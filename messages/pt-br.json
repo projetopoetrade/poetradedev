@@ -1,0 +1,181 @@
+{
+  "HomePage": {
+    "why-path-of-trade": "Por que Path of Trade?",
+    "choose-your-game": "ESCOLHA SEU JOGO"
+  },
+
+  "Features": {
+    "fast-delivery": "Entrega Rápida",
+    "secure-payment": "Pagamento Seguro",
+    "refund-guarantee": "Garantia de Reembolso",
+    "security-guarantee": "Garantia de Segurança",
+    "24-7-support": "Suporte 24/7",
+    "cheap-prices": "Preços Baratos",
+
+    "fast-delivery-description": "Compre Orbs POE 1 & 2 – Entrega em 30 Min! Transações Seguras e Rápidas 24/7.",
+    "secure-payment-description": "Usamos um sistema de pagamento seguro para proteger suas informações pessoais e financeiras.",
+    "security-guarantee-description": "Negociação Segura em PoE! Segurança de conta garantida em todas as compras de Path of Exile.",
+    "24-7-support-description": "Suporte PoE 24/7! Ajuda especializada para suas orbs e itens de Path of Exile, a qualquer hora.",
+    "cheap-prices-description": "Orbs PoE Baratas! As melhores ofertas online em moedas e itens de Path of Exile."
+  },
+
+ 
+
+  "SelectLeaguePage": {
+    "title": "SELECIONE SUA LIGA",
+    "description": "Selecione sua liga Path of Exile abaixo para visualizar os preços e ofertas disponíveis.",
+    "news": "Notícias",
+    "why-trade-with-us": "Por que Comprar com Path of Trade Net?",
+    "unmatched-security": "Segurança Incomparável",
+    "unmatched-security-description": "Sua segurança e segurança da conta são nossa prioridade.",
+    "lightning-fast-delivery": "Entrega Rápida",
+    "lightning-fast-delivery-description": "Obtenha suas moedas e itens tipicamente em minutos.",
+    "competitive-pricing": "Preços Competitivos",
+    "competitive-pricing-description": "Monitoramos constantemente o mercado para oferecer as melhores ofertas.",
+    "24-7-customer-support": "Suporte 24/7",
+    "24-7-customer-support-description": "Nosso time dedicado está sempre aqui para ajudar você.",
+    "wide-selection": "Seleção Ampla",
+    "wide-selection-description": "Uma ampla variedade de orbes, moedas e itens para {gameTitle}.",
+    "news-description": "PathofTrade.net é sua fonte confiável para {gameTitle} currency trading. Compre com segurança e instantaneamente. Obtenha os melhores preços e entrega rápida."
+    
+
+  },
+  "NewsPage": {
+    "news": "Notícias",
+    "news-description": "PathofTrade.net é sua fonte confiável para {gameTitle} currency trading. Compre com segurança e instantaneamente. Obtenha os melhores preços e entrega rápida."
+  },
+  "Footer": {
+    "home": "Início",
+    "main": "Principal",
+    "products": "Produtos",
+    "about-us": "Sobre nós",
+    "contact-us": "Contate-nos",
+    "support": "Suporte",
+    "blog": "Blog",
+    "faq": "FAQ",
+    "privacy-policy": "Política de Privacidade",
+    "terms-of-service": "Termos de Serviço",
+    "refund-policy": "Política de Reembolso",
+    "legal": "Legal"
+  },
+  
+
+
+  "faq": {
+    "question1": "O que é Path of Exile?",
+    "answer1": "Path of Exile é um jogo de RPG de ação gratuito desenvolvido pela Grinding Gear Games.",
+    "question2": "O que você vende em Path of Exile?",
+    "answer2": "Tudo o que você precisa para Path of Exile está aqui! Temos uma enorme variedade de moedas de PoE – de Orbes Divinos e Orbes do Caos a Orbes Exaltados e até Espelhos de Kalandra. Você também encontrará itens únicos muito procurados, conjuntos de mapas completos e serviços essenciais como power leveling. Mergulhe em nosso catálogo para ver tudo o que oferecemos!",
+    "question3": "Vocês vendem moedas e itens para qual liga de Path of Exile?",
+    "answer3": "Sim, atendemos tanto a liga Standard quanto a liga atual do desafio (temporária) em Path of Exile. Certifique-se de selecionar a liga correta ao colocar seu pedido para garantir que os itens sejam entregues ao lugar certo.",  
+    "question4": "Os itens e moedas são para POE1 ou POE2? E para quais plataformas ",
+    "answer4": " Atualmente, nosso foco principal é em Path of Exile 1 para PC. Estamos acompanhando de perto o desenvolvimento de Path of Exile 2 e planejamos expandir nossos serviços assim que o jogo e sua economia estiverem estabelecidos. No momento, não oferecemos suporte para as versões de console (PlayStation/Xbox).",
+    "question5": "Como posso entrar em contato com você se tiver dúvidas ou problemas?",
+    "answer5": "Você pode nos contatar via email em support@pathoftrade.com ou usar o formulário de contato em nosso site. Nosso objetivo é responder a todas as consultas em até 24 horas.",
+    "answers-to-some-questions": "Respostas a algumas perguntas que você pode ter."
+  },
+
+  "Testemonials": {
+    "title": "O que nossos clientes dizem: "
+  },
+
+  "LeagueSelection": {
+    "title": "SELECIONE SUA LIGA",
+    "description": "Selecione sua liga Path of Exile abaixo para visualizar os preços e ofertas disponíveis."
+  },
+
+  "Products": {
+    "allCategories": "Todas as Categorias",
+    "currency": "Moedas",
+    "services": "Serviços",
+    "items": "Itens",
+    "buyNow": "Comprar Agora",
+    "addToCart": "Adicionar ao Carrinho",
+    "viewDetails": "Ver Detalhes",
+    "processing": "Processando",
+    "noProductsFound": "Nenhum produto encontrado. Tente ajustar sua busca ou filtro.",
+    "gameVersion": "Versão do Jogo",
+    "selectGameVersion": "Selecione a Versão do Jogo",
+    "league": "Liga",
+    "selectLeague": "Selecione a Liga",
+    "difficulty": "Dificuldade",
+    "allLeagues": "Todas as Ligas",
+    "allDifficulties": "Todas as Dificuldades",
+    "selectDifficulty": "Selecione a Dificuldade",
+    "filters": "Filtros"
+  },
+
+  "ProductCard": {
+    "addToCartError": "Falha ao adicionar o item ao carrinho. Por favor, tente novamente.",
+    "placeholderImageAlt": "Imagem de placeholder",
+    "decrementQuantity": "Diminuir quantidade",
+    "incrementQuantity": "Aumentar quantidade",
+    "quantityInput": "Quantidade do produto",
+    "processing": "Processando...",
+    "buyNow": "Comprar Agora",
+    "addToCart": "Adicionar ao Carrinho",
+    "viewDetails": "Ver Detalhes"
+  },
+
+  "Orders": {
+    "title": "Meus Pedidos PoE",
+    "noOrdersYet": "Nenhum pedido ainda",
+    "onceYouPlaceAnOrder": "Uma vez que você coloque um pedido para itens Path of Exile, você poderá rastrear o status de entrega aqui.",
+    "trackOrder": "Rastrear Pedido",
+    "orderStatus": "Status do Pedido",
+    "orderDate": "Data do Pedido",
+    "orderTotal": "Total do Pedido",
+    "orderDetails": "Detalhes do Pedido",
+    "orderHistory": "Histórico de Pedidos",
+    "orderTracking": "Rastreamento de Pedido",
+    "orderTrackingNumber": "Número de Rastreamento do Pedido",
+    "loading": "Carregando seus pedidos...",
+    "browsePoEItems": "Navegar por Itens PoE",
+    "trackDeliveryStatus": "Rastrear status de entrega de seus itens Path of Exile",
+    "viewOrderDetails": "Ver Detalhes do Pedido",
+    "orderPlaced": "Pedido Criado",
+    "orderProcessing": "Pedido Processando",
+    "orderShipped": "Pedido Enviado",
+    "orderDelivered": "Pedido Entregue",
+    "orderCancelled": "Pedido Cancelado",
+    "orderFailed": "Pedido Falhou",
+    "orderRefunded": "Pedido Reembolsado",
+    "orderCompleted": "Pedido Completo",
+    "orderPending": "Pedido Pendente",
+    "league": "Liga",
+    "difficulty": "Dificuldade",
+    "category": "Categoria",
+    "characterName": "Nome do Personagem",
+    "totalAmount": "Total",
+    "paymentStatus": "Status do Pagamento",
+    "backToOrders": "Voltar para Pedidos",
+    "orderNotFound": "Pedido Não Encontrado",
+    "orderNotFoundDescription": "Não conseguimos encontrar o pedido que você está procurando. Ele pode ter sido removido ou você não tem permissão para visualizá-lo.",
+    "viewAllOrders": "Ver Todos os Pedidos",
+    "orderItems": "Itens do Pedido",
+    "subtotal": "Subtotal",
+    "discount": "Desconto",
+    "total": "Total",
+    "deliveryInformation": "Informações de Entrega",
+    "order": "Pedido",
+    "orderId": "ID do Pedido",
+    "contactSupport": "Contatar Suporte",
+    "cancelOrder": "Cancelar Pedido",
+    "buyAgain": "Comprar Novamente",
+    "trackDelivery": "Rastrear Entrega"
+  },
+
+  "Header": {
+    "signIn": "Entrar",
+    "signUp": "Cadastrar",
+    "signOut": "Sair",
+    "myOrders": "Meus Pedidos",
+    "myAccount": "Minha Conta"
+  },
+
+  "LocaleSwitcher": {
+    "label": "Idioma",
+    "locale": "Português (BR)"
+  }
+
+}

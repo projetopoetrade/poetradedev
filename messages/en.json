@@ -1,0 +1,190 @@
+{
+  "HomePage": {
+    "why-path-of-trade": "Why Path of Trade?",
+    "choose-your-game": "CHOOSE YOUR GAME"
+  },
+
+  "Features": {
+    "fast-delivery": "Fast Delivery",
+    "secure-payment": "Secure Payment",
+    "refund-guarantee": "Refund Guarantee",
+    "security-guarantee": "Security Guarantee",
+    "24-7-support": "24/7 Support",
+    "cheap-prices": "Cheap Prices",
+
+    "fast-delivery-description": "Buy POE 1 & 2 Currency – Delivered in 30 Mins! 24/7 Safe & Fast Transactions.",
+    "secure-payment-description": "We use a secure payment system to protect your personal and financial information.",    
+    "security-guarantee-description": "Secure POE Trading! Guaranteed account safety for all Path of Exile purchases.",
+    "24-7-support-description": "24/7 PoE Support! Expert help for your Path of Exile currency & items, anytime.",
+    "cheap-prices-description": "Cheap POE Currency! Best online deals for Path of Exile orbs & items."
+  },
+
+  "Testemonials": {
+    "title": "What our Customers say"
+  },
+
+  "LeagueSelection": {
+    "title": "SELECT YOUR LEAGUE",
+    "description": "Select your Path of Exile league below to view available currency prices and offers."
+  },
+
+  "Products": {
+    "allCategories": "All Categories",
+    "currency": "Currency",
+    "services": "Services",
+    "items": "Items",
+    "buyNow": "Buy Now",
+    "addToCart": "Add to Cart",
+    "viewDetails": "View Details",
+    "processing": "Processing",
+    "noProductsFound": "No products found. Try adjusting your search or filter.",
+    "gameVersion": "Game Version",
+    "selectGameVersion": "Select Game Version",
+    "league": "League",
+    "selectLeague": "Select League",
+    "difficulty": "Difficulty",
+    "allLeagues": "All Leagues",
+    "allDifficulties": "All Difficulties",
+    "filters": "Filters",
+    "selectDifficulty": "Select Difficulty"
+  },
+
+  "faq": {
+    "question1": "What is Path of Exile?",
+    "answer1": "Path of Exile is a free-to-play action RPG game developed by Grinding Gear Games.",
+    "question2": "What kind of Path of Exile currency, services and items do you sell?",
+    "answer2": "Everything you need for Path of Exile is here! We stock a massive range of PoE currency - from Divine and Chaos Orbs to Exalted Orbs and even Mirrors of Kalandra. You'll also find highly sought-after unique items, and essential services like power leveling and professional build creating. Dive into our catalog to see all we offer!",
+    "question3": "Which Path of Exile league do you sell items for?", 
+    "answer3": "Yes, we cater to both the Standard league and the current Challenge (temporary) League in Path of Exile. Please ensure you select the correct league when placing your order to guarantee items are delivered to the right place.",
+    "question4": "Are the items and currency for POE1 and POE2? And for which platforms?",
+    "answer4": "Currently, our primary focus is on Path of Exile 1 & 2 for PC. At this time, we do not offer support for console versions (PlayStation/Xbox).",
+    "question5": "How do I contact you if I have questions or issues?",
+    "answer5": "You can contact us via email at support@pathoftrade.com or use the contact form on our website. We aim to respond to all inquiries within 24 hours.",
+    "answers-to-some-questions": "Answers to some questions you might have."
+  },
+
+  "SelectLeaguePage": {
+    "title": "SELECT YOUR LEAGUE",
+    "description": "Select your Path of Exile league below to view available currency prices and offers.",
+    "news": "News",
+    "news-description": "PathofTrade.net is your trusted source for {gameTitle} currency trading. Buy safely and instantly. Get the best prices and fast delivery.",
+    "why-trade-with-us": "Why Trade with Path of Trade Net?",
+    "unmatched-security": "Unmatched Security",
+    "unmatched-security-description": "Your transactions and account safety are our top priority.",
+    "lightning-fast-delivery": "Lightning-Fast Delivery",
+    "lightning-fast-delivery-description": "Get your currency and items typically within minutes.",
+    "competitive-pricing": "Competitive Pricing",
+    "competitive-pricing-description": "We constantly monitor the market to offer you the best deals.",
+    "24-7-customer-support": "24/7 Customer Support",
+    "24-7-customer-support-description": "Our dedicated team is always here to assist you.",
+    "wide-selection": "Wide Selection",
+    "wide-selection-description": "A vast inventory of orbs, currency, and items for {gameTitle}."
+  },
+
+  "Footer": {
+    "home": "Home",
+    "main": "Main",
+    "products": "Products",
+    "about-us": "About us",
+    "contact-us": "Contact us",
+    "support": "Support",
+    "blog": "Blog",
+    "faq": "FAQ",
+    "privacy-policy": "Privacy Policy",
+    "terms-of-service": "Terms of Service",
+    "refund-policy": "Refund Policy",
+    "legal": "Legal"
+  },
+  
+
+  "GamePage": {
+    "news": "News",
+    "news-description": "PathofTrade.net is your trusted source for {gameTitle} currency trading. Buy safely and instantly. Get the best prices and fast delivery.",
+    "why-trade-with-us": "Why Trade with Path of Trade Net?",
+    "unmatched-security": "Unmatched Security",
+    "unmatched-security-description": "Your transactions and account safety are our top priority.",
+    "lightning-fast-delivery": "Lightning-Fast Delivery",
+    "lightning-fast-delivery-description": "Get your currency and items typically within minutes.",
+    "competitive-pricing": "Competitive Pricing",
+    "competitive-pricing-description": "We constantly monitor the market to offer you the best deals.",
+    "24-7-customer-support": "24/7 Customer Support",
+    "24-7-customer-support-description": "Our dedicated team is always here to assist you.",
+    "wide-selection": "Wide Selection",
+    "wide-selection-description": "A vast inventory of orbs, currency, and items for {gameTitle}."
+  },
+  "ProductCard": {
+    "addToCartError": "Failed to add item to cart. Please try again.",
+    "placeholderImageAlt": "Placeholder image",
+    "decrementQuantity": "Decrement quantity",
+    "incrementQuantity": "Increment quantity",
+    "quantityInput": "Product quantity",
+    "processing": "Processing...",
+    "buyNow": "Buy Now",
+    "addToCart": "Add to Cart",
+    "viewDetails": "View Details"
+  },
+  "NewsPage": {
+    "news": "News",
+    "news-description": "PathofTrade.net is your trusted source for {gameTitle} currency trading. Buy safely and instantly. Get the best prices and fast delivery."
+  },
+
+  "Orders": {
+    "title": "My PoE Orders",
+    "noOrdersYet": "No Orders Yet",
+    "onceYouPlaceAnOrder": "Once you place an order for Path of Exile items, you'll be able to track delivery status here.",
+    "trackOrder": "Track Order",
+    "orderStatus": "Order Status",
+    "orderDate": "Order Date",
+    "orderTotal": "Order Total",
+    "orderDetails": "Order Details",
+    "orderHistory": "Order History",
+    "orderTracking": "Order Tracking",
+    "orderTrackingNumber": "Order Tracking Number",
+    "loading": "Loading your orders...",
+    "browsePoEItems": "Browse PoE Items",
+    "trackDeliveryStatus": "Track delivery status of your Path of Exile items",
+    "viewOrderDetails": "View Order Details",
+    "orderPlaced": "Order Placed",
+    "orderProcessing": "Order Processing",
+    "orderDelivered": "Order Delivered",
+    "orderCancelled": "Order Cancelled",
+    "orderFailed": "Order Failed",
+    "orderRefunded": "Order Refunded",
+    "orderCompleted": "Order Completed",
+    "orderPending": "Order Pending",
+    "league": "League",
+    "difficulty": "Difficulty",
+    "category": "Category",
+    "characterName": "Character Name",
+    "totalAmount": "Total Amount",
+    "paymentStatus": "Payment Status",
+    "backToOrders": "Back to Orders",
+    "orderNotFound": "Order Not Found",
+    "orderNotFoundDescription": "We couldn't find the order you're looking for. It may have been removed or you don't have permission to view it.",
+    "viewAllOrders": "View All Orders",
+    "orderItems": "Order Items",
+    "subtotal": "Subtotal",
+    "discount": "Discount",
+    "total": "Total",
+    "deliveryInformation": "Delivery Information",
+    "order": "Order",
+    "orderId": "Order ID",
+    "contactSupport": "Contact Support",
+    "cancelOrder": "Cancel Order",
+    "buyAgain": "Buy Again"
+  },
+
+  "Header": {
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "signOut": "Sign Out",
+    "myOrders": "My Orders",
+    "myAccount": "My Account"
+
+  },
+
+  "LocaleSwitcher": {
+    "label": "Language",
+    "locale": "English"
+  }
+}
