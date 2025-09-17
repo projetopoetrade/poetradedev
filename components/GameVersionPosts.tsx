@@ -25,7 +25,7 @@ export default async function GameVersionPosts({
     const limitedPosts = maxPosts ? posts.slice(0, maxPosts) : posts;
 
     return (
-      <div className="py-5">
+      <div className="py-12">
         <h2 className="text-4xl font-bold">Latest News</h2>
         {limitedPosts?.length > 0 ? (
           limitedPosts.map((post: Blog) => (

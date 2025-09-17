@@ -3,7 +3,7 @@ import GameVersionPosts from "@/components/GameVersionPosts";
 import { LeagueSelectionPage } from "@/components/league-selection";
 import PatchInfo from "@/components/PatchInfo";
 import { Metadata } from "next";
-import { useTranslations } from "next-intl";
+
 
 // Generate metadata based on game version
 export async function generateMetadata(props: {
@@ -90,7 +90,7 @@ export default async function Page({
             />
             <header>
               <h2 className="text-4xl font-bold">{gameTitle} Major Updates</h2>
-              <p className="mt-2 text-base text-muted-foreground"></p>
+              <p className="mt-2 text-base text-muted-foreground">Latest updates and changes for {gameTitle}.</p>
             </header>
             <PatchInfo gameVersion={patchVersion} />
             <CurrencyInfo gameVersion={gameVersion} />
