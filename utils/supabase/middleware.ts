@@ -1,80 +1,65 @@
-import { createServerClient } from "@supabase/ssr";
-import { type NextRequest, NextResponse } from "next/server";
+// @/utils/supabase/middleware.ts
 
-// List of admin user IDs
-const ADMIN_USER_IDS = [
-  // Add your admin user IDs here
-  '8db9eeb1-51bf-4daf-80b0-e204023232a9',
-];
+import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { type NextRequest, NextResponse } from 'next/server';
 
-export const updateSession = async (request: NextRequest, response: NextResponse) => {
-  // This `try/catch` block is only here for the interactive tutorial.
-  // Feel free to remove once you have Supabase connected.
-  try {
-    // Use the provided response instead of creating a new one
-    let updatedResponse = response || NextResponse.next({
-      request: {
-        headers: request.headers,
-      },
-    });
-
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          getAll() {
-            return request.cookies.getAll();
-          },
-          setAll(cookiesToSet) {
-            cookiesToSet.forEach(({ name, value }) =>
-              request.cookies.set(name, value),
-            );
-            
-            // Preserve the existing response instead of creating a new one
-            cookiesToSet.forEach(({ name, value, options }) =>
-              updatedResponse.cookies.set(name, value, options),
-            );
-          },
+export async function updateSession(request: NextRequest, response: NextResponse) {
+  // O cliente Supabase é criado como antes
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return request.cookies.get(name)?.value;
+        },
+        set(name: string, value: string, options: CookieOptions) {
+          response.cookies.set({ name, value, ...options });
+        },
+        remove(name: string, options: CookieOptions) {
+          response.cookies.set({ name, value: '', ...options });
         },
       },
-    );
-
-    // This will refresh session if expired - required for Server Components
-    // https://supabase.com/docs/guides/auth/server-side/nextjs
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
-
-    // Check admin routes access
-    if (request.nextUrl.pathname.startsWith("/admin")) {
-      if (userError || !user) {
-        // Not logged in
-        return NextResponse.redirect(new URL("/auth/login", request.url));
-      }
-      
-      // Check if user is in admin list
-      if (!ADMIN_USER_IDS.includes(user.id)) {
-        // Not an admin
-        return NextResponse.redirect(new URL("/", request.url));
-      }
     }
+  );
 
-    // Redirect authenticated users away from auth pages
-    if ((request.nextUrl.pathname === "/auth/login" || 
-         request.nextUrl.pathname === "/auth/sign-up") && 
-        !userError) {
-      return NextResponse.redirect(new URL("/", request.url));
-    }
+  // Verificamos a sessão e obtemos os dados do usuário
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-    return updatedResponse;
-  } catch (e) {
-    // If you are here, a Supabase client could not be created!
-    // This is likely because you have not set up environment variables.
-    // Check out http://localhost:3000 for Next Steps.
-    console.error('Middleware error:', e);
-    return response || NextResponse.next({
-      request: {
-        headers: request.headers,
-      },
-    });
-  }
-};
+  // --- INÍCIO DA LÓGICA DE PROTEÇÃO DE ROTAS ---
+
+// 1. Defina as rotas que você quer proteger (sem o prefixo de idioma).
+// A lógica vai funcionar para qualquer idioma (ex: /pt/dashboard, /en/dashboard)
+const protectedRoutes = ['/orders', '/admin', '/profile'];
+
+// 2. Obtenha o pathname da requisição. Ele já virá com o idioma, ex: "/pt/dashboard"
+const { pathname } = request.nextUrl;
+
+// 3. Verifique se o pathname atual corresponde a uma rota protegida.
+// Usamos .some() e .endsWith() para ignorar o prefixo de idioma.
+const isProtectedRoute = protectedRoutes.some((route) => pathname.endsWith(route));
+
+// 4. Se for uma rota protegida E o usuário NÃO estiver logado...
+if (isProtectedRoute && !user) {
+  // Clona a URL original para manter o idioma e outros parâmetros.
+  const redirectUrl = request.nextUrl.clone();
+
+  // Define o novo caminho para a página de login.
+  // O prefixo de idioma (ex: /pt) será mantido.
+  redirectUrl.pathname = '/auth/login';
+  console.log('redirectUrl', redirectUrl);
+
+  // Adiciona o pathname original que o usuário tentou acessar como callback.
+  redirectUrl.searchParams.set('callbackUrl', pathname);
+
+  // Redireciona o usuário para a página de login com o callback.
+  return NextResponse.redirect(redirectUrl);
+}
+
+// --- FIM DA LÓGICA DE PROTEÇÃO ---
+  // Se a rota não for protegida ou o usuário estiver logado,
+  // apenas retorna a `response` original para continuar o fluxo.
+  return response;
+}

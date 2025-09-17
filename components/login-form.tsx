@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useRef, useState } from "react";
 import { OAuthProviders } from "@/components/oauth-providers";
 import { Turnstile } from "next-turnstile";
@@ -31,6 +31,8 @@ export function LoginForm({
     "success" | "error" | "expired" | "required"
   >("required");
   const turnstileRef = useRef<string>("");
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/";
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,7 +52,8 @@ export function LoginForm({
         password,
       });
       if (error) throw error;
-      router.push("/auth/sign-in-success");
+      router.push(callbackUrl);
+      router.refresh();
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred");
     } finally {

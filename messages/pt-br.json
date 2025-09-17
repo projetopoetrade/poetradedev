@@ -19,12 +19,20 @@
     "cheap-prices-description": "Orbs PoE Baratas! As melhores ofertas online em moedas e itens de Path of Exile."
   },
 
- 
+  "PatchInfo": {
+    "no-patch-information-available": "Nenhuma informação de patch disponível."
+  },
 
+ 
   "SelectLeaguePage": {
     "title": "SELECIONE SUA LIGA",
     "description": "Selecione sua liga Path of Exile abaixo para visualizar os preços e ofertas disponíveis.",
     "news": "Notícias",
+    "select-your-league": "SELECIONE SUA LIGA",
+    "latest-news": "Últimas Notícias",
+    "no-posts-found": "Nenhuma postagem encontrada para esta categoria e versão do jogo",
+    "error-loading-posts": "Erro ao carregar as postagens. Por favor, tente novamente mais tarde.",
+    
     "why-trade-with-us": "Por que Comprar com Path of Trade Net?",
     "unmatched-security": "Segurança Incomparável",
     "unmatched-security-description": "Sua segurança e segurança da conta são nossa prioridade.",
@@ -74,6 +82,9 @@
     "answer5": "Você pode nos contatar via email em support@pathoftrade.com ou usar o formulário de contato em nosso site. Nosso objetivo é responder a todas as consultas em até 24 horas.",
     "answers-to-some-questions": "Respostas a algumas perguntas que você pode ter."
   },
+  "GameVersionPosts": {
+    "major-updates": "Atualizações Principais"
+  },
 
   "Testemonials": {
     "title": "O que nossos clientes dizem: "
@@ -81,7 +92,10 @@
 
   "LeagueSelection": {
     "title": "SELECIONE SUA LIGA",
-    "description": "Selecione sua liga Path of Exile abaixo para visualizar os preços e ofertas disponíveis."
+    "description": "Selecione sua liga Path of Exile abaixo para visualizar os preços e ofertas disponíveis.",
+    "latest-news": "Últimas Notícias",
+    "no-posts-found": "Nenhuma postagem encontrada para esta categoria e versão do jogo",
+    "error-loading-posts": "Erro ao carregar as postagens. Por favor, tente novamente mais tarde."
   },
 
   "Products": {

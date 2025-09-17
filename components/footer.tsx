@@ -71,9 +71,7 @@ export default function Footer() {
             <Link href="/products" className="text-gray-300 hover:text-white text-sm transition-colors">
               {t('products')}
             </Link>
-            <div className="pt-2">
-              <ThemeSwitcher />
-            </div>
+            
           </div>
 
           {/* Support Links */}

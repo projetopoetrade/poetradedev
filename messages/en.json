@@ -22,10 +22,17 @@
   "Testemonials": {
     "title": "What our Customers say"
   },
+  "GameVersionPosts": {
+    "major-updates": "Major Updates"
+  },
 
   "LeagueSelection": {
     "title": "SELECT YOUR LEAGUE",
-    "description": "Select your Path of Exile league below to view available currency prices and offers."
+    "description": "Select your Path of Exile league below to view available currency prices and offers.",
+    "latest-news": "Latest News",
+    "no-posts-found": "No posts found for this category and game version",
+    "error-loading-posts": "Error loading posts. Please try again later."
+
   },
 
   "Products": {
@@ -67,6 +74,11 @@
     "title": "SELECT YOUR LEAGUE",
     "description": "Select your Path of Exile league below to view available currency prices and offers.",
     "news": "News",
+    "select-your-league": "SELECT YOUR LEAGUE",
+    "no-posts-found": "No posts found for this category and game version",
+    "error-loading-posts": "Error loading posts. Please try again later.",
+
+    "latest-news": "Latest News",
     "news-description": "PathofTrade.net is your trusted source for {gameTitle} currency trading. Buy safely and instantly. Get the best prices and fast delivery.",
     "why-trade-with-us": "Why Trade with Path of Trade Net?",
     "unmatched-security": "Unmatched Security",
@@ -80,6 +92,8 @@
     "wide-selection": "Wide Selection",
     "wide-selection-description": "A vast inventory of orbs, currency, and items for {gameTitle}."
   },
+
+
 
   "Footer": {
     "home": "Home",

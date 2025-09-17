@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useCurrency } from "@/lib/contexts/currency-context";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { Loader2, ShoppingBag, Trash2, User } from "lucide-react";
 import { toast, Toaster } from "sonner";
 import Image from "next/image";
@@ -21,6 +21,7 @@ export default function CartPage() {
   const { items, removeFromCart, updateQuantity, totalItems, totalPrice } = useCart();
   const { formatPrice, currency, convertPrice } = useCurrency();
   const router = useRouter();
+  const pathname = usePathname();
   const [isLoading, setIsLoading] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const [characterName, setCharacterName] = useState("");
@@ -50,7 +51,7 @@ export default function CartPage() {
           description: <span className="text-white">You need to be signed in to complete your purchase</span>,
           action: {
             label: "Sign In",
-            onClick: () => router.push('auth/login')
+            onClick: () => router.push(`auth/login?callbackUrl=${pathname}`)
           },
           duration: 5000
         });

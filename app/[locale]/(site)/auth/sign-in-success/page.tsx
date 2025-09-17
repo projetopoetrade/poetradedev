@@ -67,22 +67,7 @@ export default function SignInSuccess() {
             >
               <CheckCircle2 className="w-16 h-16 text-green-500" />
             </motion.div>
-            <div className="space-y-2">
-              <p className="text-center text-lg font-medium text-white">
-                Sign In Successful
-              </p>
-              <p className="text-center text-sm text-muted-foreground">
-                You will be redirected to the dashboard in a moment...
-              </p>
-            </div>
-            <Progress value={progress} className="w-full" />
-            <div className="flex flex-col gap-3 pt-2">
-              <Button
-                onClick={() => router.push("/dashboard")}
-                className="w-full bg-indigo-600 hover:bg-indigo-700 transition-colors"
-              >
-                Go to Dashboard
-              </Button>
+            
               <Button
                 onClick={() => router.push("/")}
                 variant="outline"
@@ -90,7 +75,7 @@ export default function SignInSuccess() {
               >
                 Return Home
               </Button>
-            </div>
+
           </CardContent>
         </Card>
       </motion.div>

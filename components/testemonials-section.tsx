@@ -1,3 +1,5 @@
+"use client";
+
 import * as React from "react";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import {
@@ -8,7 +10,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Star } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 interface Testimonial {
   name: string;
@@ -18,44 +20,84 @@ interface Testimonial {
 }
 
 export default function TestimonialCarousel() {
-  const testimonials: Testimonial[] = [
-    
-      {
-        "name": "ExileSlayer_92",
-        "title": "Fastest Orbs in Wraeclast!",
-        "description":
-          "I was skeptical at first, but pathoftrade.net delivered my Divine Orbs in less than 5 minutes after payment. The whole process was incredibly fast and smooth. I'll definitely be back for the next league start!",
-        "rating": 5
-      },
-      {
-        "name": "MappingManiac",
-        "title": "Trustworthy and Secure",
-        "description":
-          "Security is my biggest concern when buying currency, and pathoftrade.net handled it perfectly. The transaction felt safe, and the communication for the in-game trade was professional. Highly recommend for a worry-free experience.",
-        "rating": 5
-      },
-      {
-        "name": "ChaosQueen",
-        "title": "The Best Prices for Bulking",
-        "description":
-          "I've shopped around, and the prices here are consistently the best, especially when you're buying in bulk. I got a great deal on my Chaos Orbs, which helped me finish my build way sooner than I expected. Great value!",
-        "rating": 5
-      },
-      {
-        "name": "Hardcore_Hero",
-        "title": "Incredible Customer Support",
-        "description":
-          "I had a small issue with my order details, and the support team on pathoftrade.net was amazing. They responded to my ticket within minutes and sorted everything out politely and efficiently. A+ service!",
-        "rating": 5
-      },
-      {
-        "name": "JustAnotherTuna",
-        "title": "Super Simple and Easy to Use",
-        "description":
-          "The website is so easy to navigate. Found the currency I needed for my server, paid, and got instructions for the trade right away. The entire process from start to finish is streamlined for gamers. No hassle at all.",
-        "rating": 5
-      }
-    ]
+  const locale = useLocale();
+  const testimonialsEn: Testimonial[] = [
+    {
+      name: "ExileSlayer_92",
+      title: "Fastest Orbs in Wraeclast!",
+      description:
+        "I was skeptical at first, but pathoftrade.net delivered my Divine Orbs in less than 5 minutes after payment. The whole process was incredibly fast and smooth. I'll definitely be back for the next league start!",
+      rating: 5
+    },
+    {
+      name: "MappingManiac",
+      title: "Trustworthy and Secure",
+      description:
+        "Security is my biggest concern when buying currency, and pathoftrade.net handled it perfectly. The transaction felt safe, and the communication for the in-game trade was professional. Highly recommend for a worry-free experience.",
+      rating: 5
+    },
+    {
+      name: "ChaosQueen",
+      title: "The Best Prices for Bulking",
+      description:
+        "I've shopped around, and the prices here are consistently the best, especially when you're buying in bulk. I got a great deal on my Chaos Orbs, which helped me finish my build way sooner than I expected. Great value!",
+      rating: 5
+    },
+    {
+      name: "Hardcore_Hero",
+      title: "Incredible Customer Support",
+      description:
+        "I had a small issue with my order details, and the support team on pathoftrade.net was amazing. They responded to my ticket within minutes and sorted everything out politely and efficiently. A+ service!",
+      rating: 5
+    },
+    {
+      name: "JustAnotherTuna",
+      title: "Super Simple and Easy to Use",
+      description:
+        "The website is so easy to navigate. Found the currency I needed for my server, paid, and got instructions for the trade right away. The entire process from start to finish is streamlined for gamers. No hassle at all.",
+      rating: 5
+    }
+  ];
+
+  const testimonialsPt: Testimonial[] = [
+    {
+      name: "ExileSlayer_92",
+      title: "As orbs mais rápidas de Wraeclast!",
+      description:
+        "Fiquei desconfiado no começo, mas a pathoftrade.net entregou minhas Orbes Divinas em menos de 5 minutos após o pagamento. Todo o processo foi muito rápido e tranquilo. Com certeza volto no próximo começo de liga!",
+      rating: 5
+    },
+    {
+      name: "MappingManiac",
+      title: "Confiável e seguro",
+      description:
+        "Segurança é minha maior preocupação ao comprar moedas, e a pathoftrade.net fez tudo perfeitamente. A transação foi segura e a comunicação para a troca no jogo foi profissional. Recomendo para uma experiência sem preocupações.",
+      rating: 5
+    },
+    {
+      name: "ChaosQueen",
+      title: "Os melhores preços para comprar em quantidade",
+      description:
+        "Pesquisei bastante e os preços aqui são sempre os melhores, principalmente para compras em grande volume. Consegui um ótimo preço nas minhas Orbes do Caos, o que ajudou a finalizar meu build muito mais cedo. Ótimo custo-benefício!",
+      rating: 5
+    },
+    {
+      name: "Hardcore_Hero",
+      title: "Suporte ao cliente incrível",
+      description:
+        "Tive um pequeno problema com os detalhes do pedido e o suporte da pathoftrade.net foi incrível. Responderam meu ticket em minutos e resolveram tudo com educação e eficiência. Serviço nota 10!",
+      rating: 5
+    },
+    {
+      name: "JustAnotherTuna",
+      title: "Super simples e fácil de usar",
+      description:
+        "O site é muito fácil de navegar. Encontrei a moeda que precisava para meu servidor, paguei e recebi as instruções para a troca imediatamente. Do começo ao fim, tudo é pensado para gamers. Zero dor de cabeça.",
+      rating: 5
+    }
+  ];
+
+  const testimonials: Testimonial[] = locale === "pt-br" ? testimonialsPt : testimonialsEn;
 
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, index) => (

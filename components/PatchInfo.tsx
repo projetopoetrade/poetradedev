@@ -1,6 +1,9 @@
+"use client"
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useLocale, useTranslations } from "next-intl"
 
 interface PatchInfoProps {
   gameVersion?: string
@@ -18,7 +21,7 @@ interface PatchData {
   }[]
 }
 
-const patchData: Record<string, PatchData> = {
+const patchDataEn: Record<string, PatchData> = {
   "poe2": {
     version: "2.0",
     title: "Path of Exile 2",
@@ -85,16 +88,85 @@ const patchData: Record<string, PatchData> = {
   }
 }
 
+const patchDataPt: Record<string, PatchData> = {
+  "poe2": {
+    version: "2.0",
+    title: "Path of Exile 2",
+    date: "6 de dezembro de 2024",
+    description: "Path of Exile 2 é um ARPG gratuito desenvolvido e publicado pela Grinding Gear Games. Continuação do Path of Exile de 2013, lançado em Acesso Antecipado pago para PC, PlayStation 5 e Xbox Series X|S.",
+    changes: [
+      "Nova Campanha com seis atos",
+      "12 Classes com três Ascendências cada",
+      "Mais de 100 mapas de fim de jogo",
+      "Centenas de bases de equipamentos",
+      "Sistema de Habilidades personalizável com Dupla Especialização",
+      "Novo motor gráfico com visuais de alta fidelidade"
+    ],
+    features: [
+      {
+        title: "Nova Campanha",
+        description: "Se passa vários anos após os eventos do primeiro jogo, com novas áreas, cidades e personagens."
+      },
+      {
+        title: "Mecânicas de Liga",
+        description: "Mantém a tradição de ligas temporárias de desafios com mecânicas e recompensas únicas."
+      },
+      {
+        title: "Sistema de Equipamentos",
+        description: "Centenas de bases de equipamentos com modificadores mágicos e variantes únicas com poderes ancestrais."
+      },
+      {
+        title: "Sistema de Habilidades Personalizável",
+        description: "Qualquer classe pode usar qualquer Gema de Habilidade, modificada por até 5 Gemas de Suporte. A Dupla Especialização permite alternar entre dois estilos de luta."
+      }
+    ]
+  },
+  "0.2.0": {
+    version: "0.2.0",
+    title: "Liga Aurora da Caça",
+    date: "4 de abril de 2025",
+    description: "A primeira grande atualização de conteúdo do Acesso Antecipado de Path of Exile 2, trazendo novas classes, sistema de Ascendência, Itens Únicos e melhorias no endgame.",
+    changes: [
+      "Nova classe Caçadora – guerreira Azmeri com lança",
+      "5 novas classes de Ascendência",
+      "100+ novas Gemas de Suporte",
+      "100+ novos Itens Únicos",
+      "Mecânica de Espíritos Azmerianos",
+      "Sete novos mapas de endgame",
+      "Encontros com Renegados Exilados",
+      "Sistema de Corrupção no endgame"
+    ]
+  },
+  "3.25": {
+    version: "3.25",
+    title: "Settlers of Kalguur",
+    date: "26 de julho de 2024",
+    description: "Em Settlers of Kalguur, os jogadores ajudam pioneiros Kalguuranos a construir a cidade de Kingsmarch e estabelecer comércio entre Wraeclast e sua terra natal.",
+    changes: [
+      "Nova Liga de Desafio Settlers of Kalguur",
+      "Coleta de recursos e mecânicas de construção de cidade",
+      "Novo Mercado de Trocas com NPC Black Market",
+      "Retrabalho da Ascendência Gladiador",
+      "Nova classe Warden substituindo a Ascendência Raider",
+      "6º slot no Map Device",
+      "Novos encontros em Mapas Tier 16 e Tier 17",
+    ]
+  }
+}
+
 export default function PatchInfo({ gameVersion }: PatchInfoProps) {
+  const locale = useLocale()
+  const t = useTranslations("PatchInfo");
+  const selectedData = locale === "pt-br" ? patchDataPt : patchDataEn
   const patches = gameVersion 
-    ? [patchData[gameVersion]].filter(Boolean)
-    : Object.values(patchData)
+    ? [selectedData[gameVersion]].filter(Boolean)
+    : Object.values(selectedData)
 
   if (patches.length === 0) {
     return (
       <Card>
         <CardContent className="pt-6">
-          <p className="text-muted-foreground">No patch information available.</p>
+          <p className="text-muted-foreground">{t("no-patch-information-available")}</p>
         </CardContent>
       </Card>
     )

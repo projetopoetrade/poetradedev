@@ -176,13 +176,13 @@ export function LeagueSelectionPage({ gameVersion }: LeagueSelectionProps) {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-start bg-background pt-12 px-4">
+      <div className="min-h-screen flex flex-col items-center justify-start bg-background pt-12 px-4 pb-10">
         <div className="max-w-7xl w-full flex flex-col items-center">
           <h2 className="text-5xl md:text-6xl text-center font-black font-source-sans bg-gradient-to-r from-[#DEDCFF] to-[#6f58ff] bg-clip-text text-transparent tracking-wider">
-            SELECT YOUR LEAGUE
+           {t("select-your-league")}
           </h2>
           <p className="text-sm text-center text-muted-foreground/80 mb-12 max-w-2xl tracking-wide">
-            Select your Path of Exile league below to view available currency prices and offers.
+            {t("description")}
           </p>
           <div className="flex flex-wrap justify-center gap-10">
             {[1, 2, 3, 4].map((item) => (
