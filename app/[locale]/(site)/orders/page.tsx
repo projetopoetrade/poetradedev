@@ -207,7 +207,7 @@ export default function OrdersPage() {
               {/* Order Header */}
               <div className="flex flex-col md:flex-row justify-between items-start gap-4 md:gap-0 mb-6 pb-4 border-b">
                 <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
-                  <h2 className="text-xl font-semibold">Order #{order.id}</h2>
+                  <h2 className="text-xl font-semibold">{t("order")} #{order.id}</h2>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Calendar className="h-4 w-4" />
                     {formatDate(order.created_at)}
