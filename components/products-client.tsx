@@ -108,12 +108,12 @@ export default function ProductsClient({ products, initialFilters }: ProductsCli
         {/* Search and Filters Section */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           {/* Category Buttons */}
-          <nav className="flex flex-wrap gap-2 flex-1" aria-label="Filters">
+          <nav className="grid grid-cols-2 gap-3 md:flex md:flex-wrap" aria-label="Filters">
             {buttons.map((button) => (
               <Button
                 key={button.value}
                 variant="secondary"
-                className={`flex-1 sm:flex-none min-w-[100px] text-sm md:text-base font-bold hover:bg-indigo-600 ${
+                className={` min-w-[100px] text-sm md:text-base font-bold hover:bg-indigo-600 ${
                   selectedFilter === button.value ? "bg-indigo-600 text-white" : ""
                 }`}
                 onClick={() => setSelectedFilter(button.value)}

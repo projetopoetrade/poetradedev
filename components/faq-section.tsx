@@ -5,64 +5,61 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { useTranslations } from "next-intl";
+
+// 1. Crie um array com os dados do seu FAQ
+const faqItems = [
+  {
+    questionKey: "question1",
+    answerKey: "answer1",
+  },
+  {
+    questionKey: "question2",
+    answerKey: "answer2",
+  },
+  {
+    questionKey: "question3",
+    answerKey: "answer3",
+  },
+  {
+    questionKey: "question4",
+    answerKey: "answer4",
+  },
+  {
+    questionKey: "question5",
+    answerKey: "answer5",
+  },
+];
+
 export function FaqSection() {
-  const  t = useTranslations("faq");
+  const t = useTranslations("faq");
+
   return (
-    <section className=" container mx-auto mb-16 bg-background">
-      <div className="grid md:grid-cols-2 mx-auto ">
+    <section className="container mx-auto mb-16 bg-background">
+      <div className="grid md:grid-cols-2 mx-auto gap-x-12 gap-y-8">
         <div className="flex flex-col">
-          <h2 className="text-6xl font-bold  font-source text-left mb-4 text-primary-font">
+          {/* O título responsivo que fizemos antes */}
+          <h2 className="text-4xl md:text-6xl font-bold font-source text-left mb-4 text-primary-font">
             FAQ
           </h2>
-          <span className=" font-inter font-black text-primary text-lg tracking-wider">
+          <span className="font-inter font-black text-primary text-lg tracking-wider">
             {t("answers-to-some-questions")}
           </span>
         </div>
 
         <Accordion type={"single"} collapsible className="w-full">
-          <AccordionItem value="item 1">
-            <AccordionTrigger className=" font-inter font-bold text-bold  px-4 text-lg">
-              {t("question1")}
-            </AccordionTrigger>
-            <AccordionContent className="font-inter px-4 text-base">
-              {t("answer1")}
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="item 2">
-            <AccordionTrigger className=" font-inter font-bold text-bold  px-4 text-lg">
-              {t("question2")}
-            </AccordionTrigger>
-            <AccordionContent className="font-inter px-4 text-base">
-              {t("answer2")}
-            </AccordionContent>
-          </AccordionItem>
-
-          <AccordionItem value="item 3">
-            <AccordionTrigger className=" font-inter font-bold text-bold  px-4 text-lg">
-              {t("question3")}
-            </AccordionTrigger>
-            <AccordionContent className="font-inter px-4 text-base">
-              {t("answer3")}
-            </AccordionContent>
-          </AccordionItem>
-
-          <AccordionItem value="item 4">
-            <AccordionTrigger className=" font-inter font-bold text-bold  px-4 text-lg">
-              {t("question4")}
-            </AccordionTrigger>
-            <AccordionContent className="font-inter px-4 text-base">
-              {t("answer4")}
-            </AccordionContent>
-          </AccordionItem>
-
-          <AccordionItem value="item 5">
-            <AccordionTrigger className=" font-inter font-bold text-bold  px-4 text-lg">
-              {t("question5")}
-            </AccordionTrigger>
-            <AccordionContent className="font-inter px-4 text-base">
-              {t("answer5")}
-            </AccordionContent>
-          </AccordionItem>
+          {/* 2. Use .map() para renderizar os itens dinamicamente */}
+          {faqItems.map((item, index) => (
+            <AccordionItem key={index} value={`item-${index}`}>
+              {/* 3. Ajustado o tamanho da fonte da pergunta */}
+              <AccordionTrigger className="font-inter font-bold px-4 text-base text-left">
+                {t(item.questionKey)}
+              </AccordionTrigger>
+              {/* 4. Ajustado o tamanho da fonte da resposta */}
+              <AccordionContent className="font-inter px-4 text-sm">
+                {t(item.answerKey)}
+              </AccordionContent>
+            </AccordionItem>
+          ))}
         </Accordion>
       </div>
     </section>

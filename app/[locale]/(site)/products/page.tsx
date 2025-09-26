@@ -3,6 +3,7 @@ import ProductsClient from "@/components/products-client";
 import { Metadata } from "next";
 import { SearchParamsStorage } from "@/components/search-params-storage";
 import { CurrencyInfo } from "@/components/currency-info";
+import PatchInfo from "@/components/PatchInfo";
 
 
 type SearchParams = {
@@ -129,6 +130,7 @@ export default async function ProductsPage(
           }}
         />
         <CurrencyInfo gameVersion={gameVersion} />
+        <PatchInfo gameVersion={gameVersion} />
         </div>
   
     );

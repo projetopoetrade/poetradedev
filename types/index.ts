@@ -19,6 +19,19 @@ export interface Order {
   updated_at: string;
 }
 
+export interface PatchData {
+  id: string // Adicionamos um ID para usar como key
+  version: string
+  title: string
+  date: string
+  description: string
+  changes: string[]
+  features?: {
+    title: string
+    description: string
+  }[]
+}
+
 export interface OrderItem {
   product: {
     id: string;

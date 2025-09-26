@@ -141,6 +141,63 @@
     "news": "News",
     "news-description": "PathofTrade.net is your trusted source for {gameTitle} currency trading. Buy safely and instantly. Get the best prices and fast delivery."
   },
+  
+    "PatchInfo": {
+      "keyFeatures": "Key Features",
+      "keyChanges": "Key Changes",
+      "noPatchInformationAvailable": "No patch information available for the selected version.",
+      "patches": {
+        "path-of-exile-1": {
+          "version": "3.25",
+          "title": "Settlers of Kalguur",
+          "date": "July 26, 2024",
+          "description": "In Settlers of Kalguur, players help Kalguuran pioneers build the town of Kingsmarch and establish trade between Wraeclast and their homeland.",
+          "changes": [
+            "New Settlers of Kalguur Challenge League",
+            "Resource gathering and town building mechanics",
+            "New Currency Trade Market with Black Market NPC",
+            "Gladiator Ascendancy Class rework",
+            "New Warden class replacing Raider Ascendancy",
+            "6th Map Device Slot",
+            "New encounters in Tier 16 and Tier 17 Maps",
+            "Improved loading times and performance"
+          ]
+        },
+        "path-of-exile-2": {
+          "version": "2.0",
+          "title": "Path of Exile 2",
+          "date": "December 6, 2024",
+          "description": "Path of Exile 2 is a free-to-play MMORPG developed and published by Grinding Gear Games. The sequel to 2013's Path of Exile, launching in paid Early Access on Windows PC, PlayStation 5, and Xbox Series X and Series S.",
+          "changes": [
+            "New Campaign with six acts",
+            "12 Character Classes with three Ascendancy subclasses each",
+            "Over 100 endgame maps",
+            "Hundreds of equipment base types",
+            "Customizable Skill System with Dual-Specialisation",
+            "Brand new graphics engine with high-fidelity visuals"
+          ],
+          "features": [
+            {
+              "title": "New Campaign",
+              "description": "Takes place several years after the events of the first game, featuring new areas, towns, and characters."
+            },
+            {
+              "title": "League Mechanics",
+              "description": "Continues the tradition of temporary challenge leagues with unique mechanics and rewards."
+            },
+            {
+              "title": "Equipment System",
+              "description": "Features hundreds of equipment base types with magical modifiers and unique variants with ancient powers."
+            },
+            {
+              "title": "Customizable Skill System",
+              "description": "Any class can use any Skill Gem, modified with up to 5 Support Gems. Dual-Specialisation allows switching between two fighting styles."
+            }
+          ]
+        }
+      }
+    }
+,
 
   "Orders": {
     "title": "My PoE Orders",

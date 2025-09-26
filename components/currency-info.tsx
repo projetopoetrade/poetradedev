@@ -78,7 +78,7 @@ const currencyDataEn: Record<string, CurrencyData[]> = {
       name: "Mirror of Kalandra",
       description: "The most valuable and rarest currency item in Path of Exile, capable of creating an exact mirrored copy of any item, including all its modifiers and values.",
       imageUrl: "/images/mirror-of-kalandra.webp",
-      gameVersion: "3.25",
+      gameVersion: "path-of-exile-1",
       uses: [
         "Creates an exact mirrored copy of any item",
         "Most valuable currency item in Path of Exile",
@@ -179,7 +179,7 @@ const currencyDataPt: Record<string, CurrencyData[]> = {
       name: "Mirror of Kalandra",
       description: "O item de moeda mais valioso e raro do Path of Exile, capaz de criar uma cópia espelhada exata de qualquer item, incluindo todos os seus modificadores e valores.",
       imageUrl: "/images/mirror-of-kalandra.webp",
-      gameVersion: "3.25",
+      gameVersion: "path-of-exile-1",
       uses: [
         "Cria uma cópia espelhada exata de qualquer item",
         "Item de moeda mais valioso do Path of Exile",

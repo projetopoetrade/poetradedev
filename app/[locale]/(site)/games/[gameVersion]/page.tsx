@@ -72,7 +72,7 @@ export default async function Page({
 
   const shortGameName = isPoe2 ? "PoE 2" : "PoE";
   const gameTitle = isPoe2 ? "Path of Exile 2" : "Path of Exile";
-  const patchVersion = isPoe2 ? "poe2" : "3.25";
+  const patchVersion = isPoe2 ? "path-of-exile-2" : "path-of-exile-1";
 
   // Structured data for rich results
 

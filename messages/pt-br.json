@@ -19,10 +19,6 @@
     "cheap-prices-description": "Orbs PoE Baratas! As melhores ofertas online em moedas e itens de Path of Exile."
   },
 
-  "PatchInfo": {
-    "no-patch-information-available": "Nenhuma informação de patch disponível."
-  },
-
  
   "SelectLeaguePage": {
     "title": "SELECIONE SUA LIGA",
@@ -178,6 +174,63 @@
     "buyAgain": "Comprar Novamente",
     "trackDelivery": "Rastrear Entrega"
   },
+  
+    "PatchInfo": {
+      "keyFeatures": "Recursos Principais",
+      "keyChanges": "Principais Mudanças",
+      "noPatchInformationAvailable": "Nenhuma informação de patch disponível para a versão selecionada.",
+      "patches": {
+        "path-of-exile-1": {
+          "version": "3.25",
+          "title": "Settlers of Kalguur",
+          "date": "26 de julho de 2024",
+          "description": "Em Settlers of Kalguur, os jogadores ajudam pioneiros Kalguuranos a construir a cidade de Kingsmarch e estabelecer comércio entre Wraeclast e sua terra natal.",
+          "changes": [
+            "Nova Liga de Desafio Settlers of Kalguur",
+            "Coleta de recursos e mecânicas de construção de cidade",
+            "Novo Mercado de Trocas com NPC do Mercado Negro",
+            "Retrabalho da Ascendência Gladiador",
+            "Nova classe Warden substituindo a Ascendência Raider",
+            "6º espaço no Dispositivo de Mapas",
+            "Novos encontros em Mapas de Tier 16 e Tier 17",
+            "Tempos de carregamento e desempenho aprimorados"
+          ]
+        },
+        "path-of-exile-2": {
+          "version": "2.0",
+          "title": "Path of Exile 2",
+          "date": "6 de dezembro de 2024",
+          "description": "Path of Exile 2 é um ARPG gratuito desenvolvido e publicado pela Grinding Gear Games. Continuação do Path of Exile de 2013, lançado em Acesso Antecipado pago para PC, PlayStation 5 e Xbox Series X|S.",
+          "changes": [
+            "Nova Campanha com seis atos",
+            "12 Classes com três Ascendências cada",
+            "Mais de 100 mapas de fim de jogo",
+            "Centenas de bases de equipamentos",
+            "Sistema de Habilidades personalizável com Dupla Especialização",
+            "Novo motor gráfico com visuais de alta fidelidade"
+          ],
+          "features": [
+            {
+              "title": "Nova Campanha",
+              "description": "Se passa vários anos após os eventos do primeiro jogo, com novas áreas, cidades e personagens."
+            },
+            {
+              "title": "Mecânicas de Liga",
+              "description": "Mantém a tradição de ligas temporárias de desafios com mecânicas e recompensas únicas."
+            },
+            {
+              "title": "Sistema de Equipamentos",
+              "description": "Centenas de bases de equipamentos com modificadores mágicos e variantes únicas com poderes ancestrais."
+            },
+            {
+              "title": "Sistema de Habilidades Personalizável",
+              "description": "Qualquer classe pode usar qualquer Gema de Habilidade, modificada por até 5 Gemas de Suporte. A Dupla Especialização permite alternar entre dois estilos de luta."
+            }
+          ]
+        }
+      }
+    },
+  
 
   "Header": {
     "signIn": "Entrar",

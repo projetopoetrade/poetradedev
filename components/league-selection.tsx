@@ -151,7 +151,7 @@ export function LeagueSelectionPage({ gameVersion }: LeagueSelectionProps) {
   const t = useTranslations("SelectLeaguePage");
   const isPoe2 = gameVersion === "path-of-exile-2";
   const gameTitle = isPoe2 ? "Path of Exile 2" : "Path of Exile";
-  const patchVersion = gameVersion === "path-of-exile-2" ? "poe2" : "3.25";
+
 
   
   const handleExpand = (leagueId: string) => {

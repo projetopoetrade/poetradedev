@@ -11,7 +11,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "../globals.css";
 import Footer from "@/components/footer";
-import { setRequestLocale } from "next-intl/server";
+import { setRequestLocale, getMessages } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
 import TawkTo from "@/components/tawTo";
 
@@ -57,6 +57,7 @@ export default async function RootLayout({
   const {locale} = await params;
 
   setRequestLocale(locale);
+  const messages = await getMessages();
 
 
   return (
@@ -73,7 +74,7 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-                        <NextIntlClientProvider locale={locale}>
+                        <NextIntlClientProvider locale={locale} messages={messages}>
 
           <CurrencyProvider>
             <CartProvider>

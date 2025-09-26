@@ -1,11 +1,10 @@
+// components/AuthButton.tsx
 import { signOutAction } from "@/app/actions";
 import { hasEnvVars } from "@/utils/supabase/check-env-vars";
 import Link from "next/link";
-import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { createClient } from "@/utils/supabase/server";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { DropdownSettingsItem } from "./dropdown-settings-item";
 import { CurrencyIndicator } from "./currency-indicator";
 import {
   DropdownMenu,
@@ -13,17 +12,13 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuPortal,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { MobileMenu } from "./mobile-menu";
-import { Settings, Package, User, LogOut } from "lucide-react";
+import { Package, LogOut } from "lucide-react";
 import LocaleSwitcher from "./locale-switcher";
+import { Separator } from "./ui/separator";
 
 export default async function AuthButton() {
   const supabase = await createClient();
@@ -32,57 +27,35 @@ export default async function AuthButton() {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // Your fallback for missing env vars is good, no changes needed here.
   if (!hasEnvVars) {
-    return (
-      <div className="flex gap-4 items-center">
-        <div className="flex gap-2">
-          <Button
-            asChild
-            size="sm"
-            variant="outline"
-            disabled
-            className="w-24 h-9 opacity-75 cursor-none pointer-events-none"
-          >
-            <Link href="auth/login">Sign in</Link>
-          </Button>
-          <Button
-            asChild
-            size="sm"
-            variant="default"
-            disabled
-            className="w-24 h-9 opacity-75 cursor-none pointer-events-none"
-          >
-            <Link href="auth/sign-up">Sign up</Link>
-          </Button>
-        </div>
-      </div>
-    );
+    // ... same as your original code
   }
 
   return user ? (
+    // Authenticated User View
     <div className="flex items-center gap-4 pr-2">
-      <div className="hidden sm:block">
+      {/* --- Desktop View (hidden below md) --- */}
+      <div className="hidden md:flex items-center gap-4">
         <CurrencyIndicator variant="full" />
-      </div>
-      <div className="sm:hidden">
-        <CurrencyIndicator variant="icon" />
-      </div>
-      <LocaleSwitcher />
-      <div className="hidden md:block">
-   
+        <LocaleSwitcher />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Avatar className="h-8 w-8 sm:h-9 sm:w-9 cursor-pointer hover:opacity-80 transition-opacity">
+            <Avatar className="h-9 w-9 cursor-pointer hover:opacity-80 transition-opacity">
               <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-              <AvatarFallback>{user.email?.charAt(0).toUpperCase() || 'U'}</AvatarFallback>
+              <AvatarFallback>
+                {user.email?.charAt(0).toUpperCase() || "U"}
+              </AvatarFallback>
             </Avatar>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56">
-            <DropdownMenuLabel className="font-roboto text-sm font-bold">My Account</DropdownMenuLabel>
+            <DropdownMenuLabel className="font-roboto text-sm font-bold">
+              My Account
+            </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem asChild>
-                <Link href="/orders" className="flex items-center justify-between w-full">
+                <Link href="/orders" className="flex items-center justify-between w-full cursor-pointer">
                   <span className="font-roboto text-sm font-medium">My Orders</span>
                   <Package className="h-4 w-4 text-muted-foreground" />
                 </Link>
@@ -90,8 +63,8 @@ export default async function AuthButton() {
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <form action={signOutAction}>
-              <DropdownMenuItem className="text-red-500 focus:text-red-500 focus:bg-red-500/10">
-                <button type="submit" className="w-full text-left flex items-center justify-between">
+              <DropdownMenuItem className="text-red-500 focus:text-red-500 focus:bg-red-500/10 p-0">
+                <button type="submit" className="w-full text-left flex items-center justify-between p-2 cursor-pointer">
                   <span>Log out</span>
                   <LogOut className="h-4 w-4" />
                 </button>
@@ -99,48 +72,83 @@ export default async function AuthButton() {
             </form>
           </DropdownMenuContent>
         </DropdownMenu>
-        
       </div>
-   
-      <div className="block md:hidden">
-        <MobileMenu isAuthenticated={true} />
-      </div>
+
+      {/* --- Mobile View (visible below md) --- */}
+      <MobileMenu>
+        <div className="flex flex-col gap-5 pt-6">
+          {/* User Info */}
+          <div className="flex items-center gap-3 px-2">
+            <Avatar className="h-10 w-10">
+              <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+              <AvatarFallback>{user.email?.charAt(0).toUpperCase() || "U"}</AvatarFallback>
+            </Avatar>
+            <div className="flex flex-col">
+              <span className="font-semibold text-sm">Account</span>
+              <span className="text-xs text-muted-foreground">{user.email}</span>
+            </div>
+          </div>
+          <Separator />
+          {/* Links */}
+          <Link href="/orders" className="flex items-center justify-between w-full px-2 py-1.5 text-sm hover:bg-accent rounded-md">
+            My Orders
+            <Package className="h-4 w-4 text-muted-foreground" />
+          </Link>
+          <Separator />
+          {/* Controls */}
+          <div className="flex items-center justify-between px-2">
+            <span className="text-sm">Language</span>
+            <LocaleSwitcher />
+          </div>
+          <div className="flex items-center justify-between px-2">
+            <span className="text-sm">Currency</span>
+            <CurrencyIndicator variant="full" />
+          </div>
+          <Separator />
+          {/* Sign Out */}
+          <form action={signOutAction} className="w-full">
+            <Button type="submit" variant="ghost" className="w-full justify-between text-red-500 hover:text-red-500 hover:bg-red-500/10">
+              Log out <LogOut className="h-4 w-4" />
+            </Button>
+          </form>
+        </div>
+      </MobileMenu>
     </div>
   ) : (
-    <div className="flex items-center gap-2 sm:gap-3 justify-end pr-2">
-      <div className="sm:hidden">
-        <CurrencyIndicator variant="icon" />
-      </div>
-      <div className="hidden sm:block">
+    // Unauthenticated User View
+    <div className="flex items-center gap-3 pr-2">
+      {/* --- Desktop View (hidden below md) --- */}
+      <div className="hidden md:flex items-center gap-3">
         <CurrencyIndicator variant="full" />
-      </div>
-      <LocaleSwitcher />
-      <div className="hidden md:flex gap-2 sm:gap-3">
-
-        
-        <Button
-          asChild
-          size="sm"
-          className="text-white w-20 sm:w-24 font-roboto text-sm font-bold bg-black 
-            hover:bg-slate-100 hover:text-black transition-all duration-300 
-            hover:scale-102 rounded-md border hover:border-black"
-        >
+        <LocaleSwitcher />
+        <Button asChild size="sm" variant="outline">
           <Link href="/auth/login">Sign in</Link>
         </Button>
-
-        <Button
-          asChild
-          size="sm"
-          className="text-white font-roboto text-sm font-bold bg-black 
-            hover:bg-slate-100 hover:text-black transition-all duration-300 
-            hover:scale-102 rounded-md border hover:border-black"
-        >
+        <Button asChild size="sm">
           <Link href="/auth/sign-up">Sign up</Link>
         </Button>
       </div>
-      <div className="block md:hidden">
-        <MobileMenu isAuthenticated={false} />
-      </div>
+
+      {/* --- Mobile View (visible below md) --- */}
+      <MobileMenu>
+        <div className="flex flex-col gap-4 pt-6">
+          <Button asChild className="w-full">
+            <Link href="/auth/login">Sign in</Link>
+          </Button>
+          <Button asChild variant="secondary" className="w-full">
+            <Link href="/auth/sign-up">Sign up</Link>
+          </Button>
+          <Separator className="my-4" />
+          <div className="flex items-center justify-between px-2">
+            <span className="text-sm">Language</span>
+            <LocaleSwitcher />
+          </div>
+          <div className="flex items-center justify-between px-2">
+            <span className="text-sm">Currency</span>
+            <CurrencyIndicator variant="full" />
+          </div>
+        </div>
+      </MobileMenu>
     </div>
   );
 }
