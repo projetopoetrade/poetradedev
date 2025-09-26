@@ -1,5 +1,5 @@
 import HeaderAuth from "@/components/header-auth";
-import { GoogleAnalytics, GoogleTagManager } from "@next/third-parties/google";
+import { GoogleTagManager } from "@next/third-parties/google";
 import { Roboto, Source_Sans_3 } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import Link from "next/link";
@@ -8,12 +8,12 @@ import { CurrencyProvider } from "@/lib/contexts/currency-context";
 import { CartProvider } from "@/lib/contexts/cart-context";
 import CartDropdown from "@/components/cart-dropdown";
 import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/next";
+import ConsentedProviders from "@/components/consented-providers";
 import "../globals.css";
 import Footer from "@/components/footer";
 import { setRequestLocale, getMessages } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
-import TawkTo from "@/components/tawTo";
+import CookieConsent from "@/components/cookie-consent";
 
 export const metadata = {
   metadataBase: new URL("https://www.pathoftrade.net"),
@@ -109,10 +109,9 @@ export default async function RootLayout({
               </nav>
 
               {children}
-              <TawkTo />
               <Footer />
-              <GoogleAnalytics gaId="G-G1790M45LN" />
-              <SpeedInsights />
+              <ConsentedProviders />
+              <CookieConsent locale={locale} />
             </CartProvider>
           </CurrencyProvider>
           </NextIntlClientProvider>

@@ -35,11 +35,7 @@ function useCartContext() {
 
 // Main component in PascalCase
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>(() => {
-    if (typeof window === 'undefined') return [];
-    const savedCart = localStorage.getItem(CART_STORAGE_KEY);
-    return savedCart ? JSON.parse(savedCart) : [];
-  });
+  const [items, setItems] = useState<CartItem[]>([]);
   const { currency, convertPrice } = useCurrency();
 
   // Update prices when currency changes
@@ -52,6 +48,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
       }))
     );
   }, [currency, convertPrice]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const savedCart = localStorage.getItem(CART_STORAGE_KEY);
+    setItems(savedCart ? JSON.parse(savedCart) : []);
+  }, []);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
