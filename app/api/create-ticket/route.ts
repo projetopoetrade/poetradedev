@@ -1,100 +1,232 @@
 // app/api/create-ticket/route.ts
-import { NextResponse, NextRequest } from 'next/server';
+import { NextResponse } from "next/server";
+import { ZodError } from "zod";
+import {
+  ticketSchema,
+  sanitizeTicketData,
+} from "@/lib/validations/ticket";
 
-// Define a type for the expected request body
-interface TicketRequestBody {
-  email: string;
-  subject: string;
-  description: string;
-  status?: number;
-  priority?: number;
-  name?: string;
-}
+// Cache para o access token (em memória)
+let cachedAccessToken: string | null = null;
+let tokenExpiryTime: number | null = null;
 
-// Define a type for the Freshdesk ticket creation payload
-interface FreshdeskTicketPayload {
-  email: string;
-  subject: string;
-  description: string;
-  status: number;
-  priority: number;
-  name?: string;
-}
+// Security: Rate limiting map (IP-based)
+const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
+const RATE_LIMIT_WINDOW_MS = 60000; // 1 minute
+const MAX_REQUESTS_PER_WINDOW = 1; // 5 requests per minute per IP
 
-// Define a basic type for the expected successful Freshdesk API response
-interface FreshdeskTicketResponse {
-  id: number;
-  [key: string]: any;
-}
+// Função para renovar o access token usando refresh token
+async function getValidAccessToken(): Promise<string> {
+  // Se temos um token válido em cache, retorna ele
+  if (cachedAccessToken && tokenExpiryTime && Date.now() < tokenExpiryTime) {
+    return cachedAccessToken;
+  }
 
-export async function POST(req: NextRequest) {
+  // Se não temos refresh token, usa o access token direto das env vars
+  if (!process.env.ZOHO_REFRESH_TOKEN) {
+    console.warn('ZOHO_REFRESH_TOKEN não configurado. Usando ZOHO_ACCESS_TOKEN direto (pode expirar).');
+    return process.env.ZOHO_ACCESS_TOKEN || '';
+  }
+
+  // Renova o token usando o refresh token
   try {
-    const body = await req.json() as TicketRequestBody;
-    const {
-      email,
-      subject,
-      description,
-      status,
-      priority,
-      name,
-    } = body;
+    const tokenResponse = await fetch(
+      `https://accounts.zoho.com/oauth/v2/token?refresh_token=${process.env.ZOHO_REFRESH_TOKEN}&client_id=${process.env.ZOHO_CLIENT_ID}&client_secret=${process.env.ZOHO_CLIENT_SECRET}&grant_type=refresh_token`,
+      { method: 'POST' }
+    );
 
-    if (!email || !subject || !description) {
-      return NextResponse.json({ message: 'Missing required fields: email, subject, description.' }, { status: 400 });
+    if (!tokenResponse.ok) {
+      throw new Error('Failed to refresh Zoho token');
     }
 
-    const FD_ENDPOINT = process.env.NEXT_PUBLIC_FRESHDESK_DOMAIN;
-    const API_KEY = process.env.FRESHDESK_API_KEY;
+    const tokenData = await tokenResponse.json();
+    
+    // Armazena o novo token em cache
+    cachedAccessToken = tokenData.access_token;
+    // Define expiração (geralmente 1 hora, deixamos 55min para segurança)
+    tokenExpiryTime = Date.now() + 55 * 60 * 1000;
+    
+    return cachedAccessToken || '';
+  } catch (error) {
+    console.error('Error refreshing Zoho token:', error);
+    // Fallback para o token das env vars
+    return process.env.ZOHO_ACCESS_TOKEN || '';
+  }
+}
 
-    if (!FD_ENDPOINT || !API_KEY) {
-      console.error('Freshdesk domain or API key is not configured.');
-      return NextResponse.json({ message: 'Server configuration error.' }, { status: 500 });
+// Security: Get client IP for rate limiting
+function getClientIP(request: Request): string {
+  // Try various headers that might contain the real IP
+  const forwarded = request.headers.get('x-forwarded-for');
+  const real = request.headers.get('x-real-ip');
+  const cloudflare = request.headers.get('cf-connecting-ip');
+  
+  return cloudflare || real || forwarded?.split(',')[0] || 'unknown';
+}
+
+// Security: Check rate limit
+function checkRateLimit(ip: string): { allowed: boolean; remainingTime?: number } {
+  const now = Date.now();
+  const clientData = rateLimitMap.get(ip);
+
+  if (!clientData || now > clientData.resetTime) {
+    // Reset or create new entry
+    rateLimitMap.set(ip, {
+      count: 1,
+      resetTime: now + RATE_LIMIT_WINDOW_MS,
+    });
+    return { allowed: true };
+  }
+
+  if (clientData.count >= MAX_REQUESTS_PER_WINDOW) {
+    const remainingTime = Math.ceil((clientData.resetTime - now) / 1000);
+    return { allowed: false, remainingTime };
+  }
+
+  clientData.count++;
+  return { allowed: true };
+}
+
+// Security: Clean up old rate limit entries periodically
+setInterval(() => {
+  const now = Date.now();
+  const ipsToDelete: string[] = [];
+  
+  rateLimitMap.forEach((data, ip) => {
+    if (now > data.resetTime) {
+      ipsToDelete.push(ip);
+    }
+  });
+  
+  ipsToDelete.forEach(ip => rateLimitMap.delete(ip));
+}, RATE_LIMIT_WINDOW_MS);
+
+export async function POST(request: Request) {
+  try {
+    // Security: Rate limiting check
+    const clientIP = getClientIP(request);
+    const rateLimitResult = checkRateLimit(clientIP);
+    
+    if (!rateLimitResult.allowed) {
+      return NextResponse.json(
+        { 
+          error: `Too many requests. Please try again in ${rateLimitResult.remainingTime} seconds.` 
+        },
+        { 
+          status: 429,
+          headers: {
+            'Retry-After': String(rateLimitResult.remainingTime),
+          }
+        }
+      );
     }
 
-    const URL = `https://${FD_ENDPOINT}.freshdesk.com/api/v2/tickets`;
+    // 1. Parse and validate the request body with Zod
+    const body = await request.json();
+    
+    // Security: Validate with Zod schema
+    const validationResult = ticketSchema.safeParse(body);
+    
+    if (!validationResult.success) {
+      // Return first validation error
+      const firstError = validationResult.error.errors[0];
+      return NextResponse.json(
+        { 
+          error: firstError.message,
+          field: firstError.path[0],
+        },
+        { status: 400 }
+      );
+    }
 
-    const ticketData: FreshdeskTicketPayload = {
-      email,
-      subject,
-      description,
-      status: status || 2, // Default to Open
-      priority: priority || 1, // Default to Low
-      name: name,
-    };
+    // Security: Sanitize validated data
+    const sanitizedData = sanitizeTicketData(validationResult.data);
+    const { email: sanitizedEmail, subject: sanitizedSubject, description: sanitizedDescription } = sanitizedData;
 
-    const freshdeskResponse = await fetch(URL, {
+    // 2. Validate environment variables
+    if (!process.env.ZOHO_API_URL || !process.env.ZOHO_ORG_ID || !process.env.ZOHO_DEPARTMENT_ID) {
+      console.error('Missing Zoho environment variables');
+      return NextResponse.json(
+        { error: 'Server configuration error.' },
+        { status: 500 }
+      );
+    }
+
+    // 3. Obter um access token válido
+    const accessToken = await getValidAccessToken();
+    
+    if (!accessToken) {
+      console.error('Failed to obtain valid Zoho access token');
+      return NextResponse.json(
+        { error: 'Authentication error. Please contact support.' },
+        { status: 500 }
+      );
+    }
+
+    // 4. Assemble the request to the Zoho Desk API with sanitized data
+    const zohoResponse = await fetch(process.env.ZOHO_API_URL, {
       method: 'POST',
       headers: {
+        // Authenticate using the token we generated
+        'Authorization': `Zoho-oauthtoken ${accessToken}`,
+        'orgId': process.env.ZOHO_ORG_ID,
         'Content-Type': 'application/json',
-        'Authorization': `Basic ${Buffer.from(API_KEY + ':X').toString('base64')}`,
       },
-      body: JSON.stringify(ticketData),
+      body: JSON.stringify({
+        // Security: Use sanitized data
+        subject: sanitizedSubject,
+        description: sanitizedDescription,
+        email: sanitizedEmail,
+        departmentId: process.env.ZOHO_DEPARTMENT_ID,
+        contact: {
+          email: sanitizedEmail,
+        }
+      }),
     });
 
-    const responseData = await freshdeskResponse.json();
-
-    if (!freshdeskResponse.ok) {
-      console.error('Freshdesk API Error:', responseData);
-      console.error('Freshdesk Response Status:', freshdeskResponse.status);
-      const requestId = freshdeskResponse.headers.get('x-request-id');
-      console.error("X-Request-Id:", requestId);
-      return NextResponse.json({
-        message: 'Error creating ticket in Freshdesk.',
-        details: responseData.errors || responseData.description || 'Unknown error',
-        requestId: requestId,
-      }, { status: freshdeskResponse.status });
+    // 5. Parse the response from Zoho
+    const zohoData = await zohoResponse.json();
+    
+    // If the response from Zoho is not 'OK' (e.g., auth error, etc.)
+    if (!zohoResponse.ok) {
+      console.error('Zoho Desk Error:', zohoData);
+      
+      // Se for erro de OAuth, limpa o cache e tenta novamente na próxima chamada
+      if (zohoData.errorCode === 'INVALID_OAUTH') {
+        cachedAccessToken = null;
+        tokenExpiryTime = null;
+      }
+      
+      // Return a generic error message to the user
+      return NextResponse.json(
+        { error: 'Failed to create the ticket. Please try again.' },
+        { status: 500 }
+      );
     }
 
-    console.log('Freshdesk Response Body:', responseData);
-    console.log("Response Status : " + freshdeskResponse.status);
-    if (freshdeskResponse.status === 201) {
-      console.log("Location Header : " + freshdeskResponse.headers.get('location'));
+    // 6. Send a success response back to the frontend
+    return NextResponse.json(
+      { success: true, ticketId: zohoData.ticketNumber },
+      { status: 201 }
+    );
+
+  } catch (error) {
+    console.error('Internal Server Error:', error);
+    
+    // Handle Zod validation errors
+    if (error instanceof ZodError) {
+      return NextResponse.json(
+        { 
+          error: 'Validation failed',
+          details: error.errors.map(e => ({ field: e.path[0], message: e.message }))
+        },
+        { status: 400 }
+      );
     }
-
-    return NextResponse.json(responseData as FreshdeskTicketResponse, { status: 201 });
-
-  } catch (error: any) {
-    console.error('Error in create-ticket API route:', error);
-    return NextResponse.json({ message: 'Internal Server Error', details: error.message }, { status: 500 });
+    
+    return NextResponse.json(
+      { error: 'An unexpected error occurred.' },
+      { status: 500 }
+    );
   }
 }

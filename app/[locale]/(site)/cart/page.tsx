@@ -15,6 +15,16 @@ import { loadStripe } from "@stripe/stripe-js";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { createClient } from "@/utils/supabase/client";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { cn } from "@/lib/utils";
+import {
+  checkoutSchema,
+  sanitizeCheckoutData,
+  MAX_CHARACTER_NAME_LENGTH,
+  MAX_OBSERVATIONS_LENGTH,
+  type CheckoutInput,
+} from "@/lib/validations/checkout";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
@@ -25,24 +35,34 @@ export default function CartPage() {
   const pathname = usePathname();
   const [isLoading, setIsLoading] = useState(false);
   const [isClient, setIsClient] = useState(false);
-  const [characterName, setCharacterName] = useState("");
-  const [observations, setObservations] = useState("");
-  const [error, setError] = useState<string | null>(null);
   const supabase = createClient();
+
+  // React Hook Form with Zod validation
+  const {
+    register,
+    handleSubmit: handleFormSubmit,
+    watch,
+    formState: { errors, isValid },
+  } = useForm({
+    resolver: zodResolver(checkoutSchema),
+    mode: "onChange",
+    defaultValues: {
+      characterName: "",
+      observations: "",
+    },
+  });
+
+  // Watch field values for character counters
+  const characterName = watch("characterName", "");
+  const observations = watch("observations", "");
 
   // Handle hydration mismatch
   useEffect(() => {
     setIsClient(true);
   }, []);
 
-  const handleCheckout = async () => {
-    if (!characterName.trim()) {
-      toast.error("Please enter your character name");
-      return;
-    }
-
+  const handleCheckout = async (data: CheckoutInput) => {
     setIsLoading(true);
-    setError(null);
 
     try {
       // Check if user is authenticated
@@ -57,7 +77,6 @@ export default function CartPage() {
           },
           duration: 5000
         });
-        // Add a small delay before redirecting
         return;
       }
 
@@ -70,6 +89,9 @@ export default function CartPage() {
         });
         return;
       }
+
+      // Security: Sanitize validated data
+      const sanitizedData = sanitizeCheckoutData(data);
 
       // Send prices already converted to the selected currency
       const checkoutItems = items.map(item => ({
@@ -84,7 +106,7 @@ export default function CartPage() {
         quantity: item.quantity,
       }));
 
-      // Create Stripe checkout session
+      // Create Stripe checkout session with sanitized data
       const response = await fetch('/api/create', {
         method: 'POST',
         headers: {
@@ -93,12 +115,12 @@ export default function CartPage() {
         body: JSON.stringify({
           items: checkoutItems,
           currency: currency.toLowerCase(),
-          characterName,
-          observations,
+          characterName: sanitizedData.characterName,
+          observations: sanitizedData.observations,
         }),
       });
       
-      const data = await response.json();
+      const responseData = await response.json();
       
       if (!response.ok) {
         if (response.status === 401) {
@@ -110,18 +132,17 @@ export default function CartPage() {
             },
             duration: 5000
           });
-          // Add a small delay before redirecting
           setTimeout(() => {
             router.push('auth/login');
           }, 10000);
           return;
         }
-        throw new Error(data.details || data.error || `HTTP error! status: ${response.status}`);
+        throw new Error(responseData.details || responseData.error || `HTTP error! status: ${response.status}`);
       }
       
       // Redirect to Stripe checkout
       const result = await stripe.redirectToCheckout({
-        sessionId: data.id,
+        sessionId: responseData.id,
       });
       
       if (result.error) {
@@ -129,7 +150,6 @@ export default function CartPage() {
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
-      setError(errorMessage);
       toast.error(errorMessage, {
         description: "Please try again or contact support if the problem persists",
         duration: 5000
@@ -304,63 +324,96 @@ export default function CartPage() {
             <Card className="p-6 sticky top-6">
               <h2 className="text-xl font-semibold mb-4">Complete Purchase</h2>
               
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="characterName">Character Name *</Label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
-                    <Input
-                      id="characterName"
-                      placeholder="Enter your character name"
-                      value={characterName}
-                      onChange={(e) => setCharacterName(e.target.value)}
-                      className="pl-10"
-                      required
+              <form onSubmit={handleFormSubmit(handleCheckout)}>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="characterName">Character Name *</Label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
+                      <Input
+                        id="characterName"
+                        placeholder="Enter your character name"
+                        maxLength={MAX_CHARACTER_NAME_LENGTH}
+                        className={cn(
+                          "pl-10",
+                          errors.characterName && "border-red-500 focus:border-red-500"
+                        )}
+                        {...register("characterName")}
+                      />
+                    </div>
+                    <div className="flex justify-between items-center">
+                      {errors.characterName && (
+                        <p className="text-xs text-red-500">
+                          {errors.characterName.message}
+                        </p>
+                      )}
+                      <p className={cn(
+                        "text-xs text-muted-foreground",
+                        errors.characterName && "ml-auto"
+                      )}>
+                        {characterName?.length || 0}/{MAX_CHARACTER_NAME_LENGTH}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="observations">Observations (optional)</Label>
+                    <Textarea
+                      id="observations"
+                      placeholder="Any notes for the trader (optional)"
+                      maxLength={MAX_OBSERVATIONS_LENGTH}
+                      className={cn(
+                        "min-h-[80px] resize-none",
+                        errors.observations && "border-red-500 focus:border-red-500"
+                      )}
+                      {...register("observations")}
                     />
+                    <div className="flex justify-between items-center">
+                      {errors.observations && (
+                        <p className="text-xs text-red-500">
+                          {errors.observations.message}
+                        </p>
+                      )}
+                      <p className={cn(
+                        "text-xs text-muted-foreground",
+                        errors.observations && "ml-auto"
+                      )}>
+                        {observations?.length || 0}/{MAX_OBSERVATIONS_LENGTH}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="border-t pt-4">
+                    <div className="flex justify-between mb-2">
+                      <span>Subtotal ({totalItems} items)</span>
+                      <span>{formatPrice(totalPrice)}</span>
+                    </div>
+                    <div className="flex justify-between font-semibold text-lg">
+                      <span>Total</span>
+                      <span>{formatPrice(totalPrice)}</span>
+                    </div>
                   </div>
                 </div>
                 
-                <div className="space-y-2">
-                  <Label htmlFor="observations">Observations (optional)</Label>
-                  <Textarea
-                    id="observations"
-                    placeholder="Any notes for the trader (optional)"
-                    value={observations}
-                    onChange={(e) => setObservations(e.target.value)}
-                    className="min-h-[80px]"
-                  />
-                </div>
-
-                <div className="border-t pt-4">
-                  <div className="flex justify-between mb-2">
-                    <span>Subtotal ({totalItems} items)</span>
-                    <span>{formatPrice(totalPrice)}</span>
-                  </div>
-                  <div className="flex justify-between font-semibold text-lg">
-                    <span>Total</span>
-                    <span>{formatPrice(totalPrice)}</span>
-                  </div>
-                </div>
-              </div>
-              
-              <Button 
-                className="w-full mt-6"
-                onClick={handleCheckout}
-                disabled={isLoading || !characterName.trim()}
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Processing...
-                  </>
-                ) : (
-                  'Go to Checkout'
-                )}
-              </Button>
-              
-              <p className="text-sm text-muted-foreground mt-4 text-center">
-                By clicking "Go to Checkout", you will be redirected to our secure payment page
-              </p>
+                <Button 
+                  type="submit"
+                  className="w-full mt-6"
+                  disabled={isLoading || !isValid}
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    'Go to Checkout'
+                  )}
+                </Button>
+                
+                <p className="text-sm text-muted-foreground mt-4 text-center">
+                  By clicking "Go to Checkout", you will be redirected to our secure payment page
+                </p>
+              </form>
             </Card>
           </div>
         </div>
