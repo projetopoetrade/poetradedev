@@ -281,7 +281,16 @@
     "orderId": "Order ID",
     "contactSupport": "Contact Support",
     "cancelOrder": "Cancel Order",
-    "buyAgain": "Buy Again"
+    "buyAgain": "Buy Again",
+    "showing": "Showing",
+    "of": "of",
+    "orders": "orders",
+    "previous": "Previous",
+    "next": "Next",
+    "cancelOrderWarningTitle": "To Cancel This Order",
+    "cancelOrderWarningDescription": "Please open a support ticket with the following subject:",
+    "subject": "Subject",
+    "openCancellationTicket": "Open Cancellation Ticket"
   },
 
   "Header": {

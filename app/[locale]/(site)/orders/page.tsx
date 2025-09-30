@@ -5,7 +5,8 @@ import { createClient } from "@/utils/supabase/client";
 import { Card } from "@/components/ui/card";
 import { 
   Loader2, Package, Clock, CheckCircle, XCircle, ChevronRight, 
-  Calendar, RefreshCcw, ShoppingBag, CreditCard, Tag, Shield, Sword, User, Map
+  Calendar, RefreshCcw, ShoppingBag, CreditCard, Tag, Shield, Sword, User, Map,
+  ChevronLeft
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -14,6 +15,8 @@ import Link from "next/link";
 import type { Order } from "@/types";
 import { useTranslations } from "next-intl";
 
+
+const ITEMS_PER_PAGE = 5;
 
 const formatPrice = (price: number, currency: string = 'USD') => {
   // Handle Path of Exile currency formatting
@@ -120,6 +123,7 @@ const getStatusColor = (status: string | null) => {
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
   const router = useRouter();
   const supabase = createClient();
   const t = useTranslations("Orders");
@@ -155,6 +159,17 @@ export default function OrdersPage() {
 
     fetchOrders();
   }, [router, supabase]);
+
+  // Pagination logic
+  const totalPages = Math.ceil(orders.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const paginatedOrders = orders.slice(startIndex, endIndex);
+
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   if (loading) {
     return (
@@ -192,13 +207,20 @@ export default function OrdersPage() {
 
   return (
     <div className="container mx-auto px-4 py-12 animate-in fade-in duration-500">
-      <h1 className="text-3xl font-bold mb-2 text-center md:text-left">{t("title")}</h1>
-      <p className="text-muted-foreground mb-8 text-center md:text-left">
-        {t("trackDeliveryStatus")}
-      </p>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+        <div>
+          <h1 className="text-3xl font-bold mb-2 text-center md:text-left">{t("title")}</h1>
+          <p className="text-muted-foreground text-center md:text-left">
+            {t("trackDeliveryStatus")}
+          </p>
+        </div>
+        <div className="text-sm text-muted-foreground">
+          {t("showing")} {startIndex + 1}-{Math.min(endIndex, orders.length)} {t("of")} {orders.length} {t("orders")}
+        </div>
+      </div>
       
       <div className="grid grid-cols-1 gap-8 max-w-5xl mx-auto">
-        {orders.map((order) => (
+        {paginatedOrders.map((order) => (
           <Card 
             key={order.id} 
             className="group overflow-hidden border border-border/50 hover:border-border hover:shadow-lg transition-all duration-300"
@@ -341,6 +363,69 @@ export default function OrdersPage() {
           </Card>
         ))}
       </div>
+
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center mt-12 gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="gap-1"
+          >
+            <ChevronLeft className="h-4 w-4" />
+            {t("previous")}
+          </Button>
+          
+          <div className="flex items-center gap-1">
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+              // Show first page, last page, current page, and pages around current
+              const showPage = 
+                page === 1 || 
+                page === totalPages || 
+                (page >= currentPage - 1 && page <= currentPage + 1);
+              
+              const showEllipsis = 
+                (page === currentPage - 2 && currentPage > 3) ||
+                (page === currentPage + 2 && currentPage < totalPages - 2);
+
+              if (showEllipsis) {
+                return (
+                  <span key={page} className="px-2 text-muted-foreground">
+                    ...
+                  </span>
+                );
+              }
+
+              if (!showPage) return null;
+
+              return (
+                <Button
+                  key={page}
+                  variant={currentPage === page ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => handlePageChange(page)}
+                  className={currentPage === page ? "pointer-events-none" : ""}
+                >
+                  {page}
+                </Button>
+              );
+            })}
+          </div>
+          
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="gap-1"
+          >
+            {t("next")}
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+      )}
     </div>
   );
 } 

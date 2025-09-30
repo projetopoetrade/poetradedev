@@ -212,7 +212,16 @@
     "contactSupport": "Contatar Suporte",
     "cancelOrder": "Cancelar Pedido",
     "buyAgain": "Comprar Novamente",
-    "trackDelivery": "Rastrear Entrega"
+    "trackDelivery": "Rastrear Entrega",
+    "showing": "Mostrando",
+    "of": "de",
+    "orders": "pedidos",
+    "previous": "Anterior",
+    "next": "Próximo",
+    "cancelOrderWarningTitle": "Para Cancelar Este Pedido",
+    "cancelOrderWarningDescription": "Por favor, abra um ticket de suporte com o seguinte assunto:",
+    "subject": "Assunto",
+    "openCancellationTicket": "Abrir Ticket de Cancelamento"
   },
   
     "PatchInfo": {

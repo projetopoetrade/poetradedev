@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card";
 import { 
   Loader2, Package, Clock, CheckCircle, XCircle, 
   Calendar, RefreshCcw, ShoppingBag, CreditCard, Shield, Sword, User, Map,
-  ArrowLeft, ExternalLink, MessageSquare, Receipt
+  ArrowLeft, ExternalLink, MessageSquare, Receipt, AlertCircle
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -241,17 +241,17 @@ export default function OrderDetailsPage(props: { params: Promise<{ id: string }
   }
 
   return (
-    <div className="container mx-auto px-4 py-12 animate-in fade-in duration-500">
-      <Button variant="ghost" className="mb-8 gap-2" onClick={() => router.back()}>
+    <div className="container mx-auto px-4 py-6 animate-in fade-in duration-500">
+      <Button variant="ghost" className="mb-4 gap-2" onClick={() => router.back()}>
         <ArrowLeft className="h-4 w-4" />
         {t("backToOrders")}
       </Button>
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 max-w-7xl mx-auto">
         {/* Order Summary */}
         <div className="lg:col-span-2">
-          <Card className="p-6 md:p-8 mb-8">
-            <div className="flex flex-col md:flex-row justify-between items-start gap-4 md:gap-0 mb-6">
+          <Card className="p-5 mb-4">
+            <div className="flex flex-col md:flex-row justify-between items-start gap-3 md:gap-0 mb-4">
               <div>
                 <h1 className="text-2xl font-bold mb-1">{t("order")} #{order.id}</h1>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -265,26 +265,26 @@ export default function OrderDetailsPage(props: { params: Promise<{ id: string }
               </Badge>
             </div>
             
-            <Separator className="mb-6" />
+            <Separator className="mb-4" />
             
-            <div className="space-y-6">
+            <div className="space-y-4">
               <div>
-                <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
                   <Shield className="h-5 w-5 text-primary" />
                   {t("orderItems")}
                 </h2>
                 
-                <div className="space-y-4">
+                <div className="space-y-3">
                   {order.items.map((item, index) => (
-                    <div key={index} className="flex justify-between p-4 bg-muted/30 rounded-md border">
-                      <div className="flex flex-col">
-                        <div className="font-medium text-lg">
+                    <div key={index} className="flex justify-between items-start p-3 bg-muted/30 rounded-md border">
+                      <div className="flex flex-col gap-1.5">
+                        <div className="font-medium">
                           {item.product?.name || 'Unknown Item'}
                         </div>
-                        <div className="text-sm text-muted-foreground mt-1 space-y-1">
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
                           {(item.product as any)?.difficulty && (
-                            <div className="flex items-center gap-2 mt-2">
-                              <span className="font-medium">Difficulty:</span>
+                            <>
+                              <span>Difficulty:</span>
                               <Badge variant="outline" className={
                                 (item.product as any).difficulty.toLowerCase() === 'softcore' ? 'bg-green-100 text-green-800 border-green-200 dark:bg-green-950/50 dark:text-green-400 dark:border-green-900' :
                                 (item.product as any).difficulty.toLowerCase() === 'hardcore' ? 'bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-950/50 dark:text-yellow-400 dark:border-yellow-900' :
@@ -292,18 +292,18 @@ export default function OrderDetailsPage(props: { params: Promise<{ id: string }
                               }>
                                 {(item.product as any).difficulty}
                               </Badge>
-                            </div>
-                          )}
-                          {(item.product as any)?.description && (
-                            <div className="mt-2 italic">{(item.product as any).description}</div>
+                            </>
                           )}
                         </div>
+                        {(item.product as any)?.description && (
+                          <div className="text-sm text-muted-foreground italic">{(item.product as any).description}</div>
+                        )}
                       </div>
-                      <div className="flex flex-col items-end">
+                      <div className="flex flex-col items-end gap-1.5">
                         <div className="font-medium">
                           {formatPrice(item.product?.price * item.quantity || 0, order.currency)}
                         </div>
-                        <Badge variant="outline" className="mt-2">
+                        <Badge variant="outline" className="text-xs">
                           Qty: {item.quantity}
                         </Badge>
                       </div>
@@ -314,20 +314,20 @@ export default function OrderDetailsPage(props: { params: Promise<{ id: string }
               
               <Separator />
               
-              <div className="flex justify-between items-center py-2">
+              <div className="flex justify-between items-center py-1.5">
                 <span className="font-medium">{t("subtotal")}</span>
                 <span>{formatPrice(order.total_amount, order.currency)}</span>
               </div>
               
               {(order as any).delivery_fee > 0 && (
-                <div className="flex justify-between items-center py-2">
+                <div className="flex justify-between items-center py-1.5">
                   <span className="font-medium">Delivery Fee</span>
                   <span>{formatPrice((order as any).delivery_fee, order.currency)}</span>
                 </div>
               )}
               
               {(order as any).discount_amount > 0 && (
-                <div className="flex justify-between items-center py-2 text-green-600">
+                <div className="flex justify-between items-center py-1.5 text-green-600">
                   <span className="font-medium">{t("discount")}</span>
                   <span>-{formatPrice((order as any).discount_amount, order.currency)}</span>
                 </div>
@@ -335,7 +335,7 @@ export default function OrderDetailsPage(props: { params: Promise<{ id: string }
               
               <Separator />
               
-              <div className="flex justify-between items-center py-2">
+              <div className="flex justify-between items-center py-1.5">
                 <span className="font-bold text-lg">{t("total")}</span>
                 <span className="font-bold text-lg">
                   {formatPrice(order.total_amount, order.currency)}
@@ -345,8 +345,8 @@ export default function OrderDetailsPage(props: { params: Promise<{ id: string }
             
             {/* Observations */}
             {order.observations && (
-              <div className="mt-6 p-4 border border-border/70 rounded-md bg-muted/30">
-                <h3 className="font-medium flex items-center gap-2 mb-2">
+              <div className="mt-4 p-3 border border-border/70 rounded-md bg-muted/30">
+                <h3 className="font-medium flex items-center gap-2 mb-1.5">
                   <MessageSquare className="h-4 w-4 text-primary" />
                   Observations
                 </h3>
@@ -358,8 +358,8 @@ export default function OrderDetailsPage(props: { params: Promise<{ id: string }
 
             {/* Delivery Instructions */}
             {(order as any).delivery_instructions && (
-              <div className="mt-6 p-4 border border-border/70 rounded-md bg-muted/30">
-                <h3 className="font-medium flex items-center gap-2 mb-2">
+              <div className="mt-4 p-3 border border-border/70 rounded-md bg-muted/30">
+                <h3 className="font-medium flex items-center gap-2 mb-1.5">
                   <MessageSquare className="h-4 w-4 text-primary" />
                   Delivery Instructions
                 </h3>
@@ -372,14 +372,14 @@ export default function OrderDetailsPage(props: { params: Promise<{ id: string }
           
           {/* Payment History */}
           {order.payment_intent && (
-            <Card className="p-6 md:p-8">
-              <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <Card className="p-5">
+              <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
                 <Receipt className="h-5 w-5 text-primary" />
                 Payment Information
               </h2>
               
-              <div className="space-y-4">
-                <div className="flex justify-between items-center p-4 bg-muted/30 rounded-md border">
+              <div className="space-y-3">
+                <div className="flex justify-between items-center p-3 bg-muted/30 rounded-md border">
                   <div className="flex flex-col">
                     <div className="text-sm text-muted-foreground">Payment Status</div>
                     <div className="flex items-center gap-2 mt-1">
@@ -416,24 +416,24 @@ export default function OrderDetailsPage(props: { params: Promise<{ id: string }
         
         {/* Order Meta & Actions Sidebar */}
         <div className="lg:col-span-1">
-          <Card className="p-6 md:p-8 mb-8">
-            <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+          <Card className="p-5">
+            <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
               <User className="h-5 w-5 text-primary" />
               {t("deliveryInformation")}
             </h2>
             
-            <div className="space-y-4">
+            <div className="space-y-3">
               {order.character_name && (
-                <div className="flex flex-col">
-                  <span className="text-sm text-muted-foreground mb-1">{t("characterName")}</span>
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-sm text-muted-foreground">{t("characterName")}</span>
                   <span className="font-medium">{order.character_name}</span>
                 </div>
               )}
               
               {/* Extract league from first item if available */}
               {order.items && order.items.length > 0 && order.items[0].product?.league && (
-                <div className="flex flex-col">
-                  <span className="text-sm text-muted-foreground mb-1">{t("league")}</span>
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-sm text-muted-foreground">{t("league")}</span>
                   <div className="flex items-center gap-2">
                     <Map className="h-4 w-4 text-orange-500" />
                     <span className="font-medium">{order.items[0].product.league}</span>
@@ -443,8 +443,8 @@ export default function OrderDetailsPage(props: { params: Promise<{ id: string }
               
 
               {(order as any).estimated_delivery && (
-                <div className="flex flex-col">
-                  <span className="text-sm text-muted-foreground mb-1">Estimated Delivery</span>
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-sm text-muted-foreground">Estimated Delivery</span>
                   <div className="flex items-center gap-2">
                     <Clock className="h-4 w-4 text-blue-500" />
                     <span className="font-medium">{formatDate((order as any).estimated_delivery)}</span>
@@ -453,9 +453,9 @@ export default function OrderDetailsPage(props: { params: Promise<{ id: string }
               )}
             </div>
             
-            <Separator className="my-6" />
+            <Separator className="my-4" />
             
-            <div className="space-y-4">
+            <div className="space-y-3">
               <Button className="w-full gap-2" onClick={handleContactSupport}>
                 <MessageSquare className="h-4 w-4" />
                 {t("contactSupport")}
@@ -469,10 +469,32 @@ export default function OrderDetailsPage(props: { params: Promise<{ id: string }
                 </Button>
               ) : (
                 order.status?.toLowerCase() !== 'cancelled' && order.status?.toLowerCase() !== 'canceled' && order.status?.toLowerCase() !== 'failed' && (
-                  <Button variant="outline" className="w-full gap-2 border-red-200 text-red-700 hover:bg-red-50 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950/50">
-                    <XCircle className="h-4 w-4" />
-                    {t("cancelOrder")}
-                  </Button>
+                  <>
+                    {/* Cancel Order Warning */}
+                    <div className="p-3 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900 rounded-md">
+                      <div className="flex gap-2">
+                        <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+                        <div className="space-y-1">
+                          <p className="text-xs font-medium text-amber-900 dark:text-amber-200">
+                            {t("cancelOrderWarningTitle")}
+                          </p>
+                          <p className="text-xs text-amber-700 dark:text-amber-300">
+                            {t("cancelOrderWarningDescription")}
+                          </p>
+                          <p className="text-xs font-semibold text-amber-900 dark:text-amber-100 mt-2">
+                            {t("subject")}: Cancel Order #{order.id}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <Button variant="outline" className="w-full gap-2 border-red-200 text-red-700 hover:bg-red-50 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950/50" asChild>
+                      <Link href={`/support/tickets`}>
+                        <XCircle className="h-4 w-4" />
+                        {t("openCancellationTicket")}
+                      </Link>
+                    </Button>
+                  </>
                 )
               )}
             </div>
