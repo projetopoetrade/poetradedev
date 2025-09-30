@@ -343,6 +343,19 @@ export default function OrderDetailsPage(props: { params: Promise<{ id: string }
               </div>
             </div>
             
+            {/* Observations */}
+            {order.observations && (
+              <div className="mt-6 p-4 border border-border/70 rounded-md bg-muted/30">
+                <h3 className="font-medium flex items-center gap-2 mb-2">
+                  <MessageSquare className="h-4 w-4 text-primary" />
+                  Observations
+                </h3>
+                <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                  {order.observations}
+                </p>
+              </div>
+            )}
+
             {/* Delivery Instructions */}
             {(order as any).delivery_instructions && (
               <div className="mt-6 p-4 border border-border/70 rounded-md bg-muted/30">

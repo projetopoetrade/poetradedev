@@ -5,6 +5,7 @@ import { useCart } from "@/lib/contexts/cart-context";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { useCurrency } from "@/lib/contexts/currency-context";
 import { useRouter, usePathname } from "next/navigation";
 import { Loader2, ShoppingBag, Trash2, User } from "lucide-react";
@@ -25,6 +26,7 @@ export default function CartPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const [characterName, setCharacterName] = useState("");
+  const [observations, setObservations] = useState("");
   const [error, setError] = useState<string | null>(null);
   const supabase = createClient();
 
@@ -92,6 +94,7 @@ export default function CartPage() {
           items: checkoutItems,
           currency: currency.toLowerCase(),
           characterName,
+          observations,
         }),
       });
       
@@ -315,6 +318,17 @@ export default function CartPage() {
                       required
                     />
                   </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="observations">Observations (optional)</Label>
+                  <Textarea
+                    id="observations"
+                    placeholder="Any notes for the trader (optional)"
+                    value={observations}
+                    onChange={(e) => setObservations(e.target.value)}
+                    className="min-h-[80px]"
+                  />
                 </div>
 
                 <div className="border-t pt-4">

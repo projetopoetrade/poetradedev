@@ -14,7 +14,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 
 export async function POST(req: Request) {
   try {
-    const { items, currency, characterName } = await req.json();
+    const { items, currency, characterName, observations } = await req.json();
 
     console.log('Received checkout request:', {
       items,
@@ -54,6 +54,7 @@ export async function POST(req: Request) {
         total_amount: totalAmount,
         currency: currency.toLowerCase(),
         user_id: user.id,
+        observations: observations || null,
       })
       .select()
       .single();
@@ -87,12 +88,14 @@ export async function POST(req: Request) {
         orderId: order.id,
         characterName,
         userId: user.id,
+        observations: observations || '',
       },
       payment_intent_data: {
         metadata: {
           orderId: order.id,
           characterName,
           userId: user.id,
+          observations: observations || '',
         },
         receipt_email: user.email,
         description: `Order for ${characterName}`,

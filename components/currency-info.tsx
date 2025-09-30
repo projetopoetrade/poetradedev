@@ -3,6 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import Image from "next/image"
 import { useLocale } from "next-intl"
+import Link from "next/link"
 
 interface CurrencyInfoProps {
   gameVersion?: string
@@ -123,7 +124,7 @@ const currencyDataPt: Record<string, CurrencyData[]> = {
       name: "Exalted Orb",
       description: "Adiciona um novo modificador aleatório a um item raro.",
       imageUrl: "/images/exalted-orb.webp",
-      gameVersion: "poe2",
+      gameVersion: "path-of-exile-2",
       uses: [
         "Adiciona um novo modificador aleatório a um item raro",
         "Usado em crafting de alto nível",
@@ -217,21 +218,29 @@ export function CurrencyInfo({ gameVersion }: CurrencyInfoProps) {
         <Card key={currency.id}>
           <CardHeader>
             <div className="flex items-center justify-between">
+ 
               <CardTitle className="text-2xl font-bold">
-                {currency.name}
+              <Link href={`https://www.pathoftrade.net/products/${encodeURIComponent(currency.name)}?gameVersion=${currency.gameVersion}`}>
+                    {currency.name}
+                    </Link>
               </CardTitle>
+
+
             </div>
           </CardHeader>
           <CardContent>
             <div className="flex flex-col md:flex-row gap-6">
               <div className="relative w-20 h-20 flex-shrink-0">
+              <Link href={`https://www.pathoftrade.net/products/${currency.id}`}>
                 <Image
                   src={currency.imageUrl}
                   alt={`${currency.name} icon ${currency.gameVersion} PathOfTrade.net`}
                   fill
                   sizes="80px"
-                  className="object-contain"
+                  className="object-contain hover:scale-105 transition-transform duration-300"
                 />
+                </Link>
+
               </div>
               <div className="flex-1 space-y-4">
                 <p className="text-muted-foreground">{currency.description}</p>

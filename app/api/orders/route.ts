@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 
 export async function POST(req: Request) {
   try {
-    const { characterName, items, totalAmount, currency, sessionId } = await req.json();
+    const { characterName, items, totalAmount, currency, sessionId, observations } = await req.json();
 
     // Get authenticated user
     const cookieStore = await cookies();
@@ -29,6 +29,7 @@ export async function POST(req: Request) {
         status: 'pending',
         user_id: user.id,
         stripe_session_id: sessionId,
+        observations: observations || null,
       })
       .select()
       .single();

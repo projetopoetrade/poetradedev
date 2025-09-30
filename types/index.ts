@@ -15,6 +15,7 @@ export interface Order {
   } | null;
   stripe_session_id: string | null;
   user_id: string;
+  observations?: string | null;
   created_at: string;
   updated_at: string;
 }
