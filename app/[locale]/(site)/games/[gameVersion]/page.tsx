@@ -3,58 +3,51 @@ import GameVersionPosts from "@/components/GameVersionPosts";
 import { LeagueSelectionPage } from "@/components/league-selection";
 import PatchInfo from "@/components/PatchInfo";
 import { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import { buildCanonical } from "@/lib/utils";
 
 
 // Generate metadata based on game version
 export async function generateMetadata(props: {
-  params: Promise<{ gameVersion: "path-of-exile-1" | "path-of-exile-2" }>;
+  params: Promise<{ gameVersion: "path-of-exile-1" | "path-of-exile-2"; locale: string }>;
 }): Promise<Metadata> {
   const params = await props.params;
   const isPoe2 = params.gameVersion === "path-of-exile-2";
-  const gameTitle = isPoe2 ? "Path of Exile 2" : "Path of Exile";
-  const shortGameName = isPoe2 ? "PoE 2" : "PoE"; // Shorter version for concise text
-
-  // More engaging and keyword-rich descriptions
-  const description = isPoe2
-    ? `Dive into Path of Exile 2 trading with Path of Trade Net! Securely buy and sell ${shortGameName} currency, items, and orbs. Experience instant transactions, competitive prices, and dedicated 24/7 support for all your ${gameTitle} needs.`
-    : `Your premier Path of Exile trading hub is Path of Trade Net. Effortlessly buy and sell ${shortGameName} currency, orbs, and unique items. Benefit from lightning-fast delivery, unbeatable prices, and round-the-clock customer assistance for ${gameTitle}.`;
-
-  const pageTitle = `Buy ${gameTitle} Currency & Items | Safe ${shortGameName} Trading | Path of Trade Net`;
-  const canonicalUrl = `https://pathoftrade.net/${params.gameVersion}`; // Adjust path as per your routing
+  const t = await getTranslations({ locale: params.locale, namespace: "SEO" });
+  const title = isPoe2 ? t("gameVersion.poe2Title") : t("gameVersion.poe1Title");
+  const description = isPoe2 ? t("gameVersion.poe2Description") : t("gameVersion.poe1Description");
+  const canonicalUrl = buildCanonical(`/${params.locale}/games/${params.gameVersion}`);
   const socialImageUrl = isPoe2
-    ? `https://pathoftrade.net/images/social-poe2.png`
-    : `https://pathoftrade.net/images/social-poe1.png`; // Create these images
+    ? `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"}/images/social-poe2.png`
+    : `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"}/images/social-poe1.png`;
 
   return {
-    title: pageTitle,
+    title,
     description,
     alternates: {
       canonical: canonicalUrl,
     },
     openGraph: {
-      title: pageTitle,
+      title,
       description,
-      url: canonicalUrl, // Use the canonical URL here
+      url: canonicalUrl,
       type: "website",
-      siteName: "Path of Trade Net",
+      siteName: t("siteName"),
       images: [
         {
           url: socialImageUrl,
-          width: 1200, // Standard OG image width
-          height: 630, // Standard OG image height
-          alt: `${gameTitle} Currency Trading - Path of Trade Net`,
+          width: 1200,
+          height: 630,
+          alt: title,
         },
       ],
     },
     twitter: {
       card: "summary_large_image",
-      title: pageTitle,
+      title,
       description,
-      images: [socialImageUrl], // Twitter also uses og:image if twitter:image is not set, but explicit is better
-      // site: "@YourTwitterHandle", // Optional: Add your Twitter username
+      images: [socialImageUrl],
     },
-    // Meta keywords are generally ignored by Google, so they are omitted.
-    // Focus on high-quality content and natural keyword integration.
   };
 }
 

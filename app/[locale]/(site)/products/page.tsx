@@ -4,6 +4,8 @@ import { Metadata } from "next";
 import { SearchParamsStorage } from "@/components/search-params-storage";
 import { CurrencyInfo } from "@/components/currency-info";
 import PatchInfo from "@/components/PatchInfo";
+import { getTranslations } from "next-intl/server";
+import { buildCanonical, getHreflangAlternates } from "@/lib/utils";
 
 
 type SearchParams = {
@@ -16,25 +18,54 @@ type SearchParams = {
 
 export async function generateMetadata(
   props: {
+    params: Promise<{ locale: string }>;
     searchParams: Promise<SearchParams>;
   }
 ): Promise<Metadata> {
   const searchParams = await props.searchParams;
+  const { locale } = await props.params;
+  const t = await getTranslations({ locale, namespace: "SEO" });
   const league = searchParams.league || "All Leagues";
   const category = searchParams.category || "All Items";
   const gameVersion = searchParams.gameVersion || "Current";
 
+  const title = t("products.title", { gameVersion, category, league });
+  const description = t("products.description", { gameVersion, category, league });
+  const ogTitle = t("products.ogTitle", { category, league });
+  const ogDescription = t("products.ogDescription", { category, league, gameVersion });
+
+  const basePath = `/${locale}/products`;
+  const url = new URL(basePath, process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net");
+  if (searchParams.gameVersion) url.searchParams.set("gameVersion", searchParams.gameVersion);
+  if (searchParams.league) url.searchParams.set("league", searchParams.league);
+  if (searchParams.category) url.searchParams.set("category", searchParams.category);
+  if (searchParams.difficulty) url.searchParams.set("difficulty", searchParams.difficulty);
+  if (searchParams.search) url.searchParams.set("search", searchParams.search);
+
+  const canonical = url.toString();
+
   return {
-    title: `${gameVersion} ${category} - ${league} | Path of Trade Net`,
-    description: `Search  and buy ${gameVersion} ${category} for the ${league} league. Secure trading on Path of Trade Net.`,
-    openGraph: {
-      title: `Best Price: ${category} - PoE ${league} Currency | PathofTrade.net`,
-      description: `Find the best deals on Path of Exile ${category} for ${league} at PathofTrade.net. We offer cheap PoE currency, instant delivery, and 100% secure transactions for your ${gameVersion} gameplay.`,
-      type: "website",
-    }, 
+    title,
+    description,
     alternates: {
-      canonical: `https://www.pathoftrade.net/products?league=${league}&gameVersion=${gameVersion}&category=${category}`,
+      canonical,
+      ...getHreflangAlternates({
+        "en": `/en/products${url.search}`,
+        "pt-br": `/pt-br/products${url.search}`
+      })
     },
+    openGraph: {
+      title: ogTitle,
+      description: ogDescription,
+      url: canonical,
+      type: "website",
+      siteName: t("siteName")
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: ogTitle,
+      description: ogDescription
+    }
   };
 }
 

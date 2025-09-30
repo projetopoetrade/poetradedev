@@ -55,6 +55,7 @@ export function GameCard({
             className="object-cover object-center"
             quality={75}
             priority
+            fetchPriority="high"
           />
 
           {/* Gradient Overlay */}

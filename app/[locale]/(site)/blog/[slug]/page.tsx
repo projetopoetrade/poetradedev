@@ -5,6 +5,8 @@ import RenderBodyContent from "@/components/Blog/RenderBodyContent";
 import RelatedPosts from "@/components/Blog/RelatedPosts";
 import { Blog } from "@/types/blog";
 import { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import { buildCanonical, getHreflangAlternates } from "@/lib/utils";
 
 interface PageProps {
   params: Promise<{
@@ -15,29 +17,40 @@ interface PageProps {
 
 export async function generateMetadata(props: PageProps): Promise<Metadata> {
   const params = await props.params;
-
-  const {
-    slug,
-    locale
-  } = params;
+  const { slug, locale } = params;
+  const t = await getTranslations({ locale, namespace: "SEO" });
 
   const post = await getPostBySlug(slug, locale);
 
   if (!post) {
-    return {
-      title: 'Post Not Found',
-    };
+    return { title: t("blog.notFoundTitle") };
   }
 
+  const canonical = buildCanonical(`/${locale}/blog/${slug}`);
+  const siteName = "Path of Trade";
+  const titleWithSuffix = `${post.title} | ${siteName}`;
+
   return {
-    title: post.title,
+    title: titleWithSuffix,
     description: post.metadata,
     alternates: {
-      languages: {
-        'en': `/en/blog/${slug}`,
-        'pt-br': `/pt-br/blog/${slug}`,
-        // Add more languages as needed
-      },
+      canonical,
+      ...getHreflangAlternates({
+        "en": `/en/blog/${slug}`,
+        "pt-br": `/pt-br/blog/${slug}`
+      })
+    },
+    openGraph: {
+      title: titleWithSuffix,
+      description: post.metadata,
+      url: canonical,
+      type: "article",
+      siteName: t("siteName")
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: titleWithSuffix,
+      description: post.metadata
     },
   };
 }

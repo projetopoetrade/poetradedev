@@ -1,23 +1,62 @@
 {
   "HomePage": {
-    "why-path-of-trade": "Por que Path of Trade?",
+    "why-path-of-trade": "Por que escolher a Path of Trade Net?",
     "choose-your-game": "ESCOLHA SEU JOGO"
   },
-
   "Features": {
     "fast-delivery": "Entrega Rápida",
     "secure-payment": "Pagamento Seguro",
     "refund-guarantee": "Garantia de Reembolso",
     "security-guarantee": "Garantia de Segurança",
     "24-7-support": "Suporte 24/7",
-    "cheap-prices": "Preços Baratos",
-
-    "fast-delivery-description": "Compre Orbs POE 1 & 2 – Entrega em 30 Min! Transações Seguras e Rápidas 24/7.",
-    "secure-payment-description": "Usamos um sistema de pagamento seguro para proteger suas informações pessoais e financeiras.",
-    "security-guarantee-description": "Negociação Segura em PoE! Segurança de conta garantida em todas as compras de Path of Exile.",
-    "24-7-support-description": "Suporte PoE 24/7! Ajuda especializada para suas orbs e itens de Path of Exile, a qualquer hora.",
-    "cheap-prices-description": "Orbs PoE Baratas! As melhores ofertas online em moedas e itens de Path of Exile."
+    "cheap-prices": "Melhores Preços",
+    "fast-delivery-description": "Receba suas moedas e orbes para PoE 1 & 2 em tempo recorde. Nosso sistema garante uma entrega rápida e segura em até 30 minutos, 24/7.",
+    "secure-payment-description": "Sua segurança é nossa prioridade. Processamos todos os pagamentos através de gateways criptografados e 100% seguros para proteger seus dados.",
+    "refund-guarantee-description": "Compre com total confiança. Se não for possível concluir a sua entrega, garantimos um processo de reembolso rápido e sem complicações.",
+    "security-guarantee-description": "Jogue sem preocupações. Garantimos que todas as transações são feitas de forma segura para proteger sua conta Path of Exile contra qualquer risco.",
+    "24-7-support-description": "Nossa equipe de especialistas em Path of Exile está disponível 24/7. Conte conosco para ajudar com suas compras e tirar qualquer dúvida, a qualquer hora.",
+    "cheap-prices-description": "O melhor preço do mercado, garantido. Oferecemos orbes, moedas e itens de Path of Exile com as cotações mais competitivas para maximizar seu poder de compra."
   },
+  "SEO": {
+    "siteName": "Path of Trade",
+    "layout": {
+      "title": "Compre Moedas PoE 1 & 2: Entrega em até 30 minutos | Path of Trade",
+      "description": "Compre Moedas para Path of Exile ✔️ Orbes Divinos, Exaltados e do Caos com os menores preços. Entrega Rápida, Suporte 24/7 e negociação 100% segura no Path of Trade!",
+      "ogTitle": "Compre Moedas e Orbes para Path of Exile | Path of Trade",
+      "ogDescription": "⚡ Obtenha suas Moedas de PoE com entrega instantânea. Compre Orbes Divinos, Exaltados e do Caos de forma barata e segura. Suporte ao cliente 24/7!"
+    },
+    "products": {
+      "title": "Comprar {category} de {gameVersion} ({league}) | Path of Trade",
+      "description": "Encontre o melhor preço para {category} na liga {league} de {gameVersion}. Compre Orbes e Moedas com entrega rápida e negociação segura no Path of Trade.",
+      "ogTitle": "Melhores Ofertas de {category} ({league}) | Moedas PoE | Path of Trade",
+      "ogDescription": "Não perca as melhores ofertas de {category} para a liga {league}! Preços baixos, entrega imediata e 100% de segurança para sua conta {gameVersion} no Path of Trade."
+    },
+    "productDetail": {
+      "title": "Comprar {productName} | Preço Baixo & Entrega Rápida | Path of Trade",
+      "description": "Adquira {productName} para Path of Exile com o melhor preço do mercado. Entrega instantânea e 100% segura. Compre suas moedas PoE agora no Path of Trade!",
+      "ogTitle": "Compre {productName} para PoE | Moeda Segura e Barata | Path of Trade",
+      "ogDescription": "Garanta seu {productName} em Path of Exile. Oferecemos o melhor preço, entrega em minutos e transações totalmente seguras. Visite o Path of Trade!"
+    },
+    "gameVersion": {
+      "poe1Title": "Compre Moedas e Itens de Path of Exile 1 | Path of Trade",
+      "poe2Title": "Compre Moedas e Itens de Path of Exile 2 | Path of Trade",
+      "poe1Description": "Sua central de negociação para Path of Exile. Compre moedas, orbes e itens de PoE com entrega rápida, preços imbatíveis e suporte 24/7 no Path of Trade.",
+      "poe2Description": "Prepare-se para Path of Exile 2 com o Path of Trade! Compre e venda moedas, itens e orbes de PoE 2 com segurança, transações instantâneas e os melhores preços."
+    },
+    "league": {
+      "title": "Moedas para {league} ({difficulty}) | Path of Trade",
+      "description": "Compre Moedas de {league} em PoE ({difficulty}). Melhores preços para Orbes Exaltados, do Caos e Divinos em Path of Exile {poeVersion}. Entrega instantânea!",
+      "ogTitle": "Compre Moedas para a Liga {league} de PoE | Path of Trade",
+      "ogDescription": "Negociação segura de moedas para a liga {league} ({difficulty}). Estoque em tempo real de Orbes do Caos, Exaltados e Divinos para PoE {poeVersion}."
+    },
+    "blog": {
+      "notFoundTitle": "Post não encontrado | Blog Path of Trade",
+      "title": "Blog e Notícias de Path of Exile | Path of Trade",
+      "description": "Fique por dentro das últimas notícias, guias e atualizações de Path of Exile 1 e 2. Dicas de negociação e muito mais no blog do Path of Trade."
+    }
+  },
+
+
 
  
   "SelectLeaguePage": {
@@ -29,7 +68,7 @@
     "no-posts-found": "Nenhuma postagem encontrada para esta categoria e versão do jogo",
     "error-loading-posts": "Erro ao carregar as postagens. Por favor, tente novamente mais tarde.",
     
-    "why-trade-with-us": "Por que Comprar com Path of Trade Net?",
+    "why-trade-with-us": "Por que Comprar com Path of Trade?",
     "unmatched-security": "Segurança Incomparável",
     "unmatched-security-description": "Sua segurança e segurança da conta são nossa prioridade.",
     "lightning-fast-delivery": "Entrega Rápida",
@@ -65,19 +104,20 @@
   
 
 
-  "faq": {
-    "question1": "O que é Path of Exile?",
-    "answer1": "Path of Exile é um jogo de RPG de ação gratuito desenvolvido pela Grinding Gear Games.",
-    "question2": "O que você vende em Path of Exile?",
-    "answer2": "Tudo o que você precisa para Path of Exile está aqui! Temos uma enorme variedade de moedas de PoE – de Orbes Divinos e Orbes do Caos a Orbes Exaltados e até Espelhos de Kalandra. Você também encontrará itens únicos muito procurados, conjuntos de mapas completos e serviços essenciais como power leveling. Mergulhe em nosso catálogo para ver tudo o que oferecemos!",
-    "question3": "Vocês vendem moedas e itens para qual liga de Path of Exile?",
-    "answer3": "Sim, atendemos tanto a liga Standard quanto a liga atual do desafio (temporária) em Path of Exile. Certifique-se de selecionar a liga correta ao colocar seu pedido para garantir que os itens sejam entregues ao lugar certo.",  
-    "question4": "Os itens e moedas são para POE1 ou POE2? E para quais plataformas ",
-    "answer4": " Atualmente, nosso foco principal é em Path of Exile 1 para PC. Estamos acompanhando de perto o desenvolvimento de Path of Exile 2 e planejamos expandir nossos serviços assim que o jogo e sua economia estiverem estabelecidos. No momento, não oferecemos suporte para as versões de console (PlayStation/Xbox).",
-    "question5": "Como posso entrar em contato com você se tiver dúvidas ou problemas?",
-    "answer5": "Você pode nos contatar via email em support@pathoftrade.com ou usar o formulário de contato em nosso site. Nosso objetivo é responder a todas as consultas em até 24 horas.",
-    "answers-to-some-questions": "Respostas a algumas perguntas que você pode ter."
-  },
+ "faq": {
+      "faq-title": "Perguntas Frequentes (FAQ)",
+      "answers-to-some-questions": "Respostas a algumas perguntas que você pode ter.",
+      "question1": "O que é Path of Exile?",
+      "answer1": "Path of Exile é um RPG de ação gratuito da Grinding Gear Games, famoso por sua economia complexa — e é aí que entramos para ajudar!",
+      "question2": "Que tipo de moedas, serviços e itens de Path of Exile vocês vendem?",
+      "answer2": "Oferecemos uma gama completa de produtos para Path of Exile! Nosso catálogo inclui:\n\n- Moedas PoE: Um estoque massivo de Orbes Divinos, Orbes do Caos, Orbes Exaltados, Espelhos de Kalandra e muito mais.\n- Itens Únicos: Encontre o equipamento poderoso que você precisa para completar sua build.\n- Serviços: Oferecemos power leveling e criação de builds por especialistas para te deixar pronto para o endgame.\n\nExplore nosso site para ver tudo o que temos em estoque para a liga atual!",
+      "question3": "Para qual liga de Path of Exile vocês vendem itens?",
+      "answer3": "Sim! Oferecemos suporte tanto para a liga permanente Standard quanto para a Liga de Desafio (Challenge League) da temporada atual. Por favor, verifique se selecionou a liga correta antes de finalizar a compra para garantir que seus itens cheguem ao lugar certo.",
+      "question4": "Os itens e moedas são para POE1 e POE2? E para quais plataformas?",
+      "answer4": "Sim, todos os nossos produtos e serviços são para Path of Exile 1 e Path of Exile 2 na plataforma PC. Atualmente, não oferecemos suporte para as versões de console (PlayStation/Xbox).",
+      "question5": "Como entro em contato se tiver dúvidas ou problemas?",
+      "answer5": "Nossa equipe de suporte está pronta para ajudar! A maneira mais rápida de nos contatar é através do nosso Live Chat 24/7 no site. Você também pode nos enviar um e-mail para suporte@pathoftrade.net ou usar nosso formulário de contato. Nosso objetivo é responder a todas as solicitações prontamente."
+    },
   "GameVersionPosts": {
     "major-updates": "Atualizações Principais"
   },

@@ -11,23 +11,51 @@ import { Analytics } from "@vercel/analytics/react";
 import ConsentedProviders from "@/components/consented-providers";
 import "../globals.css";
 import Footer from "@/components/footer";
-import { setRequestLocale, getMessages } from "next-intl/server";
+import { setRequestLocale, getMessages, getTranslations } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
 import CookieConsent from "@/components/cookie-consent";
+import type { Metadata } from "next";
+import { buildCanonical, getHreflangAlternates } from "@/lib/utils";
 
-export const metadata = {
-  metadataBase: new URL("https://www.pathoftrade.net"),
-  title:
-    "Buy POE 1 & 2 Currency | Cheap Divine Orbs, Exalts, Chaos - Path of Trade",
-  description:
-    "Buy Path of Exile Currency ✔️ Lowest Prices for Divine Orbs, Exalted Orbs. Instant Delivery, 24/7 Live Support. POE Trade Currency Securely at PathOfTrade.net!",
-  openGraph: {
-    title: "Buy POE Currency - Divine Orbs & Exalts | Path of Trade",
-    description:
-      "Cheap POE Currency Trading ⚡ Instant Delivery, 24/7 Support. Buy Divine Orbs, Exalts & Chaos Safely!",
-    images: [{ url: "/images/logo.webp" }],
-  },
-};
+export async function generateMetadata(props: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const { locale } = await props.params;
+  const t = await getTranslations({ locale, namespace: "SEO" });
+  const title = t("layout.title");
+  const description = t("layout.description");
+  const ogTitle = t("layout.ogTitle");
+  const ogDescription = t("layout.ogDescription");
+
+  const canonical = buildCanonical(`/${locale}`);
+
+  return {
+    metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"),
+    title,
+    description,
+    alternates: {
+      canonical,
+      ...getHreflangAlternates({
+        "en": "/en",
+        "pt-br": "/pt-br"
+      })
+    },
+    openGraph: {
+      title: ogTitle,
+      description: ogDescription,
+      url: canonical,
+      type: "website",
+      siteName: t("siteName"),
+      images: [{ url: "/images/logo.webp" }]
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: ogTitle,
+      description: ogDescription,
+      images: ["/images/logo.webp"]
+    }
+  };
+}
 
 
 const roboto = Roboto({

@@ -8,6 +8,8 @@ import { parseProductSlug } from "@/utils/url-helper";
 import ProductDetail from "../../../../../components/product-detail";
 import { getProductBySlug } from "@/sanity/sanity-utils";
 import ProductContent from "@/components/product-detail/ProductContent";
+import { getTranslations } from "next-intl/server";
+import { buildCanonical, getHreflangAlternates } from "@/lib/utils";
 
 // Add formatPrice utility function
 const formatPrice = (price: number): string => {
@@ -20,20 +22,39 @@ const formatPrice = (price: number): string => {
 };
 
 export const generateMetadata = async (props: {
-  params: Promise<{ name: string }>;
+  params: Promise<{ name: string; locale: string }>;
 }): Promise<Metadata> => {
   const params = await props.params;
   // Get a readable product name from the URL slug
   const productName = await parseProductSlug(params.name);
 
+  const t = await getTranslations({ locale: params.locale, namespace: "SEO" });
+  const title = t("productDetail.title", { productName });
+  const description = t("productDetail.description", { productName });
+  const canonical = buildCanonical(`/${params.locale}/products/${encodeURIComponent(params.name)}`);
+
   return {
-    title: `Buy POE ${productName} | Fast & Safe Currency | PathofTrade.net`,
-    description: `Buy cheap ${productName} for Path of Exile. Get your PoE currency instantly & securely from PathofTrade.net.`,
-    openGraph: {
-      title: `Buy POE ${productName} | Fast & Safe Currency | PathofTrade.net`,
-      description: `Buy cheap ${productName} for Path of Exile. Get your PoE currency instantly & securely from PathofTrade.net.`,
-      type: "website",
+    title,
+    description,
+    alternates: {
+      canonical,
+      ...getHreflangAlternates({
+        "en": `/en/products/${encodeURIComponent(params.name)}`,
+        "pt-br": `/pt-br/products/${encodeURIComponent(params.name)}`
+      })
     },
+    openGraph: {
+      title,
+      description,
+      url: canonical,
+      type: "website",
+      siteName: t("siteName")
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description
+    }
   };
 };
 

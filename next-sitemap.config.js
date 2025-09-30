@@ -26,7 +26,7 @@ module.exports = {
           loc: productPath,
           lastmod: product.lastmod || defaultLastMod,
           changefreq: 'daily',
-          priority: 0.7,
+          priority: 1,
         });
       }
     });
@@ -38,7 +38,7 @@ module.exports = {
           loc: postPath,
           lastmod: post.lastmod || defaultLastMod,
           changefreq: 'daily',
-          priority: 0.8,
+          priority: 0.5,
         });
       }
     });
@@ -51,7 +51,7 @@ module.exports = {
           loc: leaguePath,
           lastmod: league.lastmod || defaultLastMod,
           changefreq: 'weekly',
-          priority: 0.6,
+          priority: 0.8,
         });
     });
 
@@ -63,7 +63,7 @@ module.exports = {
           loc: leaguePath,
           lastmod: league.lastmod || defaultLastMod,
           changefreq: 'weekly',
-          priority: 0.6,
+          priority: 0.8,
         });
     });
 

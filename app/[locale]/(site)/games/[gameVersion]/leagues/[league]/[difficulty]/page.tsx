@@ -1,6 +1,8 @@
 import { PageProps } from "@/lib/interface";
 import Products from "@/components/products";
 import { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import { buildCanonical } from "@/lib/utils";
 
 
 export async function generateMetadata(
@@ -9,19 +11,36 @@ export async function generateMetadata(
       gameVersion: 'path-of-exile-1' | 'path-of-exile-2';
       league: string;
       difficulty: string;
+      locale: string;
     }> 
   }
 ): Promise<Metadata> {
   const params = await props.params;
   const decodedLeague = decodeURIComponent(params.league);
+  const t = await getTranslations({ locale: params.locale, namespace: "SEO" });
+
+  const poeVersion = params.gameVersion === 'path-of-exile-1' ? '1' : '2';
+  const title = t('league.title', { league: decodedLeague, difficulty: params.difficulty });
+  const description = t('league.description', { league: decodedLeague, difficulty: params.difficulty, poeVersion });
+  const ogTitle = t('league.ogTitle', { league: decodedLeague, difficulty: params.difficulty });
+  const ogDescription = t('league.ogDescription', { league: decodedLeague, difficulty: params.difficulty, poeVersion });
+  const canonical = buildCanonical(`/${params.locale}/games/${params.gameVersion}/leagues/${encodeURIComponent(params.league)}/${encodeURIComponent(params.difficulty)}`);
 
   return {
-    title: `${decodedLeague} Currency Trading - ${params.difficulty} League | PathofTrade.net`,
-    description: `Buy ${decodedLeague} POE Currency for ${params.difficulty} League. Best prices for Exalted Orbs, Chaos Orbs, Divine Orbs in Path of Exile ${params.gameVersion === 'path-of-exile-1' ? '1' : '2'}. Instant delivery & 24/7 support.`,
+    title,
+    description,
+    alternates: { canonical },
     openGraph: {
-      title: `POE ${decodedLeague} Currency - ${params.difficulty} Marketplace | PathofTrade.net`,
-      description: `Safe ${decodedLeague} currsency exchange for ${params.difficulty} League. Trade Chaos/Exalted Orbs, Divine Orbs, and more in POE ${params.gameVersion === 'path-of-exile-1' ? '1' : '2'} with real-time stock.`,
+      title: ogTitle,
+      description: ogDescription,
+      url: canonical,
       type: "website",
+      siteName: t("siteName"),
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: ogTitle,
+      description: ogDescription,
     },
   };
 }
