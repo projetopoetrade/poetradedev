@@ -39,7 +39,7 @@ export const generateMetadata = async (props: {
     alternates: {
       canonical,
       ...getHreflangAlternates({
-        "en": `/en/products/${encodeURIComponent(params.name)}`,
+        "en": `/products/${encodeURIComponent(params.name)}`, // default locale without prefix
         "pt-br": `/pt-br/products/${encodeURIComponent(params.name)}`
       }, `/products/${encodeURIComponent(params.name)}`) // x-default points to path without locale prefix
     },

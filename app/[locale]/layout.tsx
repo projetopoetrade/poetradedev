@@ -36,7 +36,7 @@ export async function generateMetadata(props: {
     alternates: {
       canonical,
       ...getHreflangAlternates({
-        "en": "/en",
+        "en": "/", // default locale without prefix
         "pt-br": "/pt-br"
       }, "/") // x-default points to root
     },

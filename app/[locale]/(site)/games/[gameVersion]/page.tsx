@@ -27,7 +27,7 @@ export async function generateMetadata(props: {
     alternates: {
       canonical: canonicalUrl,
       ...getHreflangAlternates({
-        "en": `/en/games/${params.gameVersion}`,
+        "en": `/games/${params.gameVersion}`, // default locale without prefix
         "pt-br": `/pt-br/games/${params.gameVersion}`
       }, `/games/${params.gameVersion}`) // x-default points to path without locale prefix
     },

@@ -32,7 +32,7 @@ export async function generateMetadata(
     alternates: { 
       canonical,
       ...getHreflangAlternates({
-        "en": `/en/games/${params.gameVersion}/leagues/${encodeURIComponent(params.league)}/${encodeURIComponent(params.difficulty)}`,
+        "en": `/games/${params.gameVersion}/leagues/${encodeURIComponent(params.league)}/${encodeURIComponent(params.difficulty)}`, // default locale without prefix
         "pt-br": `/pt-br/games/${params.gameVersion}/leagues/${encodeURIComponent(params.league)}/${encodeURIComponent(params.difficulty)}`
       }, `/games/${params.gameVersion}/leagues/${encodeURIComponent(params.league)}/${encodeURIComponent(params.difficulty)}`) // x-default points to path without locale prefix
     },

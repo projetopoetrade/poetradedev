@@ -36,7 +36,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
     alternates: {
       canonical,
       ...getHreflangAlternates({
-        "en": `/en/blog/${slug}`,
+        "en": `/blog/${slug}`, // default locale without prefix
         "pt-br": `/pt-br/blog/${slug}`
       }, `/blog/${slug}`) // x-default points to path without locale prefix
     },

@@ -51,7 +51,7 @@ export async function generateMetadata(
     alternates: {
       canonical,
       ...getHreflangAlternates({
-        "en": `/en/products${url.search}`,
+        "en": `/products${url.search}`, // default locale without prefix
         "pt-br": `/pt-br/products${url.search}`
       }, `/products${url.search}`) // x-default points to path without locale prefix
     },
