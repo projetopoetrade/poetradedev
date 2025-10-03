@@ -26,7 +26,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
     return { title: t("blog.notFoundTitle") };
   }
 
-  const canonical = buildCanonical(`/${locale}/blog/${slug}`);
+  const canonical = buildCanonical(`/${locale}/blog/${slug}`, locale);
   const siteName = "Path of Trade";
   const titleWithSuffix = `${post.title} | ${siteName}`;
 
@@ -38,7 +38,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
       ...getHreflangAlternates({
         "en": `/en/blog/${slug}`,
         "pt-br": `/pt-br/blog/${slug}`
-      })
+      }, `/blog/${slug}`) // x-default points to path without locale prefix
     },
     openGraph: {
       title: titleWithSuffix,

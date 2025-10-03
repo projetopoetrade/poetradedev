@@ -4,7 +4,7 @@ import { LeagueSelectionPage } from "@/components/league-selection";
 import PatchInfo from "@/components/PatchInfo";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { buildCanonical } from "@/lib/utils";
+import { buildCanonical, getHreflangAlternates } from "@/lib/utils";
 
 
 // Generate metadata based on game version
@@ -16,7 +16,7 @@ export async function generateMetadata(props: {
   const t = await getTranslations({ locale: params.locale, namespace: "SEO" });
   const title = isPoe2 ? t("gameVersion.poe2Title") : t("gameVersion.poe1Title");
   const description = isPoe2 ? t("gameVersion.poe2Description") : t("gameVersion.poe1Description");
-  const canonicalUrl = buildCanonical(`/${params.locale}/games/${params.gameVersion}`);
+  const canonicalUrl = buildCanonical(`/${params.locale}/games/${params.gameVersion}`, params.locale);
   const socialImageUrl = isPoe2
     ? `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"}/images/social-poe2.png`
     : `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"}/images/social-poe1.png`;
@@ -26,6 +26,10 @@ export async function generateMetadata(props: {
     description,
     alternates: {
       canonical: canonicalUrl,
+      ...getHreflangAlternates({
+        "en": `/en/games/${params.gameVersion}`,
+        "pt-br": `/pt-br/games/${params.gameVersion}`
+      }, `/games/${params.gameVersion}`) // x-default points to path without locale prefix
     },
     openGraph: {
       title,

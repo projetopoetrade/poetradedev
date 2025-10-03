@@ -2,7 +2,7 @@ import { PageProps } from "@/lib/interface";
 import Products from "@/components/products";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { buildCanonical } from "@/lib/utils";
+import { buildCanonical, getHreflangAlternates } from "@/lib/utils";
 
 
 export async function generateMetadata(
@@ -24,12 +24,18 @@ export async function generateMetadata(
   const description = t('league.description', { league: decodedLeague, difficulty: params.difficulty, poeVersion });
   const ogTitle = t('league.ogTitle', { league: decodedLeague, difficulty: params.difficulty });
   const ogDescription = t('league.ogDescription', { league: decodedLeague, difficulty: params.difficulty, poeVersion });
-  const canonical = buildCanonical(`/${params.locale}/games/${params.gameVersion}/leagues/${encodeURIComponent(params.league)}/${encodeURIComponent(params.difficulty)}`);
+  const canonical = buildCanonical(`/${params.locale}/games/${params.gameVersion}/leagues/${encodeURIComponent(params.league)}/${encodeURIComponent(params.difficulty)}`, params.locale);
 
   return {
     title,
     description,
-    alternates: { canonical },
+    alternates: { 
+      canonical,
+      ...getHreflangAlternates({
+        "en": `/en/games/${params.gameVersion}/leagues/${encodeURIComponent(params.league)}/${encodeURIComponent(params.difficulty)}`,
+        "pt-br": `/pt-br/games/${params.gameVersion}/leagues/${encodeURIComponent(params.league)}/${encodeURIComponent(params.difficulty)}`
+      }, `/games/${params.gameVersion}/leagues/${encodeURIComponent(params.league)}/${encodeURIComponent(params.difficulty)}`) // x-default points to path without locale prefix
+    },
     openGraph: {
       title: ogTitle,
       description: ogDescription,

@@ -14,16 +14,26 @@ export function buildAbsoluteUrl(pathOrUrl: string): string {
   }
 }
 
-export function getHreflangAlternates(pathsByLocale: Record<string, string>) {
+export function getHreflangAlternates(pathsByLocale: Record<string, string>, defaultLocalePath?: string) {
   const entries = Object.entries(pathsByLocale);
   const languages: Record<string, string> = {};
   for (const [locale, path] of entries) {
     languages[locale] = buildAbsoluteUrl(path);
   }
+  // Add x-default if provided
+  if (defaultLocalePath) {
+    languages['x-default'] = buildAbsoluteUrl(defaultLocalePath);
+  }
   return { languages };
 }
 
-export function buildCanonical(pathOrUrl: string) {
+export function buildCanonical(pathOrUrl: string, locale?: string, defaultLocale: string = 'en') {
+  // For default locale with as-needed prefix, use the path without locale
+  if (locale === defaultLocale) {
+    // Remove the locale prefix from the path for the default locale
+    const pathWithoutLocale = pathOrUrl.replace(`/${defaultLocale}`, '') || '/';
+    return buildAbsoluteUrl(pathWithoutLocale);
+  }
   return buildAbsoluteUrl(pathOrUrl);
 }
 

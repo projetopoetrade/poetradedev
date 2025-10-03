@@ -31,7 +31,7 @@ export const generateMetadata = async (props: {
   const t = await getTranslations({ locale: params.locale, namespace: "SEO" });
   const title = t("productDetail.title", { productName });
   const description = t("productDetail.description", { productName });
-  const canonical = buildCanonical(`/${params.locale}/products/${encodeURIComponent(params.name)}`);
+  const canonical = buildCanonical(`/${params.locale}/products/${encodeURIComponent(params.name)}`, params.locale);
 
   return {
     title,
@@ -41,7 +41,7 @@ export const generateMetadata = async (props: {
       ...getHreflangAlternates({
         "en": `/en/products/${encodeURIComponent(params.name)}`,
         "pt-br": `/pt-br/products/${encodeURIComponent(params.name)}`
-      })
+      }, `/products/${encodeURIComponent(params.name)}`) // x-default points to path without locale prefix
     },
     openGraph: {
       title,

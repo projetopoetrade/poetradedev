@@ -27,7 +27,7 @@ export async function generateMetadata(props: {
   const ogTitle = t("layout.ogTitle");
   const ogDescription = t("layout.ogDescription");
 
-  const canonical = buildCanonical(`/${locale}`);
+  const canonical = buildCanonical(`/${locale}`, locale);
 
   return {
     metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"),
@@ -38,7 +38,7 @@ export async function generateMetadata(props: {
       ...getHreflangAlternates({
         "en": "/en",
         "pt-br": "/pt-br"
-      })
+      }, "/") // x-default points to root
     },
     openGraph: {
       title: ogTitle,

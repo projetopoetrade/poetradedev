@@ -34,7 +34,8 @@ export async function generateMetadata(
   const ogTitle = t("products.ogTitle", { category, league });
   const ogDescription = t("products.ogDescription", { category, league, gameVersion });
 
-  const basePath = `/${locale}/products`;
+  // Build path without locale for default locale (en), with locale for others
+  const basePath = locale === 'en' ? `/products` : `/${locale}/products`;
   const url = new URL(basePath, process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net");
   if (searchParams.gameVersion) url.searchParams.set("gameVersion", searchParams.gameVersion);
   if (searchParams.league) url.searchParams.set("league", searchParams.league);
@@ -52,7 +53,7 @@ export async function generateMetadata(
       ...getHreflangAlternates({
         "en": `/en/products${url.search}`,
         "pt-br": `/pt-br/products${url.search}`
-      })
+      }, `/products${url.search}`) // x-default points to path without locale prefix
     },
     openGraph: {
       title: ogTitle,
