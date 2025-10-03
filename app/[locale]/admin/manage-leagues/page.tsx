@@ -58,18 +58,20 @@ export default function ManageLeagues() {
     if (!confirm('Are you sure you want to delete this league?')) return;
 
     try {
-      const { error } = await supabase
-        .from('leagues')
-        .delete()
-        .eq('id', leagueId);
+      const response = await fetch(`/api/admin/leagues/delete?id=${leagueId}`, {
+        method: 'DELETE',
+      });
 
-      if (error) throw error;
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to delete league');
+      }
       
       setLeagues(leagues.filter(league => league.id !== leagueId));
       toast.success('League deleted successfully');
     } catch (error) {
       console.error('Error deleting league:', error);
-      toast.error('Failed to delete league');
+      toast.error(error instanceof Error ? error.message : 'Failed to delete league');
     }
   };
 

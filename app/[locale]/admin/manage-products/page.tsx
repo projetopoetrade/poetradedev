@@ -58,12 +58,18 @@ export default function ManageProducts() {
 
     setUpdatingId(productId);
     try {
-      const { error } = await supabase
-        .from('products')
-        .update({ price })
-        .eq('id', productId);
+      const response = await fetch('/api/admin/products/update', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ productId, price }),
+      });
 
-      if (error) throw error;
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to update price');
+      }
       
       setProducts(products.map(product => 
         product.id === productId ? { ...product, price } : product
@@ -72,7 +78,7 @@ export default function ManageProducts() {
       setNewPrice(0);
     } catch (error) {
       console.error('Error updating price:', error);
-      toast.error('Failed to update price');
+      toast.error(error instanceof Error ? error.message : 'Failed to update price');
     } finally {
       setUpdatingId(null);
     }
@@ -82,18 +88,20 @@ export default function ManageProducts() {
     if (!confirm('Are you sure you want to delete this product?')) return;
 
     try {
-      const { error } = await supabase
-        .from('products')
-        .delete()
-        .eq('id', productId);
+      const response = await fetch(`/api/admin/products/delete?id=${productId}`, {
+        method: 'DELETE',
+      });
 
-      if (error) throw error;
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to delete product');
+      }
       
       setProducts(products.filter(product => product.id !== productId));
       toast.success('Product deleted successfully');
     } catch (error) {
       console.error('Error deleting product:', error);
-      toast.error('Failed to delete product');
+      toast.error(error instanceof Error ? error.message : 'Failed to delete product');
     }
   };
 

@@ -213,7 +213,7 @@ export function CurrencyInfo({ gameVersion }: CurrencyInfoProps) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 my-4">
       {currencies.map((currency) => (
         <Card key={currency.id}>
           <CardHeader>

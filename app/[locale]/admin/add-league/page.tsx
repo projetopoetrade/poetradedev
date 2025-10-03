@@ -60,18 +60,17 @@ export default function AddLeague() {
         throw new Error("Invalid game version");
       }
 
-      const { data, error } = await supabase
-        .from("leagues")
-        .insert([formData])
-        .select();
+      const response = await fetch('/api/admin/leagues/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
 
-      if (error) {
-        console.error("Supabase error:", error);
-        throw new Error(error.message || "Failed to add league");
-      }
-
-      if (!data || data.length === 0) {
-        throw new Error("No data returned after insert");
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to add league');
       }
 
       clearForm();

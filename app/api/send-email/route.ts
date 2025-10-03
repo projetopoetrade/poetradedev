@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { EmailTemplate } from '@/components/email-template';
-import { createClient } from '@/utils/supabase/server';
-import { cookies } from 'next/headers';
+import { createAdminClient } from '@/utils/supabase/admin';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -18,8 +17,8 @@ export async function POST(req: Request) {
     }
 
     // Get order details from Supabase
-    const cookieStore = await cookies();
-    const supabase = await createClient();
+    // Use admin client porque esta rota é chamada pela webhook da Stripe (sem autenticação de usuário)
+    const supabase = createAdminClient();
     
     const { data: order, error: orderError } = await supabase
       .from('orders')

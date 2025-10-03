@@ -180,7 +180,9 @@ export const getProductsByVersionAndLeague = async (
 };
 
 export const newProduct = async (product: Product) => {
-  const supabase = await createClient();
+  // Import do admin client feito no topo do arquivo
+  const { createAdminClient } = await import('@/utils/supabase/admin');
+  const supabase = createAdminClient();
   const { error } = await supabase
     .from('products')
     .insert({

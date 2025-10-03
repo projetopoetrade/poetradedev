@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/utils/supabase/server";
+import { createAdminClient } from "@/utils/supabase/admin";
 
 export async function PATCH(req: Request) {
   try {
@@ -31,7 +31,8 @@ export async function PATCH(req: Request) {
       );
     }
 
-    const supabase = await createClient();
+    // Use admin client porque esta rota é chamada pela webhook da Stripe (sem autenticação de usuário)
+    const supabase = createAdminClient();
 
     // First check if order exists
     const { data: existingOrder, error: fetchError } = await supabase

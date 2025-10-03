@@ -70,12 +70,14 @@ export default function AdminOrders() {
 
   async function fetchOrders() {
     try {
-      const { data, error } = await supabase
-        .from('orders')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
+      // Usar API admin para buscar todas as orders (bypassa RLS)
+      const response = await fetch('/api/admin/orders');
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch orders');
+      }
+      
+      const data = await response.json();
       setOrders(data || []);
     } catch (error) {
       console.error('Error fetching orders:', error);
@@ -86,14 +88,25 @@ export default function AdminOrders() {
 
   async function updateOrderStatus(orderId: string, newStatus: string) {
     try {
-      const { error } = await supabase
-        .from('orders')
-        .update({ status: newStatus })
-        .eq('id', orderId);
+      // Usar API admin para atualizar order (bypassa RLS)
+      const response = await fetch('/api/admin/orders', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ orderId, status: newStatus }),
+      });
 
-      if (error) throw error;
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to update order');
+      }
+
+      // Atualizar a lista local
+      fetchOrders();
     } catch (error) {
       console.error('Error updating order status:', error);
+      alert('Failed to update order status');
     }
   }
 
