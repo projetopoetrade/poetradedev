@@ -3,7 +3,7 @@ import Image from "next/image";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardFooter } from "./ui/card";
 import { useState } from "react";
-import { Minus, Plus, Info } from "lucide-react";
+import { Minus, Plus, Info, ShoppingCart, Check } from "lucide-react";
 import { Input } from "./ui/input";
 import type { Product } from "@/lib/interface";
 import { useCurrency } from "@/lib/contexts/currency-context";
@@ -11,6 +11,7 @@ import { useCart } from "@/lib/contexts/cart-context";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 
 
 
@@ -78,6 +79,17 @@ export default function ProductCard({ product }: ProductCardProps) {
   const handleAddToCart = () => {
     // Add to cart with original price
     addToCart(product, count);
+    
+    // Show success toast
+    toast.success(t('itemAddedToCart'), {
+      description: t('itemAddedDescription', { 
+        quantity: count, 
+        productName: product.name 
+      }),
+      icon: <Check className="h-5 w-5" />,
+      duration: 3000,
+    });
+    
     setCount(1);
   };
 

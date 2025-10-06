@@ -77,10 +77,10 @@ export default function Footer() {
           {/* Support Links */}
           <div className="flex flex-col space-y-3">
             <h3 className="font-bold text-sm uppercase tracking-wider mb-1">{t('support')}</h3>
-            <Link href="#" className="text-gray-300 hover:text-white text-sm transition-colors">
+            <Link href="/contact" className="text-gray-300 hover:text-white text-sm transition-colors">
               {t('contact-us')}
             </Link>
-            <Link href="#" className="text-gray-300 hover:text-white text-sm transition-colors">
+            <Link href="/faq" className="text-gray-300 hover:text-white text-sm transition-colors">
               {t('faq')}
             </Link>
             <Link href="/blog" className="text-gray-300 hover:text-white text-sm transition-colors">
@@ -91,13 +91,13 @@ export default function Footer() {
           {/* Legal Links */}
           <div className="flex flex-col space-y-3">
             <h3 className="font-bold text-sm uppercase tracking-wider mb-1">{t('legal')}</h3>
-            <Link href="#" className="text-gray-300 hover:text-white text-sm transition-colors">
+            <Link href="/terms#section8" className="text-gray-300 hover:text-white text-sm transition-colors">
               {t('privacy-policy')}
             </Link>
-            <Link href="#" className="text-gray-300 hover:text-white text-sm transition-colors">
+            <Link href="/terms" className="text-gray-300 hover:text-white text-sm transition-colors">
               {t('terms-of-service')}
             </Link>
-            <Link href="#" className="text-gray-300 hover:text-white text-sm transition-colors">
+            <Link href="/terms#section5" className="text-gray-300 hover:text-white text-sm transition-colors">
               {t('refund-policy')}
             </Link>
           </div>

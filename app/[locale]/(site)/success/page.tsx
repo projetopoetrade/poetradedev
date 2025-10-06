@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { CheckCircle2, Package, Receipt, ShoppingBag, Calendar, ArrowRight, AlertCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useCart } from "@/lib/contexts/cart-context";
 
 interface SessionData {
   status: string;
@@ -43,6 +44,7 @@ function SuccessContent() {
   const [sessionData, setSessionData] = useState<SessionData | null>(null);
   const searchParams = useSearchParams();
   const sessionId = searchParams.get('session_id');
+  const { clearCart } = useCart();
 
   useEffect(() => {
     async function verifySession() {
@@ -61,6 +63,9 @@ function SuccessContent() {
 
         setSessionData(data);
         setStatus('success');
+        
+        // Limpar o carrinho após confirmar a ordem
+        clearCart();
       } catch (error) {
         console.error('Error verifying session:', error);
         setStatus('error');
@@ -68,7 +73,7 @@ function SuccessContent() {
     }
 
     verifySession();
-  }, [sessionId]);
+  }, [sessionId, clearCart]);
 
   if (status === 'loading') {
     return (

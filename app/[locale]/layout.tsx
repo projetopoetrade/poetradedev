@@ -16,6 +16,7 @@ import { NextIntlClientProvider } from "next-intl";
 import CookieConsent from "@/components/cookie-consent";
 import type { Metadata } from "next";
 import { buildCanonical, getHreflangAlternates } from "@/lib/utils";
+import { Toaster } from "sonner";
 
 export async function generateMetadata(props: {
   params: Promise<{ locale: string }>
@@ -106,8 +107,8 @@ export default async function RootLayout({
 
           <CurrencyProvider>
             <CartProvider>
-              <nav className="w-full flex justify-center border-b border-b-foreground/10 h-18 mb-8">
-                <div className="w-full max-w-6xl flex items-center  text-sm">
+              <nav className="w-full flex justify-center border-b border-b-foreground/10 h-18 fixed md:relative top-0 left-0 right-0 z-50 backdrop-blur-md bg-background/80 md:bg-background md:backdrop-blur-none supports-[backdrop-filter]:bg-background/80">
+                <div className="w-full max-w-6xl flex items-center text-sm">
                   <div className="flex-1">{/* Left empty space */}</div>
                   <div className="flex-1 flex justify-center">
                     <Link href="/" className="py-3 flex items-center">
@@ -136,10 +137,25 @@ export default async function RootLayout({
                 </div>
               </nav>
 
-              {children}
+              <div className="pt-[72px] md:pt-0 md:mt-8">
+                {children}
+              </div>
               <Footer />
               <ConsentedProviders />
               <CookieConsent locale={locale} />
+              <Toaster 
+                position="top-center"
+                toastOptions={{
+                  style: {
+                    background: 'hsl(var(--background))',
+                    color: 'hsl(var(--foreground))',
+                    border: '1px solid hsl(var(--border))',
+                  },
+                  className: 'border border-border',
+                  duration: 3000,
+                }}
+                richColors
+              />
             </CartProvider>
           </CurrencyProvider>
           </NextIntlClientProvider>

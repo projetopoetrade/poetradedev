@@ -11,6 +11,8 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button as PopoverButton } from "@/components/ui/button";
+import { ConfirmationDialog } from "@/components/confirmation-dialog";
+import { useTranslations } from "next-intl";
 
 type OrderStatus = 'processing' | 'waiting_delivery' | 'completed' | 'failed';
 
@@ -31,8 +33,11 @@ export default function AdminOrders() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedStatuses, setSelectedStatuses] = useState<OrderStatus[]>(['processing', 'waiting_delivery', 'completed', 'failed']);
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [orderToMove, setOrderToMove] = useState<{ orderId: string; newStatus: OrderStatus; orderNumber: string } | null>(null);
   const supabase = createClient();
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const t = useTranslations('Orders');
 
   useEffect(() => {
     audioRef.current = new Audio('/notification.mp3');
@@ -131,6 +136,19 @@ export default function AdminOrders() {
     if (selectedStatuses.length === 4) return 'All Statuses';
     if (selectedStatuses.length === 0) return 'Select Statuses';
     return `${selectedStatuses.length} Statuses Selected`;
+  };
+
+  const handleMoveOrderClick = (orderId: string, newStatus: OrderStatus, orderNumber: string) => {
+    setOrderToMove({ orderId, newStatus, orderNumber });
+    setConfirmDialogOpen(true);
+  };
+
+  const handleConfirmMove = async () => {
+    if (orderToMove) {
+      await updateOrderStatus(orderToMove.orderId, orderToMove.newStatus);
+      setOrderToMove(null);
+    }
+    setConfirmDialogOpen(false);
   };
 
   if (loading) {
@@ -258,7 +276,7 @@ export default function AdminOrders() {
                           </div>
                           {nextStatus && (
                             <Button
-                              onClick={() => updateOrderStatus(order.id, nextStatus)}
+                              onClick={() => handleMoveOrderClick(order.id, nextStatus, String(order.id).slice(0, 8))}
                               className="w-full mt-4 bg-primary hover:bg-primary/90"
                             >
                               Move to {statusColumns[nextStatus].title}
@@ -272,6 +290,20 @@ export default function AdminOrders() {
             ))}
         </div>
       </div>
+
+      <ConfirmationDialog
+        open={confirmDialogOpen}
+        onOpenChange={setConfirmDialogOpen}
+        onConfirm={handleConfirmMove}
+        title={t('confirmMoveTitle')}
+        description={t('confirmMoveDescription', { 
+          orderId: orderToMove?.orderNumber || '', 
+          newStatus: orderToMove ? statusColumns[orderToMove.newStatus].title : '' 
+        })}
+        confirmText={t('confirm')}
+        cancelText={t('cancel')}
+        variant="default"
+      />
     </main>
   );
 } 

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Minus, Plus } from "lucide-react";
+import { Minus, Plus, Check } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCurrency } from "@/lib/contexts/currency-context";
@@ -11,6 +11,8 @@ import { useCart } from "@/lib/contexts/cart-context";
 import Filters from "../app/[locale]/(site)/products/[name]/filters";
 import type { Product } from "@/lib/interface";
 import { CurrencyInfo } from "./currency-info";
+import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 interface ProductDetailProps {
   product: Product;
@@ -40,6 +42,7 @@ export default function ProductDetail({
   const [error, setError] = useState<string | null>(null);
   const [isQuantityLoading, setIsQuantityLoading] = useState(false);
   const router = useRouter();
+  const t = useTranslations("ProductCard");
 
   const increment = () => {
     if (isQuantityLoading) return;
@@ -89,6 +92,17 @@ export default function ProductDetail({
 
   const handleAddToCart = () => {
     addToCart(product, count);
+    
+    // Show success toast
+    toast.success(t('itemAddedToCart'), {
+      description: t('itemAddedDescription', { 
+        quantity: count, 
+        productName: product.name 
+      }),
+      icon: <Check className="h-5 w-5" />,
+      duration: 3000,
+    });
+    
     setCount(1);
   };
 
