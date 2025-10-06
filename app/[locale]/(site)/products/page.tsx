@@ -6,6 +6,8 @@ import { CurrencyInfo } from "@/components/currency-info";
 import PatchInfo from "@/components/PatchInfo";
 import { getTranslations } from "next-intl/server";
 import { buildCanonical, getHreflangAlternates } from "@/lib/utils";
+import { Link } from "@/i18n/navigation";
+import { ArrowLeft } from "lucide-react";
 
 
 type SearchParams = {
@@ -73,9 +75,13 @@ export async function generateMetadata(
 export default async function ProductsPage(
   props: {
     searchParams: Promise<SearchParams>;
+    params: Promise<{ locale: string }>;
   }
 ) {
   const searchParams = await props.searchParams;
+  const { locale } = await props.params;
+  const t = await getTranslations({ locale, namespace: "Products" });
+  
   try {
     const products = await getProductsWithParams(searchParams);
     const league = searchParams.league || "All Leagues";
@@ -146,13 +152,22 @@ export default async function ProductsPage(
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(catalogStructuredData) }}
       />
-        <div className="bg-indigo-700 inline-block min-w-[320px] md:min-w-[380px] rounded-tl-md rounded-tr-sm py-2 px-4 shadow-lg">
-          <h2 className="text-lg md:text-3xl text-center text-white font-bold antialiased capitalize tracking-wider">
-            {league} - {difficulty}
-          </h2>
-        </div>
+        <div className="mb-12">
+          <div className="bg-indigo-700 rounded-t-lg py-2 px-4 md:px-8 shadow-lg flex items-center justify-between max-w-[520px]">
+            <Link 
+              href={`/games/${gameVersion}`}
+              className="flex items-center text-white hover:text-indigo-200 transition-colors group"
+              aria-label={t("backToLeagues")}
+            >
+              <ArrowLeft className="h-6 w-6 group-hover:-translate-x-1 transition-transform" />
+            </Link>
+            <h2 className="text-lg md:text-3xl text-center text-white font-bold antialiased capitalize tracking-wider flex-1">
+              {league} - {difficulty}
+            </h2>
+            <div className="w-6" />
+          </div>
 
-        <ProductsClient 
+          <ProductsClient 
 
           products={products} 
           initialFilters={{
@@ -161,6 +176,7 @@ export default async function ProductsPage(
             difficulty
           }}
         />
+        </div>
         <CurrencyInfo gameVersion={gameVersion} />
         <PatchInfo gameVersion={gameVersion} />
         </div>

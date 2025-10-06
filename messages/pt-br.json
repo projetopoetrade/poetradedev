@@ -152,7 +152,34 @@
     "allLeagues": "Todas as Ligas",
     "allDifficulties": "Todas as Dificuldades",
     "selectDifficulty": "Selecione a Dificuldade",
-    "filters": "Filtros"
+    "filters": "Filtros",
+    "backToLeagues": "Voltar para Ligas",
+    "backToHome": "Voltar para Início"
+  },
+
+  "Cart": {
+    "title": "Carrinho de Compras",
+    "emptyCart": "Seu carrinho está vazio",
+    "emptyCartDescription": "Adicione alguns itens ao seu carrinho para continuar comprando",
+    "continueShopping": "Continuar Comprando",
+    "backToProducts": "Voltar para Produtos",
+    "orderItems": "Itens do Pedido",
+    "completePurchase": "Finalizar Compra",
+    "characterName": "Nome do Personagem",
+    "characterNamePlaceholder": "Digite o nome do seu personagem",
+    "observations": "Observações (opcional)",
+    "observationsPlaceholder": "Alguma observação para o vendedor (opcional)",
+    "subtotal": "Subtotal",
+    "items": "itens",
+    "total": "Total",
+    "goToCheckout": "Ir para Checkout",
+    "processing": "Processando...",
+    "checkoutNote": "Ao clicar em \"Ir para Checkout\", você será redirecionado para nossa página de pagamento seguro",
+    "removeItemTitle": "Remover Item",
+    "removeItemDescription": "Tem certeza que deseja remover este item do seu carrinho?",
+    "remove": "Remover",
+    "cancel": "Cancelar",
+    "itemRemoved": "Item removido do carrinho"
   },
 
   "ProductCard": {
@@ -221,7 +248,11 @@
     "cancelOrderWarningTitle": "Para Cancelar Este Pedido",
     "cancelOrderWarningDescription": "Por favor, abra um ticket de suporte com o seguinte assunto:",
     "subject": "Assunto",
-    "openCancellationTicket": "Abrir Ticket de Cancelamento"
+    "openCancellationTicket": "Abrir Ticket de Cancelamento",
+    "confirmCancelTitle": "Confirmação de Cancelamento",
+    "confirmCancelDescription": "Tem certeza que deseja prosseguir com o cancelamento deste pedido? Você será redirecionado para criar um ticket de suporte.",
+    "proceed": "Prosseguir",
+    "goBack": "Voltar"
   },
   
     "PatchInfo": {

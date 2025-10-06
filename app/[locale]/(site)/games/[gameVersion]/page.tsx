@@ -5,6 +5,8 @@ import PatchInfo from "@/components/PatchInfo";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { buildCanonical, getHreflangAlternates } from "@/lib/utils";
+import { Link } from "@/i18n/navigation";
+import { ArrowLeft } from "lucide-react";
 
 
 // Generate metadata based on game version
@@ -64,6 +66,7 @@ export default async function Page({
   };
 }) {
   const { gameVersion, locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Products" });
 
   const isPoe2 = gameVersion === "path-of-exile-2";
 
@@ -76,6 +79,16 @@ export default async function Page({
   return (
     <>
       <main className="container mx-auto min-h-screen space-y-16 py-8">
+        <div>
+          <Link 
+            href="/"
+            className="inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors group"
+            aria-label={t("backToHome")}
+          >
+            <ArrowLeft className="h-5 w-5 group-hover:-translate-x-1 transition-transform" />
+            <span className="text-sm md:text-base font-semibold">{t("backToHome")}</span>
+          </Link>
+        </div>
         <LeagueSelectionPage gameVersion={gameVersion} />
         <section className="mb-12">
           <article className="space-y-8">

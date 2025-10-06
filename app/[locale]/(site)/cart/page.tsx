@@ -25,6 +25,8 @@ import {
   MAX_OBSERVATIONS_LENGTH,
   type CheckoutInput,
 } from "@/lib/validations/checkout";
+import { ConfirmationDialog } from "@/components/confirmation-dialog";
+import { useTranslations } from "next-intl";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
@@ -35,7 +37,10 @@ export default function CartPage() {
   const pathname = usePathname();
   const [isLoading, setIsLoading] = useState(false);
   const [isClient, setIsClient] = useState(false);
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [itemToRemove, setItemToRemove] = useState<number | null>(null);
   const supabase = createClient();
+  const t = useTranslations("Cart");
 
   // React Hook Form with Zod validation
   const {
@@ -168,6 +173,20 @@ export default function CartPage() {
     }
   };
 
+  const handleRemoveClick = (productId: number) => {
+    setItemToRemove(productId);
+    setConfirmDialogOpen(true);
+  };
+
+  const handleConfirmRemove = () => {
+    if (itemToRemove !== null) {
+      removeFromCart(itemToRemove);
+      toast.success(t("itemRemoved"));
+      setItemToRemove(null);
+    }
+    setConfirmDialogOpen(false);
+  };
+
   if (!isClient) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -273,6 +292,7 @@ export default function CartPage() {
                             variant="outline"
                             size="icon"
                             className="h-8 w-8"
+                            disabled={item.quantity <= 1}
                             onClick={() => item.product.id && updateQuantity(item.product.id, item.quantity - 1)}
                           >
                             -
@@ -296,10 +316,7 @@ export default function CartPage() {
                             variant="ghost"
                             size="icon"
                             className="h-8 w-8 text-red-500 hover:text-red-600"
-                            onClick={() => {
-                              item.product.id && removeFromCart(item.product.id);
-                              toast.success("Item removed from cart");
-                            }}
+                            onClick={() => item.product.id && handleRemoveClick(item.product.id)}
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -418,6 +435,17 @@ export default function CartPage() {
           </div>
         </div>
       </div>
+
+      <ConfirmationDialog
+        open={confirmDialogOpen}
+        onOpenChange={setConfirmDialogOpen}
+        onConfirm={handleConfirmRemove}
+        title={t("removeItemTitle")}
+        description={t("removeItemDescription")}
+        confirmText={t("remove")}
+        cancelText={t("cancel")}
+        variant="destructive"
+      />
     </div>
   );
 } 

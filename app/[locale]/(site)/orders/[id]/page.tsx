@@ -16,6 +16,7 @@ import type { Order } from "@/types";
 import { Separator } from "@/components/ui/separator";
 import { useTranslations } from "next-intl";
 import TawkTo from "@/components/tawTo";
+import { ConfirmationDialog } from "@/components/confirmation-dialog";
 const formatPrice = (price: number, currency: string = 'USD') => {
   if (currency.toLowerCase() === 'chaos' || currency.toLowerCase() === 'exalted') {
     return `${price} ${currency}`;
@@ -122,6 +123,7 @@ export default function OrderDetailsPage(props: { params: Promise<{ id: string }
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const router = useRouter();
   const supabase = createClient();
   const t = useTranslations('Orders');
@@ -165,6 +167,15 @@ export default function OrderDetailsPage(props: { params: Promise<{ id: string }
       // Start a new chat session
       window.Tawk_API.maximize();
     }
+  };
+
+  const handleCancelOrder = () => {
+    setCancelDialogOpen(true);
+  };
+
+  const handleConfirmCancel = () => {
+    // Navigate to support tickets page
+    router.push('/support/tickets');
   };
 
   useEffect(() => {
@@ -488,11 +499,13 @@ export default function OrderDetailsPage(props: { params: Promise<{ id: string }
                       </div>
                     </div>
                     
-                    <Button variant="outline" className="w-full gap-2 border-red-200 text-red-700 hover:bg-red-50 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950/50" asChild>
-                      <Link href={`/support/tickets`}>
-                        <XCircle className="h-4 w-4" />
-                        {t("openCancellationTicket")}
-                      </Link>
+                    <Button 
+                      variant="outline" 
+                      className="w-full gap-2 border-red-200 text-red-700 hover:bg-red-50 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950/50"
+                      onClick={handleCancelOrder}
+                    >
+                      <XCircle className="h-4 w-4" />
+                      {t("openCancellationTicket")}
                     </Button>
                   </>
                 )
@@ -501,6 +514,17 @@ export default function OrderDetailsPage(props: { params: Promise<{ id: string }
           </Card>
         </div>
       </div>
+
+      <ConfirmationDialog
+        open={cancelDialogOpen}
+        onOpenChange={setCancelDialogOpen}
+        onConfirm={handleConfirmCancel}
+        title={t("confirmCancelTitle")}
+        description={t("confirmCancelDescription")}
+        confirmText={t("proceed")}
+        cancelText={t("goBack")}
+        variant="destructive"
+      />
     </div>
   );
 } 

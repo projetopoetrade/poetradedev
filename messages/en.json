@@ -91,7 +91,34 @@
     "allLeagues": "All Leagues",
     "allDifficulties": "All Difficulties",
     "filters": "Filters",
-    "selectDifficulty": "Select Difficulty"
+    "selectDifficulty": "Select Difficulty",
+    "backToLeagues": "Back to Leagues",
+    "backToHome": "Back to Home"
+  },
+
+  "Cart": {
+    "title": "Shopping Cart",
+    "emptyCart": "Your cart is empty",
+    "emptyCartDescription": "Add some items to your cart to continue shopping",
+    "continueShopping": "Continue Shopping",
+    "backToProducts": "Back to Products",
+    "orderItems": "Order Items",
+    "completePurchase": "Complete Purchase",
+    "characterName": "Character Name",
+    "characterNamePlaceholder": "Enter your character name",
+    "observations": "Observations (optional)",
+    "observationsPlaceholder": "Any notes for the trader (optional)",
+    "subtotal": "Subtotal",
+    "items": "items",
+    "total": "Total",
+    "goToCheckout": "Go to Checkout",
+    "processing": "Processing...",
+    "checkoutNote": "By clicking \"Go to Checkout\", you will be redirected to our secure payment page",
+    "removeItemTitle": "Remove Item",
+    "removeItemDescription": "Are you sure you want to remove this item from your cart?",
+    "remove": "Remove",
+    "cancel": "Cancel",
+    "itemRemoved": "Item removed from cart"
   },
 
  "faq": {
@@ -290,7 +317,11 @@
     "cancelOrderWarningTitle": "To Cancel This Order",
     "cancelOrderWarningDescription": "Please open a support ticket with the following subject:",
     "subject": "Subject",
-    "openCancellationTicket": "Open Cancellation Ticket"
+    "openCancellationTicket": "Open Cancellation Ticket",
+    "confirmCancelTitle": "Cancel Order Confirmation",
+    "confirmCancelDescription": "Are you sure you want to proceed with canceling this order? You will be redirected to create a support ticket.",
+    "proceed": "Proceed",
+    "goBack": "Go Back"
   },
 
   "Header": {
