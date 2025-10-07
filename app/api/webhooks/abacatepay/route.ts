@@ -34,6 +34,7 @@ async function updateOrder(
     status?: string;
     payment_status?: string;
     payment_data?: any;
+    paid_at?: string;
   }
 ) {
   console.log(`Updating order ${orderId} via API`);
@@ -99,7 +100,7 @@ async function handleBillingPaid(event: any, baseUrl: string) {
     fee: payment.fee / 100,
     method: payment.method,
     status: pixQrCode.status,
-    devMode: event.devMode
+    devMode: event.devMode,
   });
 
   // Usar admin client pois webhooks não têm contexto de usuário autenticado
@@ -129,6 +130,9 @@ async function handleBillingPaid(event: any, baseUrl: string) {
   }
 
   // Preparar payment_data (similar ao paymentIntent do Stripe)
+  const paidAtTimestamp = new Date().toISOString();
+  console.log('🕐 Generating paid_at timestamp:', paidAtTimestamp);
+  
   const paymentData = {
     id: pixQrCode.id,
     amount: payment.amount,
@@ -139,13 +143,18 @@ async function handleBillingPaid(event: any, baseUrl: string) {
     event_id: event.id,
     dev_mode: event.devMode,
     created: Math.floor(new Date().getTime() / 1000),
+    paid_at: paidAtTimestamp,
   };
 
+  console.log('📦 Payment data prepared:', JSON.stringify(paymentData, null, 2));
+
   // Atualizar pedido via API com payment_data
+  console.log('🔄 Calling updateOrder with paid_at:', paidAtTimestamp);
   const result = await updateOrder(baseUrl, order.id, {
     status: 'waiting_delivery',
     payment_status: 'succeeded',
     payment_data: paymentData,
+    paid_at: paidAtTimestamp,
   });
 
   // Enviar email de confirmação

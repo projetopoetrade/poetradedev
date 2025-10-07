@@ -126,7 +126,7 @@
     "paymentMethodTitle": "Choose Payment Method",
     "paymentMethodDescription": "Select how you would like to complete your purchase",
     "pixPayment": "PIX",
-    "pixPaymentDescription": "Instant and secure payment",
+    "pixPaymentMethodDescription": "Instant and secure payment",
     "pixRecommended": "Recommended",
     "cardPayment": "Credit/Debit Card",
     "cardPaymentDescription": "Pay securely with Stripe",
@@ -153,7 +153,14 @@
     "pixAwaitingPayment": "Awaiting payment",
     "close": "Close",
     "copied": "Copied!",
-    "copyCode": "Copy Code"
+    "copyCode": "Copy Code",
+    "alreadyPaid": "Already Paid",
+    "checkingPayment": "Checking...",
+    "paymentConfirmed": "Payment Confirmed!",
+    "paymentNotConfirmed": "Payment not confirmed yet",
+    "paymentNotConfirmedDescription": "Please wait a few moments and try again. Processing may take a few seconds.",
+    "paymentVerificationError": "Error verifying payment",
+    "redirectingToOrder": "Redirecting to your order..."
   },
 
  "faq": {
@@ -397,6 +404,7 @@
     "total": "Total",
     "succeeded": "Succeeded",
     "paid": "Paid",
+    "paidAt": "Payment Date",
     "paymentProcessing": "Processing",
     "whatsNext": "What's Next?",
     "step1Title": "Order Confirmation",

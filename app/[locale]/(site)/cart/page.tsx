@@ -33,6 +33,7 @@ import { useTranslations } from "next-intl";
 import { PaymentMethodModal } from "@/components/payment-method-modal";
 import { PixFormModal } from "@/components/pix-form-modal";
 import { PixQRCodeModal } from "@/components/pix-qrcode-modal";
+import { OrderSuccessModal } from "@/components/order-success-modal";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
@@ -48,6 +49,7 @@ export default function CartPage() {
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
   const [showPixForm, setShowPixForm] = useState(false);
   const [showPixQRCode, setShowPixQRCode] = useState(false);
+  const [showOrderSuccess, setShowOrderSuccess] = useState(false);
   const [pendingCheckoutData, setPendingCheckoutData] = useState<CheckoutInput | null>(null);
   const [pixData, setPixData] = useState<{
     id: string;
@@ -56,6 +58,7 @@ export default function CartPage() {
     qrCode: string;
     copyPaste: string;
     expiresAt: string;
+    orderId?: string;
   } | null>(null);
   const [userEmail, setUserEmail] = useState<string>("");
   const supabase = createClient();
@@ -606,6 +609,15 @@ export default function CartPage() {
         open={showPixQRCode}
         onOpenChange={setShowPixQRCode}
         pixData={pixData}
+        onPaymentConfirmed={() => {
+          setShowOrderSuccess(true);
+        }}
+      />
+
+      <OrderSuccessModal
+        open={showOrderSuccess}
+        onOpenChange={setShowOrderSuccess}
+        pixQrCodeId={pixData?.id || null}
       />
 
       <ConfirmationDialog

@@ -9,7 +9,8 @@ export async function PATCH(req: Request) {
       payment_status, 
       paymentIntent, 
       payment_data,
-      stripe_session_id 
+      stripe_session_id,
+      paid_at 
     } = await req.json();
 
     console.log('Received order update request:', {
@@ -18,7 +19,8 @@ export async function PATCH(req: Request) {
       payment_status,
       hasPaymentIntent: !!paymentIntent,
       hasPaymentData: !!payment_data,
-      stripe_session_id
+      stripe_session_id,
+      paid_at
     });
 
     // Validate required fields
@@ -31,7 +33,7 @@ export async function PATCH(req: Request) {
     }
 
     // At least one field is required
-    if (!status && !payment_status && !paymentIntent && !payment_data && !stripe_session_id) {
+    if (!status && !payment_status && !paymentIntent && !payment_data && !stripe_session_id && !paid_at) {
       console.error('No update fields provided');
       return NextResponse.json(
         { error: 'At least one update field is required' },
@@ -68,6 +70,8 @@ export async function PATCH(req: Request) {
     if (status) {
       updateData.status = status;
     }
+
+    
     
     if (payment_status) {
       updateData.payment_status = payment_status;
@@ -85,6 +89,10 @@ export async function PATCH(req: Request) {
 
     if (stripe_session_id) {
       updateData.stripe_session_id = stripe_session_id;
+    }
+
+    if (paid_at) {
+      updateData.paid_at = paid_at;
     }
 
     console.log('Updating order with:', updateData);

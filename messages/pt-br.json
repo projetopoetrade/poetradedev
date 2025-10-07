@@ -187,7 +187,7 @@
     "paymentMethodTitle": "Escolha o Método de Pagamento",
     "paymentMethodDescription": "Selecione como você gostaria de concluir sua compra",
     "pixPayment": "PIX",
-    "pixPaymentDescription": "Pagamento instantâneo e seguro",
+    "pixPaymentMethodDescription": "Pagamento instantâneo e seguro",
     "pixRecommended": "Recomendado",
     "cardPayment": "Cartão de Crédito/Débito",
     "cardPaymentDescription": "Pague com segurança via Stripe",
@@ -214,7 +214,14 @@
     "pixAwaitingPayment": "Aguardando pagamento",
     "close": "Fechar",
     "copied": "Copiado!",
-    "copyCode": "Copiar Código"
+    "copyCode": "Copiar Código",
+    "alreadyPaid": "Já Paguei",
+    "checkingPayment": "Verificando...",
+    "paymentConfirmed": "Pagamento Confirmado!",
+    "paymentNotConfirmed": "Pagamento ainda não confirmado",
+    "paymentNotConfirmedDescription": "Aguarde alguns instantes e tente novamente. O processamento pode levar alguns segundos.",
+    "paymentVerificationError": "Erro ao verificar pagamento",
+    "redirectingToOrder": "Redirecionando para seu pedido..."
   },
 
   "ProductCard": {
@@ -384,6 +391,7 @@
     "total": "Total",
     "succeeded": "Aprovado",
     "paid": "Pago",
+    "paidAt": "Data do Pagamento",
     "paymentProcessing": "Processando",
     "whatsNext": "Próximos Passos",
     "step1Title": "Confirmação do Pedido",

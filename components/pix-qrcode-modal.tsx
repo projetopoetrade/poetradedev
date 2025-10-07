@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Check, Copy, Clock, QrCode } from "lucide-react";
+import { Check, Copy, Clock, QrCode, Loader2, CheckCircle2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
+import { toast } from "sonner";
 
 interface PixQRCodeModalProps {
   open: boolean;
@@ -18,16 +19,20 @@ interface PixQRCodeModalProps {
     copyPaste: string;
     expiresAt: string;
   } | null;
+  onPaymentConfirmed?: () => void;
 }
 
 export function PixQRCodeModal({
   open,
   onOpenChange,
   pixData,
+  onPaymentConfirmed,
 }: PixQRCodeModalProps) {
   const t = useTranslations("Cart");
   const [copied, setCopied] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState<string>("");
+  const [isCheckingPayment, setIsCheckingPayment] = useState(false);
+  const [paymentConfirmed, setPaymentConfirmed] = useState(false);
 
   // Copiar código PIX
   const handleCopy = async () => {
@@ -37,6 +42,80 @@ export function PixQRCodeModal({
       setTimeout(() => setCopied(false), 2000);
     }
   };
+
+  // Verificar se o pagamento foi realizado
+  const handleCheckPayment = useCallback(async () => {
+    if (!pixData?.id || paymentConfirmed) return;
+
+    setIsCheckingPayment(true);
+
+    try {
+      const response = await fetch(`/api/pix/check?id=${pixData.id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Erro ao verificar pagamento');
+      }
+
+      console.log('✅ Resposta completa da verificação:', result);
+      console.log('📊 Status recebido:', result.status);
+      console.log('📊 Tipo do status:', typeof result.status);
+
+      // Verificar se o pagamento foi confirmado
+      // Status possíveis: 'paid', 'PAID', 'completed', 'COMPLETED', 'success', 'SUCCESS'
+      const statusLower = result.status?.toString().toLowerCase();
+      const isPaid = statusLower === 'paid' || 
+                     statusLower === 'completed' || 
+                     statusLower === 'success' ||
+                     statusLower === 'complete';
+
+      console.log('💳 Status normalizado:', statusLower);
+      console.log('✅ Pagamento confirmado?', isPaid);
+
+      if (isPaid) {
+        // Marcar como confirmado para parar verificações automáticas
+        setPaymentConfirmed(true);
+        
+        toast.success(t("paymentConfirmed"), {
+          description: "Abrindo detalhes do pedido...",
+          duration: 2000,
+        });
+
+        // Fechar o modal do QR Code
+        onOpenChange(false);
+
+        // Aguardar um pouco e abrir o modal de sucesso
+        setTimeout(() => {
+          if (onPaymentConfirmed) {
+            onPaymentConfirmed();
+          }
+        }, 500);
+      } else {
+        console.log('⏳ Pagamento ainda pendente. Status:', result.status);
+        toast.info(t("paymentNotConfirmed"), {
+          description: t("paymentNotConfirmedDescription"),
+          duration: 4000,
+        });
+      }
+    } catch (error) {
+      console.error('❌ Erro ao verificar pagamento:', error);
+      
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+      
+      toast.error(t("paymentVerificationError"), {
+        description: errorMessage,
+        duration: 5000,
+      });
+    } finally {
+      setIsCheckingPayment(false);
+    }
+  }, [pixData?.id, paymentConfirmed, t, onOpenChange, onPaymentConfirmed]);
 
   // Calcular tempo restante
   useEffect(() => {
@@ -63,6 +142,29 @@ export function PixQRCodeModal({
 
     return () => clearInterval(interval);
   }, [pixData?.expiresAt]);
+
+  // Verificação automática do pagamento a cada 30 segundos
+  useEffect(() => {
+    // Não executar se modal não estiver aberto, não houver pixData, ou pagamento já confirmado
+    if (!open || !pixData?.id || paymentConfirmed) return;
+
+    console.log('🔄 Iniciando verificação automática de pagamento a cada 30 segundos...');
+
+    // Verificar imediatamente ao abrir
+    handleCheckPayment();
+
+    // Continuar verificando a cada 30 segundos
+    const interval = setInterval(() => {
+      console.log('⏰ Verificação automática do pagamento...');
+      handleCheckPayment();
+    }, 30000); // 30 segundos
+
+    // Limpar intervalo quando modal fechar ou pagamento for confirmado
+    return () => {
+      console.log('🛑 Parando verificação automática de pagamento');
+      clearInterval(interval);
+    };
+  }, [open, pixData?.id, paymentConfirmed, handleCheckPayment]);
 
   if (!pixData) return null;
 
@@ -162,29 +264,22 @@ export function PixQRCodeModal({
           </div>
         </div>
 
-        <div className="flex gap-2 pt-2">
+        <div className="pt-2">
           <Button
             type="button"
-            variant="outline"
-            className="flex-1 h-9 text-sm"
-            onClick={() => onOpenChange(false)}
+            className="w-full h-10 text-sm font-semibold bg-green-600 hover:bg-green-700 shadow-lg hover:shadow-xl transition-all"
+            onClick={handleCheckPayment}
+            disabled={isCheckingPayment}
           >
-            {t("close")}
-          </Button>
-          <Button
-            type="button"
-            className="flex-1 h-9 text-sm bg-green-600 hover:bg-green-700"
-            onClick={handleCopy}
-          >
-            {copied ? (
+            {isCheckingPayment ? (
               <>
-                <Check className="mr-1.5 h-3.5 w-3.5" />
-                {t("copied")}
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                {t("checkingPayment")}
               </>
             ) : (
               <>
-                <Copy className="mr-1.5 h-3.5 w-3.5" />
-                {t("copyCode")}
+                <CheckCircle2 className="mr-2 h-4 w-4" />
+                {t("alreadyPaid")}
               </>
             )}
           </Button>

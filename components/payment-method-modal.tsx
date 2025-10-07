@@ -43,7 +43,7 @@ export function PaymentMethodModal({
             <div className="flex-1 text-left">
               <h3 className="font-semibold text-lg">{t("pixPayment")}</h3>
               <p className="text-sm text-muted-foreground">
-                {t("pixPaymentDescription")}
+                {t("pixPaymentMethodDescription")}
               </p>
             </div>
             <div className="px-3 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">

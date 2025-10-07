@@ -19,6 +19,7 @@ export interface Order {
   observations?: string | null;
   created_at: string;
   updated_at: string;
+  paid_at?: string | null; // Data e hora em que o pagamento foi confirmado
 }
 
 export interface PatchData {
