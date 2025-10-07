@@ -11,8 +11,8 @@ const structuredData = {
   alternateName: `Path of Exile Currency Trading`,
   description:
     "Path of Trade Net - Your trusted source for Path of Exile currency trading. Buy and sell POE currency with instant delivery. Get the best prices, secure trading, and 24/7 customer support.",
-  url: "https://pathoftrade.net",
-  logo: "https://pathoftrade.net/logo.png",
+  url: process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net",
+  logo: `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"}/logo.png`,
   offers: {
     "@type": "AggregateOffer",
     priceCurrency: "USD",
@@ -21,8 +21,8 @@ const structuredData = {
       "@type": "Organization",
       name: "Path of Trade",
       description: "Professional Path of Exile currency trading service",
-      url: "https://pathoftrade.net",
-      logo: "https://pathoftrade.net/logo.png",
+      url: process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net",
+      logo: `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"}/logo.png`,
     },
   },
   aggregateRating: {

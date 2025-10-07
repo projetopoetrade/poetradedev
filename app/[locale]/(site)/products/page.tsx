@@ -90,7 +90,8 @@ export default async function ProductsPage(
     const category = searchParams.category || "All Items";
     const gameVersion = searchParams.gameVersion || "Current";
 
-    const baseUrl = 'https://pathoftrade.net/products';
+    const basePath = locale === 'en' ? `/products` : `/${locale}/products`;
+    const baseUrl = `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"}${basePath}`;
     const pageUrlObj = new URL(baseUrl);
     Object.keys(searchParams).forEach(key => {
         if (searchParams[key as keyof SearchParams]) {
@@ -112,8 +113,9 @@ export default async function ProductsPage(
           // with the actual field names from YOUR 'products' array.
           const productName = product.name || "Unknown Product";
           
-          const productImageUrl = product.imgUrl || "https://pathoftrade.net/images/default.png";
-          const productUrl =  `/products/${encodeURIComponent(product.name)}?gameVersion=${encodeURIComponent(product.gameVersion)}&league=${encodeURIComponent(product.league)}&difficulty=${encodeURIComponent(product.difficulty)}`;
+          const productImageUrl = product.imgUrl || `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"}/images/default.png`;
+          const productPath = locale === 'en' ? `/products/${encodeURIComponent(product.name)}` : `/${locale}/products/${encodeURIComponent(product.name)}`;
+          const productUrl = `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"}${productPath}?gameVersion=${encodeURIComponent(product.gameVersion)}&league=${encodeURIComponent(product.league)}&difficulty=${encodeURIComponent(product.difficulty)}`;
           const productPrice = product.price || "0.00";
           // --- !!! END ADAPTATION !!! ---
   

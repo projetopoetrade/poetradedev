@@ -152,7 +152,7 @@ export default async function ProductDetailPage(props: {
       // "category": `${product.gameVersion} ${product.category}`,
       offers: {
         "@type": "Offer",
-        url: `https://pathoftrade.net/products/${encodeURIComponent(product.name)}?league=${encodeURIComponent(product.league)}&difficulty=${encodeURIComponent(product.difficulty)}`,
+        url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"}${params.locale === 'en' ? '' : `/${params.locale}`}/products/${encodeURIComponent(product.name)}?league=${encodeURIComponent(product.league)}&difficulty=${encodeURIComponent(product.difficulty)}`,
         priceCurrency: "USD",
         price: product.price,
         availability: "https://schema.org/InStock", // e.g., "https://schema.org/InStock"
@@ -162,7 +162,7 @@ export default async function ProductDetailPage(props: {
         seller: {
           "@type": "Organization",
           name: "Path of Trade Net",
-          url: "https://pathoftrade.net", // URL to your store homepage
+          url: process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net", // URL to your store homepage
         },
       },
       // Optional: Include AggregateRating if you have reviews for THIS specific produc

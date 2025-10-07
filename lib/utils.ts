@@ -32,9 +32,13 @@ export function buildCanonical(pathOrUrl: string, locale?: string, defaultLocale
   if (locale === defaultLocale) {
     // Remove the locale prefix from the path for the default locale
     const pathWithoutLocale = pathOrUrl.replace(`/${defaultLocale}`, '') || '/';
-    return buildAbsoluteUrl(pathWithoutLocale);
+    const absoluteUrl = buildAbsoluteUrl(pathWithoutLocale);
+    // Ensure trailing slash is removed for canonical (except for root)
+    return pathWithoutLocale === '/' ? absoluteUrl : absoluteUrl.replace(/\/$/, '');
   }
-  return buildAbsoluteUrl(pathOrUrl);
+  const absoluteUrl = buildAbsoluteUrl(pathOrUrl);
+  // Ensure trailing slash is removed for canonical
+  return absoluteUrl.replace(/\/$/, '');
 }
 
 export function formatPrice(price: number, currency: string = 'USD', locale: string = 'en-US') {

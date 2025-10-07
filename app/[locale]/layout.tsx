@@ -28,7 +28,9 @@ export async function generateMetadata(props: {
   const ogTitle = t("layout.ogTitle");
   const ogDescription = t("layout.ogDescription");
 
-  const canonical = buildCanonical(`/${locale}`, locale);
+  // Build canonical: for default locale (en), use root path; for others, use locale prefix
+  const path = locale === 'en' ? '/' : `/${locale}`;
+  const canonical = buildCanonical(path, locale);
 
   return {
     metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"),
