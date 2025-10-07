@@ -32,10 +32,18 @@ async function getValidAccessToken(): Promise<string> {
   try {
     const tokenResponse = await fetch(
       `https://accounts.zoho.com/oauth/v2/token?refresh_token=${process.env.ZOHO_REFRESH_TOKEN}&client_id=${process.env.ZOHO_CLIENT_ID}&client_secret=${process.env.ZOHO_CLIENT_SECRET}&grant_type=refresh_token`,
-      { method: 'POST' }
+      { 
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        signal: AbortSignal.timeout(60000)
+      }
     );
 
     if (!tokenResponse.ok) {
+      const errorText = await tokenResponse.text();
+      console.error('Failed to refresh Zoho token:', errorText);
       throw new Error('Failed to refresh Zoho token');
     }
 

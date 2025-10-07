@@ -136,6 +136,7 @@
 
   "Products": {
     "allCategories": "Todas as Categorias",
+    "cancel": "Cancelar",
     "currency": "Moedas",
     "services": "Serviços",
     "items": "Itens",
@@ -154,7 +155,10 @@
     "selectDifficulty": "Selecione a Dificuldade",
     "filters": "Filtros",
     "backToLeagues": "Voltar para Ligas",
-    "backToHome": "Voltar para Início"
+    "backToHome": "Voltar para Início",
+    "selectFilters": "Selecione Suas Preferências",
+    "selectFiltersDescription": "Escolha sua versão do jogo, liga e dificuldade para navegar pelos produtos certos para você.",
+    "applyFilters": "Aplicar Filtros"
   },
 
   "Cart": {

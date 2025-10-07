@@ -60,7 +60,7 @@ ZOHO_ACCESS_TOKEN=seu_access_token_aqui
 1. Acesse esta URL no navegador (substitua os valores):
 
 ```
-https://accounts.zoho.com/oauth/v2/auth?scope=Desk.tickets.ALL&client_id=1000.U0Q97QCSXL64NUNMWVIPD1LI51Z8FJ&response_type=code&access_type=offline&redirect_uri=https://pathoftrade.net/callback
+https://accounts.zoho.com/oauth/v2/auth?scope=Desk.tickets.ALL&client_id=1000.1283ffc38f7f1ebce7eb347ae404f1a8.c436b59fe314dd40f54abe23d985953b&response_type=code&access_type=offline&redirect_uri=https://pathoftrade.net/callback
 ```
 
 2. Autorize a aplicação

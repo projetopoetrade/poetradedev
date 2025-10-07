@@ -8,6 +8,7 @@ import { getTranslations } from "next-intl/server";
 import { buildCanonical, getHreflangAlternates } from "@/lib/utils";
 import { Link } from "@/i18n/navigation";
 import { ArrowLeft } from "lucide-react";
+import { FilterModalWrapper } from "@/components/filter-modal-wrapper";
 
 
 type SearchParams = {
@@ -148,6 +149,7 @@ export default async function ProductsPage(
     return (
       <div className="container mx-auto py-8">
         <SearchParamsStorage searchParams={searchParams} />
+        <FilterModalWrapper searchParams={searchParams} />
         <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(catalogStructuredData) }}

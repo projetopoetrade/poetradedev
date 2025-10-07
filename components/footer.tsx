@@ -12,6 +12,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
           {/* Logo and Social Links */}
           <div className="flex flex-col items-center md:items-start space-y-4">
+            <Link href="/">
             <Image
               src="/images/logo.webp"
               height="60"
@@ -19,6 +20,7 @@ export default function Footer() {
               alt="Path of Trade"
               className="object-contain"
             />
+            </Link>
             <div className="flex space-x-4">
               <Link 
                 href="#" 

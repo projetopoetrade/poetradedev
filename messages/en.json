@@ -75,6 +75,7 @@
 
   "Products": {
     "allCategories": "All Categories",
+    "cancel": "Cancel",
     "currency": "Currency",
     "services": "Services",
     "items": "Items",
@@ -93,7 +94,10 @@
     "filters": "Filters",
     "selectDifficulty": "Select Difficulty",
     "backToLeagues": "Back to Leagues",
-    "backToHome": "Back to Home"
+    "backToHome": "Back to Home",
+    "selectFilters": "Select Your Preferences",
+    "selectFiltersDescription": "Choose your game version, league, and difficulty to browse the right products for you.",
+    "applyFilters": "Apply Filters"
   },
 
   "Cart": {
