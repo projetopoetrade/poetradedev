@@ -5,7 +5,8 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, Smartphone } from "lucide-react";
+import { Loader2 } from "lucide-react";
+import { SiPix } from "react-icons/si";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -74,7 +75,7 @@ export function PixFormModal({
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle className="text-2xl flex items-center gap-2">
-            <Smartphone className="h-6 w-6 text-green-600" />
+            <SiPix className="h-6 w-6 text-green-600" />
             {t("pixPayment")}
           </DialogTitle>
           <DialogDescription>

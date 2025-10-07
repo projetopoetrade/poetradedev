@@ -88,12 +88,31 @@ export async function GET(req: NextRequest) {
 
     console.log('📦 Resposta completa da API Abacatepay:', JSON.stringify(responseData, null, 2));
 
+    // Verificar se o PIX está expirado comparando com a data atual
+    const now = new Date().getTime();
+    const expiry = new Date(pixStatus.expiresAt).getTime();
+    const isExpired = now > expiry;
+
+    if (isExpired && pixStatus.status !== 'PAID') {
+      console.log('⏰ PIX expirado detectado');
+      return NextResponse.json({
+        id: pixStatus.id,
+        status: 'EXPIRED',
+        amount: pixStatus.amount,
+        expiresAt: pixStatus.expiresAt,
+        devMode: pixStatus.devMode,
+        isExpired: true,
+        rawData: pixStatus,
+      });
+    }
+
     return NextResponse.json({
       id: pixStatus.id,
       status: pixStatus.status,
       amount: pixStatus.amount,
       expiresAt: pixStatus.expiresAt,
       devMode: pixStatus.devMode,
+      isExpired: false,
       rawData: pixStatus, // Retornar dados completos para debug
     });
 

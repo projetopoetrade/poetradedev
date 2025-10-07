@@ -5,7 +5,8 @@ export interface Order {
   items: OrderItem[];
   total_amount: number;
   currency: string;
-  status: 'pending' | 'completed' | 'failed';
+  status: 'pending' | 'completed' | 'failed' | 'waiting_delivery';
+  payment_status?: string | null;
   payment_intent: {
     id: string;
     status: string;
@@ -14,7 +15,7 @@ export interface Order {
     created: number;
   } | null;
   stripe_session_id: string | null;
-  pix_id: string | null; // ID do PIX da AbacatePay
+  pix_qrcode_id?: string | null; // ID do QRCode PIX da AbacatePay
   user_id: string;
   observations?: string | null;
   created_at: string;

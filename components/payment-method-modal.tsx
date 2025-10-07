@@ -1,7 +1,8 @@
 "use client";
 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { CreditCard, Smartphone } from "lucide-react";
+import { SiPix } from "react-icons/si";
+import { CreditCard } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 interface PaymentMethodModalProps {
@@ -38,7 +39,7 @@ export function PaymentMethodModal({
             className="relative flex items-center gap-4 p-6 border-2 border-gray-200 rounded-lg hover:border-primary hover:bg-accent transition-all group disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <div className="flex items-center justify-center w-12 h-12 rounded-full bg-green-100 group-hover:bg-green-200 transition-colors">
-              <Smartphone className="h-6 w-6 text-green-600" />
+            <SiPix className="h-6 w-6 text-green-600" />
             </div>
             <div className="flex-1 text-left">
               <h3 className="font-semibold text-lg">{t("pixPayment")}</h3>

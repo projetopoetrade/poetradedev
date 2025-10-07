@@ -201,6 +201,19 @@ export async function POST(req: NextRequest) {
     console.log('💾 Criando pedido no banco de dados...');
     const totalAmount = amount / 100; // Converter centavos para reais
 
+    // Preparar payment_data com todas as informações do PIX
+    const pixPaymentData = {
+      id: pixData.id,
+      amount: pixData.amount,
+      status: pixData.status,
+      brCode: pixData.brCode,
+      brCodeBase64: pixData.brCodeBase64, // QR Code em base64
+      qrCodeBase64: pixData.brCodeBase64, // Alias para facilitar
+      expiresAt: pixData.expiresAt,
+      createdAt: pixData.createdAt,
+      devMode: pixData.devMode,
+    };
+
     const { data: order, error: orderError } = await supabase
       .from('orders')
       .insert({
@@ -214,6 +227,7 @@ export async function POST(req: NextRequest) {
         payment_method: 'pix',
         pix_qrcode_id: pixData.id, // ID do QRCode PIX da AbacatePay
         payment_url: pixData.brCode, // Código PIX "Copia e Cola"
+        payment_data: pixPaymentData, // Dados completos do PIX incluindo QR code
         observations: observations || null,
       })
       .select()

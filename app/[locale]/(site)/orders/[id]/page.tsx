@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card";
 import { 
   Loader2, Package, Clock, CheckCircle, XCircle, 
   Calendar, RefreshCcw, ShoppingBag, CreditCard, Shield, Sword, User, Map,
-  ArrowLeft, ExternalLink, MessageSquare, Receipt, AlertCircle
+  ArrowLeft, ExternalLink, MessageSquare, Receipt, AlertCircle, QrCode
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,8 @@ import { Separator } from "@/components/ui/separator";
 import { useTranslations } from "next-intl";
 import TawkTo from "@/components/tawTo";
 import { ConfirmationDialog } from "@/components/confirmation-dialog";
+import { PixQRCodeModal } from "@/components/pix-qrcode-modal";
+import { toast } from "sonner";
 const formatPrice = (price: number, currency: string = 'USD') => {
   if (currency.toLowerCase() === 'chaos' || currency.toLowerCase() === 'exalted') {
     return `${price} ${currency}`;
@@ -124,6 +126,16 @@ export default function OrderDetailsPage(props: { params: Promise<{ id: string }
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+  const [showPixQRCode, setShowPixQRCode] = useState(false);
+  const [pixData, setPixData] = useState<{
+    id: string;
+    status: string;
+    amount: number;
+    qrCode: string;
+    copyPaste: string;
+    expiresAt: string;
+  } | null>(null);
+  const [loadingPix, setLoadingPix] = useState(false);
   const router = useRouter();
   const supabase = createClient();
   const t = useTranslations('Orders');
@@ -176,6 +188,57 @@ export default function OrderDetailsPage(props: { params: Promise<{ id: string }
   const handleConfirmCancel = () => {
     // Navigate to support tickets page
     router.push('/support/tickets');
+  };
+
+  const handleViewPixQRCode = async () => {
+    if (!order?.id) return;
+
+    setLoadingPix(true);
+
+    try {
+      console.log('🔍 Buscando dados do PIX para pedido:', order.id);
+
+      const response = await fetch(`/api/pix/by-order/${order.id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        if (result.paymentConfirmed) {
+          toast.info("Pagamento já confirmado", {
+            description: "Este pedido já teve o pagamento confirmado.",
+            duration: 5000,
+          });
+          return;
+        }
+        throw new Error(result.error || 'Erro ao buscar QR Code PIX');
+      }
+
+      console.log('✅ Dados do PIX obtidos:', result);
+      console.log('📷 QR Code recebido:', {
+        hasQrCode: !!result.qrCode,
+        qrCodeLength: result.qrCode?.length,
+        qrCodePreview: result.qrCode?.substring(0, 100),
+      });
+
+      setPixData(result);
+      setShowPixQRCode(true);
+
+    } catch (error) {
+      console.error('❌ Erro ao buscar QR Code PIX:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+      
+      toast.error("Erro ao carregar QR Code", {
+        description: errorMessage,
+        duration: 5000
+      });
+    } finally {
+      setLoadingPix(false);
+    }
   };
 
   useEffect(() => {
@@ -257,6 +320,41 @@ export default function OrderDetailsPage(props: { params: Promise<{ id: string }
         <ArrowLeft className="h-4 w-4" />
         {t("backToOrders")}
       </Button>
+
+      {/* PIX Payment Alert - Top Banner */}
+      {order.pix_qrcode_id && order.payment_status !== 'succeeded' && order.status !== 'waiting_delivery' && (
+        <div className="mb-4 max-w-2xl">
+          <Card className="border-l-4 border-l-red-500">
+            <div className="p-2.5 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5 flex-1 min-w-0">
+                <QrCode className="h-4 w-4 text-red-600 dark:text-red-400 flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-red-600 dark:text-red-400">Aguardando pagamento via PIX</p>
+                </div>
+              </div>
+              <Button 
+                variant="outline"
+                size="sm"
+                className="gap-2 flex-shrink-0"
+                onClick={handleViewPixQRCode}
+                disabled={loadingPix}
+              >
+                {loadingPix ? (
+                  <>
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    <span className="hidden sm:inline">Carregando</span>
+                  </>
+                ) : (
+                  <>
+                    <QrCode className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">Ver PIX</span>
+                  </>
+                )}
+              </Button>
+            </div>
+          </Card>
+        </div>
+      )}
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 max-w-7xl mx-auto">
         {/* Order Summary */}
@@ -381,7 +479,7 @@ export default function OrderDetailsPage(props: { params: Promise<{ id: string }
             )}
           </Card>
           
-          {/* Payment History */}
+          {/* Payment History - Stripe */}
           {order.payment_intent && (
             <Card className="p-5">
               <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
@@ -524,6 +622,25 @@ export default function OrderDetailsPage(props: { params: Promise<{ id: string }
         confirmText={t("proceed")}
         cancelText={t("goBack")}
         variant="destructive"
+      />
+
+      {/* PIX QR Code Modal */}
+      <PixQRCodeModal
+        open={showPixQRCode}
+        onOpenChange={setShowPixQRCode}
+        pixData={pixData}
+        onPaymentConfirmed={() => {
+          setShowPixQRCode(false);
+          // Recarregar dados do pedido
+          window.location.reload();
+        }}
+        onGenerateNewPix={() => {
+          setShowPixQRCode(false);
+          toast.info("QR Code Expirado", {
+            description: "Por favor, entre em contato com o suporte para gerar um novo QR Code.",
+            duration: 7000,
+          });
+        }}
       />
     </div>
   );
