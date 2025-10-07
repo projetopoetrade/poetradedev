@@ -24,9 +24,15 @@ import {
   MAX_CHARACTER_NAME_LENGTH,
   MAX_OBSERVATIONS_LENGTH,
   type CheckoutInput,
+  pixCheckoutSchema,
+  sanitizePixData,
+  type PixCheckoutInput,
 } from "@/lib/validations/checkout";
 import { ConfirmationDialog } from "@/components/confirmation-dialog";
 import { useTranslations } from "next-intl";
+import { PaymentMethodModal } from "@/components/payment-method-modal";
+import { PixFormModal } from "@/components/pix-form-modal";
+import { PixQRCodeModal } from "@/components/pix-qrcode-modal";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
@@ -39,6 +45,19 @@ export default function CartPage() {
   const [isClient, setIsClient] = useState(false);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [itemToRemove, setItemToRemove] = useState<number | null>(null);
+  const [paymentModalOpen, setPaymentModalOpen] = useState(false);
+  const [showPixForm, setShowPixForm] = useState(false);
+  const [showPixQRCode, setShowPixQRCode] = useState(false);
+  const [pendingCheckoutData, setPendingCheckoutData] = useState<CheckoutInput | null>(null);
+  const [pixData, setPixData] = useState<{
+    id: string;
+    status: string;
+    amount: number;
+    qrCode: string;
+    copyPaste: string;
+    expiresAt: string;
+  } | null>(null);
+  const [userEmail, setUserEmail] = useState<string>("");
   const supabase = createClient();
   const t = useTranslations("Cart");
 
@@ -66,25 +85,53 @@ export default function CartPage() {
     setIsClient(true);
   }, []);
 
+  // Fetch user email
+  useEffect(() => {
+    const fetchUserEmail = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user?.email) {
+        setUserEmail(user.email);
+      }
+    };
+    
+    fetchUserEmail();
+  }, [supabase]);
+
   const handleCheckout = async (data: CheckoutInput) => {
+    // Check if user is authenticated first
+    const { data: { session: authSession }, error: sessionError } = await supabase.auth.getSession();
+    
+    if (sessionError || !authSession) {
+      toast.error("Please sign in to continue checkout", {
+        description: <span className="text-white">You need to be signed in to complete your purchase</span>,
+        action: {
+          label: "Sign In",
+          onClick: () => router.push(`auth/login?callbackUrl=${pathname}`)
+        },
+        duration: 5000
+      });
+      return;
+    }
+
+    // Store checkout data
+    setPendingCheckoutData(data);
+    
+    // If BRL, show payment selection modal, otherwise go to Stripe
+    if (currency === 'BRL') {
+      setPaymentModalOpen(true);
+    } else {
+      handleStripeCheckout(data);
+    }
+  };
+
+  const handleStripeCheckout = async (checkoutData?: CheckoutInput) => {
+    const data = checkoutData || pendingCheckoutData;
+    if (!data) return;
+    
     setIsLoading(true);
+    setPaymentModalOpen(false);
 
     try {
-      // Check if user is authenticated
-      const { data: { session: authSession }, error: sessionError } = await supabase.auth.getSession();
-      
-      if (sessionError || !authSession) {
-        toast.error("Please sign in to continue checkout", {
-          description: <span className="text-white">You need to be signed in to complete your purchase</span>,
-          action: {
-            label: "Sign In",
-            onClick: () => router.push(`auth/login?callbackUrl=${pathname}`)
-          },
-          duration: 5000
-        });
-        return;
-      }
-
       const stripe = await stripePromise;
       
       if (!stripe) {
@@ -162,6 +209,108 @@ export default function CartPage() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handlePixClick = () => {
+    setPaymentModalOpen(false);
+    setShowPixForm(true);
+  };
+
+  const handlePixCheckout = async (pixData: PixCheckoutInput) => {
+    if (!pendingCheckoutData) return;
+    
+    setIsLoading(true);
+
+    try {
+      const sanitizedPixData = sanitizePixData(pixData);
+      const sanitizedCheckout = sanitizeCheckoutData(pendingCheckoutData);
+      
+      // Calcular o valor em centavos
+      const amountInCents = Math.round(totalPrice * 100);
+
+      console.log('📤 Enviando dados para criar PIX:', {
+        amount: amountInCents,
+        characterName: sanitizedCheckout.characterName,
+        observations: sanitizedCheckout.observations,
+        customer: sanitizedPixData,
+      });
+      
+      // Chamar API para criar PIX
+      const response = await fetch('/api/pix/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount: amountInCents,
+          expiresIn: 900, // 15 minutos
+          description: `Pedido Path of Trade - ${sanitizedCheckout.characterName}`,
+          customer: {
+            taxId: sanitizedPixData.cpf, // AbacatePay usa taxId
+            cellphone: sanitizedPixData.phone,
+            email: sanitizedPixData.email,
+          },
+          characterName: sanitizedCheckout.characterName,
+          observations: sanitizedCheckout.observations,
+          items: items, // Enviar items do carrinho
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        console.error('❌ Erro ao criar PIX:', result);
+        throw new Error(result.error || 'Falha ao criar PIX');
+      }
+
+      console.log('✅ PIX criado com sucesso:', {
+        id: result.id,
+        status: result.status,
+        amount: result.amount,
+        expiresAt: result.expiresAt,
+      });
+
+      // Salvar dados do PIX
+      setPixData(result);
+
+      // Fechar formulário PIX e abrir modal do QR Code
+      setShowPixForm(false);
+      setShowPixQRCode(true);
+
+      toast.success("QR Code PIX gerado com sucesso!", {
+        description: `Valor: R$ ${(result.amount / 100).toFixed(2)}`,
+        duration: 5000,
+      });
+
+      // Mostrar detalhes do PIX no console
+      if (result.qrCode) {
+        console.log('📱 QR Code Base64:', result.qrCode.substring(0, 100) + '...');
+      }
+      if (result.copyPaste) {
+        console.log('📋 Código Copia e Cola:', result.copyPaste);
+      }
+      if (result.expiresAt) {
+        console.log('⏰ Expira em:', new Date(result.expiresAt).toLocaleString('pt-BR'));
+      }
+      
+      console.log('📦 Resposta completa da API:', result);
+      
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Erro inesperado ao processar PIX';
+      console.error('❌ Erro no handlePixCheckout:', error);
+      
+      toast.error("Erro ao gerar PIX", {
+        description: errorMessage,
+        duration: 5000
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handlePixBack = () => {
+    setShowPixForm(false);
+    setPaymentModalOpen(true);
   };
 
   const handleBackToProducts = () => {
@@ -435,6 +584,29 @@ export default function CartPage() {
           </div>
         </div>
       </div>
+
+      <PaymentMethodModal
+        open={paymentModalOpen}
+        onOpenChange={setPaymentModalOpen}
+        onPixSelect={handlePixClick}
+        onCardSelect={() => handleStripeCheckout()}
+        isLoading={isLoading}
+      />
+
+      <PixFormModal
+        open={showPixForm}
+        onOpenChange={setShowPixForm}
+        onSubmit={handlePixCheckout}
+        onBack={handlePixBack}
+        isLoading={isLoading}
+        userEmail={userEmail}
+      />
+
+      <PixQRCodeModal
+        open={showPixQRCode}
+        onOpenChange={setShowPixQRCode}
+        pixData={pixData}
+      />
 
       <ConfirmationDialog
         open={confirmDialogOpen}

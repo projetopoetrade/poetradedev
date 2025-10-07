@@ -14,6 +14,7 @@ export interface Order {
     created: number;
   } | null;
   stripe_session_id: string | null;
+  pix_id: string | null; // ID do PIX da AbacatePay
   user_id: string;
   observations?: string | null;
   created_at: string;
