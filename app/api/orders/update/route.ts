@@ -3,13 +3,21 @@ import { createAdminClient } from "@/utils/supabase/admin";
 
 export async function PATCH(req: Request) {
   try {
-    const { orderId, status, payment_status, paymentIntent, stripe_session_id } = await req.json();
+    const { 
+      orderId, 
+      status, 
+      payment_status, 
+      paymentIntent, 
+      payment_data,
+      stripe_session_id 
+    } = await req.json();
 
     console.log('Received order update request:', {
       orderId,
       status,
       payment_status,
       hasPaymentIntent: !!paymentIntent,
+      hasPaymentData: !!payment_data,
       stripe_session_id
     });
 
@@ -22,16 +30,16 @@ export async function PATCH(req: Request) {
       );
     }
 
-    // At least one of status, payment_status, paymentIntent or stripe_session_id is required
-    if (!status && !payment_status && !paymentIntent && !stripe_session_id) {
+    // At least one field is required
+    if (!status && !payment_status && !paymentIntent && !payment_data && !stripe_session_id) {
       console.error('No update fields provided');
       return NextResponse.json(
-        { error: 'At least one of status, payment_status, paymentIntent, or stripe_session_id is required' },
+        { error: 'At least one update field is required' },
         { status: 400 }
       );
     }
 
-    // Use admin client porque esta rota é chamada pela webhook da Stripe (sem autenticação de usuário)
+    // Use admin client porque esta rota é chamada pela webhook (sem autenticação de usuário)
     const supabase = createAdminClient();
 
     // First check if order exists
@@ -65,8 +73,14 @@ export async function PATCH(req: Request) {
       updateData.payment_status = payment_status;
     }
     
+    // Handle Stripe payment intent
     if (paymentIntent) {
       updateData.payment_intent = paymentIntent;
+    }
+
+    // Handle PIX payment data
+    if (payment_data) {
+      updateData.payment_data = payment_data;
     }
 
     if (stripe_session_id) {
@@ -100,4 +114,4 @@ export async function PATCH(req: Request) {
       { status: 500 }
     );
   }
-} 
+}

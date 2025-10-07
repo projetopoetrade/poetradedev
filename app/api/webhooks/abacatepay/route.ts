@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'node:crypto';
+import { createAdminClient } from '@/utils/supabase/admin';
 
 // Chave pública HMAC da AbacatePay
 const ABACATEPAY_PUBLIC_KEY = 
@@ -23,121 +24,242 @@ function verifySignature(rawBody: string, signatureFromHeader: string): boolean 
   return A.length === B.length && crypto.timingSafeEqual(A, B);
 }
 
+/**
+ * Helper para atualizar pedido via API
+ */
+async function updateOrder(
+  baseUrl: string,
+  orderId: string,
+  options: {
+    status?: string;
+    payment_status?: string;
+    payment_data?: any;
+  }
+) {
+  console.log(`Updating order ${orderId} via API`);
+
+  const updateEndpoint = `${baseUrl}/api/orders/update`;
+
+  const requestBody: any = { orderId };
+
+  if (options.status) {
+    requestBody.status = options.status;
+    console.log(`Setting order status to: ${options.status}`);
+  }
+
+  if (options.payment_status) {
+    requestBody.payment_status = options.payment_status;
+    console.log(`Setting payment status to: ${options.payment_status}`);
+  }
+
+  if (options.payment_data) {
+    requestBody.payment_data = options.payment_data;
+    console.log('Including payment data');
+  }
+
+  console.log('Request payload:', JSON.stringify(requestBody));
+
+  const response = await fetch(updateEndpoint, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(requestBody),
+  });
+
+  let responseData;
+  try {
+    responseData = await response.json();
+    console.log(`API response status: ${response.status}, data:`, responseData);
+  } catch (e) {
+    const text = await response.text();
+    console.log(`API response status: ${response.status}, text:`, text);
+    responseData = { text };
+  }
+
+  if (!response.ok) {
+    console.error('Failed to update order:', responseData);
+    throw new Error(`Failed to update order: API returned ${response.status}`);
+  }
+
+  console.log(`Order ${orderId} successfully updated`);
+  return responseData;
+}
+
+/**
+ * Processa o evento billing.paid
+ */
+async function handleBillingPaid(event: any, baseUrl: string) {
+  const { payment, pixQrCode } = event.data;
+  
+  console.log('Payment succeeded event received');
+  console.log('💰 Payment details:', {
+    pixQrCodeId: pixQrCode.id,
+    amount: payment.amount / 100,
+    fee: payment.fee / 100,
+    method: payment.method,
+    status: pixQrCode.status,
+    devMode: event.devMode
+  });
+
+  // Usar admin client pois webhooks não têm contexto de usuário autenticado
+  const supabase = createAdminClient();
+
+  // Buscar pedido pelo pix_qrcode_id
+  const { data: order, error: fetchError } = await supabase
+    .from('orders')
+    .select('*')
+    .eq('pix_qrcode_id', pixQrCode.id)
+    .single();
+
+  if (fetchError || !order) {
+    console.error('Order not found:', {
+      pixQrCodeId: pixQrCode.id,
+      error: fetchError
+    });
+    throw new Error(`No order found for PIX QR Code: ${pixQrCode.id}`);
+  }
+
+  console.log(`Processing PIX payment: ${pixQrCode.id} for order: ${order.id}`);
+
+  // Verificar idempotência
+  if (order.status === 'waiting_delivery' || order.payment_status === 'succeeded') {
+    console.log('Order already processed:', order.id);
+    return { alreadyProcessed: true };
+  }
+
+  // Preparar payment_data (similar ao paymentIntent do Stripe)
+  const paymentData = {
+    id: pixQrCode.id,
+    amount: payment.amount,
+    fee: payment.fee,
+    method: payment.method,
+    status: pixQrCode.status,
+    kind: pixQrCode.kind,
+    event_id: event.id,
+    dev_mode: event.devMode,
+    created: Math.floor(new Date().getTime() / 1000),
+  };
+
+  // Atualizar pedido via API com payment_data
+  const result = await updateOrder(baseUrl, order.id, {
+    status: 'waiting_delivery',
+    payment_status: 'succeeded',
+    payment_data: paymentData,
+  });
+
+  // Enviar email de confirmação
+  try {
+    const emailResponse = await fetch(`${baseUrl}/api/send-email`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ orderId: order.id }),
+    });
+
+    if (!emailResponse.ok) {
+      console.error('Failed to send confirmation email:', await emailResponse.text());
+    } else {
+      console.log('Confirmation email sent successfully');
+    }
+  } catch (error) {
+    console.error('Error sending confirmation email:', error);
+    // Não falhar o webhook por erro no email
+  }
+
+  return result;
+}
+
 export async function POST(request: NextRequest) {
   try {
-    // 1) Validação do Secret na URL
+    // Validar método HTTP
+    if (request.method !== 'POST') {
+      return NextResponse.json(
+        { error: 'Method not allowed' },
+        { status: 405 }
+      );
+    }
+
+    // Obter o corpo bruto
+    const rawBody = await request.text();
+    
+    if (!rawBody) {
+      return NextResponse.json(
+        { error: 'Empty request body' },
+        { status: 400 }
+      );
+    }
+
+    // Validação do Secret na URL
     const webhookSecret = request.nextUrl.searchParams.get('webhookSecret');
     
     if (webhookSecret !== WEBHOOK_SECRET) {
+      console.error('Invalid webhook secret');
       return NextResponse.json(
         { error: 'Invalid webhook secret' },
         { status: 401 }
       );
     }
 
-    // 2) Obter o corpo bruto para validação HMAC
-    const rawBody = await request.text();
+    // Validar assinatura HMAC
     const signature = request.headers.get('X-Webhook-Signature');
 
     if (!signature) {
+      console.error('Missing signature header');
       return NextResponse.json(
         { error: 'Missing signature header' },
         { status: 400 }
       );
     }
 
-    // 3) Validar assinatura HMAC
     if (!verifySignature(rawBody, signature)) {
+      console.error('Invalid HMAC signature');
       return NextResponse.json(
         { error: 'Invalid signature' },
         { status: 401 }
       );
     }
 
-    // 4) Processar o evento
+    // Parse do evento
     const event = JSON.parse(rawBody);
     
-    // 5) Verificar se é o evento billing.paid
-    if (event.event !== 'billing.paid') {
-      console.log(`Evento ignorado: ${event.event}`);
-      return NextResponse.json({ received: true }, { status: 200 });
+    console.log(`Webhook event received: ${event.event} (${event.id})`);
+
+    // Validar configuração
+    if (!process.env.ABACATEPAY_WEBHOOK_SECRET) {
+      return NextResponse.json(
+        { error: 'Server configuration error' },
+        { status: 500 }
+      );
     }
 
-    // 6) Processar pagamento confirmado
-    const { payment, pixQrCode } = event.data;
-    
-    console.log('💰 Pagamento PIX confirmado:', {
-      id: pixQrCode.id,
-      amount: payment.amount / 100, // Converter de centavos para reais
-      fee: payment.fee / 100,
-      method: payment.method,
-      status: pixQrCode.status,
-      devMode: event.devMode
-    });
+    // Obter base URL para chamadas de API
+    const baseUrl = new URL(request.url).origin;
 
-    // TODO: Implementar sua lógica de negócio aqui
-    await processarPagamento({
-      pixQrCodeId: pixQrCode.id,
-      amount: payment.amount,
-      fee: payment.fee,
-      status: pixQrCode.status,
-      eventId: event.id,
-      devMode: event.devMode
-    });
+    // Processar apenas billing.paid
+    let result;
+    if (event.event === 'billing.paid') {
+      result = await handleBillingPaid(event, baseUrl);
+    } else {
+      console.log(`Unhandled event type: ${event.event}`);
+    }
 
-    return NextResponse.json({ received: true }, { status: 200 });
+    console.log('Webhook processed successfully');
+    return NextResponse.json({ 
+      received: true, 
+      processed: !!result 
+    });
 
   } catch (error) {
-    console.error('❌ Erro ao processar webhook:', error);
+    console.error('Webhook error:', error instanceof Error ? error.message : 'Unknown error');
+
     return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
+      {
+        error: 'Webhook handler failed',
+        details: error instanceof Error ? error.message : 'Unknown error',
+      },
+      { status: 400 }
     );
   }
-}
-
-/**
- * Processa o pagamento confirmado
- */
-async function processarPagamento(data: {
-  pixQrCodeId: string;
-  amount: number;
-  fee: number;
-  status: string;
-  eventId: string;
-  devMode: boolean;
-}) {
-  // Exemplo de implementação:
-  
-  // 1) Verificar se o evento já foi processado (idempotência)
-  // const jaProcessado = await db.webhookEvent.findUnique({
-  //   where: { id: data.eventId }
-  // });
-  // if (jaProcessado) return;
-
-  // 2) Atualizar status do pedido no banco de dados
-  // await db.order.update({
-  //   where: { pixQrCodeId: data.pixQrCodeId },
-  //   data: { 
-  //     status: 'PAID',
-  //     paidAt: new Date(),
-  //     amount: data.amount,
-  //     fee: data.fee
-  //   }
-  // });
-
-  // 3) Registrar o evento como processado
-  // await db.webhookEvent.create({
-  //   data: {
-  //     id: data.eventId,
-  //     type: 'billing.paid',
-  //     processedAt: new Date()
-  //   }
-  // });
-
-  // 4) Disparar ações pós-pagamento
-  // await enviarEmailConfirmacao(data.pixQrCodeId);
-  // await liberarAcessoProduto(data.pixQrCodeId);
-  
-  console.log('✅ Pagamento processado com sucesso');
 }
