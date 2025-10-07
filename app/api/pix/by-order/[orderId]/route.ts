@@ -80,12 +80,14 @@ export async function GET(
     // Buscar payment_data que pode conter o QR code
     let qrCodeBase64 = '';
     let expiresAt = '';
+    let customerData = null;
     
     // Se houver payment_data (quando foi criado via PIX)
     if (order.payment_data && typeof order.payment_data === 'object') {
       console.log('📦 Payment Data encontrado:', order.payment_data);
       qrCodeBase64 = order.payment_data.qrCodeBase64 || order.payment_data.brCodeBase64 || '';
       expiresAt = order.payment_data.expiresAt || '';
+      customerData = order.payment_data.customer || null;
     }
 
     // Se não tiver expiresAt no payment_data, buscar da AbacatePay
@@ -150,6 +152,7 @@ export async function GET(
       expiresAt: expiresAt || new Date(Date.now() + 15 * 60 * 1000).toISOString(), // 15 minutos default
       isExpired: isExpired,
       orderId: order.id,
+      customer: customerData,
     });
 
   } catch (error) {

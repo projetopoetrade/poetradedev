@@ -241,6 +241,138 @@ export default function OrderDetailsPage(props: { params: Promise<{ id: string }
     }
   };
 
+  const handleGenerateNewPixQRCode = async () => {
+    if (!order?.id) return;
+
+    setLoadingPix(true);
+    setShowPixQRCode(false);
+
+    try {
+      console.log('🔄 Gerando novo QR Code PIX para pedido:', order.id);
+
+      // Calcular o valor em centavos
+      const amountInCents = Math.round(order.total_amount * 100);
+
+      // Buscar dados do PIX anterior para obter informações do cliente
+      let customerData = {
+        taxId: '',
+        cellphone: '',
+        email: order.email,
+      };
+
+      try {
+        const pixResponse = await fetch(`/api/pix/by-order/${order.id}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (pixResponse.ok) {
+          const pixResult = await pixResponse.json();
+          console.log('📋 Dados do PIX anterior:', pixResult);
+          
+          if (pixResult.customer) {
+            customerData = {
+              taxId: pixResult.customer.taxId || '',
+              cellphone: pixResult.customer.cellphone || '',
+              email: pixResult.customer.email || order.email,
+            };
+            
+            console.log('✅ Dados do cliente recuperados:', {
+              hasTaxId: !!customerData.taxId,
+              hasCellphone: !!customerData.cellphone,
+              hasEmail: !!customerData.email,
+            });
+          }
+        }
+      } catch (error) {
+        console.log('⚠️ Não foi possível buscar dados do PIX anterior');
+      }
+
+      // Validar se temos todos os dados necessários
+      if (!customerData.taxId || !customerData.cellphone || !customerData.email) {
+        console.error('❌ Dados do cliente incompletos:', customerData);
+        toast.error("Dados incompletos", {
+          description: "Por favor, entre em contato com o suporte para gerar um novo QR Code. Os dados do cliente não estão disponíveis.",
+          duration: 7000,
+        });
+        
+        // Abrir chat de suporte
+        if (typeof window !== 'undefined' && window.Tawk_API) {
+          handleContactSupport();
+        }
+        
+        return;
+      }
+
+      // Criar novo PIX
+      console.log('📤 Enviando requisição para criar novo PIX:', {
+        orderId: order.id,
+        amount: amountInCents,
+        customer: {
+          hasTaxId: !!customerData.taxId,
+          hasCellphone: !!customerData.cellphone,
+          hasEmail: !!customerData.email,
+        },
+      });
+
+      const response = await fetch('/api/pix/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount: amountInCents,
+          expiresIn: 900, // 15 minutos
+          description: `Pedido Path of Trade - ${order.character_name}`,
+          customer: customerData,
+          characterName: order.character_name,
+          observations: order.observations,
+          items: order.items,
+          orderId: order.id, // Vincular ao pedido existente
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        console.error('❌ Erro ao gerar novo PIX:', result);
+        throw new Error(result.error || 'Falha ao gerar novo QR Code PIX');
+      }
+
+      console.log('✅ Novo QR Code PIX gerado com sucesso:', {
+        id: result.id,
+        status: result.status,
+        amount: result.amount,
+        expiresAt: result.expiresAt,
+        orderId: result.orderId,
+      });
+
+      // O pedido já foi atualizado pela API, não é necessário fazer aqui
+      
+      // Salvar dados do novo PIX
+      setPixData(result);
+      setShowPixQRCode(true);
+
+      toast.success("Novo QR Code PIX gerado!", {
+        description: `Valor: R$ ${(result.amount / 100).toFixed(2)} - Expira em 15 minutos`,
+        duration: 5000,
+      });
+
+    } catch (error) {
+      console.error('❌ Erro ao gerar novo QR Code PIX:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+      
+      toast.error("Erro ao gerar novo QR Code", {
+        description: errorMessage,
+        duration: 5000
+      });
+    } finally {
+      setLoadingPix(false);
+    }
+  };
+
   useEffect(() => {
     async function fetchOrderDetails() {
       try {
@@ -320,43 +452,43 @@ export default function OrderDetailsPage(props: { params: Promise<{ id: string }
         <ArrowLeft className="h-4 w-4" />
         {t("backToOrders")}
       </Button>
-
-      {/* PIX Payment Alert - Top Banner */}
-      {order.pix_qrcode_id && order.payment_status !== 'succeeded' && order.status !== 'waiting_delivery' && (
-        <div className="mb-4 max-w-2xl">
-          <Card className="border-l-4 border-l-red-500">
-            <div className="p-2.5 flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2.5 flex-1 min-w-0">
-                <QrCode className="h-4 w-4 text-red-600 dark:text-red-400 flex-shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-red-600 dark:text-red-400">Aguardando pagamento via PIX</p>
-                </div>
-              </div>
-              <Button 
-                variant="outline"
-                size="sm"
-                className="gap-2 flex-shrink-0"
-                onClick={handleViewPixQRCode}
-                disabled={loadingPix}
-              >
-                {loadingPix ? (
-                  <>
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                    <span className="hidden sm:inline">Carregando</span>
-                  </>
-                ) : (
-                  <>
-                    <QrCode className="h-3.5 w-3.5" />
-                    <span className="hidden sm:inline">Ver PIX</span>
-                  </>
-                )}
-              </Button>
-            </div>
-          </Card>
-        </div>
-      )}
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 max-w-7xl mx-auto">
+        {/* PIX Payment Alert */}
+        {order.pix_qrcode_id && order.payment_status !== 'succeeded' && order.status !== 'waiting_delivery' && (
+          <div className="lg:col-span-3 mb-2">
+            <Card className="border-l-4 border-l-red-500">
+              <div className="p-2.5 flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2.5 flex-1 min-w-0">
+                  <QrCode className="h-4 w-4 text-red-600 dark:text-red-400 flex-shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-red-600 dark:text-red-400">Aguardando pagamento via PIX</p>
+                  </div>
+                </div>
+                <Button 
+                  variant="outline"
+                  size="sm"
+                  className="gap-2 flex-shrink-0"
+                  onClick={handleViewPixQRCode}
+                  disabled={loadingPix}
+                >
+                  {loadingPix ? (
+                    <>
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      <span className="hidden sm:inline">Carregando</span>
+                    </>
+                  ) : (
+                    <>
+                      <QrCode className="h-3.5 w-3.5" />
+                      <span className="hidden sm:inline">Ver PIX</span>
+                    </>
+                  )}
+                </Button>
+              </div>
+            </Card>
+          </div>
+        )}
+        
         {/* Order Summary */}
         <div className="lg:col-span-2">
           <Card className="p-5 mb-4">
@@ -634,13 +766,7 @@ export default function OrderDetailsPage(props: { params: Promise<{ id: string }
           // Recarregar dados do pedido
           window.location.reload();
         }}
-        onGenerateNewPix={() => {
-          setShowPixQRCode(false);
-          toast.info("QR Code Expirado", {
-            description: "Por favor, entre em contato com o suporte para gerar um novo QR Code.",
-            duration: 7000,
-          });
-        }}
+        onGenerateNewPix={handleGenerateNewPixQRCode}
       />
     </div>
   );
