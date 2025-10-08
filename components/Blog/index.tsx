@@ -17,17 +17,18 @@ const BlogItem = ({ blog, locale }: BlogItemProps) => {
     >
       <article className="flex gap-4 items-start">
         {blog.mainImage && (
-          <div className="relative min-w-32 min-h-36  md:min-w-56 md:min-h-40 flex-shrink-0 rounded-md overflow-hidden">
+          <div className="relative w-32 md:w-56 flex-shrink-0 rounded-md overflow-hidden aspect-[4/3]">
             <Image
               src={imageBuilder(blog.mainImage)
                 .width(800)
-                .height(400)
+                .height(600)
                 .quality(85)
+                .fit('fill')
                 .url()}
               alt={blog.title}
               fill
-              className="object-cover transition-transform duration-300 group-hover:scale-105 m-0 mt-2 md:m-0  "
-              sizes="(max-width: 768px) 100vw, 800px"
+              className="object-cover transition-transform duration-300 group-hover:scale-105"
+              sizes="(max-width: 768px) 128px, 224px"
               loading="lazy"
               priority={false}
             />

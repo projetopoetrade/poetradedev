@@ -8,6 +8,7 @@ import { useState } from "react";
 import { newProduct } from "@/app/actions";
 import type { Product } from "@/lib/interface";
 import { toast, Toaster } from "sonner";
+import RevalidateCacheButton from "@/components/revalidate-cache-button";
 
 export default function Admin() {
   const [loading, setLoading] = useState(false);
@@ -62,7 +63,7 @@ export default function Admin() {
   };
 
   return (
-    <main className="container h-min-screen py-12">
+    <main className="container h-min-screen pt-20 mb-10">
       <Toaster 
         position="bottom-right" 
         theme="dark"
@@ -76,7 +77,19 @@ export default function Admin() {
           className: 'bg-black text-white border border-gray-800',
         }}
       />
-      <div className="max-w-4xl mx-auto p-8 rounded-lg shadow-lg bg-black border border-gray-800">
+
+      {/* Cache Management Section */}
+      <div className="max-w-4xl mx-auto mb-6 p-6 rounded-lg shadow-md bg-black border border-gray-400/20">
+        <h2 className="text-2xl font-bold text-gray-slate-100 mb-6">Cache Management</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <RevalidateCacheButton type="post" label="Clear Blog Cache" variant="outline" />
+          <RevalidateCacheButton type="product" label="Clear Products Cache" variant="outline" />
+          <RevalidateCacheButton type="author" label="Clear Authors Cache" variant="outline" />
+          <RevalidateCacheButton type="category" label="Clear Categories Cache" variant="outline" />
+        </div>
+      </div>
+
+      <div className="max-w-4xl mx-auto p-8 rounded-lg shadow-md bg-black border border-gray-400/20">
         <h1 className="text-3xl font-bold text-gray-slate-100 mb-8 text-center">Add New Product</h1>
         
         <form onSubmit={handleSubmit} className="space-y-8">
@@ -241,7 +254,7 @@ export default function Admin() {
           </div>
 
           {/* Submit Button */}
-          <div className="flex justify-center">
+          <div className="flex justify-center mt-8">
             <Button
               type="submit"
               disabled={loading}
