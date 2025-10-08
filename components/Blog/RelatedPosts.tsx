@@ -1,6 +1,8 @@
 import { Blog } from "@/types/blog";
 import Link from "next/link";
+import Image from "next/image";
 import React from "react";
+import { imageBuilder } from "@/sanity/sanity-utils";
 
 interface RelatedPostsProps {
   posts: Blog[];
@@ -22,20 +24,38 @@ const RelatedPosts = ({ posts, locale }: RelatedPostsProps) => {
             href={`/${locale}/blog/${post.slug.current}`}
             className="group block no-underline"
           >
-            <article className="p-4 rounded-lg transition-all duration-300 hover:bg-gray-50 dark:hover:bg-gray-900">
-              <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                {post.title}
-              </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                {new Date(post.publishedAt).toLocaleDateString(locale, {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </p>
-              <p className="mt-2 text-sm text-gray-700 dark:text-gray-300 line-clamp-2">
-                {post.metadata}
-              </p>
+            <article className="rounded-lg overflow-hidden bg-black/40 backdrop-blur-sm border border-gray-800/50 hover:border-gray-500/50 transition-all duration-300">
+              {post.mainImage && (
+                <div className="relative w-full h-48 overflow-hidden">
+                  <Image
+                    src={imageBuilder(post.mainImage)
+                      .width(600)
+                      .height(400)
+                      .quality(80)
+                      .url()}
+                    alt={post.title}
+                    fill
+                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    loading="lazy"
+                  />
+                </div>
+              )}
+              <div className="p-4">
+                <h3 className="text-lg font-semibold mb-2 text-white group-hover:text-gray-300 transition-colors line-clamp-2">
+                  {post.title}
+                </h3>
+                <p className="text-sm text-gray-500/70 mb-2">
+                  {new Date(post.publishedAt).toLocaleDateString(locale, {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </p>
+                <p className="text-sm text-gray-400 line-clamp-2">
+                  {post.metadata}
+                </p>
+              </div>
             </article>
           </Link>
         ))}

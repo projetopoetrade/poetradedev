@@ -1,22 +1,35 @@
-import { getPosts } from "@/sanity/sanity-utils";
+import { getPosts, getPostsCount } from "@/sanity/sanity-utils";
 import BlogItem from "@/components/Blog";
 import { Blog } from "@/types/blog";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "@/i18n/navigation";
+import BlogPagination from "@/components/Blog/BlogPagination";
 
 interface PageProps {
   params: Promise<{
     locale: string;
   }>;
+  searchParams: Promise<{
+    page?: string;
+  }>;
 }
+
+const POSTS_PER_PAGE = 5; // Reduced for testing - change to 10 or more for production
 
 export default async function BlogPage(props: PageProps) {
   const params = await props.params;
+  const searchParams = await props.searchParams;
   const { locale } = params;
+  const currentPage = Number(searchParams.page) || 1;
 
   try {
-    const posts = await getPosts(locale);
+    const [posts, totalPosts] = await Promise.all([
+      getPosts(locale, currentPage, POSTS_PER_PAGE),
+      getPostsCount(locale)
+    ]);
+    
+    const totalPages = Math.ceil(totalPosts / POSTS_PER_PAGE);
     
     if (!posts) {
       return (
@@ -50,16 +63,36 @@ export default async function BlogPage(props: PageProps) {
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Stay updated with the latest Path of Exile news, guides, and trading tips
             </p>
+            {totalPosts > 0 && (
+              <div className="text-sm text-muted-foreground mt-4 space-y-1">
+                <p>
+                  Showing {((currentPage - 1) * POSTS_PER_PAGE) + 1} - {Math.min(currentPage * POSTS_PER_PAGE, totalPosts)} of {totalPosts} posts
+                </p>
+                <p className="text-xs opacity-70">
+                  Page {currentPage} of {totalPages} | Posts per page: {POSTS_PER_PAGE}
+                </p>
+              </div>
+            )}
           </div>
 
           {posts?.length > 0 ? (
-            posts.map((post: Blog) => (
-              <BlogItem 
-                key={`${post._id}-${post.slug.current}`} 
-                blog={post}
+            <>
+              <div className="space-y-6">
+                {posts.map((post: Blog) => (
+                  <BlogItem 
+                    key={`${post._id}-${post.slug.current}`} 
+                    blog={post}
+                    locale={locale}
+                  />
+                ))}
+              </div>
+              
+              <BlogPagination 
+                currentPage={currentPage}
+                totalPages={totalPages}
                 locale={locale}
               />
-            ))
+            </>
           ) : (
             <div className="text-center py-20">
               <p className="text-muted-foreground">No posts found</p>

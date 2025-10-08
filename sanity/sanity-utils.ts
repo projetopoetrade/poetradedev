@@ -35,13 +35,51 @@ export async function sanityFetch<QueryResponse>({
   );
 }
 
-export const getPosts = async (language: string) => {
+export const getPosts = async (language: string, page: number = 1, pageSize: number = 10) => {
+  const start = (page - 1) * pageSize;
+  const end = start + pageSize; // GROQ slice is exclusive of end index
+  
+  const paginatedQuery = `*[_type == "post" && language == $language] | order(publishedAt desc) [${start}...${end}] {
+    _id,
+    title,
+    metadata,
+    slug,
+    tags,
+    language,
+    author->{
+      _id,
+      name,
+      slug,
+      image,
+      bio
+    },
+    mainImage{
+      asset->{
+        _id,
+        url
+      }
+    },
+    publishedAt,
+    body
+  }`;
+  
   const data: Blog[] = await sanityFetch({
-    query: postQuery,
+    query: paginatedQuery,
     qParams: { language },
     tags: ["post", "author", "category"],
   });
   return data;
+};
+
+export const getPostsCount = async (language: string) => {
+  const countQuery = `count(*[_type == "post" && language == $language])`;
+  
+  const count: number = await sanityFetch({
+    query: countQuery,
+    qParams: { language },
+    tags: ["post"],
+  });
+  return count;
 };
 
 export const getProducts = async () => {
@@ -103,6 +141,12 @@ export async function getRelatedPosts(currentPostSlug: string, language: string,
     slug,
     publishedAt,
     metadata,
+    mainImage{
+      asset->{
+        _id,
+        url
+      }
+    },
     author->{
       name
     }
