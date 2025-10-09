@@ -10,8 +10,42 @@ import { useTranslations } from "next-intl";
 export default function ContactPage() {
   const t = useTranslations('Contact');
 
+  // Structured data for Contact page
+  const contactStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "ContactPage",
+    mainEntity: {
+      "@type": "Organization",
+      name: "Path of Trade",
+      description: "Professional Path of Exile currency trading service with 24/7 support",
+      url: process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net",
+      contactPoint: [
+        {
+          "@type": "ContactPoint",
+          contactType: "Customer Service",
+          email: "support@pathoftrade.net",
+          availableLanguage: ["en", "pt-BR"],
+          areaServed: "Worldwide",
+          hoursAvailable: {
+            "@type": "OpeningHoursSpecification",
+            dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+            opens: "00:00",
+            closes: "23:59"
+          }
+        }
+      ],
+      sameAs: [
+        "https://discord.gg/pathoftrade"
+      ]
+    }
+  };
+
   return (
     <main className="container mx-auto px-4 py-8 max-w-4xl">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(contactStructuredData) }}
+      />
       <Button variant="ghost" className="mb-6 gap-2" asChild>
         <Link href="/">
           <ArrowLeft className="h-4 w-4" />

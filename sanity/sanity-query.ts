@@ -5,6 +5,7 @@ const postData = `{
   slug,
   tags,
   language,
+  gameVersion,
   author->{
     _id,
     name,
@@ -19,6 +20,7 @@ const postData = `{
     }
   },
   publishedAt,
+  _updatedAt,
   body
 }`;
 

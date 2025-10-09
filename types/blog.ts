@@ -21,4 +21,12 @@ export type Blog = {
   author: Author,
   tags: string[],
   publishedAt: string,
+  _updatedAt?: string,
+  gameVersion?: string,
+  category?: {
+    title: string,
+    slug: {
+      current: string,
+    }
+  },
 };

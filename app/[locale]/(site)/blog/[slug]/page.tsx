@@ -70,8 +70,43 @@ const SingleBlogPage = async (props: PageProps) => {
     return <div className="py-5">Post not found</div>;
   }
 
+  // Structured data for the blog post
+  const articleStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.metadata,
+    image: post.mainImage ? post.mainImage : undefined,
+    datePublished: post.publishedAt,
+    dateModified: post.publishedAt,
+    author: {
+      "@type": "Person",
+      name: post.author.name,
+      ...(post.author.image && { image: post.author.image })
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "Path of Trade",
+      logo: {
+        "@type": "ImageObject",
+        url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"}/logo.png`
+      }
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"}${locale === 'en' ? '' : `/${locale}`}/blog/${slug}`
+    },
+    ...(post.tags && post.tags.length > 0 && { keywords: post.tags.join(", ") }),
+    inLanguage: locale === 'pt-br' ? 'pt-BR' : 'en-US',
+    articleSection: post.gameVersion === "path-of-exile-1" ? "Path of Exile 1" : post.gameVersion === "path-of-exile-2" ? "Path of Exile 2" : "Gaming"
+  };
+
   return (
     <article className="max-w-5xl mx-auto px-4 py-12">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleStructuredData) }}
+      />
       <Link 
         href={`/${locale}/blog`}
         className="inline-flex items-center px-4 py-2 rounded-lg text-gray-600 dark:text-gray-200 hover:text-gray-200 dark:hover:text-white mb-8 transition-all duration-200  group"

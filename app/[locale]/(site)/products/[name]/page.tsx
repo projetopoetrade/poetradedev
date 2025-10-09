@@ -144,28 +144,46 @@ export default async function ProductDetailPage(props: {
       name: product.name,
       description: productSanity?.body?.[0]?.children?.[0]?.text || product.name,
       image: product.imgUrl,
+      sku: product.id?.toString() || product.name.replace(/\s+/g, '-'),
+      category: "Virtual Goods > Game Currency",
       brand: {
         "@type": "Brand",
-        name: product.gameVersion,
+        name: product.gameVersion === "path-of-exile-1" ? "Path of Exile 1" : "Path of Exile 2",
       },
-      // You can add 'category' if applicable, e.g., "Virtual Goods > Game Currency"
-      // "category": `${product.gameVersion} ${product.category}`,
       offers: {
         "@type": "Offer",
-        url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"}${params.locale === 'en' ? '' : `/${params.locale}`}/products/${encodeURIComponent(product.name)}?league=${encodeURIComponent(product.league)}&difficulty=${encodeURIComponent(product.difficulty)}`,
+        url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"}${params.locale === 'en' ? '' : `/${params.locale}`}/products/${encodeURIComponent(product.name)}?league=${encodeURIComponent(product.league)}&difficulty=${encodeURIComponent(product.difficulty)}&gameVersion=${encodeURIComponent(product.gameVersion)}`,
         priceCurrency: "USD",
         price: product.price,
-        availability: "https://schema.org/InStock", // e.g., "https://schema.org/InStock"
+        availability: "https://schema.org/InStock",
+        itemCondition: "https://schema.org/NewCondition",
         priceValidUntil: new Date(new Date().setDate(new Date().getDate() + 30))
           .toISOString()
-          .split("T")[0], // Optional: Price valid for 30 days
+          .split("T")[0],
         seller: {
           "@type": "Organization",
-          name: "Path of Trade Net",
-          url: process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net", // URL to your store homepage
+          name: "Path of Trade",
+          url: process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net",
         },
       },
-      // Optional: Include AggregateRating if you have reviews for THIS specific produc
+      // Additional metadata for better SEO
+      additionalProperty: [
+        {
+          "@type": "PropertyValue",
+          name: "League",
+          value: product.league
+        },
+        {
+          "@type": "PropertyValue",
+          name: "Difficulty",
+          value: product.difficulty
+        },
+        {
+          "@type": "PropertyValue",
+          name: "Game Version",
+          value: product.gameVersion
+        }
+      ]
     };
 
     return (
@@ -225,3 +243,4 @@ export default async function ProductDetailPage(props: {
     );
   }
 }
+

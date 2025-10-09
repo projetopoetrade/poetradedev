@@ -15,6 +15,90 @@ import {
 export default function FAQPage() {
   const t = useTranslations('FAQ');
 
+  // Structured data for FAQ page
+  const faqStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      // General Questions
+      {
+        "@type": "Question",
+        name: "What is Path of Exile?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Path of Exile is a free-to-play action RPG developed by Grinding Gear Games, famous for its complex in-game economy—which is where we come in to help!"
+        }
+      },
+      {
+        "@type": "Question",
+        name: "What kind of Path of Exile currency, services, and items do you sell?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "We offer a comprehensive range of products for Path of Exile! Our catalog includes: PoE currency (Divine Orbs, Chaos Orbs, Exalted Orbs, Mirrors of Kalandra, and more), Unique Items, and Services (power leveling and expert build creation)."
+        }
+      },
+      {
+        "@type": "Question",
+        name: "Which Path of Exile league do you sell items for?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "We support both the permanent Standard league and the current seasonal Challenge League. Please double-check that you've selected the correct league before completing your purchase."
+        }
+      },
+      // Delivery Questions
+      {
+        "@type": "Question",
+        name: "How fast is the delivery?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Most orders are delivered within 30 minutes during business hours. During peak times or high demand periods, delivery may take up to 2 hours."
+        }
+      },
+      {
+        "@type": "Question",
+        name: "How does the in-game delivery work?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "After payment confirmation, our trader will contact you in-game using the character name and league you provided. You'll meet at a designated location (usually in town) and complete the trade."
+        }
+      },
+      // Payment Questions
+      {
+        "@type": "Question",
+        name: "What payment methods do you accept?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "We accept major credit cards (Visa, MasterCard, American Express), PayPal, and various cryptocurrencies including Bitcoin, Ethereum, and other popular digital currencies."
+        }
+      },
+      {
+        "@type": "Question",
+        name: "Is my payment information safe?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Absolutely! We use industry-standard encryption and never store your payment information. All transactions are processed through secure, PCI-compliant payment gateways."
+        }
+      },
+      // Safety Questions
+      {
+        "@type": "Question",
+        name: "Is it safe to buy from you?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Yes! We've been in business for years with thousands of satisfied customers. We use secure trading methods and have strict policies to protect both buyers and sellers."
+        }
+      },
+      {
+        "@type": "Question",
+        name: "How do you ensure safe trading to avoid account issues?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "We use the most advanced and safest trading methods available in Path of Exile. Our experienced traders follow strict protocols to ensure all transactions appear as legitimate player-to-player trades."
+        }
+      }
+    ]
+  };
+
   const faqCategories = [
     {
       id: "general",
@@ -93,6 +177,10 @@ export default function FAQPage() {
 
   return (
     <main className="container mx-auto px-4 py-8 max-w-6xl">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqStructuredData) }}
+      />
       <Button variant="ghost" className="mb-6 gap-2" asChild>
         <Link href="/">
           <ArrowLeft className="h-4 w-4" />

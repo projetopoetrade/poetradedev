@@ -46,8 +46,42 @@ export default async function BlogPage(props: PageProps) {
       );
     }
 
+    // Structured data for the blog listing
+    const blogStructuredData = {
+      "@context": "https://schema.org",
+      "@type": "Blog",
+      name: "Path of Exile Blog - Path of Trade",
+      description: "Stay updated with the latest Path of Exile news, guides, and trading tips",
+      url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"}${locale === 'en' ? '' : `/${locale}`}/blog`,
+      inLanguage: locale === 'pt-br' ? 'pt-BR' : 'en-US',
+      publisher: {
+        "@type": "Organization",
+        name: "Path of Trade",
+        logo: {
+          "@type": "ImageObject",
+          url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"}/logo.png`
+        }
+      },
+      blogPost: posts.map((post: Blog) => ({
+        "@type": "BlogPosting",
+        headline: post.title,
+        description: post.metadata,
+        image: post.mainImage || undefined,
+        datePublished: post.publishedAt,
+        author: {
+          "@type": "Person",
+          name: post.author.name
+        },
+        url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"}${locale === 'en' ? '' : `/${locale}`}/blog/${post.slug.current}`
+      }))
+    };
+
     return (
       <main className="container mx-auto px-4 py-8 min-h-screen">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(blogStructuredData) }}
+        />
         <Button variant="ghost" className="mb-6" asChild>
           <Link href="/" aria-label="Back to Home">
             <ArrowLeft className="h-4 w-4" />
