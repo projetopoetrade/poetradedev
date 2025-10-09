@@ -63,18 +63,21 @@ module.exports = {
       }
     });
 
-    // Add blog posts for all locales
+    // Add blog posts (one per post, based on post language)
     posts.forEach((post) => {
       if (post && post.slug) {
-        locales.forEach((locale) => {
-          const postPath = `/blog/${encodeURIComponent(post.slug)}`;
-          const localePath = locale === defaultLocale ? postPath : `/${locale}${postPath}`;
-          paths.push({
-            loc: localePath,
-            lastmod: post.lastmod || defaultLastMod,
-            changefreq: 'daily',
-            priority: 0.5,
-          });
+        // Determine the locale based on the post's language field
+        // If language is 'pt-br', use pt-br locale; otherwise default to 'en'
+        const postLocale = post.language === 'pt-br' ? 'pt-br' : 'en';
+        
+        const postPath = `/blog/${encodeURIComponent(post.slug)}`;
+        const localePath = postLocale === defaultLocale ? postPath : `/${postLocale}${postPath}`;
+        
+        paths.push({
+          loc: localePath,
+          lastmod: post.lastmod || defaultLastMod,
+          changefreq: 'daily',
+          priority: 0.5,
         });
       }
     });
