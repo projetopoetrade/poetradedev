@@ -23,6 +23,7 @@ export type Blog = {
   publishedAt: string,
   _updatedAt?: string,
   gameVersion?: string,
+  language?: string,
   category?: {
     title: string,
     slug: {

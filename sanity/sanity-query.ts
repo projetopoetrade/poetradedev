@@ -34,7 +34,7 @@ export const postQueryByAuthor = groq`*[_type == "post" && author->slug.current 
 
 export const postQueryByCategory = groq`*[_type == "post" && category->slug.current == $slug && language == $language] ${postData}`;
 
-export const postQueryByCategoryAndGameVersion = groq`*[_type == "post" && category->slug.current == $categorySlug && category->language == $language && gameVersion == $gameVersion && language == $language] ${postData}`;
+export const postQueryByCategoryAndGameVersion = groq`*[_type == "post" && category->slug.current == $categorySlug && gameVersion == $gameVersion && language == $language] | order(publishedAt desc) ${postData}`;
 
 export const productQuery = `*[_type == "product"]{
   _id,

@@ -93,7 +93,7 @@ export default function Footer() {
           {/* Legal Links */}
           <div className="flex flex-col space-y-3">
             <h3 className="font-bold text-sm uppercase tracking-wider mb-1">{t('legal')}</h3>
-            <Link href="/terms#section8" className="text-gray-300 hover:text-white text-sm transition-colors">
+            <Link href="/privacy" className="text-gray-300 hover:text-white text-sm transition-colors">
               {t('privacy-policy')}
             </Link>
             <Link href="/terms" className="text-gray-300 hover:text-white text-sm transition-colors">

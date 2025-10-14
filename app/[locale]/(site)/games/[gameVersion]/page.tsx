@@ -93,7 +93,7 @@ export default async function Page({
         <section className="mb-12">
           <article className="space-y-8">
             <GameVersionPosts
-              category="news"
+              category="Guide"
               gameVersion={gameVersion}
               locale={locale}
               maxPosts={4}
