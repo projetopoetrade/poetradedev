@@ -165,7 +165,7 @@ export default async function RootLayout({
                         priority
                         fetchPriority="high"
                         quality={90}
-                        sizes="(max-width: 768px) 100px, 0px"
+                        sizes="(max-width: 768px) 100px, 100px"
                       />
                     </Link>
                   </div>
