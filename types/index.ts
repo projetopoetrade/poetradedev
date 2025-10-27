@@ -34,6 +34,7 @@ export interface PatchData {
     title: string
     description: string
   }[]
+  leagueGuideUrl?: string // URL para o guia completo da liga
 }
 
 export interface OrderItem {

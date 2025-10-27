@@ -256,22 +256,44 @@
       "keyFeatures": "Key Features",
       "keyChanges": "Key Changes",
       "noPatchInformationAvailable": "No patch information available for the selected version.",
+      "viewFullLeagueGuide": "View Full League Guide",
       "patches": {
         "path-of-exile-1": {
-          "version": "3.25",
-          "title": "Settlers of Kalguur",
-          "date": "July 26, 2024",
-          "description": "In Settlers of Kalguur, players help Kalguuran pioneers build the town of Kingsmarch and establish trade between Wraeclast and their homeland.",
+          "version": "3.27",
+          "title": "Keepers of the Flame",
+          "date": "October 31, 2025",
+          "description": "Breach sequel with Genesis Tree system and Grafts, new ascendancy classes and quality of life changes that modernize the game.",
           "changes": [
-            "New Settlers of Kalguur Challenge League",
-            "Resource gathering and town building mechanics",
-            "New Currency Trade Market with Black Market NPC",
-            "Gladiator Ascendancy Class rework",
-            "New Warden class replacing Raider Ascendancy",
-            "6th Map Device Slot",
-            "New encounters in Tier 16 and Tier 17 Maps",
-            "Improved loading times and performance"
-          ]
+            "Genesis Tree system with own progression and strategic choices",
+            "16 types of equippable Grafts (up to 2 simultaneous) with dedicated skills",
+            "New carnal orbs for Graft crafting (Aug/Regal/Exalted)",
+            "\"Foul\" currency and uniques with altered mod distribution",
+            "Stabilized Breaches with hive defense and new bosses",
+            "Bulk identification at NPCs without using Scrolls of Wisdom",
+            "Bestiary: free beast itemization from late Act 1",
+            "Heist: Rogues starting at max level",
+            "Asynchronous trade changes buy/sell dynamics",
+            "New \"Foul\" uniques with mutant variations"
+          ],
+          "features": [
+            {
+              "title": "Genesis Tree",
+              "description": "Own progression tree that allows you to grow Grafts, currency, rares and even \"Foul\" uniques through strategic choices."
+            },
+            {
+              "title": "Equippable Grafts",
+              "description": "Up to two Grafts can be equipped, with 16 variations including fire, cold, lightning, physical and hybrid options that grant unique abilities."
+            },
+            {
+              "title": "Quality of Life",
+              "description": "Bulk identification, free beast itemization, Heist rogues at max level and trade system improvements."
+            },
+            {
+              "title": "Dedicated Crafting",
+              "description": "\"Carnal\" orbs that work like Aug/Regal/Exalted for Grafts, and \"Foul Exalted\" with filtered tier distribution for advanced crafting."
+            }
+          ],
+          "leagueGuideUrl": "/league/keepers-of-flame"
         },
         "path-of-exile-2": {
           "version": "2.0",
@@ -602,5 +624,404 @@
     "section9Content": "If you have questions about this policy or the processing of your data, please contact:",
     "contactTitle": "Contact",
     "contactDescription": "If you have questions about this policy or the processing of your data, please contact: Email:"
+  },
+  
+  "League": {
+    "breadcrumb": {
+      "leagues": "Leagues & Guides"
+    },
+    "backToBlog": "Back to Blog",
+    "buyDivines": "Buy Divines Now",
+    "toc": {
+      "title": "In This Guide",
+      "items": [
+        {
+          "id": "tldr",
+          "title": "Quick Summary"
+        },
+        {
+          "id": "mechanics",
+          "title": "League Mechanics"
+        },
+        {
+          "id": "patch-notes",
+          "title": "Patch Notes"
+        },
+        {
+          "id": "builds",
+          "title": "League Starters"
+        },
+        {
+          "id": "bloodlines",
+          "title": "Bloodline Ascendancies"
+        }
+      ]
+    },
+    "cta": {
+      "title": "Start Strong in Keepers of the Flame",
+      "description": "Secure Divines and essential currency to complete the Atlas, test Grafts, and accelerate your \"Foul\" crafts.",
+      "buyNow": "Buy Currency Now",
+      "moreGuides": "See More Guides"
+    },
+    "keepers-of-flame": {
+      "title": "PoE 3.27 Keepers of the Flame — League Guide, Patch Notes, Builds & Buy Currency",
+      "subtitle": "Breach sequel with Genesis Tree system and Grafts, new ascendancy classes and quality of life changes",
+      "metaDescription": "Complete guide for Keepers of the Flame league (3.27): mechanics, QoL, economic impact, patch notes, recommended starters and where to buy Divines and other currency.",
+      "keywords": "path of exile 3.27, keepers of the flame, poe league, breach rework, genesis tree, grafts, asynchronous trade, patch notes, league starters, buy divines",
+      "tldr": {
+        "title": "TL;DR - League Essentials",
+        "items": [
+          {
+            "text": "Direct Breach sequel with invasion in Wraeclast and own progression via Genesis Tree",
+            "type": "new"
+          },
+          {
+            "text": "Grafts: new organic \"equipment\" attached to character, with dedicated skills and stats",
+            "type": "new"
+          },
+          {
+            "text": "\"Foul\" currency and \"Foul\" uniques: new variations that alter probabilities/mods, opening craft options and mutant items",
+            "type": "new"
+          },
+          {
+            "text": "QoL: identify in bulk at NPC; Beasts can be itemized for free; Heist rogues start at max level",
+            "type": "buff"
+          },
+          {
+            "text": "Trading: introduction of asynchronous trade concept and discussion of economic impact on buy/sell flow",
+            "type": "new"
+          },
+          {
+            "text": "Economy: Divines and specialized Grafts currency will have high demand in first days",
+            "type": "neutral"
+          }
+        ]
+      },
+      "mechanics": {
+        "title": "How Does Keepers of the Flame Mechanic Work?",
+        "description": "The league modernizes the Breach loop with structured encounters, hive defense alongside NPC Ailith, stabilized Breaches, and possibility of facing a new boss like Vruun, Marshal of Xesht.",
+        "points": [
+          {
+            "title": "Genesis Tree",
+            "description": "Own progression tree that allows you to grow Grafts, currency, rares and even \"Foul\" uniques through strategic choices."
+          },
+          {
+            "title": "Equippable Grafts",
+            "description": "Up to two Grafts can be equipped, with 16 variations including fire, cold, lightning, physical and hybrid options that grant unique abilities."
+          },
+          {
+            "title": "Dedicated Crafting",
+            "description": "\"Carnal\" orbs that work like Aug/Regal/Exalted for Grafts, and \"Foul Exalted\" with filtered tier distribution for advanced crafting."
+          }
+        ],
+        "tradeImpact": {
+          "title": "Trade & Economy Impact",
+          "points": [
+            "The asynchronous trade component and new craft lines tend to accelerate item/currency liquidity",
+            "Well-crafted Grafts can be worth dozens of Divines, creating new niche market",
+            "\"Foul\" currency and uniques will create market segmentation with high initial demand",
+            "Favorable price windows in first 3-5 days for those with currency available",
+            "Builds focused on clear speed will better leverage Genesis Tree progression"
+          ]
+        }
+      },
+      "starters": {
+        "title": "Best League Starters for Keepers of the Flame",
+        "subtitle": "Recommended builds to leverage league mechanics and progress quickly",
+        "builds": [
+          {
+            "name": "Ice Shot of Penetration Deadeye",
+            "class": "Ranger - Deadeye",
+            "difficulty": "Medium",
+            "pros": [
+              "Scales well clear speed taking advantage of new \"Ice Shot of Penetration\" gem",
+              "Excellent for fast Genesis Tree farming",
+              "Good synergy with cold element Grafts",
+              "High mobility for hive defense"
+            ],
+            "cons": [
+              "Gear/bow dependency for peak DPS",
+              "Single target may need additional investment",
+              "Relatively fragile without defensive gear"
+            ],
+            "guideUrl": "#",
+            "author": "PoE Community"
+          },
+          {
+            "name": "Thunderstorm Elementalist",
+            "class": "Witch - Elementalist",
+            "difficulty": "Medium",
+            "pros": [
+              "Synergy with new lightning gems",
+              "Area coverage with good initial scaling",
+              "Benefits from lightning element Grafts",
+              "Good Genesis Tree progression"
+            ],
+            "cons": [
+              "Attention to defensive layers until consolidating gear",
+              "Mana/damage tuning in early game",
+              "May need passive tree adjustments"
+            ],
+            "guideUrl": "#",
+            "author": "PoE Community"
+          },
+          {
+            "name": "Righteous Fire Juggernaut",
+            "class": "Marauder - Juggernaut",
+            "difficulty": "Easy",
+            "pros": [
+              "Extremely tanky for hive defense",
+              "Doesn't depend on expensive gear",
+              "Excellent life regen",
+              "Classic and reliable starter"
+            ],
+            "cons": [
+              "Moderate single target damage in early",
+              "Movement speed can be slow",
+              "Less synergy with new Grafts"
+            ],
+            "guideUrl": "https://www.pathofexile.com/forum/view-thread/1729087",
+            "author": "Pohx"
+          },
+          {
+            "name": "Explosive Arrow Ballista Elementalist",
+            "class": "Witch - Elementalist",
+            "difficulty": "Easy",
+            "pros": [
+              "Good single target and AoE damage",
+              "Safe by using totems",
+              "Budget-friendly",
+              "Can use fire element Grafts"
+            ],
+            "cons": [
+              "Totem playstyle may not appeal to everyone",
+              "Requires resource management",
+              "Can be slow for ultra-fast farming"
+            ],
+            "guideUrl": "https://www.pathofexile.com/forum/view-thread/3319048",
+            "author": "Palsteron"
+          }
+        ]
+      },
+      "patchNotes": {
+        "title": "Patch Notes 3.27 Summary",
+        "subtitle": "Main changes affecting meta, economy and quality of life",
+        "categories": [
+          {
+            "title": "Quality of Life",
+            "changes": [
+              "Bulk identification at NPCs without using Scrolls of Wisdom speeds up drop triage",
+              "Bestiary: free beast itemization from late Act 1, no orb cost",
+              "Heist: Rogues starting at max level eliminates repetitive grind",
+              "New UI for Graft management",
+              "Trade system improvements with asynchronous concept"
+            ]
+          },
+          {
+            "title": "Breach & Genesis Tree",
+            "changes": [
+              "Genesis Tree system with own progression and strategic choices",
+              "16 types of equippable Grafts (up to 2 simultaneous) with dedicated skills",
+              "New carnal orbs for Graft crafting (Aug/Regal/Exalted)",
+              "\"Foul\" currency and uniques with altered mod distribution",
+              "Stabilized Breaches with hive defense and new bosses"
+            ]
+          },
+          {
+            "title": "Skill & Support Gems",
+            "changes": [
+              "New gem: Ice Shot of Penetration for rangers",
+              "New lightning gems with Elementalist synergy",
+              "Dedicated supports for Graft mechanics",
+              "Adjustments to Vaal skills for balancing",
+              "Improvements to underused gems"
+            ]
+          },
+          {
+            "title": "Atlas & Endgame",
+            "changes": [
+              "New passive keystones focused on Breach content",
+              "Reward rebalancing in high-tier maps",
+              "Genesis Tree integration with Atlas progression",
+              "New farming strategies with Grafts",
+              "Boss encounter adjustments"
+            ]
+          },
+          {
+            "title": "Crafting & Economy",
+            "changes": [
+              "\"Foul Exalted\" with filtered tiers opens new craft possibilities",
+              "Carnal orbs create parallel economy for Grafts",
+              "Adjustments to valuable affix weights",
+              "Asynchronous trade changes buy/sell dynamics",
+              "New \"Foul\" uniques with mutant variations"
+            ]
+          },
+          {
+            "title": "Ascendancy Changes",
+            "changes": [
+              "New ascendancy classes related to Breach",
+              "Adjustments to existing ascendancies for balancing",
+              "Specific synergies with Grafts by ascendancy",
+              "Improvements to less popular paths",
+              "New build diversity options"
+            ]
+          }
+        ],
+        "officialUrl": "https://www.pathofexile.com/forum/view-thread/3587126",
+        "officialText": "View Full Official Patch Notes"
+      },
+      "bloodlineAscendancies": {
+        "title": "Bloodline Ascendancy Classes",
+        "subtitle": "Absorb powers from specific bosses and add them to your character as an extra layer of customization",
+        "description": "Bloodline Ascendancy Classes allow you to absorb powers from specific endgame bosses and add them to your character as an extra layer of customization beyond your normal ascendancy. They require Ascendancy points for allocation, can be combined with any ascendancy class, and enable unique passive combinations for new build fantasies.",
+        "howItWorks": {
+          "title": "How They Work",
+          "description": "By defeating certain bosses, you unlock the corresponding Bloodline and can allocate its passives using Ascendancy points, mixing these notables with your main ascendancy. This creates countless synergy possibilities, allowing you to adapt your character to your playstyle and the content you want to farm."
+        },
+        "examples": {
+          "title": "Confirmed Examples",
+          "bloodlines": [
+            {
+              "name": "Farrul Bloodline",
+              "description": "Derived from the Beast ecosystem, adding a predator fantasy and interaction with summons and beasts.",
+              "source": "Beast Bosses",
+              "detailedDescription": "The Farrul Bloodline channels the power of ancestral predators, allowing you to summon and control powerful beasts. This ascendancy is ideal for builds focused on minions and summons, offering unique synergies with the Beast system and wild creatures.",
+              "keyFeatures": [
+                "Powerful beast summons",
+                "Damage bonus against wild creatures",
+                "Synergy with Beast system",
+                "Minion scalability"
+              ],
+              "synergies": [
+                "Necromancer for minions",
+                "Ranger for companion beasts",
+                "Witch for summons",
+                "Minion damage builds"
+              ]
+            },
+            {
+              "name": "Lycia Bloodline",
+              "description": "Herald/Sanctum themed, enabling specific archetypes like low life variations in certain configurations.",
+              "source": "Sanctum Bosses",
+              "detailedDescription": "The Lycia Bloodline incorporates heraldic powers and Sanctum mechanics, offering unique tools for low life and energy shield builds. Perfect for players seeking defensive builds with high offensive potential.",
+              "keyFeatures": [
+                "Low life mechanics",
+                "Energy shield bonuses",
+                "Heraldic powers",
+                "Defensive scalability"
+              ],
+              "synergies": [
+                "Templar for energy shield",
+                "Witch for low life builds",
+                "Guardian for tank builds",
+                "Hierophant for totems"
+              ]
+            },
+            {
+              "name": "Delirious Bloodline",
+              "description": "Focused on Delirium themes, opening scaling niches and unique risk/reward for aggressive builds.",
+              "source": "Delirium Bosses",
+              "detailedDescription": "The Delirious Bloodline embraces the chaos and madness of Delirium, offering extreme scalability with significant risks. Ideal for aggressive builds seeking to maximize damage through high-risk, high-reward mechanics.",
+              "keyFeatures": [
+                "Extreme damage scalability",
+                "Risk/reward mechanics",
+                "Delirium-based bonuses",
+                "Explosive damage potential"
+              ],
+              "synergies": [
+                "Berserker for aggression",
+                "Assassin for critical strikes",
+                "Slayer for area damage",
+                "Glass cannon builds"
+              ]
+            },
+            {
+              "name": "Catarina Bloodline",
+              "description": "Derived from Betrayal, with hooks for minion archetypes and alternative offensive/defensive scaling interactions.",
+              "source": "Betrayal Bosses",
+              "detailedDescription": "The Catarina Bloodline incorporates dark powers and betrayal mechanics, offering unique tools for minion builds and alternative scaling. Perfect for builds seeking complex synergies and unique mechanics.",
+              "keyFeatures": [
+                "Minion scalability",
+                "Betrayal mechanics",
+                "Dark powers",
+                "Complex synergies"
+              ],
+              "synergies": [
+                "Necromancer for minions",
+                "Occultist for chaos damage",
+                "Witch for dark magic",
+                "Minion army builds"
+              ]
+            },
+            {
+              "name": "Aul Bloodline",
+              "description": "Associated with Delve, bringing situational tools for deep and technological setups.",
+              "source": "Delve Bosses",
+              "detailedDescription": "The Aul Bloodline channels technological and mineral powers from Delve, offering unique tools for builds that explore the depths. Ideal for specialized setups and builds seeking unique progression mechanics.",
+              "keyFeatures": [
+                "Technological tools",
+                "Depth bonuses",
+                "Mineral mechanics",
+                "Situational scalability"
+              ],
+              "synergies": [
+                "Miner for deep delving",
+                "Templar for tech builds",
+                "Marauder for tank builds",
+                "Deep content builds"
+              ]
+            },
+            {
+              "name": "Olroth Bloodline",
+              "description": "Linked to Expedition, offering utility and offensive paths for farming and progression.",
+              "source": "Expedition Bosses",
+              "detailedDescription": "The Olroth Bloodline incorporates explosive powers and Expedition mechanics, offering unique tools for farming and progression. Perfect for builds seeking farm efficiency and explosion mechanics.",
+              "keyFeatures": [
+                "Explosion mechanics",
+                "Farming bonuses",
+                "Accelerated progression",
+                "Utility tools"
+              ],
+              "synergies": [
+                "Ranger for clear speed",
+                "Deadeye for projectiles",
+                "Elementalist for elemental damage",
+                "Farm efficiency builds"
+              ]
+            }
+          ]
+        },
+        "whyItMatters": {
+          "title": "Why This Matters",
+          "description": "These Bloodlines expand the creative ceiling of builds, allowing you to mix boss passives with your ascendancy tree and address specific gaps in damage, defense, or utility. Since they require Ascendancy points, there are real opportunity cost decisions, but the reward is enabling high-impact combinations that didn't exist before."
+        },
+        "bestPractices": {
+          "title": "Build Best Practices",
+          "tips": [
+            "Plan ahead for free Ascendancy points to fit a Bloodline without breaking your build's core",
+            "Map synergies between your desired Bloodline and your key clusters/items, prioritizing bosses whose Bloodline complements your scaling",
+            "Consider progression: unlocking your target Bloodline early accelerates testing and validation of your final setup"
+          ]
+        },
+        "faq": {
+          "title": "Frequently Asked Questions",
+          "questions": [
+            {
+              "question": "What are Bloodline Ascendancies?",
+              "answer": "They are additional classes obtained by defeating specific bosses, which grant allocatable passives using Ascendancy points."
+            },
+            {
+              "question": "Can I use them with any ascendancy?",
+              "answer": "Yes, they can be paired with any Ascendancy Class and mixed with your passives."
+            },
+            {
+              "question": "Do I need new points?",
+              "answer": "They consume existing Ascendancy points, requiring planning in your ascendancy tree route."
+            }
+          ]
+        }
+      }
+    }
   }
 }

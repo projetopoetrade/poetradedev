@@ -2,6 +2,9 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Link } from "@/i18n/navigation"
+import { ArrowRight } from "lucide-react"
+import { useTranslations } from "next-intl"
 import type { PatchData } from "@/types" // Vamos criar este tipo em breve
 
 interface PatchCardProps {
@@ -13,6 +16,8 @@ interface PatchCardProps {
 }
 
 export default function PatchCard({ patch, labels }: PatchCardProps) {
+  const t = useTranslations("PatchInfo")
+  
   return (
     <Card>
       <CardHeader>
@@ -49,6 +54,18 @@ export default function PatchCard({ patch, labels }: PatchCardProps) {
             ))}
           </ul>
         </div>
+
+        {patch.leagueGuideUrl && (
+          <div className="flex justify-end mt-4">
+             <Link 
+               href={patch.leagueGuideUrl} 
+               className="text-sm text-orange-600 hover:text-orange-500 dark:text-orange-400 dark:hover:text-orange-300 transition-colors inline-flex items-center gap-1 group font-medium"
+             >
+              {t("viewFullLeagueGuide")}
+              <ArrowRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
+            </Link>
+          </div>
+        )}
       </CardContent>
     </Card>
   )

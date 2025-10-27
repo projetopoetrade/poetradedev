@@ -6,7 +6,7 @@ import RelatedPosts from "@/components/Blog/RelatedPosts";
 import { Blog } from "@/types/blog";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { buildCanonical, getHreflangAlternates } from "@/lib/utils";
+import { buildCanonical } from "@/lib/utils";
 
 interface PageProps {
   params: Promise<{
@@ -34,11 +34,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
     title: titleWithSuffix,
     description: post.metadata,
     alternates: {
-      canonical,
-      ...getHreflangAlternates({
-        "en": `/blog/${slug}`, // default locale without prefix
-        "pt-br": `/pt-br/blog/${slug}`
-      }, `/blog/${slug}`) // x-default points to path without locale prefix
+      canonical
     },
     openGraph: {
       title: titleWithSuffix,

@@ -109,21 +109,21 @@ export default async function RootLayout({
 
           <CurrencyProvider>
             <CartProvider>
-              <nav className="w-full flex justify-center border-b border-b-foreground/10 h-18 fixed md:relative top-0 left-0 right-0 z-50 backdrop-blur-md bg-background/80 md:bg-background md:backdrop-blur-none supports-[backdrop-filter]:bg-background/80">
+              <nav className="w-full flex justify-center border-b border-b-foreground/10 h-20 fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-background/40 supports-[backdrop-filter]:bg-background/40">
                 <div className="w-full max-w-6xl flex items-center text-sm">
                   <div className="flex-1">{/* Left empty space */}</div>
                   <div className="flex-1 flex justify-center">
-                    <Link href="/" className="py-3 flex items-center">
+                    <Link href="/" className="py-2 flex items-center">
                       <Image
                         src="/images/logo.webp"
                         alt="Path of Trade - Buy POE 1 & 2 Currency"
-                        width={110}
-                        height={55}
-                        className="h-auto w-auto"
+                        width={70}
+                        height={35}
+                        className="h-auto w-auto mt-2"
                         priority
                         fetchPriority="high"
                         quality={90}
-                        sizes="(max-width: 768px) 110px, 110px"
+                        sizes="(max-width: 768px) 70px, 70px"
                       />
                     </Link>
                   </div>
@@ -139,7 +139,7 @@ export default async function RootLayout({
                 </div>
               </nav>
 
-              <div className="pt-[72px] md:pt-0 md:mt-8">
+              <div className="pt-[68px]">
                 {children}
               </div>
               <Footer />

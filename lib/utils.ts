@@ -17,13 +17,21 @@ export function buildAbsoluteUrl(pathOrUrl: string): string {
 export function getHreflangAlternates(pathsByLocale: Record<string, string>, defaultLocalePath?: string) {
   const entries = Object.entries(pathsByLocale);
   const languages: Record<string, string> = {};
+  
   for (const [locale, path] of entries) {
     languages[locale] = buildAbsoluteUrl(path);
   }
-  // Add x-default if provided
+  
+  // Add x-default if provided and it's different from all existing locales
   if (defaultLocalePath) {
-    languages['x-default'] = buildAbsoluteUrl(defaultLocalePath);
+    const defaultUrl = buildAbsoluteUrl(defaultLocalePath);
+    // Only add x-default if it's not already covered by another locale
+    const isDuplicate = Object.values(languages).some(url => url === defaultUrl);
+    if (!isDuplicate) {
+      languages['x-default'] = defaultUrl;
+    }
   }
+  
   return { languages };
 }
 
