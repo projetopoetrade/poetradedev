@@ -18,8 +18,17 @@ export function getHreflangAlternates(pathsByLocale: Record<string, string>, def
   const entries = Object.entries(pathsByLocale);
   const languages: Record<string, string> = {};
   
+  // Ensure we only have unique locale codes
+  const uniqueLocales = new Set<string>();
+  
   for (const [locale, path] of entries) {
-    languages[locale] = buildAbsoluteUrl(path);
+    // Normalize locale codes to avoid duplicates (e.g., 'pt-br' vs 'pt_br')
+    const normalizedLocale = locale.toLowerCase().replace('_', '-');
+    
+    if (!uniqueLocales.has(normalizedLocale)) {
+      uniqueLocales.add(normalizedLocale);
+      languages[normalizedLocale] = buildAbsoluteUrl(path);
+    }
   }
   
   // Add x-default if provided and it's different from all existing locales

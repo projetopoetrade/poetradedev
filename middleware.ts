@@ -10,6 +10,10 @@ const handleI18nRouting = createMiddleware(routing);
 export async function middleware(request: NextRequest) {
   // Este código SÓ será executado para as rotas que NÃO SÃO de API.
   const response = handleI18nRouting(request);
+  
+  // Add pathname to headers for layout detection
+  response.headers.set('x-pathname', request.nextUrl.pathname);
+  
   return await updateSession(request, response);
 }
 

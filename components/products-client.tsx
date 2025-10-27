@@ -59,32 +59,49 @@ export default function ProductsClient({ products, initialFilters }: ProductsCli
   const filterTags = (products: Product[]): Product[] => {
     let filteredProducts = products;
     
+    console.log("🔍 [ProductsClient] filterTags called with", products.length, "products");
+    console.log("🔍 [ProductsClient] selectedFilter:", selectedFilter);
+    console.log("🔍 [ProductsClient] searchTerm:", searchTerm);
+    
     // Apply category filter
     if (selectedFilter.toLowerCase() !== "all categories") {
+      console.log("🔍 [ProductsClient] Applying category filter:", selectedFilter);
       filteredProducts = filteredProducts.filter(
         (el) => el.category.toLowerCase() === selectedFilter.toLowerCase()
       );
+      console.log("🔍 [ProductsClient] After category filter:", filteredProducts.length, "products");
     }
     
     // Apply search term filter (client-side)
     if (searchTerm.trim() !== "") {
+      console.log("🔍 [ProductsClient] Applying search filter:", searchTerm);
       filteredProducts = filteredProducts.filter(
         (product) => product.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
+      console.log("🔍 [ProductsClient] After search filter:", filteredProducts.length, "products");
     }
     
+    console.log("🔍 [ProductsClient] Final filtered products:", filteredProducts.length);
     return filteredProducts;
   };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Debug logs for search functionality
+    console.log("🔍 [ProductsClient] handleSearch called");
+    console.log("🔍 [ProductsClient] searchTerm:", searchTerm);
+    console.log("🔍 [ProductsClient] selectedFilter:", selectedFilter);
+    console.log("🔍 [ProductsClient] current searchParams:", searchParams.toString());
+    
     // Update URL with search parameters
     const params = new URLSearchParams(searchParams.toString());
     
     if (searchTerm) {
+      console.log("🔍 [ProductsClient] Setting search param:", searchTerm);
       params.set("search", searchTerm);
     } else {
+      console.log("🔍 [ProductsClient] Removing search param");
       params.delete("search");
     }
     
@@ -92,12 +109,16 @@ export default function ProductsClient({ products, initialFilters }: ProductsCli
     const selectedButton = buttons.find(button => button.value === selectedFilter || button.label === selectedFilter);
 
     if (selectedButton && selectedButton.value !== "All Categories") {
+      console.log("🔍 [ProductsClient] Setting category param:", selectedButton.value);
       params.set("category", selectedButton.value);
     } else {
+      console.log("🔍 [ProductsClient] Removing category param");
       params.delete("category");
     }
     
-    router.push(`/products?${params.toString()}`);
+    const newUrl = `/products?${params.toString()}`;
+    console.log("🔍 [ProductsClient] Navigating to:", newUrl);
+    router.push(newUrl);
   };
 
   const filteredList = filterTags(products);

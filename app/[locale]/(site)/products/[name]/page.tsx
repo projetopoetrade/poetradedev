@@ -9,7 +9,7 @@ import ProductDetail from "../../../../../components/product-detail";
 import { getProductBySlug } from "@/sanity/sanity-utils";
 import ProductContent from "@/components/product-detail/ProductContent";
 import { getTranslations } from "next-intl/server";
-import { buildCanonical, getHreflangAlternates } from "@/lib/utils";
+import { buildCanonical } from "@/lib/utils";
 
 // Add formatPrice utility function
 const formatPrice = (price: number): string => {
@@ -38,10 +38,6 @@ export const generateMetadata = async (props: {
     description,
     alternates: {
       canonical,
-      ...getHreflangAlternates({
-        "en": `/products/${encodeURIComponent(params.name)}`, // default locale without prefix
-        "pt-br": `/pt-br/products/${encodeURIComponent(params.name)}`
-      }, `/products/${encodeURIComponent(params.name)}`) // x-default points to path without locale prefix
     },
     openGraph: {
       title,
@@ -74,6 +70,12 @@ export default async function ProductDetailPage(props: {
     // Get the decoded product name for searching
     const decodedName = await parseProductSlug(params.name);
 
+    // Convert locale format before using it
+    let currentLocale = searchParams.locale || params.locale;
+    if(currentLocale === "pt-br") {
+      currentLocale = "pt_br";
+    }
+
     // Use the decoded name to find the specific product
     const products = await getProductsWithParams({
       search: decodedName,
@@ -81,9 +83,6 @@ export default async function ProductDetailPage(props: {
       difficulty: searchParams.difficulty,
       gameVersion: searchParams.gameVersion,
     });
-
-    const productSanity = await getProductBySlug(products[0].slug);
-    console.log(productSanity);
 
     // If no product is found, show an error
     if (!products || products.length === 0) {
@@ -108,6 +107,8 @@ export default async function ProductDetailPage(props: {
     // Use the first product from the results
     const product = products[0];
 
+    // Fetch product details from Sanity
+    const productSanity = await getProductBySlug(product.slug);
 
     // Fetch leagues from database based on product's game version
     const currentGameVersion = searchParams.gameVersion || product.gameVersion;
@@ -128,15 +129,7 @@ export default async function ProductDetailPage(props: {
     // Current selected values
     const currentLeague = searchParams.league || product.league;
     const currentDifficulty = searchParams.difficulty || product.difficulty;
-    let currentLocale = searchParams.locale || params.locale;
 
-    if(currentLocale === "pt-br") {
-      currentLocale = "pt_br";
-    }
-
-    console.log(currentLocale);
-
-   
 
     const productStructuredData = {
       "@context": "https://schema.org",
@@ -227,7 +220,7 @@ export default async function ProductDetailPage(props: {
         </div>
 
         {/* Description Section */}
-        {productSanity?.body && (
+        {productSanity?.body?.[currentLocale] && (
           <div className="p-4 md:p-6 mt-6 md:mt-12 bg-muted/10 rounded-lg">
             <h2 className="text-lg font-semibold text-gray-100/40 mb-4">Description</h2>
             <ProductContent content={productSanity.body[currentLocale]} />

@@ -713,81 +713,152 @@
         }
       },
       "starters": {
-        "title": "Melhores League Starters para Keepers of the Flame",
-        "subtitle": "Builds recomendadas para aproveitar as mecânicas da liga e progredir rapidamente",
+        "title": "League Starters Recomendados",
+        "subtitle": "Tier list de builds testadas e otimizadas para semana 1 de SC Trade na Keepers of the Flame",
+        "tierS": {
+          "title": "S-Tier - Top Performers",
+          "description": "Builds de elite para veteranos e jogadores experientes"
+        },
+        "tierA": {
+          "title": "A-Tier - Excelentes Escolhas",
+          "description": "Builds sólidas e confiáveis para a maioria dos jogadores"
+        },
         "builds": [
           {
-            "name": "Ice Shot of Penetration Deadeye",
-            "class": "Ranger - Deadeye",
-            "difficulty": "Médio",
+            "name": "Attack Wander (Kinetic Rain)",
+            "class": "Elementalist/Deadeye",
+            "tier": "S",
+            "difficulty": "Média",
             "pros": [
-              "Escalam bem clear speed aproveitando novo gem \"Ice Shot of Penetration\"",
-              "Excelente para farm rápido do Genesis Tree",
-              "Boa sinergia com Grafts de elemento frio",
-              "Alta mobilidade para defesa de hives"
+              "Clear muito rápido com Kinetic Rain/Kinetic Blast",
+              "Sinergia com anomalias/explosões do novo skill",
+              "Escalabilidade com wands baratas nos primeiros dias",
+              "Ascendência flexível"
             ],
             "cons": [
-              "Dependência de gear/bows para pico de DPS",
-              "Single target pode precisar de investimento adicional",
-              "Relativamente frágil sem gear defensivo"
+              "Self-attack wander exige ajuste de single-target",
+              "Perform melhor após upgrades de wand/joias"
             ],
-            "guideUrl": "#",
-            "author": "Comunidade PoE"
+            "guides": [
+              {
+                "title": "Deadeye Version",
+                "url": "https://www.youtube.com/@Fubgun",
+                "author": "Fubgun",
+                "variant": "Deadeye"
+              },
+              {
+                "title": "Elementalist Version",
+                "url": "https://www.youtube.com/watch?v=BCEGQoK2RW0&t",
+                "author": "Jungroan",
+                "variant": "Elementalist"
+              }
+            ],
+            "description": "Kinetic Rain oferece clear muito rápido e sinergia com 'anomaly/explosões' do novo skill, mantendo escalabilidade com wands baratas nos primeiros dias."
           },
           {
-            "name": "Thunderstorm Elementalist",
-            "class": "Witch - Elementalist",
-            "difficulty": "Médio",
+            "name": "Earthshatter Slammer",
+            "class": "Berserker",
+            "tier": "S",
             "pros": [
-              "Sinergia com novos gems de raio",
-              "Cobertura de área com bom scaling inicial",
-              "Beneficia-se de Grafts de elemento raio",
-              "Boa progressão no Genesis Tree"
+              "Manteve força no 3.27",
+              "Clear em área excelente",
+              "Transição limpa de campanha para mapas",
+              "Progressão com investimento incremental"
             ],
             "cons": [
-              "Atenção a camadas defensivas até consolidar gear",
-              "Tuning de mana/dano no early game",
-              "Pode precisar de ajustes na árvore passiva"
+              "Ritmo alternado ataque+Warcry",
+              "Dependência de arma duas mãos"
             ],
-            "guideUrl": "#",
-            "author": "Comunidade PoE"
+            "guides": [
+              {
+                "title": "Berserker Version",
+                "url": "https://www.youtube.com/watch?v=ySYb3_uen5k",
+                "author": "Imexile",
+                "variant": "Berserker"
+              }
+            ],
+            "author": "Imexile",
+            "description": "Fissuras com picos detonados por Warcries geram explosões em massa, escalando muito bem com armas duas mãos."
           },
           {
-            "name": "Righteous Fire Juggernaut",
-            "class": "Marauder - Juggernaut",
-            "difficulty": "Fácil",
+            "name": "CwS Chieftain",
+            "class": "Chieftain",
+            "tier": "S",
+            "difficulty": "Alta",
             "pros": [
-              "Extremamente tanque para defesa de hives",
-              "Não depende de equipamento caro",
-              "Excelente regen de vida",
-              "Starter clássico e confiável"
+              "Consegue realizar ultimatum de maneira eficiente",
+              "Tankiness quando bem montado",
+              "Alto teto de performance"
             ],
             "cons": [
-              "Dano single target moderado no early",
-              "Velocidade de movimento pode ser lenta",
-              "Menos sinergia com novos Grafts"
+              "Setup complexo e dependente de peças-chave",
+              "Exige gear/jewels específicos",
+              "Conhecimento de limiar de atordoamento"
             ],
-            "guideUrl": "https://www.pathofexile.com/forum/view-thread/1729087",
-            "author": "Pohx"
+            "guideUrl": "https://docs.google.com/spreadsheets/d/1l0GjDUVlyVplxAys7vOQZao6LdbghU3SLQg6NzL9m6A/edit?pli=1&gid=689279781#gid=689279781",
+            "author": "Emiracle",
+            "description": "Abusar de Cast When Stunned para disparar magias como Firestorm/Blazing Salvo, manipulando stun threshold e recuperação."
           },
           {
-            "name": "Explosive Arrow Ballista Elementalist",
-            "class": "Witch - Elementalist",
-            "difficulty": "Fácil",
+            "name": "Cobra Lash/Venom Gyre Deadeye",
+            "class": "Deadeye",
+            "tier": "A",
+            "difficulty": "Baixa",
             "pros": [
-              "Bom dano single target e AoE",
-              "Segura por usar totems",
-              "Budget-friendly",
-              "Pode usar Grafts de elemento fogo"
+              "Clear extremo com chain/projéteis",
+              "Sem nerfs diretos no 3.27",
+              "Progressão barata",
+              "Dano consistente ao escalar"
             ],
             "cons": [
-              "Playstyle de totem pode não agradar todos",
-              "Requer gerenciamento de recursos",
-              "Pode ser lenta para farm ultra-rápido"
+              "Pode requerer ajuste em single-target no início",
+              "Dependência de veneno para escalar"
             ],
-            "guideUrl": "https://www.pathofexile.com/forum/view-thread/3319048",
-            "author": "Palsteron"
+            "guideUrl": "https://www.youtube.com/watch?v=9NWzm3TVico",
+            "author": "Kankar",
+            "description": "Deadeye dá chain/projéteis/clear absurdos para mapa, com progressão barata e dano consistente ao escalar lucky/poison."
+          },
+          {
+            "name": "Exsanguinate/Reap Miner",
+            "class": "Trickster/Elementalist",
+            "tier": "A",
+            "difficulty": "Média",
+            "pros": [
+              "Exsang é S-tier em mapping",
+              "Reap cobre single-target",
+              "Novas interações de runegraft",
+              "Dupla forte em 3.27"
+            ],
+            "cons": [
+              "Parede ao entrar em vermelhos sem gear",
+              "Exige upgrades para T14+",
+              "Setup de sockets específico"
+            ],
+            "guideUrl": "https://www.youtube.com/@fearlessdumb0/videos",
+            "author": "FearlessDumb0",
+            "description": "Exsang mapeia forte e Reap cobre boss, com guias recentes mantendo a dupla forte em 3.27."
+          },
+          {
+            "name": "Viper Strike",
+            "class": "Slayer",
+            "tier": "A",
+            "difficulty": "Média",
+            "pros": [
+              "Dano de Gelo hit-based com multiplicadores altos",
+              "Sinergia com cold damage e freeze",
+              "Brilha em single-target",
+              "Escala bem com pouco investimento"
+            ],
+            "cons": [
+              "Foco em alvo único",
+              "Clear speed limitado",
+              "Dependência de cold damage scaling"
+            ],
+            "guideUrl": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQk-HA2zP00mLDn49GkF4NtL_JF82UmcyIyo0RiJIbh9oUnE1P4z2UuwQ0mrSCA2xf11wk8kmTV3Qyc/pubhtml",
+            "author": "Ruetoo",
+            "description": "Build hit-based focada em cold damage com multiplicadores altos e sinergia com freeze effects."
           }
+       
         ]
       },
       "patchNotes": {

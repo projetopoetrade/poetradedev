@@ -189,7 +189,7 @@ export default async function LeaguePage(props: PageProps) {
                 title: t(`${leagueSlug}.mechanics.tradeImpact.title`),
                 points: t.raw(`${leagueSlug}.mechanics.tradeImpact.points`),
               }}
-              ctaLink="/games/path-of-exile-1"
+              ctaLink="/products?gameVersion=path-of-exile-1&league=Keepers+of+the+Flame&difficulty=softcore"
               ctaText={t("buyDivines")}
               locale={locale}
             />
@@ -211,6 +211,8 @@ export default async function LeaguePage(props: PageProps) {
               <LeagueStarters
                 title={t(`${leagueSlug}.starters.title`)}
                 subtitle={t(`${leagueSlug}.starters.subtitle`)}
+                tierS={t.raw(`${leagueSlug}.starters.tierS`)}
+                tierA={t.raw(`${leagueSlug}.starters.tierA`)}
                 builds={t.raw(`${leagueSlug}.starters.builds`)}
                 locale={locale}
               />
@@ -232,26 +234,26 @@ export default async function LeaguePage(props: PageProps) {
 
           {/* CTA Section */}
           <section className="container mx-auto px-4 py-16">
-            <Card className="p-8 md:p-12 text-center shadow-xl bg-primary text-primary-foreground">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            <div className="text-center">
+              <h2 className="text-2xl md:text-3xl font-semibold mb-4 text-foreground">
                 {t("cta.title")}
               </h2>
-              <p className="text-xl mb-8 max-w-2xl mx-auto opacity-90">
+              <p className="text-lg mb-8 max-w-2xl mx-auto text-muted-foreground">
                 {t("cta.description")}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button asChild size="lg" variant="secondary">
-                  <Link href="/games/path-of-exile-1">
+                <Button asChild size="lg" className="font-bold text-lg px-8 py-4 bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-200">
+                  <Link href="/products?gameVersion=path-of-exile-1&league=Keepers+of+the++Flame&difficulty=softcore">
                     {t("cta.buyNow")}
                   </Link>
                 </Button>
-                <Button asChild size="lg" variant="outline" className="bg-background/10 hover:bg-background/20 border-primary-foreground/20">
+                <Button asChild size="lg" variant="ghost" className="text-muted-foreground hover:text-foreground">
                   <Link href="/blog">
                     {t("cta.moreGuides")}
                   </Link>
                 </Button>
               </div>
-            </Card>
+            </div>
           </section>
         </article>
       </main>

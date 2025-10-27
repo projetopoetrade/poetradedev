@@ -4,7 +4,7 @@ import { LeagueSelectionPage } from "@/components/league-selection";
 import PatchInfo from "@/components/PatchInfo";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { buildCanonical, getHreflangAlternates } from "@/lib/utils";
+import { buildCanonical } from "@/lib/utils";
 import { Link } from "@/i18n/navigation";
 import { ArrowLeft } from "lucide-react";
 
@@ -28,10 +28,6 @@ export async function generateMetadata(props: {
     description,
     alternates: {
       canonical: canonicalUrl,
-      ...getHreflangAlternates({
-        "en": `/games/${params.gameVersion}`, // default locale without prefix
-        "pt-br": `/pt-br/games/${params.gameVersion}`
-      }, `/games/${params.gameVersion}`) // x-default points to path without locale prefix
     },
     openGraph: {
       title,

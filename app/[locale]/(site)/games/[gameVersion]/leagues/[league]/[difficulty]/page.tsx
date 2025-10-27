@@ -2,7 +2,7 @@ import { PageProps } from "@/lib/interface";
 import Products from "@/components/products";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { buildCanonical, getHreflangAlternates } from "@/lib/utils";
+import { buildCanonical } from "@/lib/utils";
 
 
 export async function generateMetadata(
@@ -31,10 +31,6 @@ export async function generateMetadata(
     description,
     alternates: { 
       canonical,
-      ...getHreflangAlternates({
-        "en": `/games/${params.gameVersion}/leagues/${encodeURIComponent(params.league)}/${encodeURIComponent(params.difficulty)}`, // default locale without prefix
-        "pt-br": `/pt-br/games/${params.gameVersion}/leagues/${encodeURIComponent(params.league)}/${encodeURIComponent(params.difficulty)}`
-      }, `/games/${params.gameVersion}/leagues/${encodeURIComponent(params.league)}/${encodeURIComponent(params.difficulty)}`) // x-default points to path without locale prefix
     },
     openGraph: {
       title: ogTitle,

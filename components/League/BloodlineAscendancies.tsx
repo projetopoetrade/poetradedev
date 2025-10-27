@@ -130,7 +130,7 @@ export default function BloodlineAscendancies({
                   {expandedBloodline === index && (
                     <div className="space-y-6 pt-4 border-t">
                        {/* Bloodline Image */}
-                       <div className="relative w-full h-64 md:h-[700px] rounded-lg overflow-hidden bg-muted/50">
+                       <div className="relative w-full h-80 md:h-[700px] rounded-lg overflow-hidden bg-muted/50">
                          {(() => {
                            // Find the bloodline data by matching the name
                            const bloodlineKey = Object.keys(bloodlinesData).find(key => 

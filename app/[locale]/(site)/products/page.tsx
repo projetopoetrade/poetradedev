@@ -5,7 +5,7 @@ import { SearchParamsStorage } from "@/components/search-params-storage";
 import { CurrencyInfo } from "@/components/currency-info";
 import PatchInfo from "@/components/PatchInfo";
 import { getTranslations } from "next-intl/server";
-import { buildCanonical, getHreflangAlternates } from "@/lib/utils";
+import { buildCanonical } from "@/lib/utils";
 import { Link } from "@/i18n/navigation";
 import { ArrowLeft } from "lucide-react";
 import { FilterModalWrapper } from "@/components/filter-modal-wrapper";
@@ -53,10 +53,6 @@ export async function generateMetadata(
     description,
     alternates: {
       canonical,
-      ...getHreflangAlternates({
-        "en": `/products${url.search}`, // default locale without prefix
-        "pt-br": `/pt-br/products${url.search}`
-      }, `/products${url.search}`) // x-default points to path without locale prefix
     },
     openGraph: {
       title: ogTitle,
@@ -83,8 +79,15 @@ export default async function ProductsPage(
   const { locale } = await props.params;
   const t = await getTranslations({ locale, namespace: "Products" });
   
+  // Debug logs for search functionality
+  console.log("🔍 [PRODUCTS PAGE] Search Params:", searchParams);
+  console.log("🔍 [PRODUCTS PAGE] Search query:", searchParams.search);
+  console.log("🔍 [PRODUCTS PAGE] All search params keys:", Object.keys(searchParams));
+  
   try {
     const products = await getProductsWithParams(searchParams);
+    console.log("🔍 [PRODUCTS PAGE] Products found:", products.length);
+    console.log("🔍 [PRODUCTS PAGE] First few products:", products.slice(0, 3));
     const league = searchParams.league || "All Leagues";
     const difficulty = searchParams.difficulty || "All Difficulties";
     const category = searchParams.category || "All Items";
@@ -157,7 +160,7 @@ export default async function ProductsPage(
         dangerouslySetInnerHTML={{ __html: JSON.stringify(catalogStructuredData) }}
       />
         <div className="mb-12">
-          <div className="bg-indigo-700 rounded-t-lg py-2 px-4 md:px-8 shadow-lg flex items-center justify-between max-w-[520px]">
+          <div className="bg-indigo-700 rounded-t-lg py-2 px-4 md: mt-10 px-8 shadow-lg flex items-center justify-between max-w-[520px]">
             <Link 
               href={`/games/${gameVersion}`}
               className="flex items-center text-white hover:text-indigo-200 transition-colors group"
@@ -165,7 +168,7 @@ export default async function ProductsPage(
             >
               <ArrowLeft className="h-6 w-6 group-hover:-translate-x-1 transition-transform" />
             </Link>
-            <h2 className="text-lg md:text-3xl text-center text-white font-bold antialiased capitalize tracking-wider flex-1">
+            <h2 className="text-md md:text-2xl text-center text-white font-bold antialiased capitalize tracking-wider flex-1">
               {league} - {difficulty}
             </h2>
             <div className="w-6" />
@@ -181,8 +184,10 @@ export default async function ProductsPage(
           }}
         />
         </div>
-        <CurrencyInfo gameVersion={gameVersion} />
+
         <PatchInfo gameVersion={gameVersion} />
+        <CurrencyInfo gameVersion={gameVersion} />
+  
         </div>
   
     );
