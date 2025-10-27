@@ -25,6 +25,7 @@ module.exports = {
       { path: '/terms', priority: 0.5, changefreq: 'monthly' },
       { path: '/games/path-of-exile-1', priority: 0.5, changefreq: 'monthly' },
       { path: '/games/path-of-exile-2', priority: 0.5, changefreq: 'monthly' },
+      { path: '/league/keepers-of-the-flame', priority: 0.8, changefreq: 'weekly' },
     ];
 
     // Add static pages for all locales

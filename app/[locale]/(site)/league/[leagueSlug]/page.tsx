@@ -25,8 +25,8 @@ interface PageProps {
 
 // Dados das ligas - pode ser movido para um arquivo separado ou banco de dados
 const leaguesData: Record<string, any> = {
-  "keepers-of-flame": {
-    slug: "keepers-of-flame",
+  "keepers-of-the-flame": {
+    slug: "keepers-of-the-flame",
     version: "3.27",
     releaseDate: {
       "pt-br": "31 de Outubro de 2025 (Américas) / 1 de Novembro de 2025 (ANZ)",
