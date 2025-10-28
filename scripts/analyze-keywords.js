@@ -189,9 +189,125 @@ function colorize(text, color) {
   return `${colors[color]}${text}${colors.reset}`;
 }
 
+// Função para buscar dados reais do banco de dados
+async function fetchRealData() {
+  try {
+    console.log('🔍 Conectando com o banco de dados Supabase...');
+    
+    // Carregar variáveis de ambiente do arquivo .env.local
+    const fs = await import('fs');
+    const path = await import('path');
+    
+    const envPath = path.join(process.cwd(), '.env.local');
+    if (fs.existsSync(envPath)) {
+      const envContent = fs.readFileSync(envPath, 'utf8');
+      const envLines = envContent.split('\n');
+      
+      envLines.forEach(line => {
+        const [key, value] = line.split('=');
+        if (key && value) {
+          process.env[key.trim()] = value.trim();
+        }
+      });
+    }
+    
+    // Verificar se as variáveis de ambiente estão disponíveis
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      throw new Error('Variáveis de ambiente do Supabase não encontradas');
+    }
+    
+    // Importar Supabase diretamente
+    const { createClient } = await import('@supabase/supabase-js');
+    
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+    
+    // Buscar produtos reais
+    console.log('📦 Buscando produtos...');
+    const { data: productsData, error: productsError } = await supabase
+      .from('products')
+      .select('name, slug, category, gameVersion, league, difficulty')
+      .limit(50); // Limitar para evitar muitos dados
+    
+    if (productsError) {
+      throw new Error(`Erro ao buscar produtos: ${productsError.message}`);
+    }
+    
+    const products = productsData || [];
+    
+    // Buscar ligas reais para PoE 1
+    console.log('🏆 Buscando ligas PoE 1...');
+    const { data: leaguesPoe1, error: leaguesPoe1Error } = await supabase
+      .from('leagues')
+      .select('name, gameVersion, isActive')
+      .eq('gameVersion', 'path-of-exile-1')
+      .eq('isActive', true);
+    
+    if (leaguesPoe1Error) {
+      throw new Error(`Erro ao buscar ligas PoE 1: ${leaguesPoe1Error.message}`);
+    }
+    
+    // Buscar ligas reais para PoE 2
+    console.log('🏆 Buscando ligas PoE 2...');
+    const { data: leaguesPoe2, error: leaguesPoe2Error } = await supabase
+      .from('leagues')
+      .select('name, gameVersion, isActive')
+      .eq('gameVersion', 'path-of-exile-2')
+      .eq('isActive', true);
+    
+    if (leaguesPoe2Error) {
+      throw new Error(`Erro ao buscar ligas PoE 2: ${leaguesPoe2Error.message}`);
+    }
+    
+    // Combinar todas as ligas e gerar slugs
+    const allLeagues = [
+      ...(leaguesPoe1 || []).map(league => ({ 
+        ...league, 
+        gameVersion: 'path-of-exile-1',
+        slug: league.name.toLowerCase().replace(/\s+/g, '-')
+      })),
+      ...(leaguesPoe2 || []).map(league => ({ 
+        ...league, 
+        gameVersion: 'path-of-exile-2',
+        slug: league.name.toLowerCase().replace(/\s+/g, '-')
+      }))
+    ];
+    
+    const difficulties = ['softcore', 'hardcore'];
+    const gameVersions = ['path-of-exile-1', 'path-of-exile-2'];
+
+    console.log(`✅ Dados carregados: ${products.length} produtos, ${allLeagues.length} ligas`);
+    
+    return { products, leagues: allLeagues, difficulties, gameVersions };
+  } catch (error) {
+    console.error('❌ Erro ao buscar dados do banco:', error.message);
+    console.log('🔄 Usando dados de fallback...');
+    
+    // Fallback para dados estáticos
+    return {
+      products: [
+        { name: 'Divine Orb', slug: 'divine-orb', category: 'currency', gameVersion: 'path-of-exile-1', league: 'Standard', difficulty: 'softcore' },
+        { name: 'Exalted Orb', slug: 'exalted-orb', category: 'currency', gameVersion: 'path-of-exile-1', league: 'Standard', difficulty: 'softcore' },
+        { name: 'Chaos Orb', slug: 'chaos-orb', category: 'currency', gameVersion: 'path-of-exile-1', league: 'Standard', difficulty: 'softcore' },
+        { name: 'Mirror of Kalandra', slug: 'mirror-of-kalandra', category: 'currency', gameVersion: 'path-of-exile-1', league: 'Standard', difficulty: 'softcore' }
+      ],
+      leagues: [
+        { name: 'Keepers of the Flame', slug: 'keepers-of-the-flame', gameVersion: 'path-of-exile-1', isActive: true },
+        { name: 'Standard', slug: 'standard', gameVersion: 'path-of-exile-1', isActive: true }
+      ],
+      difficulties: ['softcore', 'hardcore'],
+      gameVersions: ['path-of-exile-1', 'path-of-exile-2']
+    };
+  }
+}
+
 // Função para gerar keywords de exemplo para diferentes tipos de páginas
-function generatePageKeywords() {
+async function generatePageKeywords() {
   const pages = [];
+  
+  // Buscar dados reais do banco
+  const { products, leagues, difficulties, gameVersions } = await fetchRealData();
 
   // 1. Homepage
   pages.push({
@@ -214,45 +330,40 @@ function generatePageKeywords() {
     })
   });
 
-  // 2. Páginas de produtos COM liga
-  const products = ['Divine Orb', 'Exalted Orb', 'Chaos Orb', 'Mirror of Kalandra'];
-  const leagues = ['Keepers of the Flame', 'Standard'];
-  const difficulties = ['softcore', 'hardcore'];
-  const gameVersions = ['path-of-exile-1', 'path-of-exile-2'];
-
+  // 2. Páginas de produtos COM liga (usando dados reais)
   products.forEach(product => {
     leagues.forEach(league => {
       difficulties.forEach(difficulty => {
-        gameVersions.forEach(gameVersion => {
-          // EN
-          pages.push({
-            type: 'Product Detail (with league)',
-            url: `/products/${encodeURIComponent(product)}?gameVersion=${gameVersion}&league=${encodeURIComponent(league)}&difficulty=${difficulty}`,
+        // EN
+        pages.push({
+          type: 'Product Detail (with league)',
+          url: `/products/${encodeURIComponent(product.name)}?gameVersion=${league.gameVersion}&league=${encodeURIComponent(league.name)}&difficulty=${difficulty}`,
+          locale: 'en',
+          keywords: generateKeywords({
             locale: 'en',
-            keywords: generateKeywords({
-              locale: 'en',
-              gameVersion,
-              league,
-              difficulty,
-              productName: product,
-              customKeywords: ['buy', 'cheap', 'fast delivery', 'secure trading']
-            })
-          });
+            gameVersion: league.gameVersion,
+            league: league.name,
+            difficulty,
+            productName: product.name,
+            category: product.category,
+            customKeywords: ['buy', 'cheap', 'fast delivery', 'secure trading']
+          })
+        });
 
-          // PT-BR
-          pages.push({
-            type: 'Product Detail (with league)',
-            url: `/pt-br/products/${encodeURIComponent(product)}?gameVersion=${gameVersion}&league=${encodeURIComponent(league)}&difficulty=${difficulty}`,
+        // PT-BR
+        pages.push({
+          type: 'Product Detail (with league)',
+          url: `/pt-br/products/${encodeURIComponent(product.name)}?gameVersion=${league.gameVersion}&league=${encodeURIComponent(league.name)}&difficulty=${difficulty}`,
+          locale: 'pt-br',
+          keywords: generateKeywords({
             locale: 'pt-br',
-            keywords: generateKeywords({
-              locale: 'pt-br',
-              gameVersion,
-              league,
-              difficulty,
-              productName: product,
-              customKeywords: ['comprar', 'barato', 'entrega rápida', 'comércio seguro']
-            })
-          });
+            gameVersion: league.gameVersion,
+            league: league.name,
+            difficulty,
+            productName: product.name,
+            category: product.category,
+            customKeywords: ['comprar', 'barato', 'entrega rápida', 'comércio seguro']
+          })
         });
       });
     });
@@ -265,13 +376,14 @@ function generatePageKeywords() {
         // EN
         pages.push({
           type: 'Product Detail (no league)',
-          url: `/products/${encodeURIComponent(product)}?gameVersion=${gameVersion}&difficulty=${difficulty}`,
+          url: `/products/${encodeURIComponent(product.name)}?gameVersion=${gameVersion}&difficulty=${difficulty}`,
           locale: 'en',
           keywords: generateKeywords({
             locale: 'en',
             gameVersion,
             difficulty,
-            productName: product,
+            productName: product.name,
+            category: product.category,
             customKeywords: ['buy', 'cheap', 'fast delivery', 'secure trading']
           })
         });
@@ -279,13 +391,14 @@ function generatePageKeywords() {
         // PT-BR
         pages.push({
           type: 'Product Detail (no league)',
-          url: `/pt-br/products/${encodeURIComponent(product)}?gameVersion=${gameVersion}&difficulty=${difficulty}`,
+          url: `/pt-br/products/${encodeURIComponent(product.name)}?gameVersion=${gameVersion}&difficulty=${difficulty}`,
           locale: 'pt-br',
           keywords: generateKeywords({
             locale: 'pt-br',
             gameVersion,
             difficulty,
-            productName: product,
+            productName: product.name,
+            category: product.category,
             customKeywords: ['comprar', 'barato', 'entrega rápida', 'comércio seguro']
           })
         });
@@ -318,27 +431,30 @@ function generatePageKeywords() {
     });
   });
 
-  // 4. Páginas de ligas
+  // 4. Páginas de ligas (usando dados reais)
   leagues.forEach(league => {
-    const leagueSlug = league.toLowerCase().replace(/\s+/g, '-');
     pages.push({
       type: 'League',
-      url: `/league/${leagueSlug}`,
+      url: `/league/${league.slug}`,
       locale: 'en',
       keywords: generateKeywords({
         locale: 'en',
-        leagueSlug,
+        gameVersion: league.gameVersion,
+        league: league.name,
+        leagueSlug: league.slug,
         customKeywords: ['league', 'season', 'poe league']
       })
     });
 
     pages.push({
       type: 'League',
-      url: `/pt-br/league/${leagueSlug}`,
+      url: `/pt-br/league/${league.slug}`,
       locale: 'pt-br',
       keywords: generateKeywords({
         locale: 'pt-br',
-        leagueSlug,
+        gameVersion: league.gameVersion,
+        league: league.name,
+        leagueSlug: league.slug,
         customKeywords: ['liga', 'temporada', 'liga poe']
       })
     });
@@ -350,12 +466,12 @@ function generatePageKeywords() {
       difficulties.forEach(difficulty => {
         pages.push({
           type: 'Products by Category',
-          url: `/games/${gameVersion}/leagues/${league.toLowerCase().replace(/\s+/g, '-')}/${difficulty}`,
+          url: `/games/${gameVersion}/leagues/${league.slug}/${difficulty}`,
           locale: 'en',
           keywords: generateKeywords({
             locale: 'en',
             gameVersion,
-            league,
+            league: league.name,
             difficulty,
             customKeywords: ['products', 'currency', 'items']
           })
@@ -363,12 +479,12 @@ function generatePageKeywords() {
 
         pages.push({
           type: 'Products by Category',
-          url: `/pt-br/games/${gameVersion}/leagues/${league.toLowerCase().replace(/\s+/g, '-')}/${difficulty}`,
+          url: `/pt-br/games/${gameVersion}/leagues/${league.slug}/${difficulty}`,
           locale: 'pt-br',
           keywords: generateKeywords({
             locale: 'pt-br',
             gameVersion,
-            league,
+            league: league.name,
             difficulty,
             customKeywords: ['produtos', 'moedas', 'itens']
           })
@@ -576,11 +692,12 @@ function showPageExamples(pages) {
 }
 
 // Função principal
-function main() {
+async function main() {
   console.log(colorize('🚀 INICIANDO ANÁLISE DE KEYWORDS...', 'bright'));
+  console.log(colorize('📊 Buscando dados reais do banco de dados...', 'yellow'));
   
   try {
-    const pages = generatePageKeywords();
+    const pages = await generatePageKeywords();
     const analysis = analyzeKeywords(pages);
     showPageExamples(pages);
 
