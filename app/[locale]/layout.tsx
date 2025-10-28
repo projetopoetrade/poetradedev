@@ -37,6 +37,18 @@ export async function generateMetadata(props: {
     metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"),
     title,
     description,
+    icons: {
+      icon: [
+        { url: "/images/favicon/favicon-96x96.png", sizes: "96x96", type: "image/png" },
+        { url: "/images/favicon/favicon.svg", type: "image/svg+xml" }
+      ],
+      shortcut: "/images/favicon/favicon.ico",
+      apple: "/images/favicon/apple-touch-icon.png"
+    },
+    appleWebApp: {
+      title: "Path of Trade"
+    },
+    manifest: "/images/favicon/site.webmanifest",
     alternates: {
       canonical,
       ...getHreflangAlternates({

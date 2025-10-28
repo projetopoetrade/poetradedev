@@ -130,10 +130,7 @@ export default function LeagueStarters({
                               rel="noopener noreferrer"
                               className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-medium text-sm transition-colors group px-3 py-2 rounded-lg border border-primary/20 hover:border-primary/40 hover:bg-primary/5"
                             >
-                              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/>
-                                <path d="M14 2v6h6"/>
-                              </svg>
+                              
                               <span>{guide.title}</span>
                               {guide.author && (
                                 <span className="text-xs opacity-75">by {guide.author}</span>
@@ -214,10 +211,7 @@ export default function LeagueStarters({
                               rel="noopener noreferrer"
                               className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-medium text-sm transition-colors group px-3 py-2 rounded-lg border border-primary/20 hover:border-primary/40 hover:bg-primary/5"
                             >
-                              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/>
-                                <path d="M14 2v6h6"/>
-                              </svg>
+                              
                               <span>{guide.title}</span>
                               {guide.author && (
                                 <span className="text-xs opacity-75">by {guide.author}</span>
@@ -295,10 +289,7 @@ export default function LeagueStarters({
                               rel="noopener noreferrer"
                               className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-medium text-sm transition-colors group px-3 py-2 rounded-lg border border-primary/20 hover:border-primary/40 hover:bg-primary/5"
                             >
-                              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/>
-                                <path d="M14 2v6h6"/>
-                              </svg>
+                              
                               <span>{guide.title}</span>
                               {guide.author && (
                                 <span className="text-xs opacity-75">by {guide.author}</span>
