@@ -4,7 +4,7 @@ import { LeagueSelectionPage } from "@/components/league-selection";
 import PatchInfo from "@/components/PatchInfo";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { buildCanonical } from "@/lib/utils";
+import { buildCanonical, generateKeywords } from "@/lib/utils";
 import { Link } from "@/i18n/navigation";
 import { ArrowLeft } from "lucide-react";
 
@@ -50,6 +50,11 @@ export async function generateMetadata(props: {
       description,
       images: [socialImageUrl],
     },
+    keywords: generateKeywords({
+      locale: params.locale,
+      gameVersion: params.gameVersion,
+      customKeywords: ['buy currency', 'trading', 'items', 'guides']
+    })
   };
 }
 

@@ -6,7 +6,7 @@ import RelatedPosts from "@/components/Blog/RelatedPosts";
 import { Blog } from "@/types/blog";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { buildCanonical } from "@/lib/utils";
+import { buildCanonical, generateKeywords } from "@/lib/utils";
 
 interface PageProps {
   params: Promise<{
@@ -48,6 +48,11 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
       title: titleWithSuffix,
       description: post.metadata
     },
+    keywords: generateKeywords({
+      locale,
+      blogTitle: post.title,
+      customKeywords: ['poe guide', 'path of exile guide', 'poe tips', 'poe tutorial']
+    })
   };
 }
 

@@ -15,7 +15,7 @@ import { setRequestLocale, getMessages, getTranslations } from "next-intl/server
 import { NextIntlClientProvider } from "next-intl";
 import CookieConsent from "@/components/cookie-consent";
 import type { Metadata } from "next";
-import { buildCanonical, getHreflangAlternates } from "@/lib/utils";
+import { buildCanonical, getHreflangAlternates, generateKeywords } from "@/lib/utils";
 import { Toaster } from "sonner";
 import { headers } from "next/headers";
 
@@ -57,7 +57,11 @@ export async function generateMetadata(props: {
       title: ogTitle,
       description: ogDescription,
       images: ["/images/logo.webp"]
-    }
+    },
+    keywords: generateKeywords({
+      locale,
+      customKeywords: ['homepage', 'main page', 'poe trading site']
+    })
   };
 }
 

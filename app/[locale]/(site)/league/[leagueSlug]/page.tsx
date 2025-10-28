@@ -14,7 +14,7 @@ import {
   PatchNotesSection,
   BloodlineAscendancies,
 } from "@/components/League";
-import { buildCanonical } from "@/lib/utils";
+import { buildCanonical, generateKeywords } from "@/lib/utils";
 
 interface PageProps {
   params: Promise<{
@@ -80,7 +80,11 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
       title: titleWithSuffix,
       description,
     },
-    keywords: t(`${leagueSlug}.keywords`),
+    keywords: generateKeywords({
+      locale,
+      leagueSlug,
+      customKeywords: ['poe league', 'league guide', 'patch notes', 'league starters', 'buy currency']
+    }),
   };
 }
 

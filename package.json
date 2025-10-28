@@ -4,7 +4,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "postbuild": "next-sitemap"
+    "postbuild": "next-sitemap && node scripts/analyze-keywords.js",
+    "analyze-keywords": "node scripts/analyze-keywords.js"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^18.0.1",

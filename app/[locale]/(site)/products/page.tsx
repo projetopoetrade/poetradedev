@@ -5,7 +5,7 @@ import { SearchParamsStorage } from "@/components/search-params-storage";
 import { CurrencyInfo } from "@/components/currency-info";
 import PatchInfo from "@/components/PatchInfo";
 import { getTranslations } from "next-intl/server";
-import { buildCanonical } from "@/lib/utils";
+import { buildCanonical, generateKeywords } from "@/lib/utils";
 import { Link } from "@/i18n/navigation";
 import { ArrowLeft } from "lucide-react";
 import { FilterModalWrapper } from "@/components/filter-modal-wrapper";
@@ -65,7 +65,15 @@ export async function generateMetadata(
       card: "summary_large_image",
       title: ogTitle,
       description: ogDescription
-    }
+    },
+    keywords: generateKeywords({
+      locale,
+      gameVersion: searchParams.gameVersion as 'path-of-exile-1' | 'path-of-exile-2',
+      league: searchParams.league,
+      category: searchParams.category,
+      difficulty: searchParams.difficulty as 'softcore' | 'hardcore',
+      customKeywords: ['buy', 'cheap', 'best price', 'fast delivery']
+    })
   };
 }
 

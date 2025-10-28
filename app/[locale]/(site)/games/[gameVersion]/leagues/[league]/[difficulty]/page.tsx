@@ -2,7 +2,7 @@ import { PageProps } from "@/lib/interface";
 import Products from "@/components/products";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { buildCanonical } from "@/lib/utils";
+import { buildCanonical, generateKeywords } from "@/lib/utils";
 
 
 export async function generateMetadata(
@@ -44,6 +44,13 @@ export async function generateMetadata(
       title: ogTitle,
       description: ogDescription,
     },
+    keywords: generateKeywords({
+      locale: params.locale,
+      gameVersion: params.gameVersion,
+      league: decodedLeague,
+      difficulty: params.difficulty as 'softcore' | 'hardcore',
+      customKeywords: ['buy currency', 'poe items', 'trading']
+    })
   };
 }
 

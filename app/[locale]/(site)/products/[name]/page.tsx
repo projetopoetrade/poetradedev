@@ -9,7 +9,7 @@ import ProductDetail from "../../../../../components/product-detail";
 import { getProductBySlug } from "@/sanity/sanity-utils";
 import ProductContent from "@/components/product-detail/ProductContent";
 import { getTranslations } from "next-intl/server";
-import { buildCanonical } from "@/lib/utils";
+import { buildCanonical, generateKeywords } from "@/lib/utils";
 
 // Add formatPrice utility function
 const formatPrice = (price: number): string => {
@@ -23,15 +23,33 @@ const formatPrice = (price: number): string => {
 
 export const generateMetadata = async (props: {
   params: Promise<{ name: string; locale: string }>;
+  searchParams: Promise<{
+    league?: string;
+    difficulty?: string;
+    gameVersion?: "path-of-exile-1" | "path-of-exile-2";
+    locale?: string;
+  }>;
 }): Promise<Metadata> => {
   const params = await props.params;
+  const searchParams = await props.searchParams;
+  
   // Get a readable product name from the URL slug
   const productName = await parseProductSlug(params.name);
 
   const t = await getTranslations({ locale: params.locale, namespace: "SEO" });
   const title = t("productDetail.title", { productName });
   const description = t("productDetail.description", { productName });
-  const canonical = buildCanonical(`/${params.locale}/products/${encodeURIComponent(params.name)}`, params.locale);
+  
+  // Build canonical URL with query parameters
+  const basePath = `/${params.locale}/products/${encodeURIComponent(params.name)}`;
+  const url = new URL(basePath, process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net");
+  
+  // Add query parameters to canonical URL
+  if (searchParams.gameVersion) url.searchParams.set("gameVersion", searchParams.gameVersion);
+  if (searchParams.league) url.searchParams.set("league", searchParams.league);
+  if (searchParams.difficulty) url.searchParams.set("difficulty", searchParams.difficulty);
+  
+  const canonical = url.toString();
 
   return {
     title,
@@ -50,7 +68,15 @@ export const generateMetadata = async (props: {
       card: "summary_large_image",
       title,
       description
-    }
+    },
+    keywords: generateKeywords({
+      locale: params.locale,
+      gameVersion: searchParams.gameVersion,
+      league: searchParams.league,
+      difficulty: searchParams.difficulty as 'softcore' | 'hardcore',
+      productName: productName,
+      customKeywords: ['buy', 'cheap', 'fast delivery', 'secure trading']
+    })
   };
 };
 
