@@ -170,9 +170,18 @@ export function generateKeywords(options: KeywordOptions): string {
     keywords.push(productName.toLowerCase());
   }
 
-  // Add blog title as primary keyword
+  // Add blog title as primary keyword and extract individual words
   if (blogTitle) {
+    // Add full title as primary keyword
     keywords.push(blogTitle.toLowerCase());
+    
+    // Extract individual words from title (filter out common words)
+    const commonWords = ['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'o', 'a', 'e', 'de', 'da', 'do', 'das', 'dos', 'em', 'no', 'na', 'nos', 'nas', 'para', 'com', 'por', 'sobre'];
+    const titleWords = blogTitle.toLowerCase()
+      .split(/[\s\-_]+/)
+      .filter(word => word.length > 2 && !commonWords.includes(word));
+    
+    keywords.push(...titleWords);
   }
 
   // Add league name as primary keyword

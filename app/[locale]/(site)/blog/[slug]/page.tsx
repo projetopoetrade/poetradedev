@@ -51,7 +51,14 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
     keywords: generateKeywords({
       locale,
       blogTitle: post.title,
-      customKeywords: ['poe guide', 'path of exile guide', 'poe tips', 'poe tutorial']
+      gameVersion: post.gameVersion,
+      customKeywords: [
+        'poe guide', 
+        'path of exile guide', 
+        'poe tips', 
+        'poe tutorial',
+        ...(post.tags || [])
+      ]
     })
   };
 }

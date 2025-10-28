@@ -216,7 +216,7 @@ function generatePageKeywords() {
 
   // 2. Páginas de produtos COM liga
   const products = ['Divine Orb', 'Exalted Orb', 'Chaos Orb', 'Mirror of Kalandra'];
-  const leagues = ['Keepers of the Flame', 'Standard', 'Hardcore'];
+  const leagues = ['Keepers of the Flame', 'Standard'];
   const difficulties = ['softcore', 'hardcore'];
   const gameVersions = ['path-of-exile-1', 'path-of-exile-2'];
 
@@ -392,9 +392,10 @@ function generatePageKeywords() {
   blogPosts.forEach(post => {
     const isPT = post.title.includes('Melhores') || post.title.includes('Guia') || post.title.includes('Builds para') || post.title.includes('Como Fazer');
     const locale = isPT ? 'pt-br' : 'en';
+    const gameVersion = post.title.includes('Poe2') || post.title.includes('poe2') ? 'path-of-exile-2' : 'path-of-exile-1';
     const customKeywords = isPT 
-      ? ['guia poe', 'dicas poe', 'tutorial poe', 'build poe']
-      : ['poe guide', 'path of exile guide', 'poe tips', 'poe tutorial'];
+      ? ['guia poe', 'dicas poe', 'tutorial poe', 'build poe', 'builds', 'moedas', 'trading']
+      : ['poe guide', 'path of exile guide', 'poe tips', 'poe tutorial', 'builds', 'currency', 'trading'];
 
     pages.push({
       type: 'Blog Post',
@@ -403,6 +404,7 @@ function generatePageKeywords() {
       keywords: generateKeywords({
         locale,
         blogTitle: post.title,
+        gameVersion,
         customKeywords
       })
     });
