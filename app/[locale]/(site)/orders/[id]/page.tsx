@@ -542,7 +542,7 @@ export default function OrderDetailsPage(props: { params: Promise<{ id: string }
                       </div>
                       <div className="flex flex-col items-end gap-1.5">
                         <div className="font-medium">
-                          {formatPrice(item.product?.price * item.quantity || 0, order.currency)}
+                      {formatPrice((((item as any)?.priceInCurrency ?? item.product?.price) || 0) * item.quantity, order.currency)}
                         </div>
                         <Badge variant="outline" className="text-xs">
                           Qty: {item.quantity}

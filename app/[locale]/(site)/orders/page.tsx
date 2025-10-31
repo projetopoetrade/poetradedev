@@ -336,7 +336,7 @@ export default function OrdersPage() {
                           </Badge>
                         </div>
                         <div className="font-medium">
-                          {formatPrice(item.product?.price * item.quantity || 0, order.currency)}
+                          {formatPrice((((item as any)?.priceInCurrency ?? item.product?.price) || 0) * item.quantity, order.currency)}
                         </div>
                       </div>
                     ))}
