@@ -10,6 +10,8 @@ export function LogoutButton() {
   const logout = async () => {
     const supabase = createClient()
     await supabase.auth.signOut()
+    // Garantir revalidação de Server Components após logout
+    router.refresh()
     router.push('/auth/login')
   }
 
