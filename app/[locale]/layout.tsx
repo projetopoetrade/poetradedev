@@ -19,24 +19,43 @@ import { buildCanonical, getHreflangAlternates, generateKeywords } from "@/lib/u
 import { Toaster } from "sonner";
 import { headers } from "next/headers";
 
+function getPathWithoutLocale(path: string, locale: string) {
+  if (path === `/${locale}` || path === `/${locale}/`) return '/';
+  if (path.startsWith(`/${locale}/`)) return path.replace(`/${locale}`, '');
+  return path;
+}
+// -----------------------------------------------------------------------------
+
 export async function generateMetadata(props: {
   params: Promise<{ locale: string }>
 }): Promise<Metadata> {
   const { locale } = await props.params;
   const t = await getTranslations({ locale, namespace: "SEO" });
-  const title = t("layout.title");
-  const description = t("layout.description");
-  const ogTitle = t("layout.ogTitle");
-  const ogDescription = t("layout.ogDescription");
 
-  // Build canonical: for default locale (en), use root path; for others, use locale prefix
-  const path = locale === 'en' ? '/' : `/${locale}`;
-  const canonical = buildCanonical(path, locale);
+  // 1. Tenta pegar o caminho real via headers (passado pelo Middleware)
+  const headersList = await headers();
+  // Se o header não existir, fallback para a lógica da home baseada no locale
+  const rawPathname = headersList.get('x-pathname') || (locale === 'en' ? '/' : `/${locale}`);
+
+  // 2. Constrói a Canonical Auto-referenciada (A CORREÇÃO PRINCIPAL)
+  // A canonical deve ser EXATAMENTE a URL atual.
+  // Se estou em /pt-br, canonical = /pt-br. Se estou em /pt-br/trade, canonical = /pt-br/trade
+  const canonical = buildCanonical(rawPathname, locale);
+
+  // 3. Prepara os Hreflangs dinâmicos
+  // Precisamos saber qual é a "rota base" sem o locale para montar os links alternativos
+  const pathWithoutLocale = getPathWithoutLocale(rawPathname, locale);
+  
+  // Define os prefixos corretos para cada língua
+  const enPath = pathWithoutLocale === '/' ? '/' : pathWithoutLocale;
+  const ptPath = pathWithoutLocale === '/' ? '/pt-br' : `/pt-br${pathWithoutLocale}`;
 
   return {
     metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"),
-    title,
-    description,
+    title: t("layout.title"),
+    description: t("layout.description"),
+    
+    // Configurações de Ícones
     icons: {
       icon: [
         { url: "/images/favicon/favicon-96x96.png", sizes: "96x96", type: "image/png" },
@@ -49,16 +68,25 @@ export async function generateMetadata(props: {
       title: "Path of Trade"
     },
     manifest: "/images/favicon/site.webmanifest",
+
+    // ---------------------------------------------------------
+    // AQUI ESTÁ A CORREÇÃO DE SEO
+    // ---------------------------------------------------------
     alternates: {
-      canonical,
-      ...getHreflangAlternates({
-        "en": "/", // default locale without prefix
-        "pt-br": "/pt-br"
-      }, "/") // x-default points to root
+      // Canonical aponta para a página atual
+      canonical: canonical,
+      
+      // Languages apontam para as versões equivalentes
+      languages: {
+        'en': buildCanonical(enPath, 'en'),
+        'pt-BR': buildCanonical(ptPath, 'pt-br'),
+        'x-default': buildCanonical(enPath, 'en'), // Fallback para inglês
+      },
     },
+
     openGraph: {
-      title: ogTitle,
-      description: ogDescription,
+      title: t("layout.ogTitle"),
+      description: t("layout.ogDescription"),
       url: canonical,
       type: "website",
       siteName: t("siteName"),
@@ -66,8 +94,8 @@ export async function generateMetadata(props: {
     },
     twitter: {
       card: "summary_large_image",
-      title: ogTitle,
-      description: ogDescription,
+      title: t("layout.ogTitle"),
+      description: t("layout.ogDescription"),
       images: ["/images/logo.webp"]
     },
     keywords: generateKeywords({
@@ -76,7 +104,6 @@ export async function generateMetadata(props: {
     })
   };
 }
-
 
 const roboto = Roboto({
   subsets: ["latin"],

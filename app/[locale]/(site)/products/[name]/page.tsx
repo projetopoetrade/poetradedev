@@ -33,42 +33,50 @@ export const generateMetadata = async (props: {
   const params = await props.params;
   const searchParams = await props.searchParams;
   
-  // Get a readable product name from the URL slug
+  // Nome legível para o título
   const productName = await parseProductSlug(params.name);
-
   const t = await getTranslations({ locale: params.locale, namespace: "SEO" });
-  const title = t("productDetail.title", { productName });
-  const description = t("productDetail.description", { productName });
+
+  // 1. Construção da URL Base (sem query params)
+  // Se for EN (default), não usa prefixo. Se for PT, usa /pt-br
+  const pathPrefix = params.locale === 'en' ? '' : `/${params.locale}`;
+  const productPath = `/products/${params.name}`; // Mantém o encoded name original da URL
   
-  // Build canonical URL with query parameters
-  const basePath = `/${params.locale}/products/${encodeURIComponent(params.name)}`;
-  const url = new URL(basePath, process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net");
-  
-  // Add query parameters to canonical URL
-  if (searchParams.gameVersion) url.searchParams.set("gameVersion", searchParams.gameVersion);
-  if (searchParams.league) url.searchParams.set("league", searchParams.league);
-  if (searchParams.difficulty) url.searchParams.set("difficulty", searchParams.difficulty);
-  
-  const canonical = url.toString();
+  // URL Canônica "Limpa" (Sem ?league=... para concentrar a força do SEO)
+  const canonical = `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"}${pathPrefix}${productPath}`;
+
+  // 2. Construção dos Hreflangs (CRUCIAL PARA O GOOGLE)
+  // Precisamos gerar a URL deste mesmo produto para as outras línguas
+  const enUrl = `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"}/products/${params.name}`;
+  const ptUrl = `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"}/pt-br/products/${params.name}`;
 
   return {
-    title,
-    description,
+    title: t("productDetail.title", { productName }),
+    description: t("productDetail.description", { productName }),
+    
     alternates: {
-      canonical,
+      canonical: canonical,
+      languages: {
+        'en': enUrl,
+        'pt-BR': ptUrl,
+        'x-default': enUrl, // Fallback para inglês
+      },
     },
+
     openGraph: {
-      title,
-      description,
+      title: t("productDetail.title", { productName }),
+      description: t("productDetail.description", { productName }),
       url: canonical,
       type: "website",
-      siteName: t("siteName")
+      siteName: t("siteName"),
+      // Adicione a imagem se possível
     },
     twitter: {
       card: "summary_large_image",
-      title,
-      description
+      title: t("productDetail.title", { productName }),
+      description: t("productDetail.description", { productName }),
     },
+    // Mantive sua lógica de keywords, está boa
     keywords: generateKeywords({
       locale: params.locale,
       gameVersion: searchParams.gameVersion,

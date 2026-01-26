@@ -39,22 +39,18 @@ const { pathname } = request.nextUrl;
 
 // 3. Verifique se o pathname atual corresponde a uma rota protegida.
 // Usamos .some() e .endsWith() para ignorar o prefixo de idioma.
-const isProtectedRoute = protectedRoutes.some((route) => pathname.endsWith(route));
+const isProtectedRoute = protectedRoutes.some((route) => {
+  // Cria uma regex dinâmica. Ex para /admin: converte para /\/admin(\/|$)/
+  const regex = new RegExp(`^(/[^/]+)?${route}(/|$)`);
+  return regex.test(pathname);
+});
 
 // 4. Se for uma rota protegida E o usuário NÃO estiver logado...
 if (isProtectedRoute && !user) {
-  // Clona a URL original para manter o idioma e outros parâmetros.
+  // ... sua lógica de redirect (mantida igual) ...
   const redirectUrl = request.nextUrl.clone();
-
-  // Define o novo caminho para a página de login.
-  // O prefixo de idioma (ex: /pt) será mantido.
   redirectUrl.pathname = '/auth/login';
-  console.log('redirectUrl', redirectUrl);
-
-  // Adiciona o pathname original que o usuário tentou acessar como callback.
   redirectUrl.searchParams.set('callbackUrl', pathname);
-
-  // Redireciona o usuário para a página de login com o callback.
   return NextResponse.redirect(redirectUrl);
 }
 

@@ -5,12 +5,12 @@ import { SearchParamsStorage } from "@/components/search-params-storage";
 import { CurrencyInfo } from "@/components/currency-info";
 import PatchInfo from "@/components/PatchInfo";
 import { getTranslations } from "next-intl/server";
-import { buildCanonical, generateKeywords } from "@/lib/utils";
+import { generateKeywords } from "@/lib/utils"; // Removi buildCanonical pois vamos montar manualmente aqui
 import { Link } from "@/i18n/navigation";
 import { ArrowLeft } from "lucide-react";
 import { FilterModalWrapper } from "@/components/filter-modal-wrapper";
 
-
+// 1. Definição Correta dos Tipos
 type SearchParams = {
   gameVersion?: string;
   league?: string;
@@ -19,6 +19,24 @@ type SearchParams = {
   search?: string;
 };
 
+// 2. Função Helper Corrigida (Coloque fora dos componentes)
+function buildQueryString(params: SearchParams): string {
+  const urlParams = new URLSearchParams();
+  
+  // Só adiciona se o valor existir e for uma string válida
+  if (params.gameVersion) urlParams.set("gameVersion", params.gameVersion);
+  if (params.league) urlParams.set("league", params.league);
+  if (params.difficulty) urlParams.set("difficulty", params.difficulty);
+  if (params.category) urlParams.set("category", params.category);
+  if (params.search) urlParams.set("search", params.search);
+  
+  const str = urlParams.toString();
+  return str ? `?${str}` : '';
+}
+
+// ---------------------------------------------------------
+// GENERATE METADATA
+// ---------------------------------------------------------
 export async function generateMetadata(
   props: {
     params: Promise<{ locale: string }>;
@@ -28,43 +46,50 @@ export async function generateMetadata(
   const searchParams = await props.searchParams;
   const { locale } = await props.params;
   const t = await getTranslations({ locale, namespace: "SEO" });
+
   const league = searchParams.league || "All Leagues";
   const category = searchParams.category || "All Items";
   const gameVersion = searchParams.gameVersion || "Current";
 
-  const title = t("products.title", { gameVersion, category, league });
-  const description = t("products.description", { gameVersion, category, league });
-  const ogTitle = t("products.ogTitle", { category, league });
-  const ogDescription = t("products.ogDescription", { category, league, gameVersion });
+  // Base URL
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net";
+  
+  // Gera a string de busca idêntica para todas as linguagens
+  const queryString = buildQueryString(searchParams);
 
-  // Build path without locale for default locale (en), with locale for others
-  const basePath = locale === 'en' ? `/products` : `/${locale}/products`;
-  const url = new URL(basePath, process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net");
-  if (searchParams.gameVersion) url.searchParams.set("gameVersion", searchParams.gameVersion);
-  if (searchParams.league) url.searchParams.set("league", searchParams.league);
-  if (searchParams.category) url.searchParams.set("category", searchParams.category);
-  if (searchParams.difficulty) url.searchParams.set("difficulty", searchParams.difficulty);
-  if (searchParams.search) url.searchParams.set("search", searchParams.search);
+  // URLs completas
+  // Nota: Ajuste se sua rota padrão for '/products' e a pt for '/pt-br/products'
+  const enUrl = `${baseUrl}/products${queryString}`;
+  const ptUrl = `${baseUrl}/pt-br/products${queryString}`;
 
-  const canonical = url.toString();
+  // Canonical: Se estou em EN usa a url EN, se PT usa PT.
+  const canonical = locale === 'en' ? enUrl : ptUrl;
 
   return {
-    title,
-    description,
+    title: t("products.title", { gameVersion, category, league }),
+    description: t("products.description", { gameVersion, category, league }),
+    
     alternates: {
-      canonical,
+      canonical: canonical,
+      // HREFLANGS: Crucial para indexar PT-BR corretamente com os filtros
+      languages: {
+        'en': enUrl,
+        'pt-BR': ptUrl,
+        'x-default': enUrl, 
+      },
     },
+
     openGraph: {
-      title: ogTitle,
-      description: ogDescription,
+      title: t("products.ogTitle", { category, league }),
+      description: t("products.ogDescription", { category, league, gameVersion }),
       url: canonical,
       type: "website",
       siteName: t("siteName")
     },
     twitter: {
       card: "summary_large_image",
-      title: ogTitle,
-      description: ogDescription
+      title: t("products.ogTitle", { category, league }),
+      description: t("products.ogDescription", { category, league, gameVersion }),
     },
     keywords: generateKeywords({
       locale,
@@ -77,6 +102,9 @@ export async function generateMetadata(
   };
 }
 
+// ---------------------------------------------------------
+// COMPONENTE DA PÁGINA
+// ---------------------------------------------------------
 export default async function ProductsPage(
   props: {
     searchParams: Promise<SearchParams>;
@@ -87,30 +115,24 @@ export default async function ProductsPage(
   const { locale } = await props.params;
   const t = await getTranslations({ locale, namespace: "Products" });
   
-  // Debug logs for search functionality
+  // Logs seguros
   console.log("🔍 [PRODUCTS PAGE] Search Params:", searchParams);
-  console.log("🔍 [PRODUCTS PAGE] Search query:", searchParams.search);
-  console.log("🔍 [PRODUCTS PAGE] All search params keys:", Object.keys(searchParams));
-  
+
   try {
     const products = await getProductsWithParams(searchParams);
-    console.log("🔍 [PRODUCTS PAGE] Products found:", products.length);
-    console.log("🔍 [PRODUCTS PAGE] First few products:", products.slice(0, 3));
+    
+    // Variáveis para UI
     const league = searchParams.league || "All Leagues";
     const difficulty = searchParams.difficulty || "All Difficulties";
     const category = searchParams.category || "All Items";
     const gameVersion = searchParams.gameVersion || "Current";
 
-    const basePath = locale === 'en' ? `/products` : `/${locale}/products`;
-    const baseUrl = `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"}${basePath}`;
-    const pageUrlObj = new URL(baseUrl);
-    Object.keys(searchParams).forEach(key => {
-        if (searchParams[key as keyof SearchParams]) {
-            pageUrlObj.searchParams.append(key, searchParams[key as keyof SearchParams]!);
-        }
-    });
-    const pageUrl = pageUrlObj.toString();
+    // Recria a URL atual para o Schema.org usando a mesma função helper
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net";
+    const path = locale === 'en' ? '/products' : `/${locale}/products`;
+    const pageUrl = `${baseUrl}${path}${buildQueryString(searchParams)}`;
 
+    // SCHEMA.ORG (JSON-LD)
     const catalogStructuredData = {
       "@context": "https://schema.org",
       "@type": "OfferCatalog",
@@ -119,36 +141,38 @@ export default async function ProductsPage(
       "url": pageUrl,
       "numberOfItems": products.length,
       "itemListElement": products.map((product, index) => {
-          // --- !!! ADAPT THESE FIELDS !!! ---
-          // Replace 'product.productName', 'product.productDesc', etc.,
-          // with the actual field names from YOUR 'products' array.
           const productName = product.name || "Unknown Product";
+          const productImageUrl = product.imgUrl || `${baseUrl}/images/default.png`;
           
-          const productImageUrl = product.imgUrl || `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"}/images/default.png`;
+          // URLs de produto individuais
           const productPath = locale === 'en' ? `/products/${encodeURIComponent(product.name)}` : `/${locale}/products/${encodeURIComponent(product.name)}`;
-          const productUrl = `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"}${productPath}?gameVersion=${encodeURIComponent(product.gameVersion)}&league=${encodeURIComponent(product.league)}&difficulty=${encodeURIComponent(product.difficulty)}`;
-          const productPrice = product.price || "0.00";
-          // --- !!! END ADAPTATION !!! ---
-  
+          // Query string específica do produto (mantém filtros atuais)
+          const productQuery = buildQueryString({
+             gameVersion: product.gameVersion,
+             league: product.league,
+             difficulty: product.difficulty
+          });
+          const productUrl = `${baseUrl}${productPath}${productQuery}`;
+
           return {
             "@type": "ListItem",
             "position": index + 1,
             "item": {
               "@type": "Product",
               "name": `${productName} (${league})`,
-              "description": product.alt,
+              "description": product.alt || productName,
               "image": productImageUrl,
               "url": productUrl,
               "brand": {
                 "@type": "Brand",
-                "name": gameVersion === "Current" ? "Path of Exile" : gameVersion // Adjust if needed
+                "name": gameVersion === "Current" ? "Path of Exile" : gameVersion
               },
               "offers": {
                 "@type": "Offer",
                 "url": productUrl,
                 "priceCurrency": "USD",
-                "price": productPrice,
-                "availability": "https://schema.org/InStock", // Or use actual product availability if you have it
+                "price": product.price || "0.00",
+                "availability": "https://schema.org/InStock",
                 "seller": {
                   "@type": "Organization",
                   "name": "Path of Trade Net"
@@ -163,12 +187,15 @@ export default async function ProductsPage(
       <div className="container mx-auto py-8">
         <SearchParamsStorage searchParams={searchParams} />
         <FilterModalWrapper searchParams={searchParams} />
+        
         <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(catalogStructuredData) }}
-      />
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(catalogStructuredData) }}
+        />
+
         <div className="mb-12">
-          <div className="bg-indigo-700 rounded-t-lg py-2 px-4 md: mt-10 px-8 shadow-lg flex items-center justify-between max-w-[520px]">
+          {/* Header da Liga */}
+          <div className="bg-indigo-700 rounded-t-lg py-2 px-4 md:mt-10 md:px-8 shadow-lg flex items-center justify-between max-w-[520px]">
             <Link 
               href={`/games/${gameVersion}`}
               className="flex items-center text-white hover:text-indigo-200 transition-colors group"
@@ -183,28 +210,25 @@ export default async function ProductsPage(
           </div>
 
           <ProductsClient 
-
-          products={products} 
-          initialFilters={{
-            gameVersion,
-            league,
-            difficulty
-          }}
-        />
+            products={products} 
+            initialFilters={{
+              gameVersion,
+              league,
+              difficulty
+            }}
+          />
         </div>
 
         <PatchInfo gameVersion={gameVersion} />
         <CurrencyInfo gameVersion={gameVersion} />
-  
-        </div>
-  
+      </div>
     );
   } catch (error) {
     return (
-      <div className="text-red-500 p-4 border border-red-300  bg-red-50">
+      <div className="text-red-500 p-4 border border-red-300 bg-red-50">
         <h3 className="font-bold mb-2">Error Loading Products</h3>
         <p>{(error as Error).message}</p>
-        <p className="mt-4 text-sm">Please try refreshing the page or adjusting your search parameters.</p>
+        <p className="mt-4 text-sm">Please try refreshing the page.</p>
       </div>
     );
   }

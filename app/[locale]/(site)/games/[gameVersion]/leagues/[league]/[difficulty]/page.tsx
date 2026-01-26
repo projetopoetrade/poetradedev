@@ -22,27 +22,44 @@ export async function generateMetadata(
   const poeVersion = params.gameVersion === 'path-of-exile-1' ? '1' : '2';
   const title = t('league.title', { league: decodedLeague, difficulty: params.difficulty });
   const description = t('league.description', { league: decodedLeague, difficulty: params.difficulty, poeVersion });
-  const ogTitle = t('league.ogTitle', { league: decodedLeague, difficulty: params.difficulty });
-  const ogDescription = t('league.ogDescription', { league: decodedLeague, difficulty: params.difficulty, poeVersion });
-  const canonical = buildCanonical(`/${params.locale}/games/${params.gameVersion}/leagues/${encodeURIComponent(params.league)}/${encodeURIComponent(params.difficulty)}`, params.locale);
+  
+  // 1. Definição das URLs
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net";
+  
+  // Caminho base sem locale (ex: /games/path-of-exile-1/leagues/Standard/softcore)
+  // Nota: encodeURIComponent é vital aqui para ligas com espaços
+  const pathWithoutLocale = `/games/${params.gameVersion}/leagues/${encodeURIComponent(params.league)}/${encodeURIComponent(params.difficulty)}`;
+
+  // URLs completas para cada idioma
+  const enUrl = `${baseUrl}${pathWithoutLocale}`; // Assumindo que EN não tem prefixo /en
+  const ptUrl = `${baseUrl}/pt-br${pathWithoutLocale}`;
+  
+  // Canonical Auto-referenciada (aponta para a própria página atual)
+  const canonical = params.locale === 'en' ? enUrl : ptUrl;
 
   return {
     title,
     description,
     alternates: { 
       canonical,
+      // 2. Hreflangs: O "pulo do gato" para o Google indexar o PT-BR
+      languages: {
+        'en': enUrl,
+        'pt-BR': ptUrl,
+        'x-default': enUrl,
+      }
     },
     openGraph: {
-      title: ogTitle,
-      description: ogDescription,
+      title: t('league.ogTitle', { league: decodedLeague, difficulty: params.difficulty }),
+      description: t('league.ogDescription', { league: decodedLeague, difficulty: params.difficulty, poeVersion }),
       url: canonical,
       type: "website",
       siteName: t("siteName"),
     },
     twitter: {
       card: "summary_large_image",
-      title: ogTitle,
-      description: ogDescription,
+      title: t('league.ogTitle', { league: decodedLeague, difficulty: params.difficulty }),
+      description: t('league.ogDescription', { league: decodedLeague, difficulty: params.difficulty, poeVersion }),
     },
     keywords: generateKeywords({
       locale: params.locale,
@@ -53,7 +70,6 @@ export async function generateMetadata(
     })
   };
 }
-
 export default async function Page(
   props: { 
     params: Promise<{ 

@@ -16,18 +16,35 @@ export async function generateMetadata(props: {
   const params = await props.params;
   const isPoe2 = params.gameVersion === "path-of-exile-2";
   const t = await getTranslations({ locale: params.locale, namespace: "SEO" });
+  
   const title = isPoe2 ? t("gameVersion.poe2Title") : t("gameVersion.poe1Title");
   const description = isPoe2 ? t("gameVersion.poe2Description") : t("gameVersion.poe1Description");
-  const canonicalUrl = buildCanonical(`/${params.locale}/games/${params.gameVersion}`, params.locale);
+  
+  // 1. Construção das URLs
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net";
+  const pathWithoutLocale = `/games/${params.gameVersion}`;
+
+  const enUrl = `${baseUrl}${pathWithoutLocale}`;
+  const ptUrl = `${baseUrl}/pt-br${pathWithoutLocale}`;
+  
+  // Canonical correta para a língua atual
+  const canonicalUrl = params.locale === 'en' ? enUrl : ptUrl;
+
   const socialImageUrl = isPoe2
-    ? `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"}/images/social-poe2.png`
-    : `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"}/images/social-poe1.png`;
+    ? `${baseUrl}/images/social-poe2.png`
+    : `${baseUrl}/images/social-poe1.png`;
 
   return {
     title,
     description,
     alternates: {
       canonical: canonicalUrl,
+      // 2. Adição dos Hreflangs
+      languages: {
+        'en': enUrl,
+        'pt-BR': ptUrl,
+        'x-default': enUrl,
+      }
     },
     openGraph: {
       title,
@@ -57,7 +74,6 @@ export async function generateMetadata(props: {
     })
   };
 }
-
 export default async function Page({
   params,
 }: {
