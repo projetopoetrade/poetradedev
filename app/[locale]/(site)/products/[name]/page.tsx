@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Filters from "./filters";
-import { parseProductSlug } from "@/utils/url-helper";
+import { parseProductSlug, getProductUrl } from "@/utils/url-helper";
 import ProductDetail from "../../../../../components/product-detail";
 import { getProductBySlug } from "@/sanity/sanity-utils";
 import ProductContent from "@/components/product-detail/ProductContent";
@@ -32,51 +32,47 @@ export const generateMetadata = async (props: {
 }): Promise<Metadata> => {
   const params = await props.params;
   const searchParams = await props.searchParams;
-  
+
   // Nome legível para o título
   const productName = await parseProductSlug(params.name);
   const t = await getTranslations({ locale: params.locale, namespace: "SEO" });
 
-  // 1. Construção da URL Base (sem query params)
-  // Se for EN (default), não usa prefixo. Se for PT, usa /pt-br
-  const pathPrefix = params.locale === 'en' ? '' : `/${params.locale}`;
-  const productPath = `/products/${params.name}`; // Mantém o encoded name original da URL
-  
-  // URL Canônica "Limpa" (Sem ?league=... para concentrar a força do SEO)
-  const canonical = `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"}${pathPrefix}${productPath}`;
+  // 1. URLs Canônicas e Alternativas (CLEAN URL ONLY for PoE 1; Param for PoE 2)
+  // Determine Game Version (Default: POE 1)
+  const targetGameVersion = searchParams.gameVersion || "path-of-exile-1";
 
-  // 2. Construção dos Hreflangs (CRUCIAL PARA O GOOGLE)
-  // Precisamos gerar a URL deste mesmo produto para as outras línguas
-  const enUrl = `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"}/products/${params.name}`;
-  const ptUrl = `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"}/pt-br/products/${params.name}`;
+  // Canonical: A versão desta página na língua atual e JOGO atual
+  const canonicalPath = getProductUrl(productName, params.locale, undefined, undefined, targetGameVersion);
+
+  // Alternates: Versões em outras línguas (mantendo o contexto do jogo)
+  const enPath = getProductUrl(productName, 'en', undefined, undefined, targetGameVersion);
+  const ptPath = getProductUrl(productName, 'pt-br', undefined, undefined, targetGameVersion);
 
   return {
     title: t("productDetail.title", { productName }),
     description: t("productDetail.description", { productName }),
-    
+
     alternates: {
-      canonical: canonical,
+      canonical: canonicalPath,
       languages: {
-        'en': enUrl,
-        'pt-BR': ptUrl,
-        'x-default': enUrl, // Fallback para inglês
+        'en': enPath,
+        'pt-BR': ptPath,
+        'x-default': enPath,
       },
     },
 
     openGraph: {
       title: t("productDetail.title", { productName }),
       description: t("productDetail.description", { productName }),
-      url: canonical,
+      url: canonicalPath,
       type: "website",
       siteName: t("siteName"),
-      // Adicione a imagem se possível
     },
     twitter: {
       card: "summary_large_image",
       title: t("productDetail.title", { productName }),
       description: t("productDetail.description", { productName }),
     },
-    // Mantive sua lógica de keywords, está boa
     keywords: generateKeywords({
       locale: params.locale,
       gameVersion: searchParams.gameVersion,
@@ -101,70 +97,88 @@ export default async function ProductDetailPage(props: {
   const params = await props.params;
 
   try {
-    // Get the decoded product name for searching
     const decodedName = await parseProductSlug(params.name);
 
-    // Convert locale format before using it
-    let currentLocale = searchParams.locale || params.locale;
-    if(currentLocale === "pt-br") {
-      currentLocale = "pt_br";
+    // ------------------------------------------------------------------
+    // SMART LEAGUE DEFAULT LOGIC
+    // ------------------------------------------------------------------
+    // Determine Game Version (Default: POE 1)
+    const targetGameVersion = searchParams.gameVersion || "path-of-exile-1";
+
+    // Determine League
+    // 1. Use param if exists
+    // 2. Fetch active leagues and use first one (Primary Default)
+    // 3. Last fallback: undefined (will fetch any)
+    let targetLeague = searchParams.league;
+    let activeLeagues: any[] = [];
+
+    if (!targetLeague) {
+      try {
+        activeLeagues = await getLeagues(targetGameVersion);
+        if (activeLeagues && activeLeagues.length > 0) {
+          targetLeague = activeLeagues[0].name;
+        }
+      } catch (e) {
+        console.warn("Failed to fetch default leagues", e);
+      }
+    } else {
+      // If league provided, we still might want active leagues list for the dropdown later
+      // Optimally we fetch it anyway
+      activeLeagues = await getLeagues(targetGameVersion);
     }
 
-    // Use the decoded name to find the specific product
+    // Use the decoded name to find the specific product with SMART defaults
     const products = await getProductsWithParams({
       search: decodedName,
-      league: searchParams.league,
-      difficulty: searchParams.difficulty,
-      gameVersion: searchParams.gameVersion,
+      league: targetLeague, // NOW using the smart default
+      difficulty: searchParams.difficulty, // Default to undefined (any) -> ProductDetail handles selection
+      gameVersion: targetGameVersion,
     });
 
-    // If no product is found, show an error
-    if (!products || products.length === 0) {
+    // If no product is found, try looser search (remove league filter check)
+    // This handles cases where "Standard" might be the only option or Smart Default failed
+    let productFn = products?.[0];
+
+    if (!productFn && targetLeague) {
+      // Retry without league filter to find ANY version of this product
+      console.log("Smart default product not found, retrying without league filter...");
+      const fallbackProducts = await getProductsWithParams({
+        search: decodedName,
+        gameVersion: targetGameVersion,
+      });
+      productFn = fallbackProducts?.[0];
+    }
+
+    if (!productFn) {
       return (
         <div className="container mx-auto py-16 px-4">
           <div className="text-center">
             <h1 className="text-3xl font-bold mb-4">Product Not Found</h1>
-            <p className="mb-8 text-muted-foreground">
-              The product '{decodedName}' could not be found. It may have been
-              removed or doesn't exist.
-            </p>
-            <Link href="/products">
-              <Button className="bg-indigo-600 hover:bg-indigo-700">
-                Browse All Products
-              </Button>
-            </Link>
+            <Link href="/products"><Button>Browse All Products</Button></Link>
           </div>
         </div>
       );
     }
 
-    // Use the first product from the results
-    const product = products[0];
-
-    // Fetch product details from Sanity
+    const product = productFn;
     const productSanity = await getProductBySlug(product.slug);
 
-    // Fetch leagues from database based on product's game version
-    const currentGameVersion = searchParams.gameVersion || product.gameVersion;
-    const leaguesData = await getLeagues(
-      currentGameVersion as "path-of-exile-1" | "path-of-exile-2"
-    );
-    const leagueOptions = leaguesData.map((league) => league.name);
+    // Dropdown Options
+    const leagueOptions = activeLeagues.length > 0
+      ? activeLeagues.map((l: any) => l.name)
+      : [product.league]; // Fallback to product's own league if fetch failed
 
-    // Difficulty options
     const difficultyOptions = ["softcore", "hardcore"];
-
-    // Game version options
     const gameVersionOptions = [
       { value: "path-of-exile-1", label: "Path of Exile 1" },
       { value: "path-of-exile-2", label: "Path of Exile 2" },
     ];
 
-    // Current selected values
-    const currentLeague = searchParams.league || product.league;
+    // Current selected values (for UI state)
+    const currentLeague = targetLeague || product.league;
     const currentDifficulty = searchParams.difficulty || product.difficulty;
 
-
+    // JSON-LD with CLEAN URL
     const productStructuredData = {
       "@context": "https://schema.org",
       "@type": "Product",
@@ -172,59 +186,26 @@ export default async function ProductDetailPage(props: {
       description: productSanity?.body?.[0]?.children?.[0]?.text || product.name,
       image: product.imgUrl,
       sku: product.id?.toString() || product.name.replace(/\s+/g, '-'),
-      category: "Virtual Goods > Game Currency",
-      brand: {
-        "@type": "Brand",
-        name: product.gameVersion === "path-of-exile-1" ? "Path of Exile 1" : "Path of Exile 2",
-      },
       offers: {
         "@type": "Offer",
-        url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"}${params.locale === 'en' ? '' : `/${params.locale}`}/products/${encodeURIComponent(product.name)}?league=${encodeURIComponent(product.league)}&difficulty=${encodeURIComponent(product.difficulty)}&gameVersion=${encodeURIComponent(product.gameVersion)}`,
+        // Canonical URL in Schema too!
+        url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"}${getProductUrl(product.name, params.locale)}`,
         priceCurrency: "USD",
         price: product.price,
         availability: "https://schema.org/InStock",
-        itemCondition: "https://schema.org/NewCondition",
-        priceValidUntil: new Date(new Date().setDate(new Date().getDate() + 30))
-          .toISOString()
-          .split("T")[0],
-        seller: {
-          "@type": "Organization",
-          name: "Path of Trade",
-          url: process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net",
-        },
-      },
-      // Additional metadata for better SEO
-      additionalProperty: [
-        {
-          "@type": "PropertyValue",
-          name: "League",
-          value: product.league
-        },
-        {
-          "@type": "PropertyValue",
-          name: "Difficulty",
-          value: product.difficulty
-        },
-        {
-          "@type": "PropertyValue",
-          name: "Game Version",
-          value: product.gameVersion
-        }
-      ]
+        seller: { "@type": "Organization", name: "Path of Trade" }
+      }
     };
 
     return (
       <div className="container mx-auto py-6 md:py-12 px-4">
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(productStructuredData),
-          }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(productStructuredData) }}
         />
 
         <div className="max-w-6xl mx-auto rounded-lg overflow-hidden">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
-            {/* Product Image */}
             <div className="p-4 md:p-6 flex items-center justify-center bg-black/10 rounded-lg">
               <div className="relative w-full aspect-square max-w-[200px] md:max-w-[250px]">
                 <Image
@@ -234,15 +215,14 @@ export default async function ProductDetailPage(props: {
                   sizes="(max-width: 768px) 100vw, 50vw"
                   className="object-contain"
                   quality={100}
-                  priority
+                  priority // Hero image keeps priority
                 />
               </div>
             </div>
 
-            {/* Product Info */}
             <ProductDetail
               product={product}
-              currentGameVersion={currentGameVersion}
+              currentGameVersion={targetGameVersion as any}
               currentLeague={currentLeague}
               currentDifficulty={currentDifficulty}
               gameVersionOptions={gameVersionOptions}
@@ -253,11 +233,10 @@ export default async function ProductDetailPage(props: {
           </div>
         </div>
 
-        {/* Description Section */}
-        {productSanity?.body?.[currentLocale] && (
+        {productSanity?.body?.[params.locale === 'en' ? 'en' : 'pt_br'] && (
           <div className="p-4 md:p-6 mt-6 md:mt-12 bg-muted/10 rounded-lg">
             <h2 className="text-lg font-semibold text-gray-100/40 mb-4">Description</h2>
-            <ProductContent content={productSanity.body[currentLocale]} />
+            <ProductContent content={productSanity.body[params.locale === 'en' ? 'en' : 'pt_br']} />
           </div>
         )}
       </div>

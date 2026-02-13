@@ -9,13 +9,13 @@
 export const encodeProductName = (name: string): string => {
   // First normalize the string (handle accents, etc.)
   const normalized = name.normalize('NFD');
-  
+
   // Replace spaces with hyphens and remove problematic characters
   const slugified = normalized
     .replace(/[\s\+\&\%\#\@\!\(\)\[\]\{\}\:\;\'\"\,\.\?\<\>\/\\\|]/g, '-')
     .replace(/--+/g, '-')  // Replace multiple hyphens with a single one
     .replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
-    
+
   // Finally, encode the result for URL safety
   return encodeURIComponent(slugified);
 };
@@ -25,7 +25,7 @@ export const encodeProductName = (name: string): string => {
  */
 export const decodeProductName = (slug: string): string => {
   const decoded = decodeURIComponent(slug);
-  
+
   // Replace hyphens with spaces and capitalize first letter of each word
   return decoded
     .replace(/-/g, ' ')
@@ -35,22 +35,34 @@ export const decodeProductName = (slug: string): string => {
 /**
  * Generate a full, secure URL for a product
  */
+/**
+ * Generate a full, clean URL for a product
+ * Prefer clean URLs: /products/divine-orb (Canonical)
+ * Avoid: /products/Divine%20Orb?league=... (Legacy/Search)
+ */
 export const getProductUrl = (
-  productName: string, 
-  league?: string, 
-  difficulty?: string
+  productName: string,
+  locale: string = 'en',
+  // Keep these for backward compatibility or strict searches
+  league?: string,
+  difficulty?: string,
+  gameVersion?: string
 ): string => {
-  // Create base URL with encoded product name
-  const baseUrl = `/products/${encodeProductName(productName)}`;
-  
-  // Add query parameters if they exist
-  const params = new URLSearchParams();
-  if (league && league !== 'any') params.set('league', league);
-  if (difficulty && difficulty !== 'any') params.set('difficulty', difficulty);
-  
-  // Construct final URL
-  const queryString = params.toString();
-  return `${baseUrl}${queryString ? `?${queryString}` : ''}`;
+  // Normalize locale path
+  const localePath = locale === 'en' ? '' : `/${locale}`;
+
+  // Create base URL with encoded product name (slug)
+  const slug = encodeProductName(productName);
+  let baseUrl = `${localePath}/products/${slug}`;
+
+  // SEO STRATEGY:
+  // PoE 1 -> Clean URL (e.g. /products/divine-orb)
+  // PoE 2 -> Param URL (e.g. /products/divine-orb?gameVersion=path-of-exile-2)
+  if (gameVersion === 'path-of-exile-2') {
+    baseUrl += `?gameVersion=${gameVersion}`;
+  }
+
+  return baseUrl;
 };
 
 /**
@@ -61,7 +73,7 @@ export const enforceHttps = (url: string): string => {
   if (url.startsWith('http://')) {
     return url.replace('http://', 'https://');
   }
-  
+
   // If it's a relative URL or already https, return as is
   return url;
 };
