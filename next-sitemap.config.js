@@ -69,9 +69,17 @@ module.exports = {
     products.forEach((product) => {
       if (product && product.name) {
         locales.forEach((locale) => {
-          // CLEAN URL ONLY: /products/divine-orb
-          // No query params!
-          const productPath = `/products/${encodeURIComponent(product.name.replace(/ /g, '-').toLowerCase())}`;
+          // Base Clean URL: /products/divine-orb
+          let productPath = `/products/${encodeURIComponent(product.name.replace(/ /g, '-').toLowerCase())}`;
+
+          // HYBRID URL STRATEGY:
+          // If explicitly PoE 2, append the gameVersion parameter
+          // This matches our canonical strategy:
+          // PoE 1 -> Clean URL
+          // PoE 2 -> Param URL
+          if (product.gameVersion === 'path-of-exile-2') {
+            productPath += '?gameVersion=path-of-exile-2';
+          }
 
           const localePath = locale === defaultLocale ? productPath : `/${locale}${productPath}`;
 
@@ -79,7 +87,7 @@ module.exports = {
             loc: localePath,
             lastmod: product.lastmod || defaultLastMod,
             changefreq: 'daily',
-            priority: 0.9,
+            priority: product.gameVersion === 'path-of-exile-2' ? 0.85 : 0.9,
           });
         });
       }
