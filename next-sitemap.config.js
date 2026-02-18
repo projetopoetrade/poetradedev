@@ -10,23 +10,40 @@ module.exports = {
   generateRobotsTxt: true,
   sitemapSize: 5000,
 
+  // Clean Crawl Budget: Exclude assets explicitly
+  exclude: ['*.png', '*.jpg', '*.jpeg', '*.svg', '*.gif', '/admin', '/api', '/_next', '/cart', '/auth'],
+
   // Robots.txt options: Block admin and private routes
   robotsTxtOptions: {
     policies: [
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/admin', '/api', '/_next', '/cart', '/auth']
+        disallow: ['/admin', '/api', '/_next', '/cart', '/auth', '*.png', '*.jpg', '*.jpeg', '*.svg', '*.gif']
       }
     ]
   },
 
   additionalPaths: async (config) => {
     const paths = [];
+    // Lastmod: Current (February 2026)
     const defaultLastMod = new Date().toISOString();
 
     const locales = ['en', 'pt-br'];
     const defaultLocale = 'en';
+
+    // Helper to generate Hreflang alternateRefs for a given base path
+    const generateAlternateRefs = (basePath) => {
+      return locales.map(locale => {
+        const localePath = locale === defaultLocale ? basePath : `/${locale}${basePath}`;
+        // Ensure we don't end up with double slashes if basePath is /
+        const cleanPath = localePath === '/' ? '/' : localePath.replace(/\/$/, '');
+        return {
+          href: `${config.siteUrl}${cleanPath}`,
+          hreflang: locale,
+        };
+      });
+    };
 
     // ============================================================
     // 1. PÁGINAS ESTÁTICAS
@@ -42,14 +59,19 @@ module.exports = {
     ];
 
     staticPages.forEach((page) => {
+      const alternates = generateAlternateRefs(page.path);
+
       locales.forEach((locale) => {
-        // Enforce trailing slash consistency if needed, but next-sitemap usually handles it
         const localePath = locale === defaultLocale ? page.path : `/${locale}${page.path}`;
+        // Handle root special case for concatenation
+        const finalLoc = localePath.replace(/\/\//g, '/');
+
         paths.push({
-          loc: localePath,
+          loc: finalLoc,
           lastmod: defaultLastMod,
           changefreq: page.changefreq,
           priority: page.priority,
+          alternateRefs: alternates,
         });
       });
     });
@@ -58,67 +80,75 @@ module.exports = {
     const [posts, products] = await Promise.all([
       getSitemapPosts(),
       getSitemapProducts(),
-      // We don't strictly need leagues anymore if products handle it, 
-      // but if you have landing pages for leagues, keep them. 
-      // For now, focusing on PRODUCTS as per rescue protocol.
     ]);
 
     // ============================================================
     // 2. PRODUTOS (URL Limpa Enforced)
     // ============================================================
-    products.forEach((product) => {
-      if (product && product.name) {
-        locales.forEach((locale) => {
-          // Base Clean URL: /products/divine-orb
-          let productPath = `/products/${encodeURIComponent(product.name.replace(/ /g, '-').toLowerCase())}`;
+    if (products && products.length > 0) {
+      products.forEach((product) => {
+        if (product && product.name) {
+          // Base Clean URL calculation
+          let productSlug = encodeURIComponent(product.name.replace(/ /g, '-').toLowerCase());
+          let productPath = `/products/${productSlug}`;
 
-          // HYBRID URL STRATEGY:
-          // If explicitly PoE 2, append the gameVersion parameter
-          // This matches our canonical strategy:
-          // PoE 1 -> Clean URL
-          // PoE 2 -> Param URL
+          // HYBRID URL STRATEGY (PoE 2 param)
           if (product.gameVersion === 'path-of-exile-2') {
             productPath += '?gameVersion=path-of-exile-2';
           }
 
-          const localePath = locale === defaultLocale ? productPath : `/${locale}${productPath}`;
+          // Generate alternates tailored to this product's path
+          // Note for Query Params: strictly speaking hreflang should match the URL exactly.
+          const alternates = generateAlternateRefs(productPath);
 
-          paths.push({
-            loc: localePath,
-            lastmod: product.lastmod || defaultLastMod,
-            changefreq: 'daily',
-            priority: product.gameVersion === 'path-of-exile-2' ? 0.85 : 0.9,
+          locales.forEach((locale) => {
+            const localePath = locale === defaultLocale ? productPath : `/${locale}${productPath}`;
+
+            paths.push({
+              loc: localePath,
+              lastmod: product.lastmod || defaultLastMod,
+              changefreq: 'daily',
+              priority: product.gameVersion === 'path-of-exile-2' ? 0.85 : 0.9,
+              alternateRefs: alternates,
+            });
           });
-        });
-      }
-    });
+        }
+      });
+    }
 
     // ============================================================
     // 3. BLOG POSTS
     // ============================================================
-    posts.forEach((post) => {
-      if (post && post.slug) {
-        // Assuming posts are language specific or translated
-        // If posts are unique per language, check post.language. 
-        // If they are translated with same slug:
-        locales.forEach((locale) => {
-          // Check if post language matches or if we translate slugs (assuming simple structure for now)
-          if (post.language && post.language !== locale && !(post.language === 'en' && locale === 'en' || post.language === 'pt-br' && locale === 'pt-br')) {
-            return; // Skip if strict language binding exists in CMS
-          }
-
+    if (posts && posts.length > 0) {
+      posts.forEach((post) => {
+        if (post && post.slug) {
           const postPath = `/blog/${encodeURIComponent(post.slug)}`;
-          const localePath = locale === defaultLocale ? postPath : `/${locale}${postPath}`;
+          const alternates = generateAlternateRefs(postPath);
 
-          paths.push({
-            loc: localePath,
-            lastmod: post.lastmod || defaultLastMod,
-            changefreq: 'weekly',
-            priority: 0.7,
+          // Filtering logic: Check if post has a language field
+          // If strict language separation exists in CMS, logic might differ. 
+          // For now, assuming translated content shares the slug or we iterate locales.
+
+          locales.forEach((locale) => {
+            // Language filtering (if post.language exists and mismatches)
+            if (post.language && post.language !== locale &&
+              !(post.language === 'en' && locale === 'en' || post.language === 'pt-br' && locale === 'pt-br')) {
+              return;
+            }
+
+            const localePath = locale === defaultLocale ? postPath : `/${locale}${postPath}`;
+
+            paths.push({
+              loc: localePath,
+              lastmod: post.lastmod || defaultLastMod,
+              changefreq: 'weekly',
+              priority: 0.7,
+              alternateRefs: alternates,
+            });
           });
-        });
-      }
-    });
+        }
+      });
+    }
 
     return paths;
   }
