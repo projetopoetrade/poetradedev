@@ -1,7 +1,16 @@
 {
   "HomePage": {
     "why-path-of-trade": "Por que escolher a Path of Trade Net?",
-    "choose-your-game": "ESCOLHA SEU JOGO"
+    "choose-your-game": "ESCOLHA SEU JOGO",
+    "h1": "Comprar Currency de Path of Exile (PoE) - Entrega Rápida"
+  },
+  "Schema": {
+    "name": "Path of Trade Net",
+    "alternateName": "Comércio de Moedas Path of Exile",
+    "description": "Path of Trade Net - Sua fonte confiável para comércio de moedas de Path of Exile. Compre e venda moedas POE com entrega instantânea. Obtenha os melhores preços, comércio seguro e suporte ao cliente 24/7.",
+    "sellerDescription": "Serviço profissional de comércio de moedas de Path of Exile",
+    "offerName": "Comércio de Moedas POE",
+    "offerDescription": "Serviço seguro e instantâneo de comércio de moedas POE pela Path of Trade Net"
   },
   "Features": {
     "fast-delivery": "Entrega Rápida",
@@ -55,10 +64,6 @@
       "description": "Fique por dentro das últimas notícias, guias e atualizações de Path of Exile 1 e 2. Dicas de negociação e muito mais no blog do Path of Trade."
     }
   },
-
-
-
- 
   "SelectLeaguePage": {
     "title": "SELECIONE SUA LIGA",
     "description": "Selecione sua liga Path of Exile abaixo para visualizar os preços e ofertas disponíveis.",
@@ -67,7 +72,6 @@
     "latest-news": "Últimas Notícias",
     "no-posts-found": "Nenhuma postagem encontrada para esta categoria e versão do jogo",
     "error-loading-posts": "Erro ao carregar as postagens. Por favor, tente novamente mais tarde.",
-    
     "why-trade-with-us": "Por que Comprar com Path of Trade?",
     "unmatched-security": "Segurança Incomparável",
     "unmatched-security-description": "Sua segurança e segurança da conta são nossa prioridade.",
@@ -80,8 +84,6 @@
     "wide-selection": "Seleção Ampla",
     "wide-selection-description": "Uma ampla variedade de orbes, moedas e itens para {gameTitle}.",
     "news-description": "PathofTrade.net é sua fonte confiável para {gameTitle} currency trading. Compre com segurança e instantaneamente. Obtenha os melhores preços e entrega rápida."
-    
-
   },
   "NewsPage": {
     "news": "Notícias",
@@ -101,31 +103,32 @@
     "refund-policy": "Política de Reembolso",
     "legal": "Legal"
   },
-  
-
-
- "faq": {
-      "faq-title": "Perguntas Frequentes (FAQ)",
-      "answers-to-some-questions": "Respostas a algumas perguntas que você pode ter.",
-      "question1": "O que é Path of Exile?",
-      "answer1": "Path of Exile é um RPG de ação gratuito da Grinding Gear Games, famoso por sua economia complexa — e é aí que entramos para ajudar!",
-      "question2": "Que tipo de moedas, serviços e itens de Path of Exile vocês vendem?",
-      "answer2": "Oferecemos uma gama completa de produtos para Path of Exile! Nosso catálogo inclui:\n\n- Moedas PoE: Um estoque massivo de Orbes Divinos, Orbes do Caos, Orbes Exaltados, Espelhos de Kalandra e muito mais.\n- Itens Únicos: Encontre o equipamento poderoso que você precisa para completar sua build.\n- Serviços: Oferecemos power leveling e criação de builds por especialistas para te deixar pronto para o endgame.\n\nExplore nosso site para ver tudo o que temos em estoque para a liga atual!",
-      "question3": "Para qual liga de Path of Exile vocês vendem itens?",
-      "answer3": "Sim! Oferecemos suporte tanto para a liga permanente Standard quanto para a Liga de Desafio (Challenge League) da temporada atual. Por favor, verifique se selecionou a liga correta antes de finalizar a compra para garantir que seus itens cheguem ao lugar certo.",
-      "question4": "Os itens e moedas são para POE1 e POE2? E para quais plataformas?",
-      "answer4": "Sim, todos os nossos produtos e serviços são para Path of Exile 1 e Path of Exile 2 na plataforma PC. Atualmente, não oferecemos suporte para as versões de console (PlayStation/Xbox).",
-      "question5": "Como entro em contato se tiver dúvidas ou problemas?",
-      "answer5": "Nossa equipe de suporte está pronta para ajudar! A maneira mais rápida de nos contatar é através do nosso Live Chat 24/7 no site. Você também pode nos enviar um e-mail para suporte@pathoftrade.net ou usar nosso formulário de contato. Nosso objetivo é responder a todas as solicitações prontamente."
-    },
+  "faq": {
+    "faq-title": "Perguntas Frequentes (FAQ)",
+    "answers-to-some-questions": "Respostas sobre Comprar Currency, Segurança e Entrega",
+    "question1": "Como comprar Divine Orb no PoE com entrega rápida?",
+    "answer1": "Para comprar Divine Orbs com entrega rápida (até 30 minutos), basta selecionar sua liga (Settlers, Standard, ou PoE 2), escolher a quantidade desejada e finalizar o pagamento via PIX ou Cartão. Nossa equipe entrega via trade in-game seguro.",
+    "question2": "A loja Path of Trade é confiável para comprar currency?",
+    "answer2": "Sim, a Path of Trade é uma loja 100% confiável e brasileira. Operamos com CNPJ, gateways de pagamento seguros (Stripe/Pix) e temos milhares de clientes satisfeitos. Nossa reputação é construída na transparência e segurança da sua conta.",
+    "question3": "Existe risco de banimento ao comprar currency no PoE?",
+    "answer3": "Nós minimizamos o risco usando métodos de entrega 'higiênicos'. Nunca usamos bots para entrega; todas as trocas são feitas por jogadores reais, simulando interações legítimas de trade para proteger sua conta contra detecção.",
+    "question4": "Vocês vendem currency e itens para Path of Exile 2?",
+    "answer4": "Sim! Estamos totalmente preparados para o Path of Exile 2. Você pode comprar Gold, Uniques e Orbs para o PoE 2 assim que as ligas forem lançadas, com a mesma garantia de segurança do PoE 1.",
+    "question5": "Quais métodos de pagamento vocês aceitam no Brasil?",
+    "answer5": "Aceitamos PIX (aprovação instantânea e entrega mais rápida), Cartões de Crédito (via Stripe), Boleto e Criptomoedas. O PIX é o método recomendado para agilizar o envio dos seus itens.",
+    "question6": "O que acontece se eu não receber meus itens?",
+    "answer6": "Garantia de Entrega ou Reembolso. Se, por qualquer motivo raro, não conseguirmos entregar seu pedido dentro do prazo estipulado devido a problemas de estoque ou servidor, você receberá um reembolso total imediato.",
+    "question7": "Como funciona a entrega 'Face-to-Face' no jogo?",
+    "answer7": "Após o pagamento, nosso sistema fornece instruções. Um de nossos traders convidará você para um grupo no jogo e irá até o seu Hideout (ou cidade) para realizar a troca. Recomendamos colocar um item raro inútil na janela de trade para segurança extra.",
+    "question8": "Vocês cobrem ligas Hardcore e Ruthless?",
+    "answer8": "Sim, cobrimos a maioria das ligas, incluindo Hardcore e Ruthless (sujeito a disponibilidade de estoque). Verifique o seletor de ligas na página inicial para ver o estoque em tempo real para sua liga específica."
+  },
   "GameVersionPosts": {
     "major-updates": "Atualizações Principais"
   },
-
   "Testemonials": {
     "title": "O que nossos clientes dizem: "
   },
-
   "LeagueSelection": {
     "title": "SELECIONE SUA LIGA",
     "description": "Selecione sua liga Path of Exile abaixo para visualizar os preços e ofertas disponíveis.",
@@ -133,7 +136,6 @@
     "no-posts-found": "Nenhuma postagem encontrada para esta categoria e versão do jogo",
     "error-loading-posts": "Erro ao carregar as postagens. Por favor, tente novamente mais tarde."
   },
-
   "Products": {
     "allCategories": "Todas as Categorias",
     "cancel": "Cancelar",
@@ -160,7 +162,6 @@
     "selectFiltersDescription": "Escolha sua versão do jogo, liga e dificuldade para navegar pelos produtos certos para você.",
     "applyFilters": "Aplicar Filtros"
   },
-
   "Cart": {
     "title": "Carrinho de Compras",
     "emptyCart": "Seu carrinho está vazio",
@@ -223,7 +224,6 @@
     "paymentVerificationError": "Erro ao verificar pagamento",
     "redirectingToOrder": "Redirecionando para seu pedido..."
   },
-
   "ProductCard": {
     "addToCartError": "Falha ao adicionar o item ao carrinho. Por favor, tente novamente.",
     "placeholderImageAlt": "Imagem de placeholder",
@@ -237,7 +237,6 @@
     "itemAddedToCart": "Item adicionado ao carrinho",
     "itemAddedDescription": "{quantity}x {productName} adicionado com sucesso"
   },
-
   "Orders": {
     "title": "Meus Pedidos PoE",
     "noOrdersYet": "Nenhum pedido ainda",
@@ -302,86 +301,83 @@
     "confirm": "Confirmar",
     "cancel": "Cancelar"
   },
-  
-    "PatchInfo": {
-      "keyFeatures": "Recursos Principais",
-      "keyChanges": "Principais Mudanças",
-      "noPatchInformationAvailable": "Nenhuma informação de patch disponível para a versão selecionada.",
-      "viewFullLeagueGuide": "Ver Guia Completo da Liga",
-      "patches": {
-        "path-of-exile-1": {
-          "version": "3.27",
-          "title": "Keepers of the Flame",
-          "date": "31 de outubro de 2025",
-          "description": "Sequência de Breach com sistema Genesis Tree e Grafts, novas classes de ascendência e mudanças de qualidade de vida que modernizam o jogo.",
-          "changes": [
-            "Sistema Genesis Tree com progressão própria e escolhas estratégicas",
-            "16 tipos de Grafts equipáveis (até 2 simultâneos) com skills dedicadas",
-            "Novos orbes carnais para craft de Grafts (Aug/Regal/Exalted)",
-            "\"Foul\" currency e uniques com distribuição alterada de mods",
-            "Breaches estabilizados com defesa de hives e novos chefes",
-            "Identificação em massa em NPCs sem uso de Scrolls of Wisdom",
-            "Bestiário: itemização gratuita de beasts desde late Act 1",
-            "Heist: Rogues começando no nível máximo",
-            "Trade assíncrono muda dinâmica de venda/compra",
-            "Novos uniques \"Foul\" com variações mutantes"
-          ],
-          "features": [
-            {
-              "title": "Genesis Tree",
-              "description": "Árvore de progressão própria que permite crescer Grafts, currency, raros e até \"Foul\" uniques através de escolhas estratégicas."
-            },
-            {
-              "title": "Grafts Equipáveis",
-              "description": "Até dois Grafts podem ser equipados, com 16 variações incluindo fogo, gelo, raio, físico e opções híbridas que concedem habilidades únicas."
-            },
-            {
-              "title": "Quality of Life",
-              "description": "Identificação em massa, itemização gratuita de beasts, rogues de Heist no nível máximo e melhorias no sistema de trade."
-            },
-            {
-              "title": "Craft Dedicado",
-              "description": "Orbes \"carnais\" que funcionam como Aug/Regal/Exalted para Grafts, e \"Foul Exalted\" com distribuição filtrada de tiers para crafting avançado."
-            }
-          ],
-          "leagueGuideUrl": "/league/keepers-of-the-flame"
-        },
-        "path-of-exile-2": {
-          "version": "2.0",
-          "title": "Path of Exile 2",
-          "date": "6 de dezembro de 2024",
-          "description": "Path of Exile 2 é um ARPG gratuito desenvolvido e publicado pela Grinding Gear Games. Continuação do Path of Exile de 2013, lançado em Acesso Antecipado pago para PC, PlayStation 5 e Xbox Series X|S.",
-          "changes": [
-            "Nova Campanha com seis atos",
-            "12 Classes com três Ascendências cada",
-            "Mais de 100 mapas de fim de jogo",
-            "Centenas de bases de equipamentos",
-            "Sistema de Habilidades personalizável com Dupla Especialização",
-            "Novo motor gráfico com visuais de alta fidelidade"
-          ],
-          "features": [
-            {
-              "title": "Nova Campanha",
-              "description": "Se passa vários anos após os eventos do primeiro jogo, com novas áreas, cidades e personagens."
-            },
-            {
-              "title": "Mecânicas de Liga",
-              "description": "Mantém a tradição de ligas temporárias de desafios com mecânicas e recompensas únicas."
-            },
-            {
-              "title": "Sistema de Equipamentos",
-              "description": "Centenas de bases de equipamentos com modificadores mágicos e variantes únicas com poderes ancestrais."
-            },
-            {
-              "title": "Sistema de Habilidades Personalizável",
-              "description": "Qualquer classe pode usar qualquer Gema de Habilidade, modificada por até 5 Gemas de Suporte. A Dupla Especialização permite alternar entre dois estilos de luta."
-            }
-          ]
-        }
+  "PatchInfo": {
+    "keyFeatures": "Recursos Principais",
+    "keyChanges": "Principais Mudanças",
+    "noPatchInformationAvailable": "Nenhuma informação de patch disponível para a versão selecionada.",
+    "viewFullLeagueGuide": "Ver Guia Completo da Liga",
+    "patches": {
+      "path-of-exile-1": {
+        "version": "3.27",
+        "title": "Keepers of the Flame",
+        "date": "31 de outubro de 2025",
+        "description": "Sequência de Breach com sistema Genesis Tree e Grafts, novas classes de ascendência e mudanças de qualidade de vida que modernizam o jogo.",
+        "changes": [
+          "Sistema Genesis Tree com progressão própria e escolhas estratégicas",
+          "16 tipos de Grafts equipáveis (até 2 simultâneos) com skills dedicadas",
+          "Novos orbes carnais para craft de Grafts (Aug/Regal/Exalted)",
+          "\"Foul\" currency e uniques com distribuição alterada de mods",
+          "Breaches estabilizados com defesa de hives e novos chefes",
+          "Identificação em massa em NPCs sem uso de Scrolls of Wisdom",
+          "Bestiário: itemização gratuita de beasts desde late Act 1",
+          "Heist: Rogues começando no nível máximo",
+          "Trade assíncrono muda dinâmica de venda/compra",
+          "Novos uniques \"Foul\" com variações mutantes"
+        ],
+        "features": [
+          {
+            "title": "Genesis Tree",
+            "description": "Árvore de progressão própria que permite crescer Grafts, currency, raros e até \"Foul\" uniques através de escolhas estratégicas."
+          },
+          {
+            "title": "Grafts Equipáveis",
+            "description": "Até dois Grafts podem ser equipados, com 16 variações incluindo fogo, gelo, raio, físico e opções híbridas que concedem habilidades únicas."
+          },
+          {
+            "title": "Quality of Life",
+            "description": "Identificação em massa, itemização gratuita de beasts, rogues de Heist no nível máximo e melhorias no sistema de trade."
+          },
+          {
+            "title": "Craft Dedicado",
+            "description": "Orbes \"carnais\" que funcionam como Aug/Regal/Exalted para Grafts, e \"Foul Exalted\" com distribuição filtrada de tiers para crafting avançado."
+          }
+        ],
+        "leagueGuideUrl": "/league/keepers-of-the-flame"
+      },
+      "path-of-exile-2": {
+        "version": "2.0",
+        "title": "Path of Exile 2",
+        "date": "6 de dezembro de 2024",
+        "description": "Path of Exile 2 é um ARPG gratuito desenvolvido e publicado pela Grinding Gear Games. Continuação do Path of Exile de 2013, lançado em Acesso Antecipado pago para PC, PlayStation 5 e Xbox Series X|S.",
+        "changes": [
+          "Nova Campanha com seis atos",
+          "12 Classes com três Ascendências cada",
+          "Mais de 100 mapas de fim de jogo",
+          "Centenas de bases de equipamentos",
+          "Sistema de Habilidades personalizável com Dupla Especialização",
+          "Novo motor gráfico com visuais de alta fidelidade"
+        ],
+        "features": [
+          {
+            "title": "Nova Campanha",
+            "description": "Se passa vários anos após os eventos do primeiro jogo, com novas áreas, cidades e personagens."
+          },
+          {
+            "title": "Mecânicas de Liga",
+            "description": "Mantém a tradição de ligas temporárias de desafios com mecânicas e recompensas únicas."
+          },
+          {
+            "title": "Sistema de Equipamentos",
+            "description": "Centenas de bases de equipamentos com modificadores mágicos e variantes únicas com poderes ancestrais."
+          },
+          {
+            "title": "Sistema de Habilidades Personalizável",
+            "description": "Qualquer classe pode usar qualquer Gema de Habilidade, modificada por até 5 Gemas de Suporte. A Dupla Especialização permite alternar entre dois estilos de luta."
+          }
+        ]
       }
-    },
-  
-
+    }
+  },
   "Header": {
     "signIn": "Entrar",
     "signUp": "Cadastrar",
@@ -389,12 +385,10 @@
     "myOrders": "Meus Pedidos",
     "myAccount": "Minha Conta"
   },
-
   "LocaleSwitcher": {
     "label": "Idioma",
     "locale": "Português (BR)"
   },
-
   "Success": {
     "processing": "Processando seu pedido...",
     "processingDescription": "Por favor, aguarde enquanto confirmamos sua compra.",
@@ -612,7 +606,6 @@
     "contactTitle": "Contato",
     "contactDescription": "Se tiver dúvidas sobre esta política ou sobre o tratamento de seus dados, entre em contato com: E-mail:"
   },
-  
   "League": {
     "breadcrumb": {
       "leagues": "Ligas e Guias"
@@ -858,7 +851,6 @@
             "author": "Ruetoo",
             "description": "Build hit-based focada em cold damage com multiplicadores altos e sinergia com freeze effects."
           }
-       
         ]
       },
       "patchNotes": {
@@ -1082,5 +1074,4 @@
       }
     }
   }
-
 }

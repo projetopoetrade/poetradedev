@@ -1,23 +1,31 @@
 {
   "HomePage": {
-      "why-path-of-trade": "Why Choose Path of Trade Net?",
-      "choose-your-game": "CHOOSE YOUR GAME"
-    },
-    "Features": {
-      "fast-delivery": "Fast Delivery",
-      "secure-payment": "Secure Payment",
-      "refund-guarantee": "Refund Guarantee",
-      "security-guarantee": "Security Guarantee",
-      "24-7-support": "24/7 Support",
-      "cheap-prices": "Best Prices",
-      "fast-delivery-description": "Receive your currency and orbs for PoE 1 & 2 in record time. Our system ensures a fast and secure delivery within 30 minutes, 24/7.",
-      "secure-payment-description": "Your security is our priority. We process all payments through encrypted and 100% secure gateways to protect your data.",
-      "refund-guarantee-description": "Shop with total confidence. If we are unable to complete your delivery, we guarantee a fast and hassle-free refund process.",
-      "security-guarantee-description": "Play without worries. We ensure all transactions are conducted securely to protect your Path of Exile account from any risk.",
-      "24-7-support-description": "Our team of Path of Exile experts is available 24/7. Count on us to assist with your purchases and answer any questions, anytime.",
-      "cheap-prices-description": "The best price on the market, guaranteed. We offer Path of Exile orbs, currency, and items at the most competitive rates to maximize your buying power."
-    },
-
+    "why-path-of-trade": "Why Choose Path of Trade Net?",
+    "choose-your-game": "CHOOSE YOUR GAME",
+    "h1": "Buy Path of Exile (PoE) Currency - Fast Delivery"
+  },
+  "Schema": {
+    "name": "Path of Trade Net",
+    "alternateName": "Path of Exile Currency Trading",
+    "description": "Path of Trade Net - Your trusted source for Path of Exile currency trading. Buy and sell POE currency with instant delivery. Get the best prices, secure trading, and 24/7 customer support.",
+    "sellerDescription": "Professional Path of Exile currency trading service",
+    "offerName": "POE Currency Trading",
+    "offerDescription": "Safe and instant POE currency trading service by Path of Trade Net"
+  },
+  "Features": {
+    "fast-delivery": "Fast Delivery",
+    "secure-payment": "Secure Payment",
+    "refund-guarantee": "Refund Guarantee",
+    "security-guarantee": "Security Guarantee",
+    "24-7-support": "24/7 Support",
+    "cheap-prices": "Best Prices",
+    "fast-delivery-description": "Receive your currency and orbs for PoE 1 & 2 in record time. Our system ensures a fast and secure delivery within 30 minutes, 24/7.",
+    "secure-payment-description": "Your security is our priority. We process all payments through encrypted and 100% secure gateways to protect your data.",
+    "refund-guarantee-description": "Shop with total confidence. If we are unable to complete your delivery, we guarantee a fast and hassle-free refund process.",
+    "security-guarantee-description": "Play without worries. We ensure all transactions are conducted securely to protect your Path of Exile account from any risk.",
+    "24-7-support-description": "Our team of Path of Exile experts is available 24/7. Count on us to assist with your purchases and answer any questions, anytime.",
+    "cheap-prices-description": "The best price on the market, guaranteed. We offer Path of Exile orbs, currency, and items at the most competitive rates to maximize your buying power."
+  },
   "SEO": {
     "siteName": "Path of Trade",
     "layout": {
@@ -56,23 +64,19 @@
       "description": "Stay updated with the latest news, guides, and updates for Path of Exile 1 & 2. Trading tips and more on the Path of Trade blog."
     }
   },
-
   "Testemonials": {
     "title": "What our Customers say"
   },
   "GameVersionPosts": {
     "major-updates": "Major Updates"
   },
-
   "LeagueSelection": {
     "title": "SELECT YOUR LEAGUE",
     "description": "Select your Path of Exile league below to view available currency prices and offers.",
     "latest-news": "Latest News",
     "no-posts-found": "No posts found for this category and game version",
     "error-loading-posts": "Error loading posts. Please try again later."
-
   },
-
   "Products": {
     "allCategories": "All Categories",
     "cancel": "Cancel",
@@ -99,7 +103,6 @@
     "selectFiltersDescription": "Choose your game version, league, and difficulty to browse the right products for you.",
     "applyFilters": "Apply Filters"
   },
-
   "Cart": {
     "title": "Shopping Cart",
     "emptyCart": "Your cart is empty",
@@ -162,22 +165,26 @@
     "paymentVerificationError": "Error verifying payment",
     "redirectingToOrder": "Redirecting to your order..."
   },
-
- "faq": {
-      "faq-title": "Frequently Asked Questions (FAQ)",
-      "answers-to-some-questions": "Answers to some questions you might have.",
-      "question1": "What is Path of Exile?",
-      "answer1": "Path of Exile is a free-to-play action RPG developed by Grinding Gear Games, famous for its complex in-game economy—which is where we come in to help!",
-      "question2": "What kind of Path of Exile currency, services, and items do you sell?",
-      "answer2": "We offer a comprehensive range of products for Path of Exile! Our catalog includes:\n\n- PoE currency A huge stock of Divine Orbs, Chaos Orbs, Exalted Orbs, Mirrors of Kalandra, and more.\n- Unique Items: Find the powerful gear you need to complete your build.\n- Services: We offer power leveling and expert build creation to get you ready for the endgame.\n\nExplore our site to see everything we have in stock for the current league!",
-      "question3": "Which Path of Exile league do you sell items for?",
-      "answer3": "Absolutely! We support both the permanent Standard league and the current seasonal Challenge League. Please double-check that you've selected the correct league before completing your purchase to ensure your items arrive in the right place.",
-      "question4": "Are the items and currency for POE1 and POE2? And for which platforms?",
-      "answer4": "Yes, all our products and services are for Path of Exile 1 and Path of Exile 2 on the PC platform. We currently do not support console versions (PlayStation/Xbox).",
-      "question5": "How do I contact you if I have questions or issues?",
-      "answer5": "Our customer support team is ready to help! The fastest way to reach us is through our 24/7 Live Chat on the website. You can also email us at support@pathoftrade.net or use our contact form. We strive to answer all inquiries promptly."
-    },
-
+  "faq": {
+    "faq-title": "Frequently Asked Questions (FAQ)",
+    "answers-to-some-questions": "Answers about Buying Currency, Safety, and Delivery",
+    "question1": "How to buy Divine Orbs in PoE with fast delivery?",
+    "answer1": "To buy Divine Orbs with fast delivery (up to 30 minutes), simply select your league (Settlers, Standard, or PoE 2), choose the desired amount, and complete payment. Our team delivers via secure in-game trade.",
+    "question2": "Is Path of Trade a legitimate site to buy currency?",
+    "answer2": "Yes, Path of Trade is a 100% legitimate and trusted store. We operate with secure payment gateways (Stripe/Crypto) and have thousands of satisfied customers. Our reputation is built on transparency and account safety.",
+    "question3": "Is there a ban risk when buying PoE currency?",
+    "answer3": "We minimize risk by using 'hygienic' delivery methods. We never use bots for delivery; all trades are performed by real players, simulating legitimate trade interactions to protect your account from detection.",
+    "question4": "Do you sell currency and items for Path of Exile 2?",
+    "answer4": "Yes! We are fully prepared for Path of Exile 2. You can buy Gold, Uniques, and Orbs for PoE 2 as soon as leagues launch, with the same safety guarantee as PoE 1.",
+    "question5": "What payment methods do you accept?",
+    "answer5": "We accept Credit/Debit Cards (via Stripe), Google Pay, Apple Pay, and Cryptocurrencies. Card payments are recommended for the fastest processing of your items.",
+    "question6": "What happens if I don't receive my items?",
+    "answer6": "Delivery Guarantee or Refund. If, for any rare reason, we cannot deliver your order within the stipulated time due to stock or server issues, you will receive a full immediate refund.",
+    "question7": "How does 'Face-to-Face' in-game delivery work?",
+    "answer7": "After payment, our system provides instructions. One of our traders will invite you to a party in-game and go to your Hideout (or town) to complete the trade. We recommend putting a useless rare item in the trade window for extra safety.",
+    "question8": "Do you cover Hardcore and Ruthless leagues?",
+    "answer8": "Yes, we cover most leagues, including Hardcore and Ruthless (subject to stock availability). Check the league selector on the homepage for real-time stock for your specific league."
+  },
   "SelectLeaguePage": {
     "title": "SELECT YOUR LEAGUE",
     "description": "Select your Path of Exile league below to view available currency prices and offers.",
@@ -185,7 +192,6 @@
     "select-your-league": "SELECT YOUR LEAGUE",
     "no-posts-found": "No posts found for this category and game version",
     "error-loading-posts": "Error loading posts. Please try again later.",
-
     "latest-news": "Latest News",
     "news-description": "PathofTrade.net is your trusted source for {gameTitle} currency trading. Buy safely and instantly. Get the best prices and fast delivery.",
     "why-trade-with-us": "Why Trade with Path of Trade?",
@@ -200,9 +206,6 @@
     "wide-selection": "Wide Selection",
     "wide-selection-description": "A vast inventory of orbs, currency, and items for {gameTitle}."
   },
-
-
-
   "Footer": {
     "home": "Home",
     "main": "Main",
@@ -217,8 +220,6 @@
     "refund-policy": "Refund Policy",
     "legal": "Legal"
   },
-  
-
   "GamePage": {
     "news": "News",
     "news-description": "PathofTrade.net is your trusted source for {gameTitle} currency trading. Buy safely and instantly. Get the best prices and fast delivery.",
@@ -251,86 +252,83 @@
     "news": "News",
     "news-description": "PathofTrade.net is your trusted source for {gameTitle} currency trading. Buy safely and instantly. Get the best prices and fast delivery."
   },
-  
-    "PatchInfo": {
-      "keyFeatures": "Key Features",
-      "keyChanges": "Key Changes",
-      "noPatchInformationAvailable": "No patch information available for the selected version.",
-      "viewFullLeagueGuide": "View Full League Guide",
-      "patches": {
-        "path-of-exile-1": {
-          "version": "3.27",
-          "title": "Keepers of the Flame",
-          "date": "October 31, 2025",
-          "description": "Breach sequel with Genesis Tree system and Grafts, new ascendancy classes and quality of life changes that modernize the game.",
-          "changes": [
-            "Genesis Tree system with own progression and strategic choices",
-            "16 types of equippable Grafts (up to 2 simultaneous) with dedicated skills",
-            "New carnal orbs for Graft crafting (Aug/Regal/Exalted)",
-            "\"Foul\" currency and uniques with altered mod distribution",
-            "Stabilized Breaches with hive defense and new bosses",
-            "Bulk identification at NPCs without using Scrolls of Wisdom",
-            "Bestiary: free beast itemization from late Act 1",
-            "Heist: Rogues starting at max level",
-            "Asynchronous trade changes buy/sell dynamics",
-            "New \"Foul\" uniques with mutant variations"
-          ],
-          "features": [
-            {
-              "title": "Genesis Tree",
-              "description": "Own progression tree that allows you to grow Grafts, currency, rares and even \"Foul\" uniques through strategic choices."
-            },
-            {
-              "title": "Equippable Grafts",
-              "description": "Up to two Grafts can be equipped, with 16 variations including fire, cold, lightning, physical and hybrid options that grant unique abilities."
-            },
-            {
-              "title": "Quality of Life",
-              "description": "Bulk identification, free beast itemization, Heist rogues at max level and trade system improvements."
-            },
-            {
-              "title": "Dedicated Crafting",
-              "description": "\"Carnal\" orbs that work like Aug/Regal/Exalted for Grafts, and \"Foul Exalted\" with filtered tier distribution for advanced crafting."
-            }
-          ],
-          "leagueGuideUrl": "/league/keepers-of-the-flame"
-        },
-        "path-of-exile-2": {
-          "version": "2.0",
-          "title": "Path of Exile 2",
-          "date": "December 6, 2024",
-          "description": "Path of Exile 2 is a free-to-play MMORPG developed and published by Grinding Gear Games. The sequel to 2013's Path of Exile, launching in paid Early Access on Windows PC, PlayStation 5, and Xbox Series X and Series S.",
-          "changes": [
-            "New Campaign with six acts",
-            "12 Character Classes with three Ascendancy subclasses each",
-            "Over 100 endgame maps",
-            "Hundreds of equipment base types",
-            "Customizable Skill System with Dual-Specialisation",
-            "Brand new graphics engine with high-fidelity visuals"
-          ],
-          "features": [
-            {
-              "title": "New Campaign",
-              "description": "Takes place several years after the events of the first game, featuring new areas, towns, and characters."
-            },
-            {
-              "title": "League Mechanics",
-              "description": "Continues the tradition of temporary challenge leagues with unique mechanics and rewards."
-            },
-            {
-              "title": "Equipment System",
-              "description": "Features hundreds of equipment base types with magical modifiers and unique variants with ancient powers."
-            },
-            {
-              "title": "Customizable Skill System",
-              "description": "Any class can use any Skill Gem, modified with up to 5 Support Gems. Dual-Specialisation allows switching between two fighting styles."
-            }
-          ]
-        }
+  "PatchInfo": {
+    "keyFeatures": "Key Features",
+    "keyChanges": "Key Changes",
+    "noPatchInformationAvailable": "No patch information available for the selected version.",
+    "viewFullLeagueGuide": "View Full League Guide",
+    "patches": {
+      "path-of-exile-1": {
+        "version": "3.27",
+        "title": "Keepers of the Flame",
+        "date": "October 31, 2025",
+        "description": "Breach sequel with Genesis Tree system and Grafts, new ascendancy classes and quality of life changes that modernize the game.",
+        "changes": [
+          "Genesis Tree system with own progression and strategic choices",
+          "16 types of equippable Grafts (up to 2 simultaneous) with dedicated skills",
+          "New carnal orbs for Graft crafting (Aug/Regal/Exalted)",
+          "\"Foul\" currency and uniques with altered mod distribution",
+          "Stabilized Breaches with hive defense and new bosses",
+          "Bulk identification at NPCs without using Scrolls of Wisdom",
+          "Bestiary: free beast itemization from late Act 1",
+          "Heist: Rogues starting at max level",
+          "Asynchronous trade changes buy/sell dynamics",
+          "New \"Foul\" uniques with mutant variations"
+        ],
+        "features": [
+          {
+            "title": "Genesis Tree",
+            "description": "Own progression tree that allows you to grow Grafts, currency, rares and even \"Foul\" uniques through strategic choices."
+          },
+          {
+            "title": "Equippable Grafts",
+            "description": "Up to two Grafts can be equipped, with 16 variations including fire, cold, lightning, physical and hybrid options that grant unique abilities."
+          },
+          {
+            "title": "Quality of Life",
+            "description": "Bulk identification, free beast itemization, Heist rogues at max level and trade system improvements."
+          },
+          {
+            "title": "Dedicated Crafting",
+            "description": "\"Carnal\" orbs that work like Aug/Regal/Exalted for Grafts, and \"Foul Exalted\" with filtered tier distribution for advanced crafting."
+          }
+        ],
+        "leagueGuideUrl": "/league/keepers-of-the-flame"
+      },
+      "path-of-exile-2": {
+        "version": "2.0",
+        "title": "Path of Exile 2",
+        "date": "December 6, 2024",
+        "description": "Path of Exile 2 is a free-to-play MMORPG developed and published by Grinding Gear Games. The sequel to 2013's Path of Exile, launching in paid Early Access on Windows PC, PlayStation 5, and Xbox Series X and Series S.",
+        "changes": [
+          "New Campaign with six acts",
+          "12 Character Classes with three Ascendancy subclasses each",
+          "Over 100 endgame maps",
+          "Hundreds of equipment base types",
+          "Customizable Skill System with Dual-Specialisation",
+          "Brand new graphics engine with high-fidelity visuals"
+        ],
+        "features": [
+          {
+            "title": "New Campaign",
+            "description": "Takes place several years after the events of the first game, featuring new areas, towns, and characters."
+          },
+          {
+            "title": "League Mechanics",
+            "description": "Continues the tradition of temporary challenge leagues with unique mechanics and rewards."
+          },
+          {
+            "title": "Equipment System",
+            "description": "Features hundreds of equipment base types with magical modifiers and unique variants with ancient powers."
+          },
+          {
+            "title": "Customizable Skill System",
+            "description": "Any class can use any Skill Gem, modified with up to 5 Support Gems. Dual-Specialisation allows switching between two fighting styles."
+          }
+        ]
       }
     }
-,
-
+  },
   "Orders": {
     "title": "My PoE Orders",
     "noOrdersYet": "No Orders Yet",
@@ -393,21 +391,17 @@
     "confirm": "Confirm",
     "cancel": "Cancel"
   },
-
   "Header": {
     "signIn": "Sign In",
     "signUp": "Sign Up",
     "signOut": "Sign Out",
     "myOrders": "My Orders",
     "myAccount": "My Account"
-
   },
-
   "LocaleSwitcher": {
     "label": "Language",
     "locale": "English"
   },
-
   "Success": {
     "processing": "Processing your order...",
     "processingDescription": "Please wait while we confirm your purchase.",
@@ -625,7 +619,6 @@
     "contactTitle": "Contact",
     "contactDescription": "If you have questions about this policy or the processing of your data, please contact: Email:"
   },
-  
   "League": {
     "breadcrumb": {
       "leagues": "Leagues & Guides"
@@ -873,7 +866,6 @@
             "author": "Ruetoo",
             "description": "Hit-based build focused on cold damage with high multipliers and freeze effect synergy."
           }
-          
         ]
       },
       "patchNotes": {

@@ -8,33 +8,39 @@ import { useTranslations } from "next-intl";
 
 // 1. Crie um array com os dados do seu FAQ
 const faqItems = [
-  {
-    questionKey: "question1",
-    answerKey: "answer1",
-  },
-  {
-    questionKey: "question2",
-    answerKey: "answer2",
-  },
-  {
-    questionKey: "question3",
-    answerKey: "answer3",
-  },
-  {
-    questionKey: "question4",
-    answerKey: "answer4",
-  },
-  {
-    questionKey: "question5",
-    answerKey: "answer5",
-  },
+  { questionKey: "question1", answerKey: "answer1" },
+  { questionKey: "question2", answerKey: "answer2" },
+  { questionKey: "question3", answerKey: "answer3" },
+  { questionKey: "question4", answerKey: "answer4" },
+  { questionKey: "question5", answerKey: "answer5" },
+  { questionKey: "question6", answerKey: "answer6" },
+  { questionKey: "question7", answerKey: "answer7" },
+  { questionKey: "question8", answerKey: "answer8" },
 ];
 
 export function FaqSection() {
   const t = useTranslations("faq");
 
+  // Generate FAQ Schema
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqItems.map(item => ({
+      "@type": "Question",
+      "name": t(item.questionKey),
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": t(item.answerKey)
+      }
+    }))
+  };
+
   return (
     <section className="container mx-auto mb-16 bg-background">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
       <div className="grid md:grid-cols-2 mx-auto gap-x-12 gap-y-8">
         <div className="flex flex-col">
           {/* O título responsivo que fizemos antes */}
