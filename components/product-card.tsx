@@ -98,6 +98,9 @@ export default function ProductCard({ product }: ProductCardProps) {
   const displayPrice = convertPrice(product.price);
   const totalPrice = displayPrice * count;
 
+  // in_stock defaults to true for products that predate the column
+  const isInStock = product.in_stock !== false;
+
   // Create Clean URL
   const locale = useLocale();
   const productDetailUrl = getProductUrl(product.name, locale, undefined, undefined, product.gameVersion);
@@ -131,6 +134,13 @@ export default function ProductCard({ product }: ProductCardProps) {
           >
             <h2 className="text-lg md:text-xl text-center">{product.name}</h2>
           </Link>
+
+          {/* Out of Stock badge */}
+          {!isInStock && (
+            <span className="mb-1 inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-red-600/20 text-red-400 border border-red-500/30">
+              Out of Stock
+            </span>
+          )}
 
           {/* Quantity controls */}
           <div className="flex my-1 ">
@@ -179,16 +189,16 @@ export default function ProductCard({ product }: ProductCardProps) {
 
           <div className="flex flex-wrap min-w-64 justify-center gap-2 mb-2">
             <Button
-              className="bg-green-500 min-w-28  text-black hover:bg-green-600 hover:scale-105 transition-transform duration-300 hover:text-white text-md font-bold rounded-sm  "
-              disabled={count === 0 || isProcessing}
+              className="bg-green-500 min-w-28 text-black hover:bg-green-600 hover:scale-105 transition-transform duration-300 hover:text-white text-md font-bold rounded-sm"
+              disabled={count === 0 || isProcessing || !isInStock}
               onClick={handleBuyNow}
             >
               {isProcessing ? t('processing') : t('buyNow')}
             </Button>
             <Button
               variant="outline"
-              className="rounded-sm min-w-28  hover:scale-105 transition-transform duration-300 font-bold "
-              disabled={count === 0}
+              className="rounded-sm min-w-28 hover:scale-105 transition-transform duration-300 font-bold"
+              disabled={count === 0 || !isInStock}
               onClick={handleAddToCart}
             >
               {t('addToCart')}

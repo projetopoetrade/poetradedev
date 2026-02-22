@@ -115,9 +115,9 @@ export default function DashboardViews({ activeView, onViewChange }: DashboardVi
   const [selectedGameVersion, setSelectedGameVersion] = useState<string>("All Versions");
   const [selectedLeague, setSelectedLeague] = useState<string>("All Leagues");
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("All Difficulties");
-  
+
   // Leagues for product management filters
-  const [availableLeaguesForFilter, setAvailableLeaguesForFilter] = useState<Array<{id: string, name: string, gameVersion: string}>>([]);
+  const [availableLeaguesForFilter, setAvailableLeaguesForFilter] = useState<Array<{ id: string, name: string, gameVersion: string }>>([]);
   const [loadingLeaguesForFilter, setLoadingLeaguesForFilter] = useState(false);
 
   // Orders management states
@@ -148,14 +148,14 @@ export default function DashboardViews({ activeView, onViewChange }: DashboardVi
   });
 
   // Leagues state for product form
-  const [availableLeagues, setAvailableLeagues] = useState<Array<{id: string, name: string, gameVersion: string}>>([]);
+  const [availableLeagues, setAvailableLeagues] = useState<Array<{ id: string, name: string, gameVersion: string }>>([]);
   const [loadingLeagues, setLoadingLeagues] = useState(false);
 
   // Bulk products states
   const [bulkProducts, setBulkProducts] = useState<Product[]>([]);
   const [bulkLoading, setBulkLoading] = useState(false);
   const [bulkProgress, setBulkProgress] = useState({ current: 0, total: 0 });
-  const [bulkResults, setBulkResults] = useState<{success: number, failed: number, errors: string[]}>({success: 0, failed: 0, errors: []});
+  const [bulkResults, setBulkResults] = useState<{ success: number, failed: number, errors: string[] }>({ success: 0, failed: 0, errors: [] });
 
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -288,9 +288,9 @@ export default function DashboardViews({ activeView, onViewChange }: DashboardVi
     new Intl.NumberFormat('pt-BR', { style: 'currency', currency }).format(amount || 0);
 
   const formatPrice = (amount: number, currency: string) => {
-    return new Intl.NumberFormat('pt-BR', { 
-      style: 'currency', 
-      currency: currency.toUpperCase() 
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: currency.toUpperCase()
     }).format(amount || 0);
   };
 
@@ -444,8 +444,8 @@ export default function DashboardViews({ activeView, onViewChange }: DashboardVi
         const errorData = await response.json();
         throw new Error(errorData.error || 'Failed to update price');
       }
-      
-      setProducts(products.map(product => 
+
+      setProducts(products.map(product =>
         product.id === productId ? { ...product, price } : product
       ));
       toast.success('Price updated successfully');
@@ -470,7 +470,7 @@ export default function DashboardViews({ activeView, onViewChange }: DashboardVi
         const errorData = await response.json();
         throw new Error(errorData.error || 'Failed to delete product');
       }
-      
+
       setProducts(products.filter(product => product.id !== productId));
       toast.success('Product deleted successfully');
     } catch (error) {
@@ -485,6 +485,32 @@ export default function DashboardViews({ activeView, onViewChange }: DashboardVi
     setSelectedDifficulty("All Difficulties");
   };
 
+  const handleToggleStock = async (productId: number, currentStock: boolean) => {
+    const newStockValue = !currentStock;
+    // Optimistic update
+    setProducts(prev => prev.map(p =>
+      p.id === productId ? { ...p, in_stock: newStockValue } : p
+    ));
+    try {
+      const response = await fetch('/api/admin/products/update', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productId, in_stock: newStockValue }),
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to update stock');
+      }
+      toast.success(`Produto marcado como ${newStockValue ? 'Em Estoque' : 'Sem Estoque'}`);
+    } catch (error) {
+      // Revert on failure
+      setProducts(prev => prev.map(p =>
+        p.id === productId ? { ...p, in_stock: currentStock } : p
+      ));
+      toast.error(error instanceof Error ? error.message : 'Failed to update stock');
+    }
+  };
+
   // Bulk products functions
 
   const handleBulkFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -496,13 +522,13 @@ export default function DashboardViews({ activeView, onViewChange }: DashboardVi
       try {
         const content = e.target?.result as string;
         const lines = content.split('\n').filter(line => line.trim());
-        
+
         // Remove a primeira linha (cabeçalho) se existir
         const dataLines = lines.length > 1 ? lines.slice(1) : lines;
-        
+
         const products: Product[] = dataLines.map((line, index) => {
           const [name, category, price, league, difficulty, gameVersion, description, imgUrl] = line.split(',').map(item => item.trim());
-          
+
           return {
             name: name || `Produto ${index + 1}`,
             category: category || 'currency',
@@ -572,7 +598,7 @@ export default function DashboardViews({ activeView, onViewChange }: DashboardVi
     const template = 'Nome,Categoria,Preço,Liga,Dificuldade,Versão do Jogo,Descrição,URL da Imagem\n' +
       'Divine Orb,currency,10,Standard,softcore,path-of-exile-1,Moeda divina,https://example.com/divine-orb.png\n' +
       'Exalted Orb,currency,5,Standard,softcore,path-of-exile-1,Moeda exaltada,https://example.com/exalted-orb.png';
-    
+
     const blob = new Blob([template], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -593,7 +619,7 @@ export default function DashboardViews({ activeView, onViewChange }: DashboardVi
     setLoadingLeagues(true);
     try {
       console.log('Fetching leagues for gameVersion:', gameVersion);
-      
+
       // Try using the existing getLeagues function first
       try {
         const { getLeagues } = await import('@/app/actions');
@@ -604,11 +630,11 @@ export default function DashboardViews({ activeView, onViewChange }: DashboardVi
       } catch (importError) {
         console.log('getLeagues not available, trying API...');
       }
-      
+
       // Fallback to API
       const response = await fetch(`/api/admin/leagues?gameVersion=${gameVersion}`);
       console.log('Response status:', response.status);
-      
+
       if (response.ok) {
         const leagues = await response.json();
         console.log('Leagues fetched from API:', leagues);
@@ -634,7 +660,7 @@ export default function DashboardViews({ activeView, onViewChange }: DashboardVi
     setLoadingLeaguesForFilter(true);
     try {
       console.log('Fetching leagues for filter gameVersion:', gameVersion);
-      
+
       // Try using the existing getLeagues function first
       try {
         const { getLeagues } = await import('@/app/actions');
@@ -645,11 +671,11 @@ export default function DashboardViews({ activeView, onViewChange }: DashboardVi
       } catch (importError) {
         console.log('getLeagues not available for filter, trying API...');
       }
-      
+
       // Fallback to API
       const response = await fetch(`/api/admin/leagues?gameVersion=${gameVersion}`);
       console.log('Filter response status:', response.status);
-      
+
       if (response.ok) {
         const leagues = await response.json();
         console.log('Leagues for filter fetched from API:', leagues);
@@ -670,11 +696,11 @@ export default function DashboardViews({ activeView, onViewChange }: DashboardVi
     setOrdersLoading(true);
     try {
       const response = await fetch('/api/admin/orders');
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch orders');
       }
-      
+
       const data = await response.json();
       setOrders(data || []);
     } catch (error) {
@@ -974,9 +1000,9 @@ export default function DashboardViews({ activeView, onViewChange }: DashboardVi
             <Card className="bg-card border-border">
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle className="text-card-foreground">Pedidos recentes</CardTitle>
-                <Button 
+                <Button
                   onClick={() => onViewChange('orders')}
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground" 
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground"
                   size="sm"
                 >
                   <ShoppingCart className="h-4 w-4 mr-2" />
@@ -1032,8 +1058,8 @@ export default function DashboardViews({ activeView, onViewChange }: DashboardVi
                         value={productForm.name}
                         onChange={(e) => {
                           const newName = e.target.value;
-                          setProductForm({ 
-                            ...productForm, 
+                          setProductForm({
+                            ...productForm,
                             name: newName,
                             slug: generateSlug(newName, productForm.gameVersion, productForm.league, productForm.difficulty)
                           });
@@ -1048,8 +1074,8 @@ export default function DashboardViews({ activeView, onViewChange }: DashboardVi
                       <Select
                         value={productForm.league}
                         onValueChange={(value) => {
-                          setProductForm({ 
-                            ...productForm, 
+                          setProductForm({
+                            ...productForm,
                             league: value,
                             slug: generateSlug(productForm.name, productForm.gameVersion, value, productForm.difficulty)
                           });
@@ -1115,8 +1141,8 @@ export default function DashboardViews({ activeView, onViewChange }: DashboardVi
                       <Select
                         value={productForm.gameVersion as "path-of-exile-1" | "path-of-exile-2"}
                         onValueChange={(value: "path-of-exile-1" | "path-of-exile-2") => {
-                          setProductForm({ 
-                            ...productForm, 
+                          setProductForm({
+                            ...productForm,
                             gameVersion: value,
                             slug: generateSlug(productForm.name, value, productForm.league, productForm.difficulty)
                           });
@@ -1154,8 +1180,8 @@ export default function DashboardViews({ activeView, onViewChange }: DashboardVi
                       <Select
                         value={productForm.difficulty}
                         onValueChange={(value) => {
-                          setProductForm({ 
-                            ...productForm, 
+                          setProductForm({
+                            ...productForm,
                             difficulty: value,
                             slug: generateSlug(productForm.name, productForm.gameVersion, productForm.league, value)
                           });
@@ -1170,7 +1196,7 @@ export default function DashboardViews({ activeView, onViewChange }: DashboardVi
                         </SelectContent>
                       </Select>
                     </div>
-                    
+
                     <div className="space-y-2 md:col-span-2">
                       <Label htmlFor="alt" className="text-foreground">Alt da Imagem</Label>
                       <Textarea
@@ -1224,9 +1250,9 @@ export default function DashboardViews({ activeView, onViewChange }: DashboardVi
                       <Download className="h-4 w-4" />
                       Baixar Template
                     </Button>
-                    <Button 
-                      onClick={() => document.getElementById('bulk-file-input')?.click()} 
-                      variant="outline" 
+                    <Button
+                      onClick={() => document.getElementById('bulk-file-input')?.click()}
+                      variant="outline"
                       className="gap-2"
                     >
                       <Upload className="h-4 w-4" />
@@ -1249,7 +1275,7 @@ export default function DashboardViews({ activeView, onViewChange }: DashboardVi
                         <span>{bulkProgress.current} / {bulkProgress.total}</span>
                       </div>
                       <div className="w-full bg-muted rounded-full h-2">
-                        <div 
+                        <div
                           className="bg-primary h-2 rounded-full transition-all duration-300"
                           style={{ width: `${(bulkProgress.current / bulkProgress.total) * 100}%` }}
                         />
@@ -1288,17 +1314,17 @@ export default function DashboardViews({ activeView, onViewChange }: DashboardVi
                           Produtos Carregados ({bulkProducts.length})
                         </h3>
                         <div className="flex gap-2">
-                          <Button 
-                            onClick={handleBulkCreate} 
+                          <Button
+                            onClick={handleBulkCreate}
                             disabled={bulkLoading}
                             className="gap-2"
                           >
                             <Plus className="h-4 w-4" />
                             {bulkLoading ? 'Criando...' : 'Criar Produtos'}
                           </Button>
-                          <Button 
-                            onClick={clearBulkProducts} 
-                            variant="outline" 
+                          <Button
+                            onClick={clearBulkProducts}
+                            variant="outline"
                             className="gap-2"
                           >
                             <Trash2 className="h-4 w-4" />
@@ -1477,7 +1503,7 @@ export default function DashboardViews({ activeView, onViewChange }: DashboardVi
                   </div>
 
                   <div className="flex justify-end">
-                    <Button 
+                    <Button
                       onClick={handleClearFilters}
                       variant="outline"
                       className="border-border text-foreground hover:bg-accent"
@@ -1490,16 +1516,37 @@ export default function DashboardViews({ activeView, onViewChange }: DashboardVi
                   <div className="space-y-4">
                     {filteredProducts.map((product) => (
                       <div key={product.id} className="p-4 border border-border rounded-lg bg-muted/20">
-                        <div className="flex items-center justify-between">
-                          <div className="flex-1">
-                            <h3 className="text-lg font-semibold text-card-foreground">{product.name}</h3>
+                        <div className="flex items-center justify-between flex-wrap gap-3">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <h3 className="text-lg font-semibold text-card-foreground">{product.name}</h3>
+                              <span className={`text-xs font-bold px-2 py-0.5 rounded-full border ${product.in_stock !== false
+                                  ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                                  : 'bg-red-500/10 text-red-400 border-red-500/30'
+                                }`}>
+                                {product.in_stock !== false ? 'Em Estoque' : 'Sem Estoque'}
+                              </span>
+                            </div>
                             <p className="text-sm text-muted-foreground">
                               Preço atual: ${product.price} | {product.league} | {product.difficulty}
                             </p>
                           </div>
-                          
-                          <div className="flex items-center space-x-4">
-                            <div className="flex items-center space-x-2">
+
+                          <div className="flex items-center gap-2 flex-wrap">
+                            {/* Stock toggle */}
+                            <Button
+                              onClick={() => product.id && handleToggleStock(product.id, product.in_stock !== false)}
+                              size="sm"
+                              className={product.in_stock !== false
+                                ? 'bg-red-700 hover:bg-red-800 text-white font-semibold'
+                                : 'bg-emerald-700 hover:bg-emerald-800 text-white font-semibold'
+                              }
+                            >
+                              {product.in_stock !== false ? 'Tirar do Estoque' : 'Colocar em Estoque'}
+                            </Button>
+
+                            {/* Price update */}
+                            <div className="flex items-center gap-2">
                               <div className="relative">
                                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
                                 <Input
@@ -1519,12 +1566,11 @@ export default function DashboardViews({ activeView, onViewChange }: DashboardVi
                                 {updatingId === product.id ? 'Atualizando...' : 'Atualizar'}
                               </Button>
                             </div>
-                            
+
                             <Button
                               onClick={() => product.id && handleDeleteProduct(product.id)}
                               size="sm"
                               variant="destructive"
-                              className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
                             >
                               Excluir
                             </Button>
@@ -1532,7 +1578,7 @@ export default function DashboardViews({ activeView, onViewChange }: DashboardVi
                         </div>
                       </div>
                     ))}
-                    
+
                     {filteredProducts.length === 0 && (
                       <div className="text-center py-12">
                         <p className="text-muted-foreground">Nenhum produto encontrado</p>
@@ -1682,7 +1728,7 @@ export default function DashboardViews({ activeView, onViewChange }: DashboardVi
                                       </p>
                                     </div>
                                   </div>
-                                  
+
                                   <div className="border-t border-border pt-3">
                                     <p className="text-xs text-muted-foreground mb-2">Itens</p>
                                     <div className="space-y-1">
