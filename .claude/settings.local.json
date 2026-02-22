@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls:*)",
+      "WebFetch(domain:www.pathoftrade.net)",
+      "WebFetch(domain:pathoftrade.net)",
+      "WebSearch",
+      "WebFetch(domain:localhost)",
+      "WebFetch(domain:pathoftrade.com)",
+      "Bash(cat:*)",
+      "Bash(curl:*)",
+      "WebFetch(domain:pagespeed.web.dev)"
+    ]
+  }
+}

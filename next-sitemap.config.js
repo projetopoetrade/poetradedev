@@ -10,16 +10,16 @@ module.exports = {
   generateRobotsTxt: true,
   sitemapSize: 5000,
 
-  // Clean Crawl Budget: Exclude assets explicitly
-  exclude: ['*.png', '*.jpg', '*.jpeg', '*.svg', '*.gif', '/admin', '/api', '/_next', '/cart', '/auth'],
+  // Clean Crawl Budget: Exclude internal/private routes (images allowed for Google Images)
+  exclude: ['/admin', '/api', '/_next', '/cart', '/auth'],
 
-  // Robots.txt options: Block admin and private routes
+  // Robots.txt options: Block admin and private routes only (images allowed for Google Images)
   robotsTxtOptions: {
     policies: [
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/admin', '/api', '/_next', '/cart', '/auth', '*.png', '*.jpg', '*.jpeg', '*.svg', '*.gif']
+        disallow: ['/admin', '/api', '/_next', '/cart', '/auth']
       }
     ]
   },

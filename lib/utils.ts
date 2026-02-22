@@ -17,20 +17,20 @@ export function buildAbsoluteUrl(pathOrUrl: string): string {
 export function getHreflangAlternates(pathsByLocale: Record<string, string>, defaultLocalePath?: string) {
   const entries = Object.entries(pathsByLocale);
   const languages: Record<string, string> = {};
-  
+
   // Ensure we only have unique locale codes
   const uniqueLocales = new Set<string>();
-  
+
   for (const [locale, path] of entries) {
     // Normalize locale codes to avoid duplicates (e.g., 'pt-br' vs 'pt_br')
     const normalizedLocale = locale.toLowerCase().replace('_', '-');
-    
+
     if (!uniqueLocales.has(normalizedLocale)) {
       uniqueLocales.add(normalizedLocale);
       languages[normalizedLocale] = buildAbsoluteUrl(path);
     }
   }
-  
+
   // Add x-default if provided and it's different from all existing locales
   if (defaultLocalePath) {
     const defaultUrl = buildAbsoluteUrl(defaultLocalePath);
@@ -40,11 +40,13 @@ export function getHreflangAlternates(pathsByLocale: Record<string, string>, def
       languages['x-default'] = defaultUrl;
     }
   }
-  
+
   return { languages };
 }
 
 export function buildCanonical(pathOrUrl: string, locale?: string, defaultLocale: string = 'en') {
+  // Force lowercase to avoid canonical mismatches (e.g. /products/Divine-Orb vs /products/divine-orb)
+  pathOrUrl = pathOrUrl.toLowerCase();
   // For default locale with as-needed prefix, use the path without locale
   if (locale === defaultLocale) {
     // Remove the locale prefix from the path for the default locale
@@ -61,7 +63,7 @@ export function buildCanonical(pathOrUrl: string, locale?: string, defaultLocale
 export function formatPrice(price: number, currency: string = 'USD', locale: string = 'en-US') {
   // Default to USD if currency is missing or invalid
   const currencyCode = currency ? currency.toUpperCase() : 'USD';
-  
+
   try {
     const formatter = new Intl.NumberFormat(locale, {
       style: 'currency',
@@ -69,7 +71,7 @@ export function formatPrice(price: number, currency: string = 'USD', locale: str
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     });
-    
+
     return formatter.format(price);
   } catch (error) {
     // Fallback to basic formatting if there's an error with the currency code
@@ -147,14 +149,14 @@ export interface KeywordOptions {
 }
 
 export function generateKeywords(options: KeywordOptions): string {
-  const { 
-    locale, 
-    gameVersion, 
-    league, 
-    category, 
-    difficulty, 
-    productName, 
-    blogTitle, 
+  const {
+    locale,
+    gameVersion,
+    league,
+    category,
+    difficulty,
+    productName,
+    blogTitle,
     leagueSlug,
     customKeywords = []
   } = options;
@@ -174,13 +176,13 @@ export function generateKeywords(options: KeywordOptions): string {
   if (blogTitle) {
     // Add full title as primary keyword
     keywords.push(blogTitle.toLowerCase());
-    
+
     // Extract individual words from title (filter out common words)
     const commonWords = ['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'o', 'a', 'e', 'de', 'da', 'do', 'das', 'dos', 'em', 'no', 'na', 'nos', 'nas', 'para', 'com', 'por', 'sobre'];
     const titleWords = blogTitle.toLowerCase()
       .split(/[\s\-_]+/)
       .filter(word => word.length > 2 && !commonWords.includes(word));
-    
+
     keywords.push(...titleWords);
   }
 
@@ -236,7 +238,7 @@ export function generateKeywords(options: KeywordOptions): string {
   if (productName && gameVersion) {
     const gameVersionText = gameVersion === 'path-of-exile-1' ? 'poe 1' : 'poe 2';
     const gameVersionFull = gameVersion === 'path-of-exile-1' ? 'path of exile 1' : 'path of exile 2';
-    
+
     if (lang === 'en') {
       keywords.push(`buy ${productName.toLowerCase()} ${gameVersionText}`);
       keywords.push(`buy ${productName.toLowerCase()} ${gameVersionFull}`);
@@ -273,17 +275,17 @@ export function generateFocusedTitle(options: {
 
   switch (pageType) {
     case 'homepage':
-      return lang === 'en' 
+      return lang === 'en'
         ? `Buy PoE Currency: Divine, Exalted, Chaos | ${brand}`
         : `Comprar Moedas PoE: Divine, Exalted, Chaos | ${brand}`;
 
     case 'product':
       if (!productName) return brand;
-      
+
       const gameVersionText = gameVersion === 'path-of-exile-1' ? 'PoE 1' : 'PoE 2';
       const leagueText = league ? `, ${league}` : '';
       const difficultyText = difficulty ? ` (${difficulty})` : '';
-      
+
       return lang === 'en'
         ? `Buy ${productName} — ${gameVersionText}${leagueText}${difficultyText} | ${brand}`
         : `Comprar ${productName} — ${gameVersionText}${leagueText}${difficultyText} | ${brand}`;
@@ -329,11 +331,11 @@ export function generateFocusedDescription(options: {
 
     case 'product':
       if (!productName) return '';
-      
+
       const gameVersionText = gameVersion === 'path-of-exile-1' ? 'Path of Exile 1' : 'Path of Exile 2';
       const leagueText = league ? ` in ${league}` : '';
       const difficultyText = difficulty ? ` (${difficulty})` : '';
-      
+
       return lang === 'en'
         ? `Buy ${productName} for ${gameVersionText}${leagueText}${difficultyText}. Fast delivery, secure trading, competitive prices.`
         : `Compre ${productName} para ${gameVersionText}${leagueText}${difficultyText}. Entrega rápida, comércio seguro, preços competitivos.`;
@@ -356,5 +358,24 @@ export function generateFocusedDescription(options: {
     default:
       return '';
   }
+}
+
+export function buildBreadcrumbSchema(
+  items: { name: string; url: string }[]
+) {
+  const baseUrl =
+    process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net";
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.name,
+      item: item.url.startsWith("http")
+        ? item.url
+        : `${baseUrl}${item.url}`,
+    })),
+  };
 }
 

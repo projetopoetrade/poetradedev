@@ -4,9 +4,12 @@ import { LeagueSelectionPage } from "@/components/league-selection";
 import PatchInfo from "@/components/PatchInfo";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { buildCanonical, generateKeywords } from "@/lib/utils";
+import { buildCanonical, generateKeywords, buildBreadcrumbSchema } from "@/lib/utils";
 import { Link } from "@/i18n/navigation";
 import { ArrowLeft } from "lucide-react";
+
+// ISR: revalidate cache every 5 minutes
+export const revalidate = 300;
 
 
 // Generate metadata based on game version
@@ -16,17 +19,17 @@ export async function generateMetadata(props: {
   const params = await props.params;
   const isPoe2 = params.gameVersion === "path-of-exile-2";
   const t = await getTranslations({ locale: params.locale, namespace: "SEO" });
-  
+
   const title = isPoe2 ? t("gameVersion.poe2Title") : t("gameVersion.poe1Title");
   const description = isPoe2 ? t("gameVersion.poe2Description") : t("gameVersion.poe1Description");
-  
+
   // 1. Construção das URLs
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net";
   const pathWithoutLocale = `/games/${params.gameVersion}`;
 
   const enUrl = `${baseUrl}${pathWithoutLocale}`;
   const ptUrl = `${baseUrl}/pt-br${pathWithoutLocale}`;
-  
+
   // Canonical correta para a língua atual
   const canonicalUrl = params.locale === 'en' ? enUrl : ptUrl;
 
@@ -91,13 +94,22 @@ export default async function Page({
   const gameTitle = isPoe2 ? "Path of Exile 2" : "Path of Exile";
   const patchVersion = isPoe2 ? "path-of-exile-2" : "path-of-exile-1";
 
+  const breadcrumbSchema = buildBreadcrumbSchema([
+    { name: 'Home', url: '/' },
+    { name: gameTitle, url: `/games/${gameVersion}` },
+  ]);
+
   // Structured data for rich results
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
       <main className="container mx-auto min-h-screen space-y-16 py-8">
         <div>
-          <Link 
+          <Link
             href="/"
             className="inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors group"
             aria-label={t("backToHome")}

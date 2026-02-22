@@ -5,6 +5,61 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import BlogPagination from "@/components/Blog/BlogPagination";
+import { Metadata } from "next";
+import { buildCanonical } from "@/lib/utils";
+
+// ISR: revalidate cache every 5 minutes
+export const revalidate = 300;
+
+interface MetadataProps {
+  params: Promise<{ locale: string }>;
+}
+
+export async function generateMetadata(props: MetadataProps): Promise<Metadata> {
+  const { locale } = await props.params;
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.pathoftrade.net';
+
+  const titles: Record<string, string> = {
+    en: 'Path of Exile Blog — Guides, Tips & Currency News | Path of Trade',
+    'pt-br': 'Blog Path of Exile — Guias, Dicas e Notícias de Moedas | Path of Trade',
+  };
+  const descriptions: Record<string, string> = {
+    en: 'Stay up to date with the latest Path of Exile guides, currency tips, patch notes and trading news from Path of Trade.',
+    'pt-br': 'Fique por dentro dos últimos guias, dicas de moedas, notas de patch e notícias de trading do Path of Exile.',
+  };
+
+  const title = titles[locale] ?? titles.en;
+  const description = descriptions[locale] ?? descriptions.en;
+
+  const enUrl = `${baseUrl}/blog`;
+  const ptUrl = `${baseUrl}/pt-br/blog`;
+  const canonicalUrl = locale === 'en' ? enUrl : ptUrl;
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: canonicalUrl,
+      languages: {
+        'en': enUrl,
+        'pt-BR': ptUrl,
+        'x-default': enUrl,
+      },
+    },
+    openGraph: {
+      title,
+      description,
+      url: canonicalUrl,
+      type: 'website',
+      siteName: 'Path of Trade',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+    },
+  };
+}
 
 interface PageProps {
   params: Promise<{
@@ -28,9 +83,9 @@ export default async function BlogPage(props: PageProps) {
       getPosts(locale, currentPage, POSTS_PER_PAGE),
       getPostsCount(locale)
     ]);
-    
+
     const totalPages = Math.ceil(totalPosts / POSTS_PER_PAGE);
-    
+
     if (!posts) {
       return (
         <main className="container mx-auto px-4 py-8 min-h-screen">
@@ -113,15 +168,15 @@ export default async function BlogPage(props: PageProps) {
             <>
               <div className="space-y-6">
                 {posts.map((post: Blog) => (
-                  <BlogItem 
-                    key={`${post._id}-${post.slug.current}`} 
+                  <BlogItem
+                    key={`${post._id}-${post.slug.current}`}
                     blog={post}
                     locale={locale}
                   />
                 ))}
               </div>
-              
-              <BlogPagination 
+
+              <BlogPagination
                 currentPage={currentPage}
                 totalPages={totalPages}
                 locale={locale}

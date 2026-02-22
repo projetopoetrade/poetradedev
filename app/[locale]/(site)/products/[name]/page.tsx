@@ -9,7 +9,7 @@ import ProductDetail from "../../../../../components/product-detail";
 import { getProductBySlug } from "@/sanity/sanity-utils";
 import ProductContent from "@/components/product-detail/ProductContent";
 import { getTranslations } from "next-intl/server";
-import { buildCanonical, generateKeywords } from "@/lib/utils";
+import { buildCanonical, buildAbsoluteUrl, generateKeywords, buildBreadcrumbSchema } from "@/lib/utils";
 
 // Add formatPrice utility function
 const formatPrice = (price: number): string => {
@@ -178,20 +178,45 @@ export default async function ProductDetailPage(props: {
     const currentLeague = targetLeague || product.league;
     const currentDifficulty = searchParams.difficulty || product.difficulty;
 
+    // priceValidUntil: 30 days from build time
+    const priceValidUntil = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+      .toISOString()
+      .split('T')[0];
+
+    // Game version label for description
+    const gameVersionLabel = targetGameVersion === 'path-of-exile-2'
+      ? 'Path of Exile 2'
+      : 'Path of Exile 1';
+
+    // Transactional description fallback when Sanity has no body text
+    const schemaDescription =
+      productSanity?.body?.[0]?.children?.[0]?.text ||
+      `Buy ${product.name} for ${gameVersionLabel}. Fast in-game delivery, secure trading, best prices at Path of Trade.`;
+
+    // Canonical URL — buildAbsoluteUrl avoids double-slash when getProductUrl already starts with /
+    const schemaUrl = buildAbsoluteUrl(getProductUrl(product.name, params.locale));
+
+    // BreadcrumbList schema
+    const breadcrumbSchema = buildBreadcrumbSchema([
+      { name: 'Home', url: '/' },
+      { name: 'Products', url: '/products' },
+      { name: product.name, url: getProductUrl(product.name, params.locale) },
+    ]);
+
     // JSON-LD with CLEAN URL
     const productStructuredData = {
       "@context": "https://schema.org",
       "@type": "Product",
       name: product.name,
-      description: productSanity?.body?.[0]?.children?.[0]?.text || product.name,
+      description: schemaDescription,
       image: product.imgUrl,
       sku: product.id?.toString() || product.name.replace(/\s+/g, '-'),
       offers: {
         "@type": "Offer",
-        // Canonical URL in Schema too!
-        url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"}${getProductUrl(product.name, params.locale)}`,
+        url: schemaUrl,
         priceCurrency: "USD",
         price: product.price,
+        priceValidUntil: priceValidUntil,
         availability: "https://schema.org/InStock",
         seller: { "@type": "Organization", name: "Path of Trade" }
       }
@@ -202,6 +227,10 @@ export default async function ProductDetailPage(props: {
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(productStructuredData) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
         />
 
         <div className="max-w-6xl mx-auto rounded-lg overflow-hidden">

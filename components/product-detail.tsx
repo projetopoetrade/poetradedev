@@ -78,7 +78,7 @@ export default function ProductDetail({
   const handleBuyNow = async () => {
     setError(null);
     setIsProcessing(true);
-    
+
     try {
       addToCart(product, count);
       router.push('/cart');
@@ -92,17 +92,17 @@ export default function ProductDetail({
 
   const handleAddToCart = () => {
     addToCart(product, count);
-    
+
     // Show success toast
     toast.success(t('itemAddedToCart'), {
-      description: t('itemAddedDescription', { 
-        quantity: count, 
-        productName: product.name 
+      description: t('itemAddedDescription', {
+        quantity: count,
+        productName: product.name
       }),
       icon: <Check className="h-5 w-5" />,
       duration: 3000,
     });
-    
+
     setCount(1);
   };
 
@@ -120,7 +120,7 @@ export default function ProductDetail({
   const totalPrice = displayPrice * count;
 
   return (
-    
+
     <div className="p-6 md:p-8 flex flex-col">
       {/* Back to Products button */}
       <div className="flex justify-end mb-2">
@@ -134,8 +134,10 @@ export default function ProductDetail({
         </Button>
       </div>
 
-      <h1 className="text-3xl font-bold mb-2">{product.name}</h1>
-      
+      <h1 className="text-3xl font-bold mb-2">
+        Buy {product.name} — {currentGameVersion === 'path-of-exile-1' ? 'Path of Exile 1' : 'Path of Exile 2'}
+      </h1>
+
       <div className="flex items-center gap-2 mb-4">
         <span className="px-3 py-1.5 bg-indigo-600/20 text-indigo-400 rounded-md text-sm font-medium">
           {currentGameVersion === 'path-of-exile-1' ? 'POE 1' : 'POE 2'}
@@ -144,7 +146,7 @@ export default function ProductDetail({
 
       {/* Game Version, League and Difficulty Filters */}
       <div className="">
-        <Filters 
+        <Filters
           productName={productName}
           gameVersionOptions={gameVersionOptions}
           leagueOptions={leagueOptions}

@@ -13,46 +13,46 @@ export default function Footer() {
           {/* Logo and Social Links */}
           <div className="flex flex-col items-center md:items-start space-y-4">
             <Link href="/">
-            <Image
-              src="/images/logo.webp"
-              height="60"
-              width="96"
-              alt="Path of Trade"
-              className="object-contain"
-            />
+              <Image
+                src="/images/logo.webp"
+                height="60"
+                width="96"
+                alt="Path of Trade"
+                className="object-contain"
+              />
             </Link>
             <div className="flex space-x-4">
-              <Link 
-                href="#" 
-                target="_blank" 
-                rel="noopener noreferrer" 
+              <Link
+                href="#"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="transition-opacity hover:opacity-80"
                 aria-label="Visit our Facebook page"
               >
                 <FacebookIcon className="h-5 w-5 text-white" />
               </Link>
-              <Link 
-                href="#" 
-                target="_blank" 
-                rel="noopener noreferrer" 
+              <Link
+                href="#"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="transition-opacity hover:opacity-80"
                 aria-label="Visit our Twitter page"
               >
                 <TwitterIcon className="h-5 w-5 text-white" />
               </Link>
-              <Link 
-                href="#" 
-                target="_blank" 
-                rel="noopener noreferrer" 
+              <Link
+                href="#"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="transition-opacity hover:opacity-80"
                 aria-label="Visit our Instagram page"
               >
                 <InstagramIcon className="h-5 w-5 text-white" />
               </Link>
-              <Link 
-                href="#" 
-                target="_blank" 
-                rel="noopener noreferrer" 
+              <Link
+                href="#"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="transition-opacity hover:opacity-80"
                 aria-label="Join our Discord server"
               >
@@ -67,13 +67,13 @@ export default function Footer() {
             <Link href="/" className="text-gray-300 hover:text-white text-sm transition-colors">
               {t('home')}
             </Link>
-            <Link href="#" className="text-gray-300 hover:text-white text-sm transition-colors">
+            <Link href="/about" className="text-gray-300 hover:text-white text-sm transition-colors">
               {t('about-us')}
             </Link>
             <Link href="/products" className="text-gray-300 hover:text-white text-sm transition-colors">
               {t('products')}
             </Link>
-            
+
           </div>
 
           {/* Support Links */}

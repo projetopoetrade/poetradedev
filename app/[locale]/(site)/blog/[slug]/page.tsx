@@ -6,7 +6,10 @@ import RelatedPosts from "@/components/Blog/RelatedPosts";
 import { Blog } from "@/types/blog";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { buildCanonical, generateKeywords } from "@/lib/utils";
+import { buildCanonical, generateKeywords, buildBreadcrumbSchema } from "@/lib/utils";
+
+// ISR: revalidate cache every 5 minutes
+export const revalidate = 300;
 
 interface PageProps {
   params: Promise<{
@@ -53,9 +56,9 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
       blogTitle: post.title,
       gameVersion: post.gameVersion as 'path-of-exile-1' | 'path-of-exile-2' | undefined,
       customKeywords: [
-        'poe guide', 
-        'path of exile guide', 
-        'poe tips', 
+        'poe guide',
+        'path of exile guide',
+        'poe tips',
         'poe tutorial',
         ...(post.tags || [])
       ]
@@ -109,27 +112,37 @@ const SingleBlogPage = async (props: PageProps) => {
     articleSection: post.gameVersion === "path-of-exile-1" ? "Path of Exile 1" : post.gameVersion === "path-of-exile-2" ? "Path of Exile 2" : "Gaming"
   };
 
+  const breadcrumbSchema = buildBreadcrumbSchema([
+    { name: 'Home', url: '/' },
+    { name: 'Blog', url: '/blog' },
+    { name: post.title, url: `/blog/${slug}` },
+  ]);
+
   return (
     <article className="max-w-5xl mx-auto px-4 py-12">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleStructuredData) }}
       />
-      <Link 
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <Link
         href={`/${locale}/blog`}
         className="inline-flex items-center px-4 py-2 rounded-lg text-gray-600 dark:text-gray-200 hover:text-gray-200 dark:hover:text-white mb-8 transition-all duration-200  group"
       >
-        <svg 
-          className="w-5 h-5 mr-2 transform group-hover:-translate-x-1 transition-transform duration-200" 
-          fill="none" 
-          stroke="currentColor" 
+        <svg
+          className="w-5 h-5 mr-2 transform group-hover:-translate-x-1 transition-transform duration-200"
+          fill="none"
+          stroke="currentColor"
           viewBox="0 0 24 24"
         >
-          <path 
-            strokeLinecap="round" 
-            strokeLinejoin="round" 
-            strokeWidth={2} 
-            d="M10 19l-7-7m0 0l7-7m-7 7h18" 
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M10 19l-7-7m0 0l7-7m-7 7h18"
           />
         </svg>
         <span className="font-medium">Back to Blog</span>
@@ -138,7 +151,7 @@ const SingleBlogPage = async (props: PageProps) => {
         <h1 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900 dark:text-white">
           {post.title}
         </h1>
-        
+
         <div className="flex items-center gap-4 text-gray-600 dark:text-gray-400 mb-8">
           <time className="text-sm">
             {new Date(post.publishedAt).toLocaleDateString(locale, {

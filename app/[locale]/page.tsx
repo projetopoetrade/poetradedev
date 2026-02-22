@@ -4,50 +4,9 @@ import GameSelection from "@/components/game-selection";
 import CarouselSpacing from "@/components/testemonials-section";
 import { useTranslations } from "next-intl";
 
-const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "Store",
-  name: "Path of Trade Net",
-  alternateName: `Path of Exile Currency Trading`,
-  description:
-    "Path of Trade Net - Your trusted source for Path of Exile currency trading. Buy and sell POE currency with instant delivery. Get the best prices, secure trading, and 24/7 customer support.",
-  url: process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net",
-  logo: `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"}/logo.png`,
-  offers: {
-    "@type": "AggregateOffer",
-    priceCurrency: "USD",
-    availability: "https://schema.org/InStock",
-    seller: {
-      "@type": "Organization",
-      name: "Path of Trade",
-      description: "Professional Path of Exile currency trading service",
-      url: process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net",
-      logo: `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"}/logo.png`,
-    },
-  },
-  aggregateRating: {
-    "@type": "AggregateRating",
-    ratingValue: "4.9",
-    reviewCount: "1000+",
-  },
-  serviceType: "Currency Trading",
-  areaServed: "Worldwide",
-  hasOfferCatalog: {
-    "@type": "OfferCatalog",
-    name: "POE Currency Trading Services",
-    itemListElement: [
-      {
-        "@type": "Offer",
-        itemOffered: {
-          "@type": "Service",
-          name: "POE Currency Trading",
-          description:
-            "Safe and instant POE currency trading service by Path of Trade Net",
-        },
-      },
-    ],
-  },
-};
+// ISR: revalidate cache every 5 minutes
+export const revalidate = 300;
+
 
 export default function Home() {
   const t = useTranslations("HomePage");
@@ -72,11 +31,6 @@ export default function Home() {
         url: process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net",
         logo: `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"}/logo.png`,
       },
-    },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "4.9",
-      reviewCount: "1000+",
     },
     serviceType: "Currency Trading",
     areaServed: "Worldwide",
