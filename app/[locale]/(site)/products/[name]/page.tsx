@@ -11,6 +11,9 @@ import ProductContent from "@/components/product-detail/ProductContent";
 import { getTranslations } from "next-intl/server";
 import { buildCanonical, buildAbsoluteUrl, generateKeywords, buildBreadcrumbSchema } from "@/lib/utils";
 
+// ISR: revalidate cache every 5 minutes
+export const revalidate = 300;
+
 // Add formatPrice utility function
 const formatPrice = (price: number): string => {
   return new Intl.NumberFormat("en-US", {

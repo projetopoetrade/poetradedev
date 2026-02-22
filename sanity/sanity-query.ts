@@ -48,5 +48,3 @@ export const productQuery = `*[_type == "product"]{
   updatedAt,
   "slug": slug.current
 }`;
-
-

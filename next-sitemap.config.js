@@ -52,6 +52,7 @@ module.exports = {
       { path: '/', priority: 1.0, changefreq: 'daily' },
       { path: '/blog', priority: 0.8, changefreq: 'weekly' },
       { path: '/contact', priority: 0.4, changefreq: 'monthly' },
+      { path: '/about', priority: 0.5, changefreq: 'monthly' },
       { path: '/faq', priority: 0.6, changefreq: 'monthly' },
       { path: '/terms', priority: 0.3, changefreq: 'yearly' },
       { path: '/games/path-of-exile-1', priority: 0.9, changefreq: 'weekly' },

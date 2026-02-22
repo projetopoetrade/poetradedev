@@ -21,24 +21,24 @@ export async function sanityFetch<QueryResponse>({
   tags: string[],
 }): Promise<QueryResponse> {
   return (
-    client.fetch <
-    QueryResponse >
-    (query,
-    qParams,
-    {
-      cache: "force-cache",
-      next: { 
-        tags,
-        revalidate: 3600 // Revalidate every 60 seconds
-      },
-    })
+    client.fetch<
+      QueryResponse>
+      (query,
+        qParams,
+        {
+          cache: "force-cache",
+          next: {
+            tags,
+            revalidate: 3600 // Revalidate every 60 seconds
+          },
+        })
   );
 }
 
 export const getPosts = async (language: string, page: number = 1, pageSize: number = 10) => {
   const start = (page - 1) * pageSize;
   const end = start + pageSize; // GROQ slice is exclusive of end index
-  
+
   const paginatedQuery = `*[_type == "post" && language == $language] | order(publishedAt desc) [${start}...${end}] {
     _id,
     title,
@@ -62,7 +62,7 @@ export const getPosts = async (language: string, page: number = 1, pageSize: num
     publishedAt,
     body
   }`;
-  
+
   const data: Blog[] = await sanityFetch({
     query: paginatedQuery,
     qParams: { language },
@@ -73,7 +73,7 @@ export const getPosts = async (language: string, page: number = 1, pageSize: num
 
 export const getPostsCount = async (language: string) => {
   const countQuery = `count(*[_type == "post" && language == $language])`;
-  
+
   const count: number = await sanityFetch({
     query: countQuery,
     qParams: { language },
