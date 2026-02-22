@@ -60,9 +60,7 @@ export default function ManageProducts() {
     try {
       const response = await fetch('/api/admin/products/update', {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ productId, price }),
       });
 
@@ -70,8 +68,8 @@ export default function ManageProducts() {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Failed to update price');
       }
-      
-      setProducts(products.map(product => 
+
+      setProducts(products.map(product =>
         product.id === productId ? { ...product, price } : product
       ));
       toast.success('Price updated successfully');
@@ -81,6 +79,33 @@ export default function ManageProducts() {
       toast.error(error instanceof Error ? error.message : 'Failed to update price');
     } finally {
       setUpdatingId(null);
+    }
+  };
+
+  const handleToggleStock = async (productId: number, currentStock: boolean) => {
+    const newStockValue = !currentStock;
+    // Optimistic update
+    setProducts(products.map(p =>
+      p.id === productId ? { ...p, in_stock: newStockValue } : p
+    ));
+    try {
+      const response = await fetch('/api/admin/products/update', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productId, in_stock: newStockValue }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to update stock');
+      }
+      toast.success(`Product marked as ${newStockValue ? 'In Stock' : 'Out of Stock'}`);
+    } catch (error) {
+      // Revert on failure
+      setProducts(products.map(p =>
+        p.id === productId ? { ...p, in_stock: currentStock } : p
+      ));
+      toast.error(error instanceof Error ? error.message : 'Failed to update stock');
     }
   };
 
@@ -96,7 +121,7 @@ export default function ManageProducts() {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Failed to delete product');
       }
-      
+
       setProducts(products.filter(product => product.id !== productId));
       toast.success('Product deleted successfully');
     } catch (error) {
@@ -109,7 +134,7 @@ export default function ManageProducts() {
     setSelectedGameVersion(() => "All Versions");
     setSelectedLeague(() => "All Leagues");
     setSelectedDifficulty(() => "All Difficulties");
-    
+
     console.log('Clearing filters...');
   };
 
@@ -137,7 +162,7 @@ export default function ManageProducts() {
     <main className="container h-min-screen mb-10">
       <div className="max-w-4xl mx-auto p-6 rounded-lg shadow-md bg-black border border-gray-400/20">
         <h1 className="text-2xl font-bold text-gray-slate-100 mb-6">Manage Products</h1>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <Select
             value={selectedGameVersion}
@@ -183,7 +208,7 @@ export default function ManageProducts() {
         </div>
 
         <div className="flex justify-end mb-6">
-          <Button 
+          <Button
             onClick={handleClearFilters}
             className="bg-slate-200 hover:bg-slate-300 font-bold"
           >
@@ -193,15 +218,36 @@ export default function ManageProducts() {
 
         <div className="space-y-4">
           {filteredProducts.map((product) => (
-            <div key={product.id} className="p-4 border  rounded-lg">
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-slate-100">{product.name}</h3>
+            <div key={product.id} className="p-4 border rounded-lg">
+              <div className="flex items-center justify-between flex-wrap gap-3">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-lg font-semibold text-gray-slate-100">{product.name}</h3>
+                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${product.in_stock !== false
+                        ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-500/30'
+                        : 'bg-red-600/20 text-red-400 border border-red-500/30'
+                      }`}>
+                      {product.in_stock !== false ? 'In Stock' : 'Out of Stock'}
+                    </span>
+                  </div>
                   <p className="text-sm text-gray-400">Current Price: ${product.price}</p>
                 </div>
-                
-                <div className="flex items-center space-x-4">
-                  <div className="flex items-center space-x-2">
+
+                <div className="flex items-center gap-2 flex-wrap">
+                  {/* Stock toggle */}
+                  <Button
+                    onClick={() => product.id && handleToggleStock(product.id, product.in_stock !== false)}
+                    className={product.in_stock !== false
+                      ? 'bg-red-700 hover:bg-red-800 font-bold text-white'
+                      : 'bg-emerald-700 hover:bg-emerald-800 font-bold text-white'
+                    }
+                    size="sm"
+                  >
+                    {product.in_stock !== false ? 'Mark Out of Stock' : 'Mark In Stock'}
+                  </Button>
+
+                  {/* Price update */}
+                  <div className="flex items-center gap-2">
                     <div className="relative">
                       <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">$</span>
                       <Input
@@ -209,21 +255,23 @@ export default function ManageProducts() {
                         placeholder="New price"
                         value={newPrice}
                         onChange={(e) => setNewPrice(Number(e.target.value))}
-                        className="w-16 pl-7 mr-4 font-roboto [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        className="w-24 pl-7 font-roboto [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                       />
                     </div>
                     <Button
                       onClick={() => product.id && handleUpdatePrice(product.id)}
                       disabled={updatingId === product.id}
-                      className="bg-slate-200 hover:bg-slate-300 font-bold "
+                      className="bg-slate-200 hover:bg-slate-300 font-bold"
+                      size="sm"
                     >
                       {updatingId === product.id ? 'Updating...' : 'Update Price'}
                     </Button>
                   </div>
-                  
+
                   <Button
                     onClick={() => product.id && handleDeleteProduct(product.id)}
                     className="bg-red-500 hover:bg-red-600 font-bold"
+                    size="sm"
                   >
                     Delete
                   </Button>
@@ -231,7 +279,7 @@ export default function ManageProducts() {
               </div>
             </div>
           ))}
-          
+
           {filteredProducts.length === 0 && (
             <p className="text-center text-gray-400">No products found</p>
           )}

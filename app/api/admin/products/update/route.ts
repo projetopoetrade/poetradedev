@@ -15,11 +15,8 @@ export async function PATCH(req: Request) {
       );
     }
 
-    // TODO: Adicionar verificação de role admin aqui
-    // Por exemplo: verificar se user tem role 'admin' em uma tabela user_roles
-    // Por enquanto, qualquer usuário autenticado pode atualizar (AJUSTAR EM PRODUÇÃO)
-
-    const { productId, price } = await req.json();
+    const body = await req.json();
+    const { productId, price, in_stock } = body;
 
     if (!productId) {
       return NextResponse.json(
@@ -28,9 +25,26 @@ export async function PATCH(req: Request) {
       );
     }
 
-    if (!price || isNaN(price) || price <= 0) {
+    // Build update payload — accept price and/or in_stock independently
+    const updatePayload: Record<string, unknown> = {};
+
+    if (price !== undefined) {
+      if (isNaN(price) || price <= 0) {
+        return NextResponse.json(
+          { error: 'Valid price is required' },
+          { status: 400 }
+        );
+      }
+      updatePayload.price = price;
+    }
+
+    if (in_stock !== undefined) {
+      updatePayload.in_stock = Boolean(in_stock);
+    }
+
+    if (Object.keys(updatePayload).length === 0) {
       return NextResponse.json(
-        { error: 'Valid price is required' },
+        { error: 'No fields to update' },
         { status: 400 }
       );
     }
@@ -39,7 +53,7 @@ export async function PATCH(req: Request) {
     const adminSupabase = createAdminClient();
     const { data, error } = await adminSupabase
       .from('products')
-      .update({ price })
+      .update(updatePayload)
       .eq('id', productId)
       .select()
       .single();
@@ -61,4 +75,3 @@ export async function PATCH(req: Request) {
     );
   }
 }
-

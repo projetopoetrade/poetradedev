@@ -1,9 +1,7 @@
-"use client";
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Minus, Plus, Check } from "lucide-react";
+import { Minus, Plus, Check, ShoppingCart } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCurrency } from "@/lib/contexts/currency-context";
@@ -119,6 +117,9 @@ export default function ProductDetail({
   const displayPrice = convertPrice(product.price);
   const totalPrice = displayPrice * count;
 
+  // in_stock defaults to true for products that predate the column
+  const isInStock = product.in_stock !== false;
+
   return (
 
     <div className="p-6 md:p-8 flex flex-col">
@@ -134,9 +135,16 @@ export default function ProductDetail({
         </Button>
       </div>
 
-      <h1 className="text-3xl font-bold mb-2">
-        Buy {product.name} — {currentGameVersion === 'path-of-exile-1' ? 'Path of Exile 1' : 'Path of Exile 2'}
-      </h1>
+      <div className="flex items-start gap-3 mb-2">
+        <h1 className="text-3xl font-bold">
+          Buy {product.name} — {currentGameVersion === 'path-of-exile-1' ? 'Path of Exile 1' : 'Path of Exile 2'}
+        </h1>
+        {!isInStock && (
+          <span className="shrink-0 mt-1.5 inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold bg-red-600/20 text-red-400 border border-red-500/30">
+            Out of Stock
+          </span>
+        )}
+      </div>
 
       <div className="flex items-center gap-2 mb-4">
         <span className="px-3 py-1.5 bg-indigo-600/20 text-indigo-400 rounded-md text-sm font-medium">
@@ -200,11 +208,18 @@ export default function ProductDetail({
           </div>
         )}
 
+        {!isInStock && (
+          <div className="mb-4 px-4 py-3 rounded-lg bg-red-950/40 border border-red-700/40 text-sm text-red-300 text-center">
+            This item is temporarily out of stock. Check back soon or{" "}
+            <a href="https://discord.gg/pathoftrade" className="underline hover:text-red-100" target="_blank" rel="noopener noreferrer">contact support</a>.
+          </div>
+        )}
+
         {/* Action buttons */}
         <div className="grid grid-cols-2 gap-4 mb-8">
           <Button
             className="bg-green-500 text-black hover:bg-green-600 hover:text-white text-md font-bold"
-            disabled={count === 0 || isProcessing}
+            disabled={count === 0 || isProcessing || !isInStock}
             onClick={handleBuyNow}
           >
             {isProcessing ? 'Processing...' : 'Buy Now'}
@@ -212,7 +227,7 @@ export default function ProductDetail({
           <Button
             variant="outline"
             className="font-bold"
-            disabled={count === 0}
+            disabled={count === 0 || !isInStock}
             onClick={handleAddToCart}
           >
             Add to Cart

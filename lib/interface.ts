@@ -7,13 +7,14 @@ export interface Product {
   body?: any, // Portable Text content from Sanity
   alt?: string,
   price: number,
+  in_stock?: boolean, // true = available, false = out of stock (blocks purchases)
   imgUrl: string,
   gameVersion: 'path-of-exile-1' | 'path-of-exile-2',
   league: string,
   difficulty: string,
   updatedAt?: string
 }
-export type PageProps = Promise< {
+export type PageProps = Promise<{
   gameVersion: 'path-of-exile-1' | 'path-of-exile-2';
   league: string;
   difficulty: string;
