@@ -219,6 +219,9 @@ export default async function ProductDetailPage(props: {
 
     const localeKey = params.locale === 'pt-BR' || params.locale === 'pt-br' ? 'pt_br' : 'en';
 
+    const seoTitle = (productSanity as any)?.seoTitle?.[localeKey]
+      || `Buy ${product.name} for ${gameVersionLabel} | Path of Trade`;
+
     // Transactional description fallback when Sanity has no body text
     const schemaDescription =
       productSanity?.metaDescription?.[localeKey] ||
@@ -328,17 +331,23 @@ export default async function ProductDetailPage(props: {
 
         <div className="max-w-6xl mx-auto rounded-lg overflow-hidden">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
-            <div className="sticky top-4 p-4 md:p-8 flex items-center justify-center bg-black/20 rounded-xl border border-white/5">
-              <div className="relative w-full aspect-square max-w-[188px]">
+            <div className="sticky top-4 flex flex-col items-center justify-start p-8 md:p-12 gap-4">
+              <Link href="/products" className="self-start flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                {params.locale === 'en' ? 'Back to Products' : 'Voltar aos Produtos'}
+              </Link>
+              <div className="flex-1 flex items-center justify-center">
+              <div className="relative w-[188px] h-[188px]">
                 <Image
                   src={product.imgUrl || "/images/placeholder.jpg"}
                   alt={product.name}
                   fill
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                  className="object-contain drop-shadow-[0_4px_32px_rgba(99,102,241,0.15)]"
+                  sizes="188px"
+                  className="object-contain"
                   quality={100}
                   priority
                 />
+              </div>
               </div>
             </div>
 
@@ -351,16 +360,14 @@ export default async function ProductDetailPage(props: {
               leagueOptions={leagueOptions}
               difficultyOptions={difficultyOptions}
               productName={decodedName}
+              seoTitle={seoTitle}
             />
           </div>
         </div>
 
-        {/* Price History — seção full-width abaixo do grid */}
+        {/* Price History */}
         <div className="max-w-6xl mx-auto mt-8">
-          <div className="p-4 md:p-6 bg-muted/5 rounded-xl border border-white/5">
-            <h2 className="text-xl font-bold mb-6">Price History</h2>
-            <PriceHistoryChart productSlug={product.slug} league={currentLeague} />
-          </div>
+          <PriceHistoryChart productSlug={product.slug} league={currentLeague} />
         </div>
 
         {productSanity?.body?.[params.locale === 'en' ? 'en' : 'pt_br'] && (

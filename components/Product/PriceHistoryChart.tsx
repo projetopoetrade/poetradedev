@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { ChevronDown } from 'lucide-react'
 import {
     LineChart,
     Line,
@@ -25,6 +26,7 @@ export default function PriceHistoryChart({ productSlug, league }: { productSlug
     const [data, setData] = useState<HistoryPoint[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
+    const [open, setOpen] = useState(false)
     const [itemName, setItemName] = useState('')
     const [leagueName, setLeagueName] = useState('')
 
@@ -112,14 +114,20 @@ export default function PriceHistoryChart({ productSlug, league }: { productSlug
     const minTickGap = 40
 
     return (
-        <div className="w-full bg-card/30 border border-border/40 rounded-xl p-4 sm:p-6 space-y-4">
-            <div>
-                <h3 className="text-lg font-semibold tracking-tight text-card-foreground">30-Day Market Trend</h3>
-                <p className="text-sm text-muted-foreground">
+        <div className="w-full bg-card/30 border border-border/40 rounded-xl overflow-hidden">
+            <button
+                onClick={() => setOpen(o => !o)}
+                className="w-full flex items-center justify-between px-4 sm:px-6 py-4 hover:bg-white/5 transition-colors"
+            >
+                <span className="text-base font-semibold tracking-tight text-card-foreground">Price History</span>
+                <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
+            </button>
+
+            {open && (
+            <div className="px-4 sm:px-6 pb-6 space-y-4">
+                <p className="text-sm text-muted-foreground -mt-1">
                     {itemName} price evolution in {leagueName} league (poe.ninja data)
                 </p>
-            </div>
-
             <div className="h-[250px] sm:h-[300px] w-full mt-4">
                 <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={data} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
@@ -158,6 +166,8 @@ export default function PriceHistoryChart({ productSlug, league }: { productSlug
                     </LineChart>
                 </ResponsiveContainer>
             </div>
+            </div>
+            )}
         </div>
     )
 }

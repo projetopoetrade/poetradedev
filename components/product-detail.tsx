@@ -23,6 +23,7 @@ interface ProductDetailProps {
   leagueOptions: string[];
   difficultyOptions: string[];
   productName: string;
+  seoTitle?: string;
 }
 
 export default function ProductDetail({
@@ -34,6 +35,7 @@ export default function ProductDetail({
   leagueOptions,
   difficultyOptions,
   productName,
+  seoTitle,
 }: ProductDetailProps) {
   const [count, setCount] = useState(1);
   const { formatPrice, convertPrice } = useCurrency();
@@ -124,33 +126,16 @@ export default function ProductDetail({
 
   return (
       <div className="p-6 md:p-8 flex flex-col">
-        {/* Back to Products button */}
-        <div className="flex justify-end mb-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="hover:bg-muted"
-            onClick={handleBackToProducts}
-          >
-            Back to Products
-          </Button>
-        </div>
+        {/* h1 invisível com o SEO title completo */}
+        {seoTitle && <h1 className="sr-only">{seoTitle}</h1>}
 
-        <div className="flex items-start gap-3 mb-2">
-          <h1 className="text-3xl font-bold">
-            Buy {product.name} — {currentGameVersion === 'path-of-exile-1' ? 'Path of Exile 1' : 'Path of Exile 2'}
-          </h1>
+        <div className="flex items-start gap-3 mb-4">
+          <h2 className="text-3xl font-bold">{product.name}</h2>
           {!isInStock && (
             <span className="shrink-0 mt-1.5 inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold bg-red-600/20 text-red-400 border border-red-500/30">
               Out of Stock
             </span>
           )}
-        </div>
-
-        <div className="flex items-center gap-2 mb-4">
-          <span className="px-3 py-1.5 bg-indigo-600/20 text-indigo-400 rounded-md text-sm font-medium">
-            {currentGameVersion === 'path-of-exile-1' ? 'POE 1' : 'POE 2'}
-          </span>
         </div>
 
 
@@ -168,7 +153,7 @@ export default function ProductDetail({
           />
         </div>
 
-        <div className="mt-8">
+        <div className="mt-4">
           {/* Quantity controls */}
           <div className="flex items-center justify-center mb-3">
             <Button
@@ -219,9 +204,9 @@ export default function ProductDetail({
           )}
 
           {/* Action buttons */}
-          <div className="grid grid-cols-2 gap-4 mb-8">
+          <div className="flex items-center gap-3 mb-8">
             <Button
-              className="bg-green-500 text-black hover:bg-green-600 hover:text-white text-md font-bold"
+              className="flex-1 h-12 bg-green-500 text-black hover:bg-green-600 hover:text-white text-base font-bold"
               disabled={count === 0 || isProcessing || !isInStock}
               onClick={handleBuyNow}
             >
@@ -229,7 +214,7 @@ export default function ProductDetail({
             </Button>
             <Button
               variant="outline"
-              className="font-bold"
+              className="shrink-0 h-10 px-5 font-medium"
               disabled={count === 0 || !isInStock}
               onClick={handleAddToCart}
             >
