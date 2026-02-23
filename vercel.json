@@ -1,17 +1,4 @@
 {
-    "redirects": [
-        {
-            "source": "/(.*)",
-            "has": [
-                {
-                    "type": "host",
-                    "value": "pathoftrade.net"
-                }
-            ],
-            "destination": "https://www.pathoftrade.net/$1",
-            "permanent": true
-        }
-    ],
     "crons": [
         {
             "path": "/api/tools/prices/snapshot",
