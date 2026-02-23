@@ -73,7 +73,9 @@ export default function Footer() {
             <Link href="/products" className="text-gray-300 hover:text-white text-sm transition-colors">
               {t('products')}
             </Link>
-
+            <Link href="/tools/price-tracker" className="text-gray-300 hover:text-white text-sm transition-colors">
+              {t('price-tracker')}
+            </Link>
           </div>
 
           {/* Support Links */}

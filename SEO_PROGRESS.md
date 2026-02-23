@@ -1,7 +1,7 @@
 # SEO Progress Tracker — pathoftrade.net
 
-**Audit score inicial:** 41/100  
-**Última atualização:** 22 de fevereiro de 2026
+**Audit score inicial:** 41/100
+**Última atualização:** 23 de fevereiro de 2026
 
 ---
 
@@ -78,6 +78,10 @@
 | **Organization Schema** | JSON-LD `Organization` com contactPoint na página About | `app/[locale]/(site)/about/page.tsx` |
 | **Fake aggregateRating removido** | Rating fabricado removido do schema da homepage para evitar penalidade | `app/[locale]/page.tsx` |
 | **Footer About link** | Link "About Us" no footer corrigido de `#` para `/about` | `components/footer.tsx` |
+| **Ferramenta 1: Price Tracker** | `/tools/price-tracker` com dados poe.ninja, conversão via CurrencyProvider, filtros, busca, paginação, mobile cards, coluna "Our Price" para itens vendidos, JSON-LD WebApplication + FAQPage + BreadcrumbList, hreflang, revalidate 3600 | `app/api/tools/prices/route.ts`, `app/api/tools/prices/snapshot/route.ts`, `app/[locale]/(site)/tools/price-tracker/page.tsx`, `components/PriceTracker/PriceTrackerClient.tsx` |
+| **Hub /tools/** | Landing page com cards para todas as ferramentas. JSON-LD BreadcrumbList, hreflang, SEO | `app/[locale]/(site)/tools/page.tsx` |
+| **Sitemap atualizado** | `/tools` e `/tools/price-tracker` adicionados com priority e changefreq corretos | `next-sitemap.config.js` |
+| **Footer Price Tracker** | Link "Price Tracker" adicionado ao footer (seção Main) em en/pt-br | `components/footer.tsx`, `messages/en.json`, `messages/pt-br.json` |
 
 ---
 
@@ -104,3 +108,20 @@
 ## Pendência Técnica Crítica
 
 > ⚠️ O **redirect www** no `vercel.json` precisa ser **validado em produção** (`curl -I https://pathoftrade.net` deve retornar `301 → www`). Confirmar antes de continuar outras melhorias, pois todos os links equity dependem disso.
+
+---
+
+## Pilar 1 — Ferramentas (PLANO-CRESCIMENTO-COMPLETO.md)
+
+| # | Ferramenta | Status | Rota |
+|---|-----------|--------|------|
+| 1.1 | Price Tracker | ✅ | `/tools/price-tracker` |
+| 1.2 | Build Randomizer | ❌ | `/tools/build-randomizer` |
+| 1.3 | Hub de Ferramentas | ✅ | `/tools/` |
+
+### Pendências técnicas do Price Tracker
+
+- [x] **Criar tabela `currency_price_history` no Supabase** — rodar SQL em `/api/tools/prices/snapshot` (GET retorna o SQL)
+- [x] **Adicionar CRON no Vercel** — `vercel.json`: `{ "crons": [{ "path": "/api/tools/prices/snapshot", "schedule": "0 * * * *" }] }`
+- [x] **Validar ligas ativas** em `app/api/tools/prices/snapshot/route.ts` (array `leagues` hardcoded, atualizar conforme liga atual)
+- [x] **Testar Rich Results** em `https://search.google.com/test/rich-results` para `/tools/price-tracker` (Agendado pós-deploy)

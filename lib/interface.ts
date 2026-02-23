@@ -8,10 +8,13 @@ export interface Product {
   alt?: string,
   price: number,
   in_stock?: boolean, // true = available, false = out of stock (blocks purchases)
+  is_listed?: boolean, // true = shown in the store listing, false = hidden but still accessible directly for SEO
   imgUrl: string,
   gameVersion: 'path-of-exile-1' | 'path-of-exile-2',
   league: string,
   difficulty: string,
+  seoTitle?: any,
+  metaDescription?: any,
   updatedAt?: string
 }
 export type PageProps = Promise<{

@@ -38,6 +38,7 @@ export const generateMetadata = async (props: {
 
   // Nome legível para o título
   const productName = await parseProductSlug(params.name);
+  const decodedName = await parseProductSlug(params.name);
   const t = await getTranslations({ locale: params.locale, namespace: "SEO" });
 
   // 1. URLs Canônicas e Alternativas (CLEAN URL ONLY for PoE 1; Param for PoE 2)
@@ -49,6 +50,22 @@ export const generateMetadata = async (props: {
     ? 'PoE 2'
     : 'PoE 1';
 
+  // Buscar SEO no Sanity (caso o script de inteligência já tenha populado)
+  const products = await getProductsWithParams({
+    search: decodedName,
+    gameVersion: targetGameVersion,
+  });
+  const productFn = products?.[0];
+  let sanitySeoTitle = null;
+  let sanityMetaDescription = null;
+
+  if (productFn) {
+    const productSanity = await getProductBySlug(productFn.slug) as any;
+    const localeKey = params.locale === 'pt-BR' || params.locale === 'pt-br' ? 'pt_br' : 'en';
+
+    if (productSanity?.seoTitle) sanitySeoTitle = productSanity.seoTitle[localeKey];
+    if (productSanity?.metaDescription) sanityMetaDescription = productSanity.metaDescription[localeKey];
+  }
 
   // Canonical: A versão desta página na língua atual e JOGO atual
   const canonicalPath = getProductUrl(productName, params.locale, undefined, undefined, targetGameVersion);
@@ -57,10 +74,12 @@ export const generateMetadata = async (props: {
   const enPath = getProductUrl(productName, 'en', undefined, undefined, targetGameVersion);
   const ptPath = getProductUrl(productName, 'pt-br', undefined, undefined, targetGameVersion);
 
-  return {
-    title: t("productDetail.title", { productName, gameVersionLabel }),
-    description: t("productDetail.description", { productName, gameVersionLabel }),
+  const title = sanitySeoTitle || t("productDetail.title", { productName, gameVersionLabel });
+  const description = sanityMetaDescription || t("productDetail.description", { productName, gameVersionLabel });
 
+  return {
+    title,
+    description,
     alternates: {
       canonical: canonicalPath,
       languages: {
@@ -71,16 +90,16 @@ export const generateMetadata = async (props: {
     },
 
     openGraph: {
-      title: t("productDetail.title", { productName, gameVersionLabel }),
-      description: t("productDetail.description", { productName, gameVersionLabel }),
+      title,
+      description,
       url: canonicalPath,
       type: "website",
       siteName: t("siteName"),
     },
     twitter: {
       card: "summary_large_image",
-      title: t("productDetail.title", { productName, gameVersionLabel }),
-      description: t("productDetail.description", { productName, gameVersionLabel }),
+      title,
+      description,
     },
     keywords: generateKeywords({
       locale: params.locale,
@@ -197,9 +216,11 @@ export default async function ProductDetailPage(props: {
       ? 'Path of Exile 2'
       : 'Path of Exile 1';
 
+    const localeKey = params.locale === 'pt-BR' || params.locale === 'pt-br' ? 'pt_br' : 'en';
+
     // Transactional description fallback when Sanity has no body text
     const schemaDescription =
-      productSanity?.body?.[0]?.children?.[0]?.text ||
+      productSanity?.metaDescription?.[localeKey] ||
       `Buy ${product.name} for ${gameVersionLabel}. Fast in-game delivery, secure trading, best prices at Path of Trade.`;
 
     // Canonical URL — buildAbsoluteUrl avoids double-slash when getProductUrl already starts with /
@@ -306,7 +327,7 @@ export default async function ProductDetailPage(props: {
 
         <div className="max-w-6xl mx-auto rounded-lg overflow-hidden">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
-            <div className="p-4 md:p-6 flex items-center justify-center bg-black/10 rounded-lg">
+            <div className="p-4 md:p-6 flex items-center justify-center bg-black/10 rounded-lg self-start sticky top-24">
               <div className="relative w-full aspect-square max-w-[200px] md:max-w-[250px]">
                 <Image
                   src={product.imgUrl || "/images/placeholder.jpg"}

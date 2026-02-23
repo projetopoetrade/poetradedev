@@ -112,6 +112,8 @@ export const productQuery = `*[_type == "product"]{
   gameVersion,
   league,
   difficulty,
+  seoTitle,
+  metaDescription,
   updatedAt,
   "slug": slug.current
 }`;

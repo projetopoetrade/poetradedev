@@ -11,5 +11,11 @@
             "destination": "https://www.pathoftrade.net/$1",
             "permanent": true
         }
+    ],
+    "crons": [
+        {
+            "path": "/api/tools/prices/snapshot",
+            "schedule": "0 */6 * * *"
+        }
     ]
 }

@@ -22,14 +22,14 @@ type SearchParams = {
 // 2. Função Helper Corrigida (Coloque fora dos componentes)
 function buildQueryString(params: SearchParams): string {
   const urlParams = new URLSearchParams();
-  
+
   // Só adiciona se o valor existir e for uma string válida
   if (params.gameVersion) urlParams.set("gameVersion", params.gameVersion);
   if (params.league) urlParams.set("league", params.league);
   if (params.difficulty) urlParams.set("difficulty", params.difficulty);
   if (params.category) urlParams.set("category", params.category);
   if (params.search) urlParams.set("search", params.search);
-  
+
   const str = urlParams.toString();
   return str ? `?${str}` : '';
 }
@@ -53,7 +53,7 @@ export async function generateMetadata(
 
   // Base URL
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net";
-  
+
   // Gera a string de busca idêntica para todas as linguagens
   const queryString = buildQueryString(searchParams);
 
@@ -68,14 +68,14 @@ export async function generateMetadata(
   return {
     title: t("products.title", { gameVersion, category, league }),
     description: t("products.description", { gameVersion, category, league }),
-    
+
     alternates: {
       canonical: canonical,
       // HREFLANGS: Crucial para indexar PT-BR corretamente com os filtros
       languages: {
         'en': enUrl,
         'pt-BR': ptUrl,
-        'x-default': enUrl, 
+        'x-default': enUrl,
       },
     },
 
@@ -114,13 +114,16 @@ export default async function ProductsPage(
   const searchParams = await props.searchParams;
   const { locale } = await props.params;
   const t = await getTranslations({ locale, namespace: "Products" });
-  
+
   // Logs seguros
   console.log("🔍 [PRODUCTS PAGE] Search Params:", searchParams);
 
   try {
-    const products = await getProductsWithParams(searchParams);
-    
+    const products = await getProductsWithParams({
+      ...searchParams,
+      isListed: true
+    });
+
     // Variáveis para UI
     const league = searchParams.league || "All Leagues";
     const difficulty = searchParams.difficulty || "All Difficulties";
@@ -141,53 +144,53 @@ export default async function ProductsPage(
       "url": pageUrl,
       "numberOfItems": products.length,
       "itemListElement": products.map((product, index) => {
-          const productName = product.name || "Unknown Product";
-          const productImageUrl = product.imgUrl || `${baseUrl}/images/default.png`;
-          
-          // URLs de produto individuais
-          const productPath = locale === 'en' ? `/products/${encodeURIComponent(product.name)}` : `/${locale}/products/${encodeURIComponent(product.name)}`;
-          // Query string específica do produto (mantém filtros atuais)
-          const productQuery = buildQueryString({
-             gameVersion: product.gameVersion,
-             league: product.league,
-             difficulty: product.difficulty
-          });
-          const productUrl = `${baseUrl}${productPath}${productQuery}`;
+        const productName = product.name || "Unknown Product";
+        const productImageUrl = product.imgUrl || `${baseUrl}/images/default.png`;
 
-          return {
-            "@type": "ListItem",
-            "position": index + 1,
-            "item": {
-              "@type": "Product",
-              "name": `${productName} (${league})`,
-              "description": product.alt || productName,
-              "image": productImageUrl,
+        // URLs de produto individuais
+        const productPath = locale === 'en' ? `/products/${encodeURIComponent(product.name)}` : `/${locale}/products/${encodeURIComponent(product.name)}`;
+        // Query string específica do produto (mantém filtros atuais)
+        const productQuery = buildQueryString({
+          gameVersion: product.gameVersion,
+          league: product.league,
+          difficulty: product.difficulty
+        });
+        const productUrl = `${baseUrl}${productPath}${productQuery}`;
+
+        return {
+          "@type": "ListItem",
+          "position": index + 1,
+          "item": {
+            "@type": "Product",
+            "name": `${productName} (${league})`,
+            "description": product.alt || productName,
+            "image": productImageUrl,
+            "url": productUrl,
+            "brand": {
+              "@type": "Brand",
+              "name": gameVersion === "Current" ? "Path of Exile" : gameVersion
+            },
+            "offers": {
+              "@type": "Offer",
               "url": productUrl,
-              "brand": {
-                "@type": "Brand",
-                "name": gameVersion === "Current" ? "Path of Exile" : gameVersion
-              },
-              "offers": {
-                "@type": "Offer",
-                "url": productUrl,
-                "priceCurrency": "USD",
-                "price": product.price || "0.00",
-                "availability": "https://schema.org/InStock",
-                "seller": {
-                  "@type": "Organization",
-                  "name": "Path of Trade Net"
-                }
+              "priceCurrency": "USD",
+              "price": product.price || "0.00",
+              "availability": "https://schema.org/InStock",
+              "seller": {
+                "@type": "Organization",
+                "name": "Path of Trade Net"
               }
             }
-          };
+          }
+        };
       })
     };
-    
+
     return (
       <div className="container mx-auto py-8">
         <SearchParamsStorage searchParams={searchParams} />
         <FilterModalWrapper searchParams={searchParams} />
-        
+
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(catalogStructuredData) }}
@@ -196,7 +199,7 @@ export default async function ProductsPage(
         <div className="mb-12">
           {/* Header da Liga */}
           <div className="bg-indigo-700 rounded-t-lg py-2 px-4 md:mt-10 md:px-8 shadow-lg flex items-center justify-between max-w-[520px]">
-            <Link 
+            <Link
               href={`/games/${gameVersion}`}
               className="flex items-center text-white hover:text-indigo-200 transition-colors group"
               aria-label={t("backToLeagues")}
@@ -209,8 +212,8 @@ export default async function ProductsPage(
             <div className="w-6" />
           </div>
 
-          <ProductsClient 
-            products={products} 
+          <ProductsClient
+            products={products}
             initialFilters={{
               gameVersion,
               league,

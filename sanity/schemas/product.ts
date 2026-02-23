@@ -1,4 +1,4 @@
-import {defineType, defineField, SlugValue, Rule, ValidationBuilder, NumberRule, StringRule, ImageRule, ImageValue} from 'sanity'
+import { defineType, defineField, SlugValue, Rule, ValidationBuilder, NumberRule, StringRule, ImageRule, ImageValue } from 'sanity'
 
 // Define a type for the selection in the preview prepare function for clarity
 interface ProductPreviewSelection {
@@ -17,6 +17,26 @@ export default defineType({
       title: "Product Name",
       type: "string",
       validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "seoTitle",
+      title: "SEO Title",
+      type: "object",
+      description: "Optimized title tag for search engines.",
+      fields: [
+        { name: "en", title: "English", type: "string" },
+        { name: "pt_br", title: "Portuguese", type: "string" }
+      ]
+    }),
+    defineField({
+      name: "metaDescription",
+      title: "Meta Description",
+      type: "object",
+      description: "Brief description for search enginges (max 160 characters suggested).",
+      fields: [
+        { name: "en", title: "English", type: "text" },
+        { name: "pt_br", title: "Portuguese", type: "text" }
+      ]
     }),
     defineField({
       name: "slug",

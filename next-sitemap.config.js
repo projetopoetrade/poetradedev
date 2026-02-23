@@ -58,6 +58,8 @@ module.exports = {
       { path: '/terms', priority: 0.3, changefreq: 'yearly' },
       { path: '/games/path-of-exile-1', priority: 0.9, changefreq: 'weekly' },
       { path: '/games/path-of-exile-2', priority: 0.9, changefreq: 'weekly' },
+      { path: '/tools', priority: 0.8, changefreq: 'monthly' },
+      { path: '/tools/price-tracker', priority: 0.85, changefreq: 'daily' },
     ];
 
     staticPages.forEach((page) => {

@@ -103,6 +103,8 @@ export const getProductBySlug = async (slug: string) => {
     gameVersion,
     league,
     difficulty,
+    seoTitle,
+    metaDescription,
     updatedAt,
     "slug": slug.current
   }`;

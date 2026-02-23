@@ -140,11 +140,18 @@ export default function DashboardViews({ activeView, onViewChange }: DashboardVi
     alt: "",
   });
 
-  const [leagueForm, setLeagueForm] = useState({
+  const [leagueForm, setLeagueForm] = useState<{
+    name: string;
+    imageUrl: string;
+    gameVersion: "path-of-exile-1" | "path-of-exile-2";
+    description: string;
+    cloneFromLeague?: string;
+  }>({
     name: "",
     imageUrl: "",
-    gameVersion: "path-of-exile-1" as "path-of-exile-1" | "path-of-exile-2",
+    gameVersion: "path-of-exile-1",
     description: "",
+    cloneFromLeague: "",
   });
 
   // Leagues state for product form
@@ -387,8 +394,34 @@ export default function DashboardViews({ activeView, onViewChange }: DashboardVi
         imageUrl: "",
         gameVersion: "path-of-exile-1",
         description: "",
+        cloneFromLeague: "",
       });
       toast.success("League added successfully!");
+
+      // Clone products if requested
+      if (leagueForm.cloneFromLeague && leagueForm.cloneFromLeague !== "None") {
+        toast.info(`Cloning items from ${leagueForm.cloneFromLeague}...`, { duration: 5000 });
+        try {
+          const cloneRes = await fetch('/api/admin/leagues/clone', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              sourceLeague: leagueForm.cloneFromLeague,
+              targetLeague: leagueForm.name
+            })
+          });
+          const cloneData = await cloneRes.json();
+          if (cloneRes.ok) {
+            toast.success(`Successfully cloned ${cloneData.clonedItemsCount} items to ${leagueForm.name}!`);
+          } else {
+            toast.error(cloneData.error || "Failed to clone items.");
+          }
+        } catch (cloneErr) {
+          console.error("Clone error:", cloneErr);
+          toast.error("Network error while cloning items.");
+        }
+      }
+
       fetchAll();
     } catch (error) {
       console.error("Error adding league: ", error);
@@ -1410,6 +1443,25 @@ export default function DashboardViews({ activeView, onViewChange }: DashboardVi
                       </Select>
                     </div>
 
+                    <div className="space-y-2">
+                      <Label className="text-foreground">Clonar itens de uma liga existente (Opcional)</Label>
+                      <Select
+                        value={leagueForm.cloneFromLeague}
+                        onValueChange={(value) => setLeagueForm({ ...leagueForm, cloneFromLeague: value })}
+                      >
+                        <SelectTrigger className="bg-card border-border text-card-foreground focus:border-primary">
+                          <SelectValue placeholder="Selecione uma liga (ou deixe vazio)" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-card border-border">
+                          <SelectItem value="None">Não clonar (Liga vazia)</SelectItem>
+                          {availableLeaguesForFilter.map((l) => (
+                            <SelectItem key={l.id} value={l.name}>{l.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <p className="text-xs text-muted-foreground mt-1">Ao clonar, todos os itens da liga de origem serão copiados para esta nova liga com o preço zerado e pausados.</p>
+                    </div>
+
                     <div className="space-y-2 md:col-span-2">
                       <Label htmlFor="description" className="text-foreground">Descrição</Label>
                       <Textarea
@@ -1521,8 +1573,8 @@ export default function DashboardViews({ activeView, onViewChange }: DashboardVi
                             <div className="flex items-center gap-2 flex-wrap">
                               <h3 className="text-lg font-semibold text-card-foreground">{product.name}</h3>
                               <span className={`text-xs font-bold px-2 py-0.5 rounded-full border ${product.in_stock !== false
-                                  ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
-                                  : 'bg-red-500/10 text-red-400 border-red-500/30'
+                                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                                : 'bg-red-500/10 text-red-400 border-red-500/30'
                                 }`}>
                                 {product.in_stock !== false ? 'Em Estoque' : 'Sem Estoque'}
                               </span>

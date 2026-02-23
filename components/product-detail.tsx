@@ -13,6 +13,7 @@ import type { Product } from "@/lib/interface";
 import { CurrencyInfo } from "./currency-info";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
+import PriceHistoryChart from "./Product/PriceHistoryChart";
 
 interface ProductDetailProps {
   product: Product;
@@ -152,6 +153,10 @@ export default function ProductDetail({
         <span className="px-3 py-1.5 bg-indigo-600/20 text-indigo-400 rounded-md text-sm font-medium">
           {currentGameVersion === 'path-of-exile-1' ? 'POE 1' : 'POE 2'}
         </span>
+      </div>
+
+      <div className="mb-6">
+        <PriceHistoryChart productSlug={product.slug} league={currentLeague} />
       </div>
 
       {/* Game Version, League and Difficulty Filters */}

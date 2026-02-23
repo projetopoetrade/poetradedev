@@ -122,7 +122,7 @@ export const signWithGoogle = async () => {
     options: {
       redirectTo: `${origin}/auth/callback?redirect_to=/`,
     },
-  }) 
+  })
   if (data.url) {
     redirect(data.url)
   }
@@ -183,7 +183,7 @@ export const newProduct = async (product: Product) => {
   // Import do admin client feito no topo do arquivo
   const { createAdminClient } = await import('@/utils/supabase/admin');
   const supabase = createAdminClient();
-  
+
   // Verificar se já existe um produto com o mesmo nome na mesma liga
   const { data: existingProduct, error: checkError } = await supabase
     .from('products')
@@ -244,59 +244,65 @@ export const getProductsWithParams = async (
     difficulty?: string;
     category?: string;
     search?: string;
+    isListed?: boolean;
   }
 ): Promise<Product[]> => {
-  const { gameVersion, league, difficulty, category, search } = params;
+  const { gameVersion, league, difficulty, category, search, isListed } = params;
   const supabase = await createClient();
-  
+
   // Debug logs for search functionality
   console.log("🔍 [getProductsWithParams] Input params:", params);
   console.log("🔍 [getProductsWithParams] Search term:", search);
   console.log("🔍 [getProductsWithParams] Search type:", typeof search);
   console.log("🔍 [getProductsWithParams] Search truthy:", !!search);
-  
+
   let query = supabase.from('products').select('*');
-  
+
+  if (isListed !== undefined) {
+    console.log("🔍 [getProductsWithParams] Filtering by is_listed:", isListed);
+    query = query.eq('is_listed', isListed);
+  }
+
   if (gameVersion) {
     console.log("🔍 [getProductsWithParams] Filtering by gameVersion:", gameVersion);
     query = query.eq('gameVersion', gameVersion);
   }
-  
+
   if (league) {
     console.log("🔍 [getProductsWithParams] Filtering by league:", league);
     query = query.eq('league', league);
   }
-  
+
   if (difficulty) {
     console.log("🔍 [getProductsWithParams] Filtering by difficulty:", difficulty);
     query = query.eq('difficulty', difficulty);
   }
-  
+
   if (category) {
     console.log("🔍 [getProductsWithParams] Filtering by category:", category);
     query = query.eq('category', category);
   }
-  
+
   if (search) {
     console.log("🔍 [getProductsWithParams] Adding search filter for:", search);
     query = query.ilike('name', `%${search}%`);
   } else {
     console.log("🔍 [getProductsWithParams] No search term provided");
   }
-  
+
   console.log("🔍 [getProductsWithParams] Executing query...");
   const { data, error } = await query;
-  
+
   if (error) {
     console.error('❌ [getProductsWithParams] Error fetching products with params:', error.message);
     throw new Error('Could not fetch products');
   }
-  
+
   console.log("🔍 [getProductsWithParams] Query successful, found products:", data?.length || 0);
   if (data && data.length > 0) {
     console.log("🔍 [getProductsWithParams] First product name:", data[0]?.name);
   }
-  
+
   return data as Product[];
 };
 
