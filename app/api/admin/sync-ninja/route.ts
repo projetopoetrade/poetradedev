@@ -92,9 +92,11 @@ export async function POST(req: NextRequest) {
                 const lookupLeague = item.league ? item.league.toLowerCase() : '';
                 const officialLeagueName = leagueNameResolver.get(lookupLeague) || item.league;
 
+                const productSlug = generateSlug(item.item_name);
+
                 newProductsToCreate.push({
                     name: item.item_name,
-                    slug: generateSlug(item.item_name),
+                    slug: productSlug,
                     category: item.item_category,
                     gameVersion: targetGameVersion,
                     league: officialLeagueName,     // Using the mapped official Supabase league name
@@ -102,7 +104,7 @@ export async function POST(req: NextRequest) {
                     price: 0,                // Default starting price
                     is_listed: false,        // Important: keep unlisted
                     in_stock: false,
-                    imgUrl: '',              // Default empty
+                    imgUrl: `/images/products/${productSlug}.png`, // Automatically map to local path
                 });
 
                 // Add to existingSet to avoid duplicates in this loop if ninjaItems had weird dupes

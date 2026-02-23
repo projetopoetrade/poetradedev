@@ -8,6 +8,7 @@ import { parseProductSlug, getProductUrl } from "@/utils/url-helper";
 import ProductDetail from "../../../../../components/product-detail";
 import { getProductBySlug } from "@/sanity/sanity-utils";
 import ProductContent from "@/components/product-detail/ProductContent";
+import PriceHistoryChart from "@/components/Product/PriceHistoryChart";
 import { getTranslations } from "next-intl/server";
 import { buildCanonical, buildAbsoluteUrl, generateKeywords, buildBreadcrumbSchema } from "@/lib/utils";
 
@@ -327,16 +328,16 @@ export default async function ProductDetailPage(props: {
 
         <div className="max-w-6xl mx-auto rounded-lg overflow-hidden">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
-            <div className="p-4 md:p-6 flex items-center justify-center bg-black/10 rounded-lg self-start sticky top-24">
-              <div className="relative w-full aspect-square max-w-[200px] md:max-w-[250px]">
+            <div className="sticky top-4 p-4 md:p-8 flex items-center justify-center bg-black/20 rounded-xl border border-white/5">
+              <div className="relative w-full aspect-square max-w-[188px]">
                 <Image
                   src={product.imgUrl || "/images/placeholder.jpg"}
                   alt={product.name}
                   fill
                   sizes="(max-width: 768px) 100vw, 50vw"
-                  className="object-contain"
+                  className="object-contain drop-shadow-[0_4px_32px_rgba(99,102,241,0.15)]"
                   quality={100}
-                  priority // Hero image keeps priority
+                  priority
                 />
               </div>
             </div>
@@ -354,15 +355,26 @@ export default async function ProductDetailPage(props: {
           </div>
         </div>
 
+        {/* Price History — seção full-width abaixo do grid */}
+        <div className="max-w-6xl mx-auto mt-8">
+          <div className="p-4 md:p-6 bg-muted/5 rounded-xl border border-white/5">
+            <h2 className="text-xl font-bold mb-6">Price History</h2>
+            <PriceHistoryChart productSlug={product.slug} league={currentLeague} />
+          </div>
+        </div>
+
         {productSanity?.body?.[params.locale === 'en' ? 'en' : 'pt_br'] && (
-          <div className="p-4 md:p-6 mt-6 md:mt-12 bg-muted/10 rounded-lg">
-            <h2 className="text-lg font-semibold text-gray-100/40 mb-4">Description</h2>
-            <ProductContent content={productSanity.body[params.locale === 'en' ? 'en' : 'pt_br']} />
+          <div className="max-w-6xl mx-auto mt-8">
+            <div className="p-4 md:p-6 bg-muted/10 rounded-xl border border-white/5">
+              <h2 className="text-lg font-semibold text-gray-100/40 mb-4">Description</h2>
+              <ProductContent content={productSanity.body[params.locale === 'en' ? 'en' : 'pt_br']} />
+            </div>
           </div>
         )}
 
         {/* FAQ Section Render */}
-        <div className="p-4 md:p-6 mt-6 bg-muted/5 rounded-lg border border-white/5">
+        <div className="max-w-6xl mx-auto mt-8">
+        <div className="p-4 md:p-6 bg-muted/5 rounded-xl border border-white/5">
           <h2 className="text-xl font-bold text-gray-100 mb-6">
             {params.locale === 'en' ? 'Frequently Asked Questions' : 'Perguntas Frequentes'}
           </h2>
@@ -374,6 +386,7 @@ export default async function ProductDetailPage(props: {
               </div>
             ))}
           </div>
+        </div>
         </div>
       </div>
     );

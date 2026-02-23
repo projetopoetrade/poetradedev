@@ -13,7 +13,6 @@ import type { Product } from "@/lib/interface";
 import { CurrencyInfo } from "./currency-info";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
-import PriceHistoryChart from "./Product/PriceHistoryChart";
 
 interface ProductDetailProps {
   product: Product;
@@ -124,127 +123,124 @@ export default function ProductDetail({
   const isInStock = product.in_stock !== false;
 
   return (
+      <div className="p-6 md:p-8 flex flex-col">
+        {/* Back to Products button */}
+        <div className="flex justify-end mb-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="hover:bg-muted"
+            onClick={handleBackToProducts}
+          >
+            Back to Products
+          </Button>
+        </div>
 
-    <div className="p-6 md:p-8 flex flex-col">
-      {/* Back to Products button */}
-      <div className="flex justify-end mb-2">
-        <Button
-          variant="outline"
-          size="sm"
-          className="hover:bg-muted"
-          onClick={handleBackToProducts}
-        >
-          Back to Products
-        </Button>
-      </div>
+        <div className="flex items-start gap-3 mb-2">
+          <h1 className="text-3xl font-bold">
+            Buy {product.name} — {currentGameVersion === 'path-of-exile-1' ? 'Path of Exile 1' : 'Path of Exile 2'}
+          </h1>
+          {!isInStock && (
+            <span className="shrink-0 mt-1.5 inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold bg-red-600/20 text-red-400 border border-red-500/30">
+              Out of Stock
+            </span>
+          )}
+        </div>
 
-      <div className="flex items-start gap-3 mb-2">
-        <h1 className="text-3xl font-bold">
-          Buy {product.name} — {currentGameVersion === 'path-of-exile-1' ? 'Path of Exile 1' : 'Path of Exile 2'}
-        </h1>
-        {!isInStock && (
-          <span className="shrink-0 mt-1.5 inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold bg-red-600/20 text-red-400 border border-red-500/30">
-            Out of Stock
+        <div className="flex items-center gap-2 mb-4">
+          <span className="px-3 py-1.5 bg-indigo-600/20 text-indigo-400 rounded-md text-sm font-medium">
+            {currentGameVersion === 'path-of-exile-1' ? 'POE 1' : 'POE 2'}
           </span>
-        )}
-      </div>
+        </div>
 
-      <div className="flex items-center gap-2 mb-4">
-        <span className="px-3 py-1.5 bg-indigo-600/20 text-indigo-400 rounded-md text-sm font-medium">
-          {currentGameVersion === 'path-of-exile-1' ? 'POE 1' : 'POE 2'}
-        </span>
-      </div>
 
-      <div className="mb-6">
-        <PriceHistoryChart productSlug={product.slug} league={currentLeague} />
-      </div>
 
-      {/* Game Version, League and Difficulty Filters */}
-      <div className="">
-        <Filters
-          productName={productName}
-          gameVersionOptions={gameVersionOptions}
-          leagueOptions={leagueOptions}
-          difficultyOptions={difficultyOptions}
-          currentGameVersion={currentGameVersion}
-          currentLeague={currentLeague}
-          currentDifficulty={currentDifficulty}
-        />
-      </div>
-
-      <div className="mt-auto">
-        {/* Quantity controls */}
-        <div className="flex items-center justify-center mb-3">
-          <Button
-            variant="outline"
-            size="icon"
-            className="flex-none h-10"
-            onClick={decrement}
-            disabled={isQuantityLoading || count === 0}
-          >
-            <Minus />
-          </Button>
-          <Input
-            className="shrink text-center text-xl w-24 mx-2 h-10 appearance-none [-moz-appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-            type="number"
-            placeholder="1"
-            value={count}
-            onChange={handleInputChange}
-            disabled={isQuantityLoading}
-            min="0"
+        {/* Game Version, League and Difficulty Filters */}
+        <div className="">
+          <Filters
+            productName={productName}
+            gameVersionOptions={gameVersionOptions}
+            leagueOptions={leagueOptions}
+            difficultyOptions={difficultyOptions}
+            currentGameVersion={currentGameVersion}
+            currentLeague={currentLeague}
+            currentDifficulty={currentDifficulty}
           />
-          <Button
-            variant="outline"
-            size="icon"
-            className="flex-none h-10"
-            onClick={increment}
-            disabled={isQuantityLoading}
-          >
-            <Plus />
-          </Button>
         </div>
 
-        {/* Price display */}
-        <div className="flex items-baseline justify-center mb-6">
-          <span className="text-3xl font-bold text-primary">{formatPrice(totalPrice)}</span>
-        </div>
-
-        {error && (
-          <div className="text-red-500 text-sm mb-4 text-center">
-            {error}
+        <div className="mt-8">
+          {/* Quantity controls */}
+          <div className="flex items-center justify-center mb-3">
+            <Button
+              variant="outline"
+              size="icon"
+              className="flex-none h-10"
+              onClick={decrement}
+              disabled={isQuantityLoading || count === 0}
+            >
+              <Minus />
+            </Button>
+            <Input
+              className="shrink text-center text-xl w-24 mx-2 h-10 appearance-none [-moz-appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              type="number"
+              placeholder="1"
+              value={count}
+              onChange={handleInputChange}
+              disabled={isQuantityLoading}
+              min="0"
+            />
+            <Button
+              variant="outline"
+              size="icon"
+              className="flex-none h-10"
+              onClick={increment}
+              disabled={isQuantityLoading}
+            >
+              <Plus />
+            </Button>
           </div>
-        )}
 
-        {!isInStock && (
-          <div className="mb-4 px-4 py-3 rounded-lg bg-red-950/40 border border-red-700/40 text-sm text-red-300 text-center">
-            This item is temporarily out of stock. Check back soon or{" "}
-            <a href="https://discord.gg/pathoftrade" className="underline hover:text-red-100" target="_blank" rel="noopener noreferrer">contact support</a>.
+          {/* Price display */}
+          <div className="flex items-baseline justify-center mb-6">
+            <span className="text-3xl font-bold text-primary">{formatPrice(totalPrice)}</span>
           </div>
-        )}
 
-        {/* Action buttons */}
-        <div className="grid grid-cols-2 gap-4 mb-8">
-          <Button
-            className="bg-green-500 text-black hover:bg-green-600 hover:text-white text-md font-bold"
-            disabled={count === 0 || isProcessing || !isInStock}
-            onClick={handleBuyNow}
-          >
-            {isProcessing ? 'Processing...' : 'Buy Now'}
-          </Button>
-          <Button
-            variant="outline"
-            className="font-bold"
-            disabled={count === 0 || !isInStock}
-            onClick={handleAddToCart}
-          >
-            Add to Cart
-          </Button>
+          {error && (
+            <div className="text-red-500 text-sm mb-4 text-center">
+              {error}
+            </div>
+          )}
+
+          {!isInStock && (
+            <div className="mb-4 px-4 py-3 rounded-lg bg-red-950/40 border border-red-700/40 text-sm text-red-300 text-center">
+              This item is temporarily out of stock. Check back soon or{" "}
+              <a href="https://discord.gg/pathoftrade" className="underline hover:text-red-100" target="_blank" rel="noopener noreferrer">contact support</a>.
+            </div>
+          )}
+
+          {/* Action buttons */}
+          <div className="grid grid-cols-2 gap-4 mb-8">
+            <Button
+              className="bg-green-500 text-black hover:bg-green-600 hover:text-white text-md font-bold"
+              disabled={count === 0 || isProcessing || !isInStock}
+              onClick={handleBuyNow}
+            >
+              {isProcessing ? 'Processing...' : 'Buy Now'}
+            </Button>
+            <Button
+              variant="outline"
+              className="font-bold"
+              disabled={count === 0 || !isInStock}
+              onClick={handleAddToCart}
+            >
+              Add to Cart
+            </Button>
+          </div>
+
+
         </div>
 
 
       </div>
-
-
-    </div>
   );
 } 
