@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
-export const revalidate = 3600 // 1 hora de cache
+export const dynamic = 'force-dynamic'
 
 export async function GET() {
     try {
