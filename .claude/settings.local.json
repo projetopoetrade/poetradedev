@@ -9,7 +9,11 @@
       "WebFetch(domain:pathoftrade.com)",
       "Bash(cat:*)",
       "Bash(curl:*)",
-      "WebFetch(domain:pagespeed.web.dev)"
+      "WebFetch(domain:pagespeed.web.dev)",
+      "Bash(grep:*)",
+      "Bash(find C:\\\\Users\\\\alexa\\\\Documents\\\\poetrade-dev\\\\app\\\\[locale]\\\\\\(site\\):*)",
+      "Bash(wc:*)",
+      "Bash(cd:*)"
     ]
   }
 }

@@ -372,9 +372,24 @@ export function buildBreadcrumbSchema(
       "@type": "ListItem",
       position: index + 1,
       name: item.name,
-      item: item.url.startsWith("http")
-        ? item.url
-        : `${baseUrl}${item.url}`,
+      item: item.url.startsWith("http") ? item.url : `${baseUrl}${item.url}`
+    })),
+  };
+}
+
+export function buildFAQSchema(
+  questionsAndAnswers: { question: string; answer: string }[]
+) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: questionsAndAnswers.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.answer,
+      },
     })),
   };
 }

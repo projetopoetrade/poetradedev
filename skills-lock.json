@@ -6,6 +6,11 @@
       "sourceType": "github",
       "computedHash": "82588484b29316f3106185374cc6aedf409c38a0698d49f7034c9b5ec07a1aa7"
     },
+    "browser-use": {
+      "source": "browser-use/browser-use",
+      "sourceType": "github",
+      "computedHash": "5790ef9eef84bbeacd0f16465f424dfc28e16dafaf33a0ce9ffe9e105da0b190"
+    },
     "seo-audit": {
       "source": "coreyhaines31/marketingskills",
       "sourceType": "github",

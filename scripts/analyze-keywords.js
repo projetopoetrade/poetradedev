@@ -61,14 +61,14 @@ const PRODUCT_CATEGORY_KEYWORDS = {
 };
 
 function generateKeywords(options) {
-  const { 
-    locale, 
-    gameVersion, 
-    league, 
-    category, 
-    difficulty, 
-    productName, 
-    blogTitle, 
+  const {
+    locale,
+    gameVersion,
+    league,
+    category,
+    difficulty,
+    productName,
+    blogTitle,
     leagueSlug,
     customKeywords = []
   } = options;
@@ -108,7 +108,7 @@ function generateKeywords(options) {
   // Add league keywords
   if (league) {
     keywords.push(...LEAGUE_KEYWORDS[lang]);
-    
+
     // Add league-specific keywords with the actual league name
     if (lang === 'en') {
       keywords.push(`buy ${league.toLowerCase()} currency`);
@@ -153,7 +153,7 @@ function generateKeywords(options) {
   if (productName && gameVersion) {
     const gameVersionText = gameVersion === 'path-of-exile-1' ? 'poe 1' : 'poe 2';
     const gameVersionFull = gameVersion === 'path-of-exile-1' ? 'path of exile 1' : 'path of exile 2';
-    
+
     if (lang === 'en') {
       keywords.push(`buy ${productName.toLowerCase()} ${gameVersionText}`);
       keywords.push(`buy ${productName.toLowerCase()} ${gameVersionFull}`);
@@ -193,16 +193,16 @@ function colorize(text, color) {
 async function fetchRealData() {
   try {
     console.log('🔍 Conectando com o banco de dados Supabase...');
-    
+
     // Carregar variáveis de ambiente do arquivo .env.local
     const fs = await import('fs');
     const path = await import('path');
-    
+
     const envPath = path.join(process.cwd(), '.env.local');
     if (fs.existsSync(envPath)) {
       const envContent = fs.readFileSync(envPath, 'utf8');
       const envLines = envContent.split('\n');
-      
+
       envLines.forEach(line => {
         const [key, value] = line.split('=');
         if (key && value) {
@@ -210,32 +210,32 @@ async function fetchRealData() {
         }
       });
     }
-    
+
     // Verificar se as variáveis de ambiente estão disponíveis
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
       throw new Error('Variáveis de ambiente do Supabase não encontradas');
     }
-    
+
     // Importar Supabase diretamente
     const { createClient } = await import('@supabase/supabase-js');
-    
+
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
     const supabase = createClient(supabaseUrl, supabaseKey);
-    
+
     // Buscar produtos reais
     console.log('📦 Buscando produtos...');
     const { data: productsData, error: productsError } = await supabase
       .from('products')
       .select('name, slug, category, gameVersion, league, difficulty')
       .limit(50); // Limitar para evitar muitos dados
-    
+
     if (productsError) {
       throw new Error(`Erro ao buscar produtos: ${productsError.message}`);
     }
-    
+
     const products = productsData || [];
-    
+
     // Buscar ligas reais para PoE 1
     console.log('🏆 Buscando ligas PoE 1...');
     const { data: leaguesPoe1, error: leaguesPoe1Error } = await supabase
@@ -243,11 +243,11 @@ async function fetchRealData() {
       .select('name, gameVersion, isActive')
       .eq('gameVersion', 'path-of-exile-1')
       .eq('isActive', true);
-    
+
     if (leaguesPoe1Error) {
       throw new Error(`Erro ao buscar ligas PoE 1: ${leaguesPoe1Error.message}`);
     }
-    
+
     // Buscar ligas reais para PoE 2
     console.log('🏆 Buscando ligas PoE 2...');
     const { data: leaguesPoe2, error: leaguesPoe2Error } = await supabase
@@ -255,35 +255,35 @@ async function fetchRealData() {
       .select('name, gameVersion, isActive')
       .eq('gameVersion', 'path-of-exile-2')
       .eq('isActive', true);
-    
+
     if (leaguesPoe2Error) {
       throw new Error(`Erro ao buscar ligas PoE 2: ${leaguesPoe2Error.message}`);
     }
-    
+
     // Combinar todas as ligas e gerar slugs
     const allLeagues = [
-      ...(leaguesPoe1 || []).map(league => ({ 
-        ...league, 
+      ...(leaguesPoe1 || []).map(league => ({
+        ...league,
         gameVersion: 'path-of-exile-1',
         slug: league.name.toLowerCase().replace(/\s+/g, '-')
       })),
-      ...(leaguesPoe2 || []).map(league => ({ 
-        ...league, 
+      ...(leaguesPoe2 || []).map(league => ({
+        ...league,
         gameVersion: 'path-of-exile-2',
         slug: league.name.toLowerCase().replace(/\s+/g, '-')
       }))
     ];
-    
+
     const difficulties = ['softcore', 'hardcore'];
     const gameVersions = ['path-of-exile-1', 'path-of-exile-2'];
 
     console.log(`✅ Dados carregados: ${products.length} produtos, ${allLeagues.length} ligas`);
-    
+
     return { products, leagues: allLeagues, difficulties, gameVersions };
   } catch (error) {
     console.error('❌ Erro ao buscar dados do banco:', error.message);
     console.log('🔄 Usando dados de fallback...');
-    
+
     // Fallback para dados estáticos
     return {
       products: [
@@ -305,7 +305,7 @@ async function fetchRealData() {
 // Função para gerar keywords de exemplo para diferentes tipos de páginas
 async function generatePageKeywords() {
   const pages = [];
-  
+
   // Buscar dados reais do banco
   const { products, leagues, difficulties, gameVersions } = await fetchRealData();
 
@@ -435,7 +435,7 @@ async function generatePageKeywords() {
   leagues.forEach(league => {
     pages.push({
       type: 'League',
-      url: `/league/${league.slug}`,
+      url: `/games/${league.gameVersion}/league/${league.slug}`,
       locale: 'en',
       keywords: generateKeywords({
         locale: 'en',
@@ -448,7 +448,7 @@ async function generatePageKeywords() {
 
     pages.push({
       type: 'League',
-      url: `/pt-br/league/${league.slug}`,
+      url: `/pt-br/games/${league.gameVersion}/league/${league.slug}`,
       locale: 'pt-br',
       keywords: generateKeywords({
         locale: 'pt-br',
@@ -509,7 +509,7 @@ async function generatePageKeywords() {
     const isPT = post.title.includes('Melhores') || post.title.includes('Guia') || post.title.includes('Builds para') || post.title.includes('Como Fazer');
     const locale = isPT ? 'pt-br' : 'en';
     const gameVersion = post.title.includes('Poe2') || post.title.includes('poe2') ? 'path-of-exile-2' : 'path-of-exile-1';
-    const customKeywords = isPT 
+    const customKeywords = isPT
       ? ['guia poe', 'dicas poe', 'tutorial poe', 'build poe', 'builds', 'moedas', 'trading']
       : ['poe guide', 'path of exile guide', 'poe tips', 'poe tutorial', 'builds', 'currency', 'trading'];
 
@@ -532,7 +532,7 @@ async function generatePageKeywords() {
 // Função para analisar keywords
 function analyzeKeywords(pages) {
   console.log(colorize('\n🔍 ANÁLISE DE KEYWORDS - TODAS AS PÁGINAS', 'bright'));
-  console.log(colorize('=' .repeat(80), 'cyan'));
+  console.log(colorize('='.repeat(80), 'cyan'));
 
   // Estatísticas gerais
   const totalPages = pages.length;
@@ -573,7 +573,7 @@ function analyzeKeywords(pages) {
 
   // Top keywords
   const topKeywords = Object.entries(allKeywords)
-    .sort(([,a], [,b]) => b.total - a.total)
+    .sort(([, a], [, b]) => b.total - a.total)
     .slice(0, 20);
 
   console.log(colorize(`\n🏆 TOP 20 KEYWORDS MAIS COMUNS:`, 'yellow'));
@@ -583,7 +583,7 @@ function analyzeKeywords(pages) {
   });
 
   // Keywords específicas de compra
-  const purchaseKeywords = Object.keys(allKeywords).filter(keyword => 
+  const purchaseKeywords = Object.keys(allKeywords).filter(keyword =>
     keyword.includes('buy') || keyword.includes('comprar')
   );
 
@@ -594,7 +594,7 @@ function analyzeKeywords(pages) {
   });
 
   // Keywords de liga
-  const leagueKeywords = Object.keys(allKeywords).filter(keyword => 
+  const leagueKeywords = Object.keys(allKeywords).filter(keyword =>
     keyword.includes('league') || keyword.includes('liga') || keyword.includes('season') || keyword.includes('temporada')
   );
 
@@ -610,12 +610,12 @@ function analyzeKeywords(pages) {
 // Função para mostrar exemplos de páginas específicas
 function showPageExamples(pages) {
   console.log(colorize(`\n📄 EXEMPLOS DE PÁGINAS ESPECÍFICAS:`, 'yellow'));
-  console.log(colorize('=' .repeat(80), 'cyan'));
+  console.log(colorize('='.repeat(80), 'cyan'));
 
   // Exemplo 1: Divine Orb com liga específica
-  const divineOrbExample = pages.find(p => 
-    p.url.includes('Divine%20Orb') && 
-    p.url.includes('Keepers%20of%20the%20Flame') && 
+  const divineOrbExample = pages.find(p =>
+    p.url.includes('Divine%20Orb') &&
+    p.url.includes('Keepers%20of%20the%20Flame') &&
     p.locale === 'en'
   );
 
@@ -625,9 +625,9 @@ function showPageExamples(pages) {
   }
 
   // Exemplo 2: Divine Orb PT-BR com liga
-  const divineOrbPT = pages.find(p => 
-    p.url.includes('Divine%20Orb') && 
-    p.url.includes('Keepers%20of%20the%20Flame') && 
+  const divineOrbPT = pages.find(p =>
+    p.url.includes('Divine%20Orb') &&
+    p.url.includes('Keepers%20of%20the%20Flame') &&
     p.locale === 'pt-br'
   );
 
@@ -637,9 +637,9 @@ function showPageExamples(pages) {
   }
 
   // Exemplo 3: Divine Orb SEM liga (PT-BR)
-  const divineOrbNoLeague = pages.find(p => 
-    p.url.includes('Divine%20Orb') && 
-    !p.url.includes('league') && 
+  const divineOrbNoLeague = pages.find(p =>
+    p.url.includes('Divine%20Orb') &&
+    !p.url.includes('league') &&
     p.locale === 'pt-br' &&
     p.type === 'Product Detail (no league)'
   );
@@ -650,9 +650,9 @@ function showPageExamples(pages) {
   }
 
   // Exemplo 4: Divine Orb SEM liga (EN)
-  const divineOrbNoLeagueEN = pages.find(p => 
-    p.url.includes('Divine%20Orb') && 
-    !p.url.includes('league') && 
+  const divineOrbNoLeagueEN = pages.find(p =>
+    p.url.includes('Divine%20Orb') &&
+    !p.url.includes('league') &&
     p.locale === 'en' &&
     p.type === 'Product Detail (no league)'
   );
@@ -695,7 +695,7 @@ function showPageExamples(pages) {
 async function main() {
   console.log(colorize('🚀 INICIANDO ANÁLISE DE KEYWORDS...', 'bright'));
   console.log(colorize('📊 Buscando dados reais do banco de dados...', 'yellow'));
-  
+
   try {
     const pages = await generatePageKeywords();
     const analysis = analyzeKeywords(pages);

@@ -76,10 +76,10 @@
       "ogDescription": "Não perca as melhores ofertas de {category} para a liga {league}! Preços baixos, entrega imediata e 100% de segurança para sua conta {gameVersion} no Path of Trade."
     },
     "productDetail": {
-      "title": "Comprar {productName} | Preço Baixo & Entrega Rápida | Path of Trade",
-      "description": "Adquira {productName} para Path of Exile com o melhor preço do mercado. Entrega instantânea e 100% segura. Compre suas moedas PoE agora no Path of Trade!",
-      "ogTitle": "Compre {productName} para PoE | Moeda Segura e Barata | Path of Trade",
-      "ogDescription": "Garanta seu {productName} em Path of Exile. Oferecemos o melhor preço, entrega em minutos e transações totalmente seguras. Visite o Path of Trade!"
+      "title": "Comprar {productName} para {gameVersionLabel} — Melhor Preço | Path of Trade",
+      "description": "Adquira {productName} para {gameVersionLabel} com o melhor preço do mercado. Entrega instantânea e segura. Compre suas moedas PoE agora no Path of Trade!",
+      "ogTitle": "Compre {productName} para {gameVersionLabel} | Moeda Segura | Path of Trade",
+      "ogDescription": "Garanta seu {productName} em {gameVersionLabel}. Oferecemos o melhor preço, entrega em minutos e transações totalmente seguras. Visite o Path of Trade!"
     },
     "gameVersion": {
       "poe1Title": "Compre Moedas de Path of Exile 1 — Chaos, Divine e Exalted Orbs | Path of Trade",
@@ -647,6 +647,32 @@
     },
     "backToBlog": "Voltar ao Blog",
     "buyDivines": "Comprar Divines Agora",
+    "whatWeKnowSoFar": "O Que Sabemos Até Agora",
+    "leagueStarterBuilds": "Builds para Início de Liga",
+    "howItWorks": "Como Funciona {leagueName}",
+    "patchNotesHighlights": "Destaques do Patch Notes",
+    "tldr": "Resumo",
+    "tierList": "Tier List",
+    "launchDate": "Data de Lançamento",
+    "liveNow": "AO VIVO",
+    "leagueEnded": "Esta liga terminou.",
+    "leagueEndedBadge": "Liga Encerrada",
+    "budget": "Orçamento",
+    "pros": "Vantagens",
+    "cons": "Desvantagens",
+    "viewGuide": "Ver Guia",
+    "featuredCurrency": "Currency em Destaque",
+    "officialPatchNotes": "Ver Patch Notes Oficial",
+    "gggOfficialPosts": "Posts Oficiais da GGG",
+    "teaserMedia": "Mídia e Teasers",
+    "currencyOnLaunchDay": "Currency disponível a partir do dia de lançamento",
+    "prepareForLeague": "Prepare-se para {leagueName} — Ver Currency",
+    "lookingForCurrentLeague": "Procurando a liga atual?",
+    "viewCurrentLeague": "Ver Liga Atual",
+    "buyForLeague": "Comprar {currencyName} para {leagueName}",
+    "getCurrencyFor": "Compre Sua Currency para {leagueName}",
+    "viewOfficialPost": "Ver Post Oficial",
+    "browseAllCurrency": "Ver Toda a Currency",
     "toc": {
       "title": "Neste Guia",
       "items": [

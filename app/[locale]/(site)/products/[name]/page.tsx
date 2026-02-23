@@ -44,6 +44,12 @@ export const generateMetadata = async (props: {
   // Determine Game Version (Default: POE 1)
   const targetGameVersion = searchParams.gameVersion || "path-of-exile-1";
 
+  // Game version label for description
+  const gameVersionLabel = targetGameVersion === 'path-of-exile-2'
+    ? 'PoE 2'
+    : 'PoE 1';
+
+
   // Canonical: A versão desta página na língua atual e JOGO atual
   const canonicalPath = getProductUrl(productName, params.locale, undefined, undefined, targetGameVersion);
 
@@ -52,8 +58,8 @@ export const generateMetadata = async (props: {
   const ptPath = getProductUrl(productName, 'pt-br', undefined, undefined, targetGameVersion);
 
   return {
-    title: t("productDetail.title", { productName }),
-    description: t("productDetail.description", { productName }),
+    title: t("productDetail.title", { productName, gameVersionLabel }),
+    description: t("productDetail.description", { productName, gameVersionLabel }),
 
     alternates: {
       canonical: canonicalPath,
@@ -65,16 +71,16 @@ export const generateMetadata = async (props: {
     },
 
     openGraph: {
-      title: t("productDetail.title", { productName }),
-      description: t("productDetail.description", { productName }),
+      title: t("productDetail.title", { productName, gameVersionLabel }),
+      description: t("productDetail.description", { productName, gameVersionLabel }),
       url: canonicalPath,
       type: "website",
       siteName: t("siteName"),
     },
     twitter: {
       card: "summary_large_image",
-      title: t("productDetail.title", { productName }),
-      description: t("productDetail.description", { productName }),
+      title: t("productDetail.title", { productName, gameVersionLabel }),
+      description: t("productDetail.description", { productName, gameVersionLabel }),
     },
     keywords: generateKeywords({
       locale: params.locale,
@@ -206,6 +212,64 @@ export default async function ProductDetailPage(props: {
       { name: product.name, url: getProductUrl(product.name, params.locale) },
     ]);
 
+    // Dynamic FAQ Data
+    const faqData = [
+      {
+        question: params.locale === 'en'
+          ? `Is it safe to buy ${product.name} for ${gameVersionLabel} here?`
+          : `É seguro comprar ${product.name} para ${gameVersionLabel} aqui?`,
+        answer: params.locale === 'en'
+          ? `Yes! Buying ${product.name} at Path of Trade is 100% secure. We use safe in-game trading methods to ensure your account is protected at all times.`
+          : `Sim! Comprar ${product.name} no Path of Trade é 100% seguro. Usamos métodos seguros de troca no jogo para garantir a proteção da sua conta.`
+      },
+      {
+        question: params.locale === 'en'
+          ? `How fast is the delivery for ${product.name}?`
+          : `Quão rápida é a entrega para ${product.name}?`,
+        answer: params.locale === 'en'
+          ? `We typically deliver ${product.name} within 5 to 15 minutes of payment confirmation in the ${currentLeague} league.`
+          : `Nós normalmente entregamos ${product.name} entre 5 e 15 minutos após a confirmação do pagamento na liga ${currentLeague}.`
+      },
+      {
+        question: params.locale === 'en'
+          ? `How will I receive my ${product.name} in-game?`
+          : `Como vou receber meu ${product.name} no jogo?`,
+        answer: params.locale === 'en'
+          ? `After your purchase is confirmed, our team will invite you to a party in-game. We usually trade face-to-face in your hideout or a town. Make sure to put a random rare item in the trade window for extra safety.`
+          : `Após a confirmação da compra, nossa equipe convidará você para um grupo no jogo. Geralmente negociamos cara a cara no seu refúgio (hideout) ou em uma cidade. Coloque um item raro aleatório na janela de troca para maior segurança.`
+      },
+      {
+        question: params.locale === 'en'
+          ? `Is it possible to buy ${product.name} for other leagues or ${targetGameVersion === 'path-of-exile-1' ? 'PoE 2' : 'PoE 1'}?`
+          : `É possível comprar ${product.name} para outras ligas ou ${targetGameVersion === 'path-of-exile-1' ? 'PoE 2' : 'PoE 1'}?`,
+        answer: params.locale === 'en'
+          ? `Yes, you can use the dropdown filters on this page to check the availability and current price of ${product.name} across different game versions and active leagues.`
+          : `Sim, você pode usar os filtros nesta página para verificar a disponibilidade e o preço atual de ${product.name} em diferentes versões do jogo e ligas ativas.`
+      },
+      {
+        question: params.locale === 'en'
+          ? `What payment methods are accepted to buy ${product.name}?`
+          : `Quais métodos de pagamento são aceitos para comprar ${product.name}?`,
+        answer: params.locale === 'en'
+          ? `We accept a variety of secure payment methods including PIX, Credit Cards, and other local options depending on your region. Check our checkout page for the full list.`
+          : `Aceitamos uma variedade de métodos de pagamento seguros, incluindo PIX, Cartões de Crédito e outras opções locais dependendo da sua região. Verifique nossa página de checkout para a lista completa.`
+      }
+    ];
+
+    // FAQPage schema (dynamically generated from the array)
+    const faqSchema = {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: faqData.map((faq) => ({
+        "@type": "Question",
+        name: faq.question,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: faq.answer,
+        },
+      })),
+    };
+
     // JSON-LD with CLEAN URL
     const productStructuredData = {
       "@context": "https://schema.org",
@@ -234,6 +298,10 @@ export default async function ProductDetailPage(props: {
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
         />
 
         <div className="max-w-6xl mx-auto rounded-lg overflow-hidden">
@@ -271,6 +339,21 @@ export default async function ProductDetailPage(props: {
             <ProductContent content={productSanity.body[params.locale === 'en' ? 'en' : 'pt_br']} />
           </div>
         )}
+
+        {/* FAQ Section Render */}
+        <div className="p-4 md:p-6 mt-6 bg-muted/5 rounded-lg border border-white/5">
+          <h2 className="text-xl font-bold text-gray-100 mb-6">
+            {params.locale === 'en' ? 'Frequently Asked Questions' : 'Perguntas Frequentes'}
+          </h2>
+          <div className="space-y-6">
+            {faqData.map((faq, index) => (
+              <div key={index} className="border-b border-white/10 pb-4 last:border-0 last:pb-0">
+                <h3 className="text-lg font-medium text-gray-200 mb-2">{faq.question}</h3>
+                <p className="text-gray-400 text-sm leading-relaxed">{faq.answer}</p>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     );
   } catch (error) {

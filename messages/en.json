@@ -76,10 +76,10 @@
       "ogDescription": "Don't miss the best offers on {category} for the {league} league! Low prices, instant delivery, and 100% safety for your {gameVersion} account at Path of Trade."
     },
     "productDetail": {
-      "title": "Buy {productName} | Low Price & Fast Delivery | Path of Trade",
-      "description": "Get {productName} for Path of Exile at the best market price. Instant and 100% secure delivery. Buy your PoE currency now at Path of Trade!",
-      "ogTitle": "Buy {productName} for PoE | Safe & Cheap Currency | Path of Trade ",
-      "ogDescription": "Secure your {productName} in Path of Exile. We offer the best price, delivery in minutes, and fully secure transactions. Visit PathofTrade.net!"
+      "title": "Buy {productName} {gameVersionLabel} — Best Price | Path of Trade",
+      "description": "Get {productName} for {gameVersionLabel} at the best market price. Instant and 100% secure delivery. Buy your PoE currency now at Path of Trade!",
+      "ogTitle": "Buy {productName} for {gameVersionLabel} | Safe Currency | Path of Trade",
+      "ogDescription": "Secure your {productName} in {gameVersionLabel}. We offer the best price, delivery in minutes, and fully secure transactions. Visit Path of Trade!"
     },
     "gameVersion": {
       "poe1Title": "Buy Path of Exile 1 Currency — Chaos, Divine & Exalted Orbs | Path of Trade",
@@ -660,6 +660,32 @@
     },
     "backToBlog": "Back to Blog",
     "buyDivines": "Buy Divines Now",
+    "whatWeKnowSoFar": "What We Know So Far",
+    "leagueStarterBuilds": "League Starter Builds",
+    "howItWorks": "How {leagueName} Works",
+    "patchNotesHighlights": "Patch Notes Highlights",
+    "tldr": "TL;DR",
+    "tierList": "Tier List",
+    "launchDate": "Launch Date",
+    "liveNow": "LIVE NOW",
+    "leagueEnded": "This league has ended.",
+    "leagueEndedBadge": "League Ended",
+    "budget": "Budget",
+    "pros": "Pros",
+    "cons": "Cons",
+    "viewGuide": "View Guide",
+    "featuredCurrency": "Featured Currency",
+    "officialPatchNotes": "View Official Patch Notes",
+    "gggOfficialPosts": "GGG Official Posts",
+    "teaserMedia": "Teaser Media",
+    "currencyOnLaunchDay": "Currency will be available on launch day",
+    "prepareForLeague": "Prepare for {leagueName} — Browse Currency",
+    "lookingForCurrentLeague": "Looking for the current league?",
+    "viewCurrentLeague": "View Current League",
+    "buyForLeague": "Buy {currencyName} for {leagueName}",
+    "getCurrencyFor": "Get Your Currency for {leagueName}",
+    "viewOfficialPost": "View Official Post",
+    "browseAllCurrency": "Browse All Currency",
     "toc": {
       "title": "In This Guide",
       "items": [

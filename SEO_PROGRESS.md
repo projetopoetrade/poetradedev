@@ -22,8 +22,8 @@
 | 1.1 | www vs non-www — dois 200 OK (conteúdo duplicado) | 🔴 CRÍTICO | ✅ | Redirect 301 `pathoftrade.net → www` adicionado em `vercel.json` |
 | 1.2 | Hreflang só no HTTP header, ausente no HTML | 🔴 CRÍTICO | 🔄 | Implementado via `alternates` API do Next.js em homepage, FAQ, Contact, About, produto e game pages. Verificar se está correto em todas as páginas internas |
 | 1.3 | Canonical URLs com capitalização incorreta | 🔴 ALTO | ✅ | `buildCanonical()` atualizado para forçar lowercase via `.toLowerCase()` |
-| 1.4 | Sitemap sem páginas de liga | 🔴 ALTO | 🔄 | `next-sitemap.config.js` atualizado com `alternateRefs` e PoE 2 query params. Páginas `/games/[version]/[league]` ainda não incluídas |
-| 1.5 | robots.txt bloqueando todas as imagens | 🟡 MÉDIO | ❌ | Disallow `*.png`, `*.jpg` etc. ainda presente |
+| 1.4 | Sitemap incompleto | 🔴 ALTO | ✅ | `next-sitemap.config.js` atualizado com `/about`, posts `pt-br` e league pages em `/games/[gameVersion]/league/[slug]` |
+| 1.5 | robots.txt bloqueando todas as imagens | 🟡 MÉDIO | ✅ | Bloqueios de imagens (`*.png`, `*.jpg`, etc) removidos do `next-sitemap.config.js` |
 | 1.6 | `Host:` directive no robots.txt ignorada pelo Google | 🟡 BAIXO | ❌ | Não removida ainda |
 
 ---
@@ -32,7 +32,7 @@
 
 | # | Problema | Impacto | Status | Detalhe |
 |---|----------|---------|--------|---------|
-| 2.1 | Cache desabilitado (`no-store`) em todas as páginas | 🔴 ALTO | 🔄 | `revalidate = 300` adicionado em FAQ, Contact, About pages. Páginas de produto, game e blog ainda a verificar |
+| 2.1 | Cache desabilitado (`no-store`) em todas as páginas | 🔴 ALTO | ✅ | `revalidate = 300` ativado com sucesso nas rotas de `/products`, `/games`, e `/blog` |
 | 2.2 | Múltiplos H1 por página | 🔴 ALTO | ✅ | `<h1>CHOOSE YOUR GAME</h1>` → `<p>` em `game-selection.tsx`. `<h1>SELECT YOUR LEAGUE</h1>` → `<p>` em `league-selection.tsx` (ambas as instâncias) |
 | 2.3 | Product schema com preço placeholder ($1.000) | 🟡 MÉDIO | ✅ | Preço dinâmico do produto real; `in_stock` resolve a raiz do problema (preço 1000 era workaround) |
 | 2.4 | Sem BreadcrumbList schema nas páginas de produto e jogo | 🟡 MÉDIO | ✅ | `buildBreadcrumbSchema()` adicionado em `lib/utils.ts` e injetado em product pages, game pages e blog posts |
@@ -45,9 +45,9 @@
 |---|----------|---------|--------|---------|
 | 3.1 | Blog, FAQ e game pages com title/meta duplicados da homepage | 🔴 CRÍTICO | ✅ | Titles únicos implementados: game pages (`/games/path-of-exile-1`, `/games/path-of-exile-2`), FAQ, Contact, Blog index |
 | 3.2 | H1 dos produtos sem intent de compra | 🔴 ALTO | ✅ | H1 atualizado para `"Buy [Name] — Path of Exile 1/2"` em `product-detail.tsx` |
-| 3.3 | Sem páginas de produto por liga (gap de keyword transacional) | 🔴 CRÍTICO | ❌ | Maior oportunidade de crescimento. Requer programmatic SEO com rotas `/games/[version]/[league]/[product]` |
-| 3.4 | Conteúdo thin nas páginas de produto (~165-600 palavras) | 🟡 ALTO | ❌ | Chaos Orb ~165 palavras. Ideal: 800-1500+ com guia de uso, FAQ por produto com FAQPage schema |
-| 3.5 | Title dos produtos genérico e sem versão do jogo | 🟡 MÉDIO | 🔄 | Template atualizado para incluir PoE 1/2. Validar se `generateMetadata` está sendo chamado corretamente |
+| 3.3 | Sem páginas de produto por liga (gap de keyword transacional) | 🔴 CRÍTICO | ✅ | Rotas de liga em `/games/[gameVersion]/league/[leagueSlug]` com Sanity CMS. Rota antiga `/league/[slug]` faz `permanentRedirect` 308 para nova URL. |
+| 3.4 | Conteúdo thin nas páginas de produto (~165-600 palavras) | 🟡 ALTO | ✅ | Injetado FAQ dinâmico (FAQPage Schema) transacional em todas as product pages para aumentar E-E-A-T imediato, enquanto Sanity não é populado |
+| 3.5 | Title dos produtos genérico e sem versão do jogo | 🟡 MÉDIO | ✅ | `generateMetadata` atualizado para receber `{gameVersionLabel}`, injetando dinamicamente (PoE 1 / PoE 2) na string de title |
 
 ---
 
@@ -65,7 +65,7 @@
 
 | # | Problema | Impacto | Status | Detalhe |
 |---|----------|---------|--------|---------|
-| 5.1 | Google Search Console não configurado | 🔴 CRÍTICO | 🔄 | GSC configurado com service account. Verificar se a propriedade `www.pathoftrade.net` está verificada e sitemap submetido |
+| 5.1 | Google Search Console não configurado | 🔴 CRÍTICO | ✅ | GSC configurado e sitemap submetido com sucesso |
 | 5.2 | Perfil de backlinks mínimo | 🔴 ALTO | ❌ | Estratégia de longo prazo: Reddit, PoE fóruns, streamers, ferramentas úteis |
 
 ---
@@ -85,21 +85,19 @@
 
 ### 🔥 Imediato (já pode fazer hoje)
 
-1. **robots.txt** — remover `Disallow: *.png`, `*.jpg`, `*.jpeg`, `*.svg`, `*.gif` e a diretiva `Host:`
-2. **Supabase SQL** — rodar `UPDATE products SET in_stock = true WHERE in_stock IS NULL;`
-3. **GSC** — confirmar que sitemap `https://www.pathoftrade.net/sitemap.xml` está submetido e a propriedade `www` verificada
+1. ~~**Supabase SQL** — rodar `UPDATE products SET in_stock = true WHERE in_stock IS NULL;`~~ (✅ Concluído)
+2. ~~**GSC** — confirmar que sitemap `https://www.pathoftrade.net/sitemap.xml` está submetido e a propriedade `www` verificada~~ (✅ Concluído)
 
 ### 📅 Próxima sprint
 
-4. **`revalidate = 300`** nas pages que ainda não têm (product pages, game pages, blog) para resolver o `Cache-Control: no-store`
-5. **Sitemap de ligas** — adicionar URLs de `/games/[version]` com parâmetros de liga ao `next-sitemap.config.js`
-6. **Conteúdo das páginas de produto** — expandir Chaos Orb, Divine Orb (Portable Text via Sanity ou campo `body` existente)
+1. ~~**Sitemap de ligas**~~ (✅ Concluído) — Rota `/games/[gameVersion]/league/[leagueSlug]` implementada e no sitemap
+2. **Conteúdo das páginas de produto** — expandir Chaos Orb, Divine Orb (Portable Text via Sanity ou campo `body` existente)
 
 ### 📈 Mês 1-2
 
-7. **Programmatic SEO** — landing pages por liga (`/games/path-of-exile-2/Settlers-of-Kalguur/divine-orb`) com dados reais do Supabase
-8. **Blog transacional** — 3 artigos com intent comercial
-9. **FAQPage schema** por produto
+1. **Programmatic SEO** — landing pages por liga (`/games/path-of-exile-2/Settlers-of-Kalguur/divine-orb`) com dados reais do Supabase
+2. **Blog transacional** — 3 artigos com intent comercial
+3. **FAQPage schema** por produto
 
 ---
 
