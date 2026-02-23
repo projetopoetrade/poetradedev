@@ -1,11 +1,14 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@/utils/supabase/server'
+import { createClient } from '@supabase/supabase-js'
 
 export const revalidate = 3600 // 1 hora de cache
 
 export async function GET() {
     try {
-        const supabase = await createClient()
+        const supabase = createClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL!,
+            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+        )
 
         // Busca apenas ligas ativas, de todos os jogos
         const { data, error } = await supabase
