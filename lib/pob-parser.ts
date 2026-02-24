@@ -50,10 +50,39 @@ export interface PobItemSet {
   items: PobItem[]
 }
 
+export interface PobKeystone {
+  name: string
+  iconUrl?: string
+}
+
+export interface PobMasterySelection {
+  masteryName: string
+  iconUrl?: string
+  stats: string[]
+}
+
+export interface PobSocketedJewel {
+  nodeId: number
+  name: string
+  rarity: string
+  isCluster: boolean
+  mods: string[]
+}
+
+export interface PobTreeSpec {
+  title: string
+  nodes: number[]
+  keystones: PobKeystone[]
+  masteries: PobMasterySelection[]
+  socketedJewels: PobSocketedJewel[]
+}
+
 export interface PobTreeDetails {
-  Keystones: string[]
-  Masteries: string[]
+  Keystones: PobKeystone[]
+  Masteries: PobMasterySelection[]
   NodesCount: number
+  Specs: PobTreeSpec[]
+  ActiveSpecIndex: number
 }
 
 export interface PobBuildData {
@@ -425,7 +454,15 @@ function parseItemText(rawLines: string[]): Omit<PobItem, 'slot' | 'iconUrl'> {
 
 // --- Skilltree cache ---
 
-let cachedSkilltree: Record<string, { name: string; isKeystone?: boolean; isMastery?: boolean }> | null = null
+interface SkilltreeNode {
+  name: string
+  icon?: string
+  isKeystone?: boolean
+  isMastery?: boolean
+  masteryEffects?: Array<{ effect: number; stats: string[] }>
+}
+
+let cachedSkilltree: Record<string, SkilltreeNode> | null = null
 
 async function getOfficialSkilltree() {
   if (cachedSkilltree) return cachedSkilltree
@@ -529,7 +566,7 @@ export async function parsePobXml(xmlString: string): Promise<PobBuildData> {
     ItemSets: [],
     SkillSets: [],
     Skills: [],
-    TreeDetails: { Keystones: [], Masteries: [], NodesCount: 0 },
+    TreeDetails: { Keystones: [], Masteries: [], NodesCount: 0, Specs: [], ActiveSpecIndex: 0 },
   }
 
   // --- 1. BuildInfo + Stats ---
@@ -701,28 +738,118 @@ export async function parsePobXml(xmlString: string): Promise<PobBuildData> {
     result.Skills = activeSet?.skills ?? []
   }
 
-  // --- 4. Tree / Keystones / Masteries ---
+  // --- 4. Tree / Keystones / Masteries / Jewels ---
   const treeNode = doc.getElementsByTagName('Tree')[0]
   if (treeNode) {
-    const activeSpec = treeNode.getElementsByTagName('Spec')[0]
-    if (activeSpec) {
-      const nodesStr = activeSpec.getAttribute('nodes') || ''
-      if (nodesStr) {
-        const nodeIds = nodesStr.split(',').filter(Boolean)
-        result.TreeDetails.NodesCount = nodeIds.length
+    const activeSpecAttr = parseInt(treeNode.getAttribute('activeSpec') || '1', 10)
+    const activeSpecIndex = Math.max(0, activeSpecAttr - 1)
 
-        const skilltree = await getOfficialSkilltree()
-        if (Object.keys(skilltree).length > 0) {
-          const masterySet = new Set<string>()
-          for (const nid of nodeIds) {
-            const nodeData = skilltree[nid]
-            if (!nodeData) continue
-            if (nodeData.isKeystone) result.TreeDetails.Keystones.push(nodeData.name)
-            else if (nodeData.isMastery) masterySet.add(nodeData.name)
+    // First pass: collect raw data from each Spec element
+    interface RawSpecData {
+      title: string
+      nodes: number[]
+      rawMasteryEffects: number[]  // just effectIds, Lua format {id1,id2,...}
+      rawSockets: Array<{ nodeId: number; itemId: string }>
+    }
+
+    const rawSpecsData: RawSpecData[] = []
+    const specElements = treeNode.getElementsByTagName('Spec')
+    for (let i = 0; i < specElements.length; i++) {
+      const spec = specElements[i]
+      const nodesStr = spec.getAttribute('nodes') || ''
+      const nodes = nodesStr
+        .split(',')
+        .filter(Boolean)
+        .map(id => parseInt(id, 10))
+        .filter(n => !isNaN(n))
+      const title = spec.getAttribute('title') || (specElements.length === 1 ? 'Passive Tree' : `Tree ${i + 1}`)
+
+      // Mastery effects: stored as Lua set attribute {effectId1,effectId2,...}
+      const rawMasteryEffects: number[] = []
+      const masteryEffectsStr = spec.getAttribute('masteryEffects') || ''
+      if (masteryEffectsStr && masteryEffectsStr !== '{}') {
+        const inner = masteryEffectsStr.replace(/[{}]/g, '').trim()
+        if (inner) {
+          for (const part of inner.split(',')) {
+            const effectId = parseInt(part.trim(), 10)
+            if (!isNaN(effectId) && effectId > 0) rawMasteryEffects.push(effectId)
           }
-          result.TreeDetails.Masteries = Array.from(masterySet)
         }
       }
+
+      // Socketed jewels: which items are socketed in jewel sockets of this tree
+      const rawSockets: Array<{ nodeId: number; itemId: string }> = []
+      const sockElements = spec.getElementsByTagName('Socket')
+      for (let j = 0; j < sockElements.length; j++) {
+        const sock = sockElements[j]
+        const nodeId = parseInt(sock.getAttribute('nodeId') || '0', 10)
+        const itemId = sock.getAttribute('itemId') || ''
+        if (nodeId && itemId) rawSockets.push({ nodeId, itemId })
+      }
+
+      rawSpecsData.push({ title, nodes, rawMasteryEffects, rawSockets })
+    }
+
+    // Second pass: resolve names/effects using skilltree data (fetched once, cached)
+    const skilltree = await getOfficialSkilltree()
+    const hasTree = Object.keys(skilltree).length > 0
+
+    const specs: PobTreeSpec[] = rawSpecsData.map(raw => {
+      const keystones: string[] = []
+      const masteries: PobMasterySelection[] = []
+      const socketedJewels: PobSocketedJewel[] = []
+
+      if (hasTree) {
+        for (const nid of raw.nodes) {
+          const nd = skilltree[String(nid)]
+          if (nd?.isKeystone) {
+            const iconUrl = nd.icon ? `https://web.poecdn.com/image/${nd.icon}.png` : undefined
+            keystones.push({ name: nd.name, iconUrl })
+          }
+        }
+        for (const effectId of raw.rawMasteryEffects) {
+          let masteryName = `Mastery ${effectId}`
+          let stats: string[] = []
+          let iconUrl: string | undefined
+          for (const node of Object.values(skilltree)) {
+            if (!node.isMastery || !node.masteryEffects) continue
+            const effect = node.masteryEffects.find(e => e.effect === effectId)
+            if (effect) {
+              masteryName = node.name
+              stats = effect.stats
+              iconUrl = node.icon ? `https://web.poecdn.com/image/${node.icon}.png` : undefined
+              break
+            }
+          }
+          masteries.push({ masteryName, iconUrl, stats })
+        }
+      }
+
+      for (const { nodeId, itemId } of raw.rawSockets) {
+        const itemLines = rawItemMap[String(itemId)]
+        if (!itemLines?.length) continue
+        const parsed = parseItemText(itemLines)
+        if (!parsed.name) continue
+        const lowerName = (parsed.name + ' ' + (parsed.baseName ?? '')).toLowerCase()
+        const isCluster = lowerName.includes('cluster jewel')
+        const mods = [
+          ...parsed.implicits.map(m => m.text),
+          ...parsed.explicits.map(m => m.text),
+        ]
+        socketedJewels.push({ nodeId, name: parsed.name, rarity: parsed.rarity, isCluster, mods })
+      }
+
+      return { title: raw.title, nodes: raw.nodes, keystones, masteries, socketedJewels }
+    })
+
+    result.TreeDetails.Specs = specs
+    result.TreeDetails.ActiveSpecIndex = Math.min(activeSpecIndex, Math.max(0, specs.length - 1))
+
+    const activeSpec = specs[result.TreeDetails.ActiveSpecIndex]
+    if (activeSpec) {
+      result.TreeDetails.NodesCount = activeSpec.nodes.length
+      result.TreeDetails.Keystones = activeSpec.keystones
+      result.TreeDetails.Masteries = activeSpec.masteries
     }
   }
 

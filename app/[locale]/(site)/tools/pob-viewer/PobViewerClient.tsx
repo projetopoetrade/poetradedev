@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Loader2, Sword, ClipboardCopy } from "lucide-react";
@@ -8,12 +8,19 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import type { PobBuildData, PobItem } from "@/lib/pob-parser";
+import type { PobBuildData, PobItem, PobKeystone, PobTreeSpec } from "@/lib/pob-parser";
 
 interface Props {
   locale: string;
@@ -240,6 +247,19 @@ const UNIQUE_TINCTURE_ICON_URLS: Record<string, string> = {
   "The Battle Within": "/tinctures/The_Battle_Within.webp",
   "Grasping Nightshade": "/tinctures/Grasping_Nightshade.webp",
 };
+
+function toKebab(str: string): string {
+  return str.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
+function getKeystoneLocalPath(name: string): string {
+  return `/images/keystone/${toKebab(name)}.webp`;
+}
+
+function getMasteryLocalPath(masteryName: string): string {
+  const base = masteryName.replace(/\s*mastery$/i, "").trim();
+  return `/images/mastery/${toKebab(base)}.webp`;
+}
 
 function getEffectiveItemIconUrl(item: PobItem): string | undefined {
   // 1) Uniques primeiro: tinctures, depois flasks
@@ -699,6 +719,14 @@ export default function PobViewerClient({ locale }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<PobBuildData | null>(null);
   const [activeItemSetIndex, setActiveItemSetIndex] = useState(0);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [activeTreeSpecIndex, setActiveTreeSpecIndex] = useState(0);
+
+  function sendNodesToViewer(nodeIds: number[]) {
+    iframeRef.current?.contentWindow?.postMessage(
+      { type: 'loadNodes', nodeIds }, '*'
+    );
+  }
   async function handleAnalyze(from?: string, options?: { updateUrl?: boolean }) {
     const source = (from ?? input).trim();
     if (!source) return;
@@ -735,7 +763,12 @@ export default function PobViewerClient({ locale }: Props) {
             (isPt ? "Erro ao processar PoB." : "Error processing PoB."),
         );
       } else {
-        setData(json as PobBuildData);
+        const buildData = json as PobBuildData;
+        setData(buildData);
+        const specIdx = buildData.TreeDetails?.ActiveSpecIndex ?? 0;
+        setActiveTreeSpecIndex(specIdx);
+        const specNodes = buildData.TreeDetails?.Specs?.[specIdx]?.nodes ?? [];
+        if (specNodes.length > 0) sendNodesToViewer(specNodes);
         // Atualiza a URL com ?id=<hash> quando disponível
         if ((options?.updateUrl ?? true) && sharedId) {
           const params = new URLSearchParams(searchParams.toString());
@@ -770,6 +803,10 @@ export default function PobViewerClient({ locale }: Props) {
     const key = normalizeSlotName(item.slot);
     slotMap[key] = item;
   }
+
+  const hasMultipleLoadouts = itemSets.length > 1;
+  const hasMultipleSpecs = (treeDetails?.Specs?.length ?? 0) > 1;
+  const activeViewSpec: PobTreeSpec | undefined = treeDetails?.Specs[activeTreeSpecIndex];
 
   // Ao trocar o loadout (ItemSet), mostramos o SkillSet correspondente (por índice) quando disponível.
   const skillSetIndex = Math.min(safeItemSetIndex, Math.max(0, skillSets.length - 1));
@@ -900,55 +937,54 @@ export default function PobViewerClient({ locale }: Props) {
 
       {data && (
         <>
-          {/* Build header badges */}
+          {/* Build header: badges + loadout selector na mesma linha */}
           {buildInfo && (
-            <div className="flex flex-wrap items-center gap-2">
-              <Badge className="text-sm px-3 py-1 bg-primary/20 text-primary border border-primary/30">
-                {buildInfo.Ascendancy || buildInfo.Class}
-              </Badge>
-              {buildInfo.Ascendancy &&
-                buildInfo.Ascendancy !== buildInfo.Class && (
-                  <Badge variant="outline" className="text-sm px-3 py-1">
-                    {buildInfo.Class}
-                  </Badge>
-                )}
-              <Badge variant="secondary" className="text-sm px-3 py-1">
-                Lv {buildInfo.Level}
-              </Badge>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex flex-wrap items-center gap-2">
+                <Badge className="text-sm px-3 py-1 bg-primary/20 text-primary border border-primary/30">
+                  {buildInfo.Ascendancy || buildInfo.Class}
+                </Badge>
+                {buildInfo.Ascendancy &&
+                  buildInfo.Ascendancy !== buildInfo.Class && (
+                    <Badge variant="outline" className="text-sm px-3 py-1">
+                      {buildInfo.Class}
+                    </Badge>
+                  )}
+                <Badge variant="secondary" className="text-sm px-3 py-1">
+                  Lv {buildInfo.Level}
+                </Badge>
+              </div>
+              {hasMultipleLoadouts && (
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-muted-foreground uppercase tracking-wide font-medium shrink-0">
+                    Loadout
+                  </span>
+                  <Select
+                    value={String(activeItemSetIndex)}
+                    onValueChange={(v) => setActiveItemSetIndex(Number(v))}
+                  >
+                    <SelectTrigger className="w-48 h-8 text-sm">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {itemSets.map((set, idx) => (
+                        <SelectItem key={idx} value={String(idx)}>
+                          {set.title || `${isPt ? "Conjunto" : "Set"} ${idx + 1}`}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
             </div>
           )}
 
-          {/* Equipment – visualizador mais “solto” na página + Loadouts */}
+          {/* Equipment */}
           {itemSets.length > 0 && (
-            <section className="mt-6 space-y-3">
-              <div className="flex items-center justify-between gap-3 flex-wrap">
-                <h2 className="text-sm font-semibold text-muted-foreground tracking-wide uppercase">
-                  {isPt ? "Equipamentos" : "Equipment"}
-                </h2>
-
-                {itemSets.length > 1 && (
-                  <div className="flex flex-wrap gap-1.5 text-xs">
-                    {itemSets.map((set, idx) => {
-                      const isActive = idx === activeItemSetIndex;
-                      const label = set.title || `${isPt ? "Conjunto" : "Set"} ${idx + 1}`;
-                      return (
-                        <button
-                          key={idx}
-                          type="button"
-                          onClick={() => setActiveItemSetIndex(idx)}
-                          className={`px-2.5 py-1 rounded-full border text-[11px] transition-colors ${
-                            isActive
-                              ? "border-primary/60 bg-primary/15 text-primary"
-                              : "border-border/40 bg-background/40 text-muted-foreground hover:border-border/70"
-                          }`}
-                        >
-                          {label}
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
+            <section className="space-y-3">
+              <h2 className="text-sm font-semibold text-muted-foreground tracking-wide uppercase">
+                {isPt ? "Equipamentos" : "Equipment"}
+              </h2>
 
               {/* Itens do conjunto ativo */}
               {itemSetItems.length > 0 && (
@@ -980,6 +1016,37 @@ export default function PobViewerClient({ locale }: Props) {
                   ))}
                 </div>
               </div>
+              )}
+
+              {/* Jewels socketed na tree */}
+              {(activeViewSpec?.socketedJewels?.length ?? 0) > 0 && (
+                <div className="bg-background p-4 rounded-xl border border-border/40">
+                  <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-2">
+                    {isPt ? "Jewels na Árvore" : "Jewels in Tree"}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {activeViewSpec!.socketedJewels.map((j, i) => {
+                      const badgeClass = j.isCluster
+                        ? "bg-purple-500/15 text-purple-300 border-purple-500/30 border cursor-default"
+                        : j.rarity === "Unique"
+                        ? "bg-orange-500/15 text-orange-300 border-orange-500/30 border cursor-default"
+                        : "bg-muted/40 text-muted-foreground border-border/40 border cursor-default";
+                      const badge = <Badge className={badgeClass}>{j.name}</Badge>;
+                      if (!j.mods?.length) return <span key={i}>{badge}</span>;
+                      return (
+                        <Tooltip key={i}>
+                          <TooltipTrigger asChild>{badge}</TooltipTrigger>
+                          <TooltipContent className="max-w-xs text-left space-y-0.5 p-2">
+                            <p className="text-xs font-semibold mb-1 opacity-70">{j.name}</p>
+                            {j.mods.map((mod, k) => (
+                              <p key={k} className="text-xs leading-snug">{mod}</p>
+                            ))}
+                          </TooltipContent>
+                        </Tooltip>
+                      );
+                    })}
+                  </div>
+                </div>
               )}
             </section>
           )}
@@ -1037,9 +1104,10 @@ export default function PobViewerClient({ locale }: Props) {
                           key={j}
                           variant="outline"
                           className={
-                            gem.is_support
+                            (gem.is_support
                               ? "border-blue-500/50 text-blue-300 bg-blue-950/20"
-                              : "border-red-500/40 text-red-300 bg-red-950/20"
+                              : "border-red-500/40 text-red-300 bg-red-950/20") +
+                            " text-[15px]"
                           }
                         >
                           {gem.name}
@@ -1057,52 +1125,126 @@ export default function PobViewerClient({ locale }: Props) {
 
           {/* Passive Tree */}
           {treeDetails &&
-            (treeDetails.NodesCount > 0 ||
-              treeDetails.Keystones.length > 0) && (
+            treeDetails.NodesCount > 0 && (
               <Card>
                 <CardHeader className="pb-3">
                   <CardTitle className="text-base">
                     {isPt ? "Árvore Passiva" : "Passive Tree"}
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  {treeDetails.NodesCount > 0 && (
-                    <p className="text-sm text-muted-foreground">
-                      {treeDetails.NodesCount}{" "}
-                      {isPt ? "nós alocados" : "nodes allocated"}
-                    </p>
-                  )}
-                  {treeDetails.Keystones.length > 0 && (
-                    <div>
-                      <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-2">
-                        Keystones
-                      </p>
-                      <div className="flex flex-wrap gap-2">
-                        {treeDetails.Keystones.map((k, i) => (
-                          <Badge
-                            key={i}
-                            className="bg-yellow-500/15 text-yellow-300 border-yellow-500/30 border"
-                          >
-                            {k}
-                          </Badge>
-                        ))}
-                      </div>
+                <CardContent className="space-y-3">
+                  {hasMultipleSpecs && (
+                    <div className="flex items-center gap-3 justify-end">
+                      <span className="text-xs text-muted-foreground uppercase tracking-wide font-medium shrink-0">
+                        {isPt ? "Árvore" : "Tree"}
+                      </span>
+                      <Select
+                        value={String(activeTreeSpecIndex)}
+                        onValueChange={(v) => {
+                          const idx = Number(v);
+                          setActiveTreeSpecIndex(idx);
+                          sendNodesToViewer(treeDetails.Specs[idx]?.nodes ?? []);
+                        }}
+                      >
+                        <SelectTrigger className="w-56 h-8 text-sm">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {treeDetails.Specs.map((spec, idx) => (
+                            <SelectItem key={idx} value={String(idx)}>
+                              {spec.title}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                   )}
-                  {treeDetails.Masteries.length > 0 && (
-                    <div>
-                      <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-2">
-                        Masteries
-                      </p>
-                      <div className="flex flex-wrap gap-2">
-                        {treeDetails.Masteries.map((m, i) => (
-                          <Badge key={i} variant="secondary">
-                            {m}
-                          </Badge>
-                        ))}
-                      </div>
+
+                  {/* Grid: iframe 75% | sidebar 25% */}
+                  <div className="grid gap-4" style={{ gridTemplateColumns: '3fr 1fr' }}>
+                    <iframe
+                      ref={iframeRef}
+                      src="/tools/viewer.html"
+                      title="Passive Skill Tree"
+                      className="w-full rounded-lg border border-zinc-700"
+                      style={{ height: '600px', background: '#0c0c0c' }}
+                      onLoad={() => {
+                        const nodes = activeViewSpec?.nodes;
+                        if (nodes?.length) sendNodesToViewer(nodes);
+                      }}
+                    />
+
+                    {/* Sidebar: Keystones + Masteries */}
+                    <div className="overflow-y-auto space-y-5 pr-1" style={{ maxHeight: '600px' }}>
+                      {(activeViewSpec?.keystones?.length ?? 0) > 0 && (
+                        <div>
+                          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-2">
+                            Keystones
+                          </p>
+                          <div className="flex flex-col gap-2">
+                            {activeViewSpec!.keystones.map((k, i) => (
+                              <div key={i} className="flex items-center gap-2">
+                                <img
+                                  src={getKeystoneLocalPath(k.name)}
+                                  alt={k.name}
+                                  width={28}
+                                  height={28}
+                                  className="shrink-0 rounded-sm"
+                                  onError={(e) => { e.currentTarget.style.display = "none"; }}
+                                />
+                                <span className="text-xs font-semibold text-yellow-300 leading-tight">
+                                  {k.name}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {(() => {
+                        const resolvedMasteries = (activeViewSpec?.masteries ?? []).filter(
+                          m => m.stats.length > 0
+                        );
+                        return resolvedMasteries.length > 0 ? (
+                          <div>
+                            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-2">
+                              Masteries
+                            </p>
+                            <div className="space-y-3">
+                              {resolvedMasteries.map((m, i) => (
+                                <div key={i} className="flex flex-col gap-0.5">
+                                  <div className="flex items-center gap-2">
+                                    <img
+                                      src={getMasteryLocalPath(m.masteryName)}
+                                      alt={m.masteryName}
+                                      width={24}
+                                      height={24}
+                                      className="shrink-0 rounded-sm"
+                                      onError={(e) => { e.currentTarget.style.display = "none"; }}
+                                    />
+                                    <span className="text-[11px] font-semibold text-amber-400/80 uppercase tracking-wide leading-tight">
+                                      {m.masteryName}
+                                    </span>
+                                  </div>
+                                  {m.stats.map((s, j) => (
+                                    <span key={j} className="text-xs text-blue-300 leading-snug pl-8">
+                                      {s}
+                                    </span>
+                                  ))}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ) : null;
+                      })()}
+
+                      {(activeViewSpec?.keystones?.length ?? 0) === 0 && (
+                        <p className="text-xs text-muted-foreground italic">
+                          {isPt ? "Sem keystones" : "No keystones"}
+                        </p>
+                      )}
                     </div>
-                  )}
+                  </div>
                 </CardContent>
               </Card>
             )}
