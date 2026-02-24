@@ -1,5 +1,5 @@
 import { inflateSync } from 'zlib'
-import { JSDOM } from 'jsdom'
+import { DOMParser } from '@xmldom/xmldom'
 
 // --- Types ---
 
@@ -521,8 +521,7 @@ export async function decodePobCode(pobCode: string): Promise<PobBuildData> {
 }
 
 export async function parsePobXml(xmlString: string): Promise<PobBuildData> {
-  const dom = new JSDOM(xmlString, { contentType: 'text/xml' })
-  const doc = dom.window.document
+  const doc = new DOMParser().parseFromString(xmlString, 'text/xml')
 
   const result: PobBuildData = {
     BuildInfo: { Class: '', Ascendancy: '', Level: '' },
@@ -534,7 +533,7 @@ export async function parsePobXml(xmlString: string): Promise<PobBuildData> {
   }
 
   // --- 1. BuildInfo + Stats ---
-  const buildNode = doc.querySelector('Build')
+  const buildNode = doc.getElementsByTagName('Build')[0]
   if (buildNode) {
     result.BuildInfo = {
       Class: buildNode.getAttribute('className') || '',
@@ -554,7 +553,9 @@ export async function parsePobXml(xmlString: string): Promise<PobBuildData> {
       EffectiveMovementSpeedMod: 'Movement Speed',
     }
 
-    for (const stat of Array.from(buildNode.querySelectorAll('PlayerStat')) as Element[]) {
+    const statNodes = buildNode.getElementsByTagName('PlayerStat')
+    for (let i = 0; i < statNodes.length; i++) {
+      const stat = statNodes[i]
       const statName = stat.getAttribute('stat') || ''
       if (statName in statsKeys) {
         const val = parseFloat(stat.getAttribute('value') || '0')
@@ -574,11 +575,13 @@ export async function parsePobXml(xmlString: string): Promise<PobBuildData> {
   }
 
   // --- 2. Items ---
-  const itemsNode = doc.querySelector('Items')
+  const itemsNode = doc.getElementsByTagName('Items')[0]
   const rawItemMap: Record<string, string[]> = {}
 
   if (itemsNode) {
-    for (const item of Array.from(itemsNode.querySelectorAll(':scope > Item')) as Element[]) {
+    const itemNodes = itemsNode.getElementsByTagName('Item')
+    for (let i = 0; i < itemNodes.length; i++) {
+      const item = itemNodes[i]
       const id = item.getAttribute('id') || ''
       const rawText = item.textContent || ''
       rawItemMap[id] = rawText.trim().split('\n').map((l: string) => l.trim()).filter(Boolean)
@@ -587,12 +590,16 @@ export async function parsePobXml(xmlString: string): Promise<PobBuildData> {
     // Fetch icons (unique + base types) in parallel with item parsing
     const iconMap = await getItemIconMap()
 
-    for (const itemSet of Array.from(itemsNode.querySelectorAll('ItemSet')) as Element[]) {
+    const itemSetNodes = itemsNode.getElementsByTagName('ItemSet')
+    for (let i = 0; i < itemSetNodes.length; i++) {
+      const itemSet = itemSetNodes[i]
       const iset: PobItemSet = {
         title: itemSet.getAttribute('title') || 'Default',
         items: [],
       }
-      for (const slot of Array.from(itemSet.querySelectorAll('Slot')) as Element[]) {
+      const slotNodes = itemSet.getElementsByTagName('Slot')
+      for (let j = 0; j < slotNodes.length; j++) {
+        const slot = slotNodes[j]
         const idRef = slot.getAttribute('itemId') || ''
         if (idRef && rawItemMap[idRef]) {
           const parsed = parseItemText(rawItemMap[idRef])
@@ -637,19 +644,21 @@ export async function parsePobXml(xmlString: string): Promise<PobBuildData> {
   }
 
   // --- 3. Skills ---
-  const skillsNode = doc.querySelector('Skills')
+  const skillsNode = doc.getElementsByTagName('Skills')[0]
   if (skillsNode) {
     const activeSkillSetId = skillsNode.getAttribute('activeSkillSet') || '1'
-    const skillSets = Array.from(skillsNode.querySelectorAll(':scope > SkillSet')) as Element[]
+    const skillSetNodes = skillsNode.getElementsByTagName('SkillSet')
     const parseSkillElementsToGroups = (skillElements: Element[]): PobSkillGroup[] => {
       const groups: PobSkillGroup[] = []
       for (const skill of skillElements) {
         if (skill.getAttribute('source') || skill.getAttribute('enabled') === 'false') continue
 
-        const slot = skill.getAttribute('slot') || 'Unspecified Slot'
+        const slot = (skill as Element).getAttribute('slot') || 'Unspecified Slot'
         const gems: PobGem[] = []
 
-        for (const gem of Array.from(skill.querySelectorAll('Gem')) as Element[]) {
+        const gemNodes = (skill as Element).getElementsByTagName('Gem')
+        for (let gi = 0; gi < gemNodes.length; gi++) {
+          const gem = gemNodes[gi]
           const gemName = gem.getAttribute('nameSpec') || ''
           if (!gemName) continue
           const isSupport =
@@ -667,20 +676,21 @@ export async function parsePobXml(xmlString: string): Promise<PobBuildData> {
       return groups
     }
 
-    if (skillSets.length > 0) {
+    if (skillSetNodes.length > 0) {
       // Parseia TODOS os skill sets para permitir trocar junto com o loadout.
-      for (const set of skillSets) {
+      for (let i = 0; i < skillSetNodes.length; i++) {
+        const set = skillSetNodes[i]
         const id = set.getAttribute('id') || ''
         const title = set.getAttribute('title') || `Skill Set ${id || '?'}`
         const skills = parseSkillElementsToGroups(
-          Array.from(set.querySelectorAll('Skill')),
+          Array.from(set.getElementsByTagName('Skill')) as Element[],
         )
         result.SkillSets.push({ id: id || String(result.SkillSets.length + 1), title, skills })
       }
     } else {
       // Sem <SkillSet>: skills ficam diretamente sob <Skills>.
       const skills = parseSkillElementsToGroups(
-        Array.from(skillsNode.querySelectorAll(':scope > Skill')),
+        Array.from(skillsNode.getElementsByTagName('Skill')) as Element[],
       )
       result.SkillSets.push({ id: activeSkillSetId, title: 'Default', skills })
     }
@@ -692,9 +702,9 @@ export async function parsePobXml(xmlString: string): Promise<PobBuildData> {
   }
 
   // --- 4. Tree / Keystones / Masteries ---
-  const treeNode = doc.querySelector('Tree')
+  const treeNode = doc.getElementsByTagName('Tree')[0]
   if (treeNode) {
-    const activeSpec = treeNode.querySelector('Spec')
+    const activeSpec = treeNode.getElementsByTagName('Spec')[0]
     if (activeSpec) {
       const nodesStr = activeSpec.getAttribute('nodes') || ''
       if (nodesStr) {
