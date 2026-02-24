@@ -117,6 +117,157 @@ const HEADER_TEXTURES: Record<
   },
 };
 
+// Flask base types (normal/magic) → local icon paths (pasta public/flask_images)
+const FLASK_BASE_ICON_URLS: Record<string, string> = {
+  // Life flasks
+  "Small Life Flask": "/flask_images/small-life-flask.webp",
+  "Medium Life Flask": "/flask_images/medium-life-flask.webp",
+  "Large Life Flask": "/flask_images/large-life-flask.webp",
+  "Greater Life Flask": "/flask_images/greater-life-flask.webp",
+  "Grand Life Flask": "/flask_images/grand-life-flask.webp",
+  "Giant Life Flask": "/flask_images/giant-life-flask.webp",
+  "Colossal Life Flask": "/flask_images/colossal-life-flask.webp",
+  "Sacred Life Flask": "/flask_images/sacred-life-flask.webp",
+  "Hallowed Life Flask": "/flask_images/hallowed-life-flask.webp",
+  "Sanctified Life Flask": "/flask_images/sanctified-life-flask.webp",
+  "Divine Life Flask": "/flask_images/divine-life-flask.webp",
+  "Eternal Life Flask": "/flask_images/eternal-life-flask.webp",
+
+  // Mana flasks
+  "Small Mana Flask": "/flask_images/small-mana-flask.webp",
+  "Medium Mana Flask": "/flask_images/medium-mana-flask.webp",
+  "Large Mana Flask": "/flask_images/large-mana-flask.webp",
+  "Greater Mana Flask": "/flask_images/greater-mana-flask.webp",
+  "Grand Mana Flask": "/flask_images/grand-mana-flask.webp",
+  "Giant Mana Flask": "/flask_images/giant-mana-flask.webp",
+  "Colossal Mana Flask": "/flask_images/colossal-mana-flask.webp",
+  "Sacred Mana Flask": "/flask_images/sacred-mana-flask.webp",
+  "Hallowed Mana Flask": "/flask_images/hallowed-mana-flask.webp",
+  "Sanctified Mana Flask": "/flask_images/sanctified-mana-flask.webp",
+  "Divine Mana Flask": "/flask_images/divine-mana-flask.webp",
+  "Eternal Mana Flask": "/flask_images/eternal-mana-flask.webp",
+
+  // Hybrid flasks
+  "Small Hybrid Flask": "/flask_images/small-hybrid-flask.webp",
+  "Medium Hybrid Flask": "/flask_images/medium-hybrid-flask.webp",
+  "Large Hybrid Flask": "/flask_images/large-hybrid-flask.webp",
+  "Colossal Hybrid Flask": "/flask_images/colossal-hybrid-flask.webp",
+  "Sacred Hybrid Flask": "/flask_images/sacred-hybrid-flask.webp",
+  "Hallowed Hybrid Flask": "/flask_images/hallowed-hybrid-flask.webp",
+
+  // Utility flasks
+  "Diamond Flask": "/flask_images/diamond-flask.webp",
+  "Ruby Flask": "/flask_images/ruby-flask.webp",
+  "Sapphire Flask": "/flask_images/sapphire-flask.webp",
+  "Topaz Flask": "/flask_images/topaz-flask.webp",
+  "Granite Flask": "/flask_images/granite-flask.webp",
+  "Quicksilver Flask": "/flask_images/quicksilver-flask.webp",
+  "Amethyst Flask": "/flask_images/amethyst-flask.webp",
+  "Quartz Flask": "/flask_images/quartz-flask.webp",
+  "Jade Flask": "/flask_images/jade-flask.webp",
+  "Basalt Flask": "/flask_images/basalt-flask.webp",
+  "Aquamarine Flask": "/flask_images/aquamarine-flask.webp",
+  "Stibnite Flask": "/flask_images/stibnite-flask.webp",
+  "Sulphur Flask": "/flask_images/sulphur-flask.webp",
+  "Silver Flask": "/flask_images/silver-flask.webp",
+  "Bismuth Flask": "/flask_images/bismuth-flask.webp",
+  "Gold Flask": "/flask_images/gold-flask.webp",
+  "Corundum Flask": "/flask_images/corundum-flask.webp",
+  "Iron Flask": "/flask_images/iron-flask.webp",
+};
+
+// Unique flasks → local icon paths (pasta public/flask_images)
+const UNIQUE_FLASK_ICON_URLS: Record<string, string> = {
+  "Atziri's Promise": "/flask_images/atziris-promise.webp",
+  "Blood of the Karui": "/flask_images/blood-of-the-karui.webp",
+  "Bottled Faith": "/flask_images/bottled-faith.webp",
+  "Cinderswallow Urn": "/flask_images/cinderswallow-urn.webp",
+  "Coralito's Signature": "/flask_images/coralitos-signature.webp",
+  "Coruscating Elixir": "/flask_images/coruscating-elixir.webp",
+  "Divination Distillate": "/flask_images/divination-distillate.webp",
+  "Doedre's Elixir": "/flask_images/doedres-elixir.webp",
+  "Dying Sun": "/flask_images/dying-sun.webp",
+  "Elixir of the Unbroken Circle": "/flask_images/elixir-of-the-unbroken-circle.webp",
+  "Forbidden Taste": "/flask_images/forbidden-taste.webp",
+  "Kiara's Determination": "/flask_images/kiaras-determination.webp",
+  "Lavianga's Spirit": "/flask_images/laviangas-spirit.webp",
+  "Lion's Roar": "/flask_images/lions-roar.webp",
+  "Olroth's Resolve": "/flask_images/olroths-resolve.webp",
+  "Oriath's End": "/flask_images/oriaths-end.webp",
+  Progenesis: "/flask_images/progenesis.webp",
+  "Replica Lavianga's Spirit": "/flask_images/replica-laviangas-spirit.webp",
+  "Replica Rumi's Concoction": "/flask_images/replica-rumis-concoction.webp",
+  "Replica Sorrow of the Divine": "/flask_images/replica-sorrow-of-the-divine.webp",
+  "Replica Witchfire Brew": "/flask_images/replica-witchfire-brew.webp",
+  Rotgut: "/flask_images/rotgut.webp",
+  "Rumi's Concoction": "/flask_images/rumis-concoction.webp",
+  "Sin's Rebirth": "/flask_images/sins-rebirth.webp",
+  "Soul Catcher": "/flask_images/soul-catcher.webp",
+  "Soul Ripper": "/flask_images/soul-ripper.webp",
+  "Starlight Chalice": "/flask_images/starlight-chalice.webp",
+  "Taste of Hate": "/flask_images/taste-of-hate.webp",
+  "The Overflowing Chalice": "/flask_images/the-overflowing-chalice.webp",
+  "The Sorrow of the Divine": "/flask_images/the-sorrow-of-the-divine.webp",
+  "The Wise Oak": "/flask_images/the-wise-oak.webp",
+  "The Writhing Jar": "/flask_images/the-writhing-jar.webp",
+  "Vessel of Vinktar": "/flask_images/vessel-of-vinktar.webp",
+  "Vorana's Preparation": "/flask_images/voranas-preparation.webp",
+  "Wellwater Phylactery": "/flask_images/wellwater-phylactery.webp",
+  "Wine of the Prophet": "/flask_images/wine-of-the-prophet.webp",
+  "Witchfire Brew": "/flask_images/witchfire-brew.webp",
+  "Zerphi's Last Breath": "/flask_images/zerphis-last-breath.webp",
+};
+
+// Tincture base types → local icon paths (pasta public/tinctures)
+const TINCTURE_BASE_ICON_URLS: Record<string, string> = {
+  "Prismatic Tincture": "/tinctures/Prismatic_Tincture.webp",
+  "Rosethorn Tincture": "/tinctures/Rosethorn_Tincture.webp",
+  "Ironwood Tincture": "/tinctures/Ironwood_Tincture.webp",
+  "Ashbark Tincture": "/tinctures/Ashbark_Tincture.webp",
+  "Borealwood Tincture": "/tinctures/Borealwood_Tincture.webp",
+  "Fulgurite Tincture": "/tinctures/Fulgurite_Tincture.webp",
+  "Poisonberry Tincture": "/tinctures/Poisonberry_Tincture.webp",
+  "Blood Sap Tincture": "/tinctures/Blood_Sap_Tincture.webp",
+  "Oakbranch Tincture": "/tinctures/Oakbranch_Tincture.webp",
+  "Sporebloom Tincture": "/tinctures/Sporebloom_Tincture.webp",
+};
+
+// Unique tinctures → local icon paths (pasta public/tinctures)
+const UNIQUE_TINCTURE_ICON_URLS: Record<string, string> = {
+  "Sap of the Seasons": "/tinctures/Sap_of_the_Seasons.webp",
+  "Mightblood Ire": "/tinctures/Mightblood_Ire.webp",
+  "Wildfire Phloem": "/tinctures/Wildfire_Phloem.webp",
+  "The Battle Within": "/tinctures/The_Battle_Within.webp",
+  "Grasping Nightshade": "/tinctures/Grasping_Nightshade.webp",
+};
+
+function getEffectiveItemIconUrl(item: PobItem): string | undefined {
+  // 1) Uniques primeiro: tinctures, depois flasks
+  const uniqueTinctureIcon =
+    item.rarity === "Unique" && UNIQUE_TINCTURE_ICON_URLS[item.name]
+      ? UNIQUE_TINCTURE_ICON_URLS[item.name]
+      : undefined;
+  if (uniqueTinctureIcon) return uniqueTinctureIcon;
+
+  const uniqueFlaskIcon =
+    item.rarity === "Unique" && UNIQUE_FLASK_ICON_URLS[item.name]
+      ? UNIQUE_FLASK_ICON_URLS[item.name]
+      : undefined;
+  if (uniqueFlaskIcon) return uniqueFlaskIcon;
+
+  // 2) Bases: tinctures, depois flasks
+  const baseName = item.baseName;
+  if (baseName && TINCTURE_BASE_ICON_URLS[baseName]) {
+    return TINCTURE_BASE_ICON_URLS[baseName];
+  }
+  if (baseName && FLASK_BASE_ICON_URLS[baseName]) {
+    return FLASK_BASE_ICON_URLS[baseName];
+  }
+
+  // 3) Fallback para URL vinda do parser/poe.ninja
+  return item.iconUrl;
+}
+
 // Normaliza alguns nomes de slot vindos do PoB para bater com o grid
 function normalizeSlotName(slot: string): string {
   if (slot === "Helmet") return "Helm";
@@ -126,9 +277,9 @@ function normalizeSlotName(slot: string): string {
 function SocketDisplay({ sockets }: { sockets: string }) {
   const groups = sockets.split(" ").filter(Boolean);
   return (
-    <div className="flex items-center gap-3 flex-wrap">
+    <div className="flex items-center justify-center gap-3 flex-wrap">
       {groups.map((group, gi) => (
-        <div key={gi} className="flex items-center">
+        <div key={gi} className="flex items-center justify-center">
           {group.split("-").map((sock, si, arr) => (
             <div key={si} className="flex items-center">
               <div
@@ -198,9 +349,10 @@ function ItemTooltip({ item }: { item: PobItem }) {
   const hasEnchant = enchantMods.length > 0;
   const hasImplicit = implicitMods.length > 0;
   const hasExplicit = explicitMods.length > 0;
+  const effectiveIconUrl = getEffectiveItemIconUrl(item);
 
   return (
-    <div className="w-[420px] text-[12px] leading-snug overflow-hidden rounded shadow-xl bg-black/80 font-fontin">
+    <div className="w-[420px] text-[14px] leading-snug overflow-hidden rounded shadow-xl bg-black/80 font-fontin">
       {/* Header: name + base type */}
       <div
         className="px-6 py-1.5 text-center relative"
@@ -218,7 +370,7 @@ function ItemTooltip({ item }: { item: PobItem }) {
         }
       >
         <p
-          className="font-semibold text-[14px] leading-tight tracking-wide"
+          className="font-semibold text-[20px] leading-tight tracking-wide "
           style={{
             color: headerTextures ? headerTextures.textColor : `hsl(${nameColorHsl})`,
           }}
@@ -226,12 +378,8 @@ function ItemTooltip({ item }: { item: PobItem }) {
           {item.name}
         </p>
         {item.baseName && item.baseName !== item.name && (
-          <p className="text-slate-200 text-[10px] mt-0.5">{item.baseName}</p>
+          <p className="text-slate-200 text-[13px] mt-0.5">{item.baseName}</p>
         )}
-        {/* Slot label (ex: Helm, Ring, Boots) */}
-        <p className="text-slate-300/80 text-[10px] mt-0.5">
-          {item.slot}
-        </p>
 
         {leftInfluenceIcon && (
           <div className="absolute left-1.5 top-1/2 -translate-y-1/2 w-6 h-6">
@@ -257,11 +405,16 @@ function ItemTooltip({ item }: { item: PobItem }) {
         )}
       </div>
 
-      <div className="px-4 py-3 space-y-2 bg-black/80">
+      <div className="px-6 py-2 space-y-3 bg-black/80 text-center">
         {/* Properties */}
-        {(item.quality || item.itemLevel || item.sockets) && (
+        {(item.quality ||
+          item.itemLevel ||
+          item.sockets ||
+          item.armour ||
+          item.evasion ||
+          item.energyShield) && (
           <div className="space-y-1.5 border-b border-slate-600/60 pb-2">
-            <div className="flex flex-wrap gap-x-4 gap-y-0.5 text-slate-300 text-[11px]">
+            <div className="flex flex-wrap justify-center gap-x-4 gap-y-0.5 text-slate-300 text-[12px]">
               {item.quality !== undefined && (
                 <span>
                   Quality:{" "}
@@ -279,6 +432,36 @@ function ItemTooltip({ item }: { item: PobItem }) {
                 </span>
               )}
             </div>
+
+            {(item.armour || item.evasion || item.energyShield) && (
+              <div className="mt-1 flex flex-col items-center gap-1 text-slate-300 text-[12px]">
+                {item.armour !== undefined && (
+                  <span>
+                    Armour:{" "}
+                    <span className="text-sky-300 font-semibold">
+                      {item.armour}
+                    </span>
+                  </span>
+                )}
+                {item.evasion !== undefined && (
+                  <span>
+                    Evasion:{" "}
+                    <span className="text-sky-300 font-semibold">
+                      {item.evasion}
+                    </span>
+                  </span>
+                )}
+                {item.energyShield !== undefined && (
+                  <span>
+                    Energy Shield:{" "}
+                    <span className="text-sky-300 font-semibold">
+                      {item.energyShield}
+                    </span>
+                  </span>
+                )}
+              </div>
+            )}
+
             {item.sockets && <SocketDisplay sockets={item.sockets} />}
           </div>
         )}
@@ -289,7 +472,7 @@ function ItemTooltip({ item }: { item: PobItem }) {
             {enchantMods.map((mod, i) => (
               <p
                 key={`enchant-${i}`}
-                className="uppercase"
+                className="uppercase first-letter:text-[13px]"
                 style={{ color: `hsl(${MOD_COLOR_HSL[mod.type]})` }}
               >
                 {mod.text}
@@ -298,13 +481,24 @@ function ItemTooltip({ item }: { item: PobItem }) {
           </div>
         )}
 
+        {/* Divider entre Enchant e Implicits */}
+        {hasEnchant && hasImplicit && (
+          <div className="mt-1 border-t border-slate-600/60 pt-1.5" />
+        )}
+
         {/* Implicits (não-enchant) */}
         {hasImplicit && (
-          <div className={`${hasEnchant ? "border-t border-slate-600/60 pt-2 mt-1" : "pt-2"} space-y-0.25`}>
+          <div
+            className={`${
+              hasEnchant
+                ? ""
+                : "pt-1"
+            }`}
+          >
             {implicitMods.map((mod, i) => (
               <p
                 key={`implicit-${i}`}
-                className="uppercase"
+                className="uppercase first-letter:text-[13px]"
                 style={{ color: `hsl(${MOD_COLOR_HSL[mod.type]})` }}
               >
                 {mod.text}
@@ -315,7 +509,7 @@ function ItemTooltip({ item }: { item: PobItem }) {
 
         {/* Divider entre implicits e explicits */}
         {hasImplicit && hasExplicit && (
-          <div className="flex items-center gap-1.5 py-0.5">
+          <div className="flex items-center">
             <div className="flex-1 h-px bg-slate-600/50" />
             <div className="w-1.5 h-1.5 rounded-full bg-slate-500" />
             <div className="flex-1 h-px bg-slate-600/50" />
@@ -324,11 +518,11 @@ function ItemTooltip({ item }: { item: PobItem }) {
 
         {/* Explicits (inclui crafted; crafted fica branco) */}
         {hasExplicit && (
-          <div className="space-y-0.25 pt-2">
+          <div className="space-y-0.5">
             {explicitMods.map((mod, i) => (
               <p
                 key={i}
-                className="uppercase"
+                className="uppercase first-letter:text-[14px]"
                 style={{
                   color:
                     mod.type === "crafted"
@@ -351,20 +545,7 @@ function ItemTooltip({ item }: { item: PobItem }) {
           </div>
         )}
 
-        {/* Icon inside tooltip, at the bottom */}
-        {item.iconUrl && (
-          <div className="pt-3 flex justify-center">
-            <div className="relative w-16 h-20">
-              <Image
-                src={item.iconUrl}
-                alt={item.name}
-                fill
-                className="object-contain drop-shadow-[0_0_12px_rgba(0,0,0,0.9)]"
-                unoptimized
-              />
-            </div>
-          </div>
-        )}
+        {/* Icon inside tooltip removed (slot already shows icon) */}
       </div>
     </div>
   );
@@ -458,6 +639,7 @@ function ItemSlotCard({
   const borderColorHsl =
     RARITY_BORDER_HSL[item.rarity] ?? RARITY_BORDER_HSL.Normal;
   const isCorruptedUnique = item.corrupted && item.rarity === "Unique";
+  const effectiveIconUrl = getEffectiveItemIconUrl(item);
 
   return (
     <Tooltip>
@@ -471,13 +653,13 @@ function ItemSlotCard({
               : "inset 0 0 15px rgba(0,0,0,0.5)",
           }}
         >
-          {item.iconUrl ? (
+          {effectiveIconUrl ? (
             <div className="relative w-full h-full flex items-center justify-center p-1">
               <Image
-                src={item.iconUrl}
+                src={effectiveIconUrl}
                 alt={item.name}
                 fill
-                className="object-contain drop-shadow-[0_0_8px_rgba(0,0,0,0.8)] filter transition-transform duration-200 group-hover:scale-105"
+                className="object-contain drop-shadow-[0_0_8px_rgba(0,0,0,0.8)]"
                 unoptimized
               />
             </div>
@@ -577,6 +759,7 @@ export default function PobViewerClient({ locale }: Props) {
   const buildInfo = data?.BuildInfo;
   const treeDetails = data?.TreeDetails;
   const itemSets = data?.ItemSets ?? [];
+  const skillSets = data?.SkillSets ?? [];
 
   const safeItemSetIndex =
     itemSets.length === 0 ? 0 : Math.min(activeItemSetIndex, itemSets.length - 1);
@@ -586,6 +769,40 @@ export default function PobViewerClient({ locale }: Props) {
   for (const item of itemSetItems) {
     const key = normalizeSlotName(item.slot);
     slotMap[key] = item;
+  }
+
+  // Ao trocar o loadout (ItemSet), mostramos o SkillSet correspondente (por índice) quando disponível.
+  const skillSetIndex = Math.min(safeItemSetIndex, Math.max(0, skillSets.length - 1));
+  const activeSkillGroups =
+    skillSets.length > 0 ? skillSets[skillSetIndex]?.skills ?? [] : data?.Skills ?? [];
+
+  // Dev logging para ajudar a depurar ícones de flasks / items.
+  if (process.env.NODE_ENV !== "production" && data && itemSetItems.length > 0) {
+    // Loga visão geral dos item sets carregados.
+    // eslint-disable-next-line no-console
+    console.log("[PoB Viewer] ItemSets:", {
+      totalSets: itemSets.length,
+      activeSetIndex: safeItemSetIndex,
+      activeSetTitle: itemSets[safeItemSetIndex]?.title,
+      itemsInActiveSet: itemSetItems.length,
+    });
+
+    // Foca principalmente nos slots de Flask para debug de imagens.
+    const flaskSlotsDebug = FLASK_SLOTS.map((slotName) => {
+      const it = slotMap[slotName];
+      return it
+        ? {
+            slot: slotName,
+            name: it.name,
+            baseName: it.baseName,
+            rarity: it.rarity,
+            iconUrl: it.iconUrl,
+          }
+        : { slot: slotName, empty: true };
+    });
+
+    // eslint-disable-next-line no-console
+    console.log("[PoB Viewer] Flask slots debug:", flaskSlotsDebug);
   }
 
   // Auto-carregar PoB se houver ?code= na URL
@@ -632,7 +849,7 @@ export default function PobViewerClient({ locale }: Props) {
 
   return (
     <TooltipProvider delayDuration={150}>
-      <div className="space-y-8 max-w-5xl mx-auto">
+      <div className="space-y-8 max-w-7xl mx-auto">
       {/* Page header */}
       <header className="space-y-1">
         <div className="flex items-center gap-2">
@@ -735,13 +952,13 @@ export default function PobViewerClient({ locale }: Props) {
 
               {/* Itens do conjunto ativo */}
               {itemSetItems.length > 0 && (
-              <div className="bg-[#12141b]/95 p-4 sm:p-5 rounded-xl border border-border/40 flex flex-col items-center shadow-[0_18px_40px_rgba(0,0,0,0.45)]">
+              <div className="bg-background p-5 sm:p-6 rounded-xl border border-border/40 flex flex-col items-center shadow-[0_18px_40px_rgba(0,0,0,0.45)]">
                 <div
                   className="grid gap-1 justify-center mx-auto"
                   style={{
                     gridTemplateColumns:
-                      "48px 48px 48px 48px 48px 48px 48px 48px 48px 48px",
-                    gridAutoRows: "48px",
+                      "64px 64px 64px 64px 64px 64px 64px 64px 64px 64px",
+                    gridAutoRows: "64px",
                   }}
                 >
                   {EQUIPMENT_GRID.map(({ slot, col, row }) => (
@@ -754,7 +971,7 @@ export default function PobViewerClient({ locale }: Props) {
                 {/* Flasks */}
                 <div className="flex justify-center gap-1.5 pt-4">
                   {FLASK_SLOTS.map((slotName) => (
-                    <div key={slotName} className="w-[48px] h-[96px]">
+                    <div key={slotName} className="w-[64px] h-[128px]">
                       <ItemSlotCard
                         item={slotMap[slotName]}
                         slotName={slotName}
@@ -800,13 +1017,13 @@ export default function PobViewerClient({ locale }: Props) {
           )}
 
           {/* Skills / Gems */}
-          {data.Skills.length > 0 && (
+          {activeSkillGroups.length > 0 && (
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-base">Skills &amp; Gems</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                {data.Skills.map((group, i) => (
+                {activeSkillGroups.map((group, i) => (
                   <div
                     key={i}
                     className="rounded-lg border border-border/50 bg-slate-950/30 p-3"
