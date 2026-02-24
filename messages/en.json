@@ -70,13 +70,13 @@
       "ogDescription": "⚡ Get your PoE Currency with instant delivery. Buy cheap and secure Divine Orbs, Exalted Orbs, and Chaos Orbs. 24/7 customer support!"
     },
     "products": {
-      "title": "Buy {gameVersion} {category} ({league}) | Path of Trade",
+      "title": "Buy {gameVersion} {category} — Orbs & Currency in {league} | Path of Trade",
       "description": "Find the best price for {category} in the {gameVersion} {league} league. Buy Orbs and Currency with fast delivery and secure trading at Path of Trade.",
       "ogTitle": "Best Deals on {category} ({league}) | PoE Currency | Path of Trade ",
       "ogDescription": "Don't miss the best offers on {category} for the {league} league! Low prices, instant delivery, and 100% safety for your {gameVersion} account at Path of Trade."
     },
     "productDetail": {
-      "title": "Buy {productName} {gameVersionLabel} — Best Price | Path of Trade",
+      "title": "Buy {productName} {gameVersionLabel} — Cheap Currency & Orbs | Path of Trade",
       "description": "Get {productName} for {gameVersionLabel} at the best market price. Instant and 100% secure delivery. Buy your PoE currency now at Path of Trade!",
       "ogTitle": "Buy {productName} for {gameVersionLabel} | Safe Currency | Path of Trade",
       "ogDescription": "Secure your {productName} in {gameVersionLabel}. We offer the best price, delivery in minutes, and fully secure transactions. Visit Path of Trade!"
@@ -88,7 +88,7 @@
       "poe2Description": "Get ready for Path of Exile 2 with Path of Trade ! Securely buy and sell PoE 2 currency, items, and orbs with instant transactions and the best prices."
     },
     "league": {
-      "title": "Currency for {league} ({difficulty}) | Path of Trade",
+      "title": "Buy {league} Currency ({difficulty}) — Divine & Chaos Orbs | Path of Trade",
       "description": "Buy {league} Currency in PoE ({difficulty}). Best prices for Exalted Orbs, Chaos Orbs, and Divine Orbs in Path of Exile {poeVersion}. Instant delivery!",
       "ogTitle": "Buy Currency for PoE's {league} League | Path of Trade",
       "ogDescription": "Safe currency trading for the {league} league ({difficulty}). Real-time stock of Chaos, Exalted, and Divine Orbs for PoE {poeVersion}."
@@ -254,7 +254,8 @@
     "terms-of-service": "Terms of Service",
     "refund-policy": "Refund Policy",
     "legal": "Legal",
-    "price-tracker": "Price Tracker"
+    "price-tracker": "Price Tracker",
+    "active-leagues": "Active Leagues"
   },
   "GamePage": {
     "news": "News",
@@ -1150,5 +1151,42 @@
         }
       }
     }
+  },
+  "AuthorPage": {
+    "posts-by": "Posts by {author}",
+    "no-posts": "No posts yet"
+  },
+  "AuthorsPage": {
+    "title": "Our Authors",
+    "description": "Meet the team of writers behind Path of Trade guides and articles",
+    "no-authors": "No authors found"
+  },
+  "PriceComparison": {
+    "title": "Price Comparison",
+    "description": "Compare prices between poe.ninja and the official PoE Currency Exchange",
+    "filters": "Filters",
+    "game": "Game",
+    "league": "League",
+    "refresh": "Refresh",
+    "loading": "Loading...",
+    "last-update": "Last update",
+    "item": "Item",
+    "difference": "Difference",
+    "status": "Status",
+    "ninja-higher": "Ninja higher",
+    "exchange-higher": "Exchange higher",
+    "similar": "Similar",
+    "large-gap": "Large gap",
+    "sources": "Sources",
+    "ninja-desc": "Aggregated prices from trade site, updated frequently",
+    "exchange-desc": "Official PoE API for bulk exchange trades",
+    "arbitrage-note": "Large differences may indicate arbitrage opportunities or different market liquidity."
+  },
+  "Breadcrumb": {
+    "home": "Home",
+    "products": "Products",
+    "blog": "Blog",
+    "games": "Games",
+    "authors": "Authors"
   }
 }

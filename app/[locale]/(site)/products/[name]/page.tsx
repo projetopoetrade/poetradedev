@@ -11,9 +11,35 @@ import ProductContent from "@/components/product-detail/ProductContent";
 import PriceHistoryChart from "@/components/Product/PriceHistoryChart";
 import { getTranslations } from "next-intl/server";
 import { buildCanonical, buildAbsoluteUrl, generateKeywords, buildBreadcrumbSchema } from "@/lib/utils";
+import { createAdminClient } from "@/utils/supabase/admin";
+import { Breadcrumb } from "@/components/ui/breadcrumb";
 
 // ISR: revalidate cache every 5 minutes
 export const revalidate = 300;
+
+export async function generateStaticParams() {
+  try {
+    const supabase = createAdminClient();
+    
+    const { data } = await supabase
+      .from('products')
+      .select('slug')
+      .eq('is_listed', true)
+      .limit(20);
+    
+    const locales = ['en', 'pt-br'];
+    
+    return locales.flatMap(locale => 
+      (data || []).map(p => ({
+        locale,
+        name: p.slug
+      }))
+    );
+  } catch (error) {
+    console.error('generateStaticParams error:', error);
+    return [];
+  }
+}
 
 // Add formatPrice utility function
 const formatPrice = (price: number): string => {
@@ -96,6 +122,7 @@ export const generateMetadata = async (props: {
       url: canonicalPath,
       type: "website",
       siteName: t("siteName"),
+      images: productFn?.imgUrl ? [{ url: productFn.imgUrl }] : undefined,
     },
     twitter: {
       card: "summary_large_image",
@@ -314,7 +341,7 @@ export default async function ProductDetailPage(props: {
       }
     };
 
-    return (
+return (
       <div className="container mx-auto py-6 md:py-12 px-4">
         <script
           type="application/ld+json"
@@ -329,13 +356,38 @@ export default async function ProductDetailPage(props: {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
         />
 
+        <Breadcrumb
+          items={[
+            { label: params.locale === 'pt-br' ? 'Produtos' : 'Products', href: '/products' },
+            { label: product.name },
+          ]}
+        />
+
         <div className="max-w-6xl mx-auto rounded-lg overflow-hidden">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
             <div className="sticky top-4 flex flex-col items-center justify-start p-8 md:p-12 gap-4">
-              <Link href="/products" className="self-start flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-                {params.locale === 'en' ? 'Back to Products' : 'Voltar aos Produtos'}
-              </Link>
+              {(() => {
+                const catSlug = product.category?.toLowerCase();
+                const validCats = ['currency', 'items', 'services'];
+                const backHref = validCats.includes(catSlug)
+                  ? `/games/${targetGameVersion}/${catSlug}`
+                  : '/products';
+                const backLabel = params.locale === 'en'
+                  ? catSlug === 'currency' ? 'Back to Currency'
+                  : catSlug === 'items' ? 'Back to Items'
+                  : catSlug === 'services' ? 'Back to Services'
+                  : 'Back to Products'
+                  : catSlug === 'currency' ? 'Voltar às Moedas'
+                  : catSlug === 'items' ? 'Voltar aos Itens'
+                  : catSlug === 'services' ? 'Voltar aos Serviços'
+                  : 'Voltar aos Produtos';
+                return (
+                  <Link href={backHref} className="self-start flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    {backLabel}
+                  </Link>
+                );
+              })()}
               <div className="flex-1 flex items-center justify-center">
               <div className="relative w-[188px] h-[188px]">
                 <Image

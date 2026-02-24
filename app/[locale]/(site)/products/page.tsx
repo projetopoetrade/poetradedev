@@ -54,13 +54,9 @@ export async function generateMetadata(
   // Base URL
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net";
 
-  // Gera a string de busca idêntica para todas as linguagens
-  const queryString = buildQueryString(searchParams);
-
-  // URLs completas
-  // Nota: Ajuste se sua rota padrão for '/products' e a pt for '/pt-br/products'
-  const enUrl = `${baseUrl}/products${queryString}`;
-  const ptUrl = `${baseUrl}/pt-br/products${queryString}`;
+  // URLs canônicas sem query params — evita indexar variações filtradas
+  const enUrl = `${baseUrl}/products`;
+  const ptUrl = `${baseUrl}/pt-br/products`;
 
   // Canonical: Se estou em EN usa a url EN, se PT usa PT.
   const canonical = locale === 'en' ? enUrl : ptUrl;

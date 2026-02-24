@@ -7,6 +7,7 @@ import { Blog } from "@/types/blog";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { buildCanonical, generateKeywords, buildBreadcrumbSchema } from "@/lib/utils";
+import { Breadcrumb } from "@/components/ui/breadcrumb";
 
 // ISR: revalidate cache every 5 minutes
 export const revalidate = 300;
@@ -127,6 +128,12 @@ const SingleBlogPage = async (props: PageProps) => {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <Breadcrumb
+        items={[
+          { label: locale === 'pt-br' ? 'Blog' : 'Blog', href: '/blog' },
+          { label: post.title },
+        ]}
       />
       <Link
         href={`/${locale}/blog`}

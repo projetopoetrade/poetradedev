@@ -1,8 +1,0 @@
-{
-    "crons": [
-        {
-            "path": "/api/tools/prices/snapshot",
-            "schedule": "0 0 * * *"
-        }
-    ]
-}

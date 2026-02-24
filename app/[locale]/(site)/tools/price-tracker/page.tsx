@@ -104,10 +104,6 @@ export async function generateMetadata(props: {
       title,
       description,
     },
-    other: {
-      'script:ld+json:faq': JSON.stringify(faqSchema),
-      'script:ld+json:webapp': JSON.stringify(webAppSchema),
-    },
   }
 }
 
@@ -212,9 +208,16 @@ export default async function PriceTrackerPage(props: {
         {/* Header */}
         <header className="space-y-2">
           <h1 className="text-3xl md:text-4xl font-bold">
-            {labels.title}
+            {isPt
+              ? 'Tracker de Preços PoE — Currency & Items em Tempo Real'
+              : 'PoE Price Tracker — Real-Time Currency & Item Prices'}
           </h1>
           <p className="text-muted-foreground text-lg">{labels.subtitle}</p>
+          <p className="text-sm text-muted-foreground max-w-2xl pt-1">
+            {isPt
+              ? 'Consulte preços de Divine Orbs, Chaos Orbs, itens únicos, gemas e muito mais para Path of Exile 1 e 2. Dados atualizados a cada hora via poe.ninja, com valores convertidos para USD, BRL e outras moedas.'
+              : 'Check live prices for Divine Orbs, Chaos Orbs, unique items, gems and more across Path of Exile 1 & 2. Data refreshed every hour via poe.ninja, with values converted to USD, BRL and other currencies.'}
+          </p>
         </header>
 
         {/* Client tracker */}

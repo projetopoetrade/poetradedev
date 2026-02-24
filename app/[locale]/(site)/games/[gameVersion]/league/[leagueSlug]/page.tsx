@@ -17,6 +17,7 @@ import {
 } from "@/components/League";
 import { buildCanonical, buildAbsoluteUrl, generateKeywords } from "@/lib/utils";
 import { getLeagueBySlug, getAllLeagues, getLiveLeague } from "@/sanity/sanity-utils";
+import { Breadcrumb } from "@/components/ui/breadcrumb";
 
 export const revalidate = 300;
 
@@ -214,13 +215,21 @@ export default async function LeaguePage(props: PageProps) {
 
     // ─── PRE-LAUNCH ──────────────────────────────────────────────────────────
 
-    if (league.status === "announced") {
+if (league.status === "announced") {
         return (
             <>
                 <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
                 <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
 
                 <main className="container mx-auto min-h-screen">
+                    <div className="px-4 py-4">
+                        <Breadcrumb
+                            items={[
+                                { label: gameLabel, href: `/games/${league.gameVersion}` },
+                                { label: league.title },
+                            ]}
+                        />
+                    </div>
                     <LeagueHero
                         title={league.title}
                         subtitle={league.subtitle || (locale === "pt-br" ? `Prepare-se para a próxima liga do ${gameLabel}` : `Prepare for the next ${gameLabel} league`)}
@@ -366,7 +375,7 @@ export default async function LeaguePage(props: PageProps) {
         league.ctaLink ||
         `/products?gameVersion=${league.gameVersion}&league=${encodeURIComponent(league.title)}&difficulty=softcore`;
 
-    return (
+return (
         <>
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
@@ -391,6 +400,16 @@ export default async function LeaguePage(props: PageProps) {
                         </div>
                     </div>
                 )}
+
+                {/* BREADCRUMB */}
+                <div className="px-4 py-4">
+                    <Breadcrumb
+                        items={[
+                            { label: gameLabel, href: `/games/${league.gameVersion}` },
+                            { label: league.title },
+                        ]}
+                    />
+                </div>
 
                 {/* HERO */}
                 <LeagueHero

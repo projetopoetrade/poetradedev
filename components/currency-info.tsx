@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import Image from "next/image"
 import { useLocale } from "next-intl"
 import Link from "next/link"
+import { getProductUrl } from "@/utils/url-helper"
 
 interface CurrencyInfoProps {
   gameVersion?: string
@@ -37,7 +38,7 @@ const currencyDataEn: Record<string, CurrencyData[]> = {
       name: "Exalted Orb",
       description: "Adds a new random modifier to a rare item.",
       imageUrl: "/images/exalted-orb.webp",
-      gameVersion: "poe2",
+      gameVersion: "path-of-exile-2",
       uses: [
         "Adds a new random modifier to a rare item",
         "Used in high-end crafting",
@@ -214,54 +215,60 @@ export function CurrencyInfo({ gameVersion }: CurrencyInfoProps) {
 
   return (
     <div className="space-y-4 my-4">
-      {currencies.map((currency) => (
-        <Card key={currency.id}>
-          <CardHeader>
-            <div className="flex items-center justify-between">
- 
+      {currencies.map((currency) => {
+        const productUrl = getProductUrl(currency.name, locale, undefined, undefined, currency.gameVersion)
+        const isPtBr = locale === "pt-br"
+        return (
+          <Card key={currency.id}>
+            <CardHeader>
               <CardTitle className="text-2xl font-bold">
-              <Link href={`https://www.pathoftrade.net/products/${encodeURIComponent(currency.name)}?gameVersion=${currency.gameVersion}`}>
-                    {currency.name}
-                    </Link>
-              </CardTitle>
-
-
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col md:flex-row gap-6">
-              <div className="relative w-20 h-20 flex-shrink-0">
-              <Link href={`https://www.pathoftrade.net/products/${currency.id}`}>
-                <Image
-                  src={currency.imageUrl}
-                  alt={`${currency.name} icon ${currency.gameVersion} PathOfTrade.net`}
-                  fill
-                  sizes="80px"
-                  className="object-contain hover:scale-105 transition-transform duration-300"
-                />
+                <Link href={productUrl} className="hover:text-primary transition-colors">
+                  {currency.name}
                 </Link>
-
-              </div>
-              <div className="flex-1 space-y-4">
-                <p className="text-muted-foreground">{currency.description}</p>
-                
-                <div className="space-y-2">
-                  <h4 className="font-semibold">
-                    {locale === "pt-br" ? "Usos Comuns:" : "Common Uses:"}
-                  </h4>
-                  <ul className="list-disc pl-4 space-y-1">
-                    {currency.uses.map((use, index) => (
-                      <li key={index} className="text-sm text-muted-foreground">
-                        {use}
-                      </li>
-                    ))}
-                  </ul>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col md:flex-row gap-6">
+                <div className="relative w-20 h-20 flex-shrink-0">
+                  <Link href={productUrl}>
+                    <Image
+                      src={currency.imageUrl}
+                      alt={`${currency.name} — ${isPtBr ? "comprar barato entrega rápida" : "buy cheap fast delivery"}`}
+                      fill
+                      sizes="80px"
+                      className="object-contain hover:scale-105 transition-transform duration-300"
+                    />
+                  </Link>
+                </div>
+                <div className="flex-1 space-y-4">
+                  <p className="text-muted-foreground">{currency.description}</p>
+                  <div className="space-y-2">
+                    <h4 className="font-semibold">
+                      {isPtBr ? "Usos Comuns:" : "Common Uses:"}
+                    </h4>
+                    <ul className="list-disc pl-4 space-y-1">
+                      {currency.uses.map((use, index) => (
+                        <li key={index} className="text-sm text-muted-foreground">{use}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="flex items-center justify-between pt-2 border-t border-border/40">
+                    <p className="text-xs text-muted-foreground">
+                      {isPtBr ? "Entrega rápida · Troca segura" : "Fast delivery · Secure trading"}
+                    </p>
+                    <Link
+                      href={productUrl}
+                      className="text-xs font-medium text-primary hover:text-primary/80 transition-colors"
+                    >
+                      {isPtBr ? `Comprar ${currency.name} →` : `Buy ${currency.name} →`}
+                    </Link>
+                  </div>
                 </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
+            </CardContent>
+          </Card>
+        )
+      })}
     </div>
   )
 }

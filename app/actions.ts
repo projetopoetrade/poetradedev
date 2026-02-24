@@ -237,6 +237,37 @@ export const getLeagues = async (gameVersion: 'path-of-exile-1' | 'path-of-exile
   return data;
 };
 
+export const getAllActiveLeagues = async (): Promise<{ name: string; gameVersion: string }[]> => {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('leagues')
+    .select('name, gameVersion')
+    .eq('isActive', true);
+
+  if (error) {
+    console.error('Error fetching all leagues:', error.message);
+    return [];
+  }
+  return data || [];
+};
+
+export const getLeagueBySlugFromSupabase = async (
+  leagueSlug: string,
+  gameVersion: string
+): Promise<{ name: string; gameVersion: string } | null> => {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from('leagues')
+    .select('name, gameVersion')
+    .eq('gameVersion', gameVersion)
+    .eq('isActive', true);
+
+  const league = (data || []).find(
+    (l) => l.name.toLowerCase().replace(/\s+/g, '-') === leagueSlug
+  );
+  return league || null;
+};
+
 export const getProductsWithParams = async (
   params: {
     gameVersion?: string;
@@ -245,62 +276,27 @@ export const getProductsWithParams = async (
     category?: string;
     search?: string;
     isListed?: boolean;
+    orderByPrice?: 'asc' | 'desc';
   }
 ): Promise<Product[]> => {
-  const { gameVersion, league, difficulty, category, search, isListed } = params;
+  const { gameVersion, league, difficulty, category, search, isListed, orderByPrice } = params;
   const supabase = await createClient();
-
-  // Debug logs for search functionality
-  console.log("🔍 [getProductsWithParams] Input params:", params);
-  console.log("🔍 [getProductsWithParams] Search term:", search);
-  console.log("🔍 [getProductsWithParams] Search type:", typeof search);
-  console.log("🔍 [getProductsWithParams] Search truthy:", !!search);
 
   let query = supabase.from('products').select('*');
 
-  if (isListed !== undefined) {
-    console.log("🔍 [getProductsWithParams] Filtering by is_listed:", isListed);
-    query = query.eq('is_listed', isListed);
-  }
+  if (isListed !== undefined) query = query.eq('is_listed', isListed);
+  if (gameVersion) query = query.eq('gameVersion', gameVersion);
+  if (league) query = query.eq('league', league);
+  if (difficulty) query = query.eq('difficulty', difficulty);
+  if (category) query = query.ilike('category', category);
+  if (search) query = query.ilike('name', `%${search}%`);
+  if (orderByPrice) query = query.order('price', { ascending: orderByPrice === 'asc' });
 
-  if (gameVersion) {
-    console.log("🔍 [getProductsWithParams] Filtering by gameVersion:", gameVersion);
-    query = query.eq('gameVersion', gameVersion);
-  }
-
-  if (league) {
-    console.log("🔍 [getProductsWithParams] Filtering by league:", league);
-    query = query.eq('league', league);
-  }
-
-  if (difficulty) {
-    console.log("🔍 [getProductsWithParams] Filtering by difficulty:", difficulty);
-    query = query.eq('difficulty', difficulty);
-  }
-
-  if (category) {
-    console.log("🔍 [getProductsWithParams] Filtering by category:", category);
-    query = query.eq('category', category);
-  }
-
-  if (search) {
-    console.log("🔍 [getProductsWithParams] Adding search filter for:", search);
-    query = query.ilike('name', `%${search}%`);
-  } else {
-    console.log("🔍 [getProductsWithParams] No search term provided");
-  }
-
-  console.log("🔍 [getProductsWithParams] Executing query...");
   const { data, error } = await query;
 
   if (error) {
-    console.error('❌ [getProductsWithParams] Error fetching products with params:', error.message);
+    console.error('[getProductsWithParams] Error:', error.message);
     throw new Error('Could not fetch products');
-  }
-
-  console.log("🔍 [getProductsWithParams] Query successful, found products:", data?.length || 0);
-  if (data && data.length > 0) {
-    console.log("🔍 [getProductsWithParams] First product name:", data[0]?.name);
   }
 
   return data as Product[];

@@ -227,7 +227,7 @@ export default async function RootLayout({
               <div className="pt-[68px]">
                 {children}
               </div>
-              <Footer />
+              <Footer locale={locale} />
               <ConsentedProviders />
               <CookieConsent locale={locale} />
               <Toaster 

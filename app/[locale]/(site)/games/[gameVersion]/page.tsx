@@ -7,6 +7,7 @@ import { getTranslations } from "next-intl/server";
 import { buildCanonical, generateKeywords, buildBreadcrumbSchema } from "@/lib/utils";
 import { Link } from "@/i18n/navigation";
 import { ArrowLeft } from "lucide-react";
+import { Breadcrumb } from "@/components/ui/breadcrumb";
 
 // ISR: revalidate cache every 5 minutes
 export const revalidate = 300;
@@ -108,6 +109,11 @@ export default async function Page({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
       <main className="container mx-auto min-h-screen space-y-16 py-8">
+        <Breadcrumb
+          items={[
+            { label: gameTitle },
+          ]}
+        />
         <div>
           <Link
             href="/"
@@ -118,7 +124,7 @@ export default async function Page({
             <span className="text-sm md:text-base font-semibold">{t("backToHome")}</span>
           </Link>
         </div>
-        <LeagueSelectionPage gameVersion={gameVersion} />
+      <LeagueSelectionPage gameVersion={gameVersion} />
         <section className="mb-12">
           <article className="space-y-8">
             <GameVersionPosts
@@ -133,6 +139,46 @@ export default async function Page({
             </header>
             <PatchInfo gameVersion={patchVersion} />
             <CurrencyInfo gameVersion={gameVersion} />
+
+            {/* Browse by Category */}
+            <div className="pt-4">
+              <h2 className="text-2xl font-bold mb-1">{`Buy ${gameTitle} Currency, Items & Services`}</h2>
+              <p className="text-sm text-muted-foreground mb-5">
+                {isPoe2
+                  ? "Cheap prices, fast in-game delivery and secure trading for Path of Exile 2."
+                  : "Cheap prices, fast in-game delivery and secure trading for Path of Exile 1."}
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {[
+                  {
+                    slug: "currency",
+                    label: isPoe2 ? "Buy PoE 2 Currency" : "Buy PoE 1 Currency",
+                    desc: isPoe2
+                      ? "Divine Orbs, Chaos Orbs, Exalted Orbs and more — cheap prices"
+                      : "Chaos Orbs, Divine Orbs, Exalted Orbs and more — cheap prices",
+                  },
+                  {
+                    slug: "items",
+                    label: isPoe2 ? "Buy PoE 2 Items" : "Buy PoE 1 Items",
+                    desc: "Unique equipment, flasks, jewels and endgame gear",
+                  },
+                  {
+                    slug: "services",
+                    label: isPoe2 ? "Buy PoE 2 Services" : "Buy PoE 1 Services",
+                    desc: "Power leveling, boss carries and progression boosts",
+                  },
+                ].map((cat) => (
+                  <Link
+                    key={cat.slug}
+                    href={`/games/${gameVersion}/${cat.slug}`}
+                    className="group block p-5 rounded-xl border border-border/50 bg-card/40 hover:bg-card hover:border-primary/30 hover:shadow-md transition-all duration-200"
+                  >
+                    <p className="font-semibold mb-1 group-hover:text-primary transition-colors">{cat.label}</p>
+                    <p className="text-xs text-muted-foreground">{cat.desc}</p>
+                  </Link>
+                ))}
+              </div>
+            </div>
           </article>
         </section>
       </main>

@@ -1,10 +1,11 @@
 import ImageUrlBuilder from "@sanity/image-url";
 import { createClient, type QueryParams } from "next-sanity";
 import clientConfig from "./config/client-config";
-import { postQuery, postQueryBySlug, productQuery, postQueryByCategory, postQueryByCategoryAndGameVersion, leagueBySlugQuery, allLeaguesQuery, liveLeagueQuery } from "./sanity-query";
+import { postQuery, postQueryBySlug, productQuery, postQueryByCategory, postQueryByCategoryAndGameVersion, leagueBySlugQuery, allLeaguesQuery, liveLeagueQuery, postQueryByAuthor, allAuthorsQuery } from "./sanity-query";
 import { Blog } from "@/types/blog";
 import { SanityImageSource } from "@sanity/image-url/lib/types/types";
 import type { Product } from "@/lib/interface";
+import { groq } from "next-sanity";
 
 export const client = createClient(clientConfig);
 export function imageBuilder(source: SanityImageSource) {
@@ -138,6 +139,24 @@ export const getPostsByCategoryAndGameVersion = async (categorySlug: string, gam
   return data;
 };
 
+export const getRecentPostsByGameVersion = async (
+  gameVersion: string,
+  language: string,
+  limit: number = 3
+): Promise<Blog[]> => {
+  const query = `*[_type == "post" && gameVersion == $gameVersion && language == $language] | order(publishedAt desc)[0...$limit] {
+    _id, title, slug, metadata,
+    mainImage{ asset->{ _id, url } },
+    publishedAt,
+    author->{ name }
+  }`;
+  return sanityFetch<Blog[]>({
+    query,
+    qParams: { gameVersion, language, limit },
+    tags: ["post"],
+  });
+};
+
 export async function getRelatedPosts(currentPostSlug: string, language: string, limit: number = 3): Promise<Blog[]> {
   const query = `*[_type == "post" && slug.current != $currentPostSlug && language == $language] | order(publishedAt desc)[0...$limit] {
     _id,
@@ -263,4 +282,51 @@ export const getLiveLeague = async (): Promise<{ title: string; slug: string; ga
     tags: ["league"],
   });
   return data || null;
+};
+
+// ============================================================
+// AUTHOR
+// ============================================================
+
+export type SanityAuthor = {
+  _id: string;
+  name: string;
+  slug: string;
+  image?: string;
+  bio?: string;
+};
+
+const authorBySlugQuery = groq`*[_type == "author" && slug.current == $slug][0]{
+  _id,
+  name,
+  "slug": slug.current,
+  image,
+  bio
+}`;
+
+export const getAuthorBySlug = async (slug: string): Promise<SanityAuthor | null> => {
+  const data = await sanityFetch<SanityAuthor>({
+    query: authorBySlugQuery,
+    qParams: { slug },
+    tags: ["author"],
+  });
+  return data || null;
+};
+
+export const getPostsByAuthor = async (slug: string, language: string): Promise<Blog[]> => {
+  const data = await sanityFetch<Blog[]>({
+    query: postQueryByAuthor,
+    qParams: { slug, language },
+    tags: ["post", "author"],
+  });
+  return data || [];
+};
+
+export const getAllAuthors = async (): Promise<SanityAuthor[]> => {
+  const data = await sanityFetch<SanityAuthor[]>({
+    query: allAuthorsQuery,
+    qParams: {},
+    tags: ["author"],
+  });
+  return data || [];
 };

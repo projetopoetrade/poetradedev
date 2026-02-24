@@ -14,7 +14,9 @@
       "Bash(find C:\\\\Users\\\\alexa\\\\Documents\\\\poetrade-dev\\\\app\\\\[locale]\\\\\\(site\\):*)",
       "Bash(wc:*)",
       "Bash(cd:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)"
     ]
   }
 }

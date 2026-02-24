@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/utils/supabase/server'
+import { createAdminClient } from '@/utils/supabase/admin'
 
 // SQL para criar a tabela (rodar uma vez no Supabase Dashboard):
 //
@@ -24,8 +24,10 @@ const SNAPSHOT_CATEGORIES = [
 ]
 
 // Cron job chama este endpoint 1x/hora
-// vercel.json: { "crons": [{ "path": "/api/tools/prices/snapshot", "schedule": "0 * * * *" }] }
+// pg_cron: { "schedule": "0 * * * *", "job": "price-snapshot-hourly" }
 export async function POST(request: NextRequest) {
+  const startTime = Date.now();
+  
   // Verificar secret para evitar chamadas não autorizadas
   const authHeader = request.headers.get('authorization')
   const cronSecret = process.env.CRON_SECRET
@@ -34,7 +36,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const supabase = await createClient()
+    const supabase = createAdminClient()
 
     // Pegar todas as ligas ativas do PoE 1 para snapshot
     const { data: activeLeagues } = await supabase
@@ -103,7 +105,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Inserir snapshots no Supabase em lotes
+// Inserir snapshots no Supabase em lotes
     if (snapshots.length > 0) {
       const BATCH_SIZE = 100
       for (let i = 0; i < snapshots.length; i += BATCH_SIZE) {
@@ -115,13 +117,39 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    return NextResponse.json({
+    const duration = Date.now() - startTime;
+    const response = {
       success: true,
       snapshotCount: snapshots.length,
       snapshotAt: new Date().toISOString(),
-    })
-  } catch (error) {
+      durationMs: duration,
+    };
+
+    // Log success to cron_job_logs
+    await supabase.from('cron_job_logs').insert({
+      job_name: 'price-snapshot-hourly',
+      status: 'success',
+      message: `Snapshotted ${snapshots.length} items in ${duration}ms`,
+      response_body: JSON.stringify(response),
+    });
+
+    return NextResponse.json(response);
+  } catch (error: any) {
     console.error('[/api/tools/prices/snapshot] Error:', error)
+    
+    // Log error to cron_job_logs
+    try {
+      const supabase = createAdminClient();
+      await supabase.from('cron_job_logs').insert({
+        job_name: 'price-snapshot-hourly',
+        status: 'failed',
+        message: error.message || 'Unknown error',
+        response_body: JSON.stringify({ error: error.message }),
+      });
+    } catch (logError) {
+      console.error('[snapshot] Failed to log error:', logError);
+    }
+    
     return NextResponse.json({ error: 'Snapshot failed' }, { status: 500 })
   }
 }

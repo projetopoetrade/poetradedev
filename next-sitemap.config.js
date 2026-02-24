@@ -3,6 +3,7 @@ const {
   getSitemapProducts,
   getSitemapLeagues,
   getSitemapLeaguesFromSanity,
+  getSitemapLeagueSlugPages,
 } = require('./lib/sitemap-data-fetchers.js');
 
 /** @type {import('next-sitemap').IConfig} */
@@ -60,6 +61,13 @@ module.exports = {
       { path: '/games/path-of-exile-2', priority: 0.9, changefreq: 'weekly' },
       { path: '/tools', priority: 0.8, changefreq: 'monthly' },
       { path: '/tools/price-tracker', priority: 0.85, changefreq: 'daily' },
+      { path: '/products', priority: 0.85, changefreq: 'daily' },
+      { path: '/games/path-of-exile-1/currency', priority: 0.9, changefreq: 'weekly' },
+      { path: '/games/path-of-exile-2/currency', priority: 0.9, changefreq: 'weekly' },
+      { path: '/games/path-of-exile-1/items', priority: 0.85, changefreq: 'weekly' },
+      { path: '/games/path-of-exile-2/items', priority: 0.85, changefreq: 'weekly' },
+      { path: '/games/path-of-exile-1/services', priority: 0.8, changefreq: 'weekly' },
+      { path: '/games/path-of-exile-2/services', priority: 0.8, changefreq: 'weekly' },
     ];
 
     staticPages.forEach((page) => {
@@ -81,10 +89,11 @@ module.exports = {
     });
 
     // Fetch Data
-    const [posts, products, sanityLeagues] = await Promise.all([
+    const [posts, products, sanityLeagues, leagueSlugPages] = await Promise.all([
       getSitemapPosts(),
       getSitemapProducts(),
       getSitemapLeaguesFromSanity(),
+      getSitemapLeagueSlugPages(),
     ]);
 
     // ============================================================
@@ -181,6 +190,25 @@ module.exports = {
             });
           });
         }
+      });
+    }
+
+    // ============================================================
+    // 5. LEAGUE × SLUG PAGES (categorias + produtos-chave × ligas)
+    // ============================================================
+    if (leagueSlugPages && leagueSlugPages.length > 0) {
+      leagueSlugPages.forEach(({ leagueSlug, gameVersion, slug, lastmod }) => {
+        const path = `/games/${gameVersion}/league/${leagueSlug}/${slug}`;
+        const alternates = generateAlternateRefs(path);
+        locales.forEach((locale) => {
+          paths.push({
+            loc: locale === defaultLocale ? path : `/${locale}${path}`,
+            lastmod: lastmod || defaultLastMod,
+            changefreq: 'weekly',
+            priority: 0.8,
+            alternateRefs: alternates,
+          });
+        });
       });
     }
 

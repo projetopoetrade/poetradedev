@@ -2,14 +2,21 @@ import Image from "next/image";
 import Link from "next/link";
 import { JSX, SVGProps } from "react";
 import { ThemeSwitcher } from "./theme-switcher";
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
+import { getAllActiveLeagues } from "@/app/actions";
 
-export default function Footer() {
-  const t = useTranslations('Footer');
+interface FooterProps {
+  locale?: string;
+}
+
+export default async function Footer({ locale = 'en' }: FooterProps) {
+  const t = await getTranslations({ locale, namespace: 'Footer' });
+  const leagues = await getAllActiveLeagues();
+  
   return (
     <footer className="w-full bg-black/40 text-white py-8 px-4 md:px-10">
       <div className="container mx-auto max-w-7xl">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-8">
           {/* Logo and Social Links */}
           <div className="flex flex-col items-center md:items-start space-y-4">
             <Link href="/">
@@ -76,6 +83,47 @@ export default function Footer() {
             <Link href="/tools/price-tracker" className="text-gray-300 hover:text-white text-sm transition-colors">
               {t('price-tracker')}
             </Link>
+          </div>
+
+          {/* Games Links */}
+          <div className="flex flex-col space-y-3">
+            <h3 className="font-bold text-sm uppercase tracking-wider mb-1">Games</h3>
+            <Link href="/games/path-of-exile-2" className="text-gray-300 hover:text-white text-sm transition-colors">
+              Path of Exile 2
+            </Link>
+            <Link href="/games/path-of-exile-2/currency" className="text-gray-300 hover:text-white text-sm transition-colors">
+              Buy PoE 2 Currency
+            </Link>
+            <Link href="/games/path-of-exile-2/items" className="text-gray-300 hover:text-white text-sm transition-colors">
+              Buy PoE 2 Items
+            </Link>
+            <Link href="/games/path-of-exile-1" className="text-gray-300 hover:text-white text-sm transition-colors">
+              Path of Exile 1
+            </Link>
+            <Link href="/games/path-of-exile-1/currency" className="text-gray-300 hover:text-white text-sm transition-colors">
+              Buy PoE 1 Currency
+            </Link>
+          </div>
+
+          {/* Active Leagues */}
+          <div className="flex flex-col space-y-3">
+            <h3 className="font-bold text-sm uppercase tracking-wider mb-1">{t('active-leagues')}</h3>
+            {leagues && leagues.length > 0 ? (
+              leagues.slice(0, 5).map((league) => {
+                const leagueSlug = league.name.toLowerCase().replace(/\s+/g, '-');
+                return (
+                  <Link 
+                    key={`league-${league.gameVersion}-${league.name}`}
+                    href={`/games/${league.gameVersion}/league/${leagueSlug}`}
+                    className="text-gray-300 hover:text-white text-sm transition-colors"
+                  >
+                    {league.name}
+                  </Link>
+                );
+              })
+            ) : (
+              <span className="text-gray-500 text-sm">No active leagues</span>
+            )}
           </div>
 
           {/* Support Links */}

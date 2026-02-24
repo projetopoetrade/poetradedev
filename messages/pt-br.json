@@ -70,13 +70,13 @@
       "ogDescription": "⚡ Obtenha suas Moedas de PoE com entrega instantânea. Compre Orbes Divinos, Exaltados e do Caos de forma barata e segura. Suporte ao cliente 24/7!"
     },
     "products": {
-      "title": "Comprar {category} de {gameVersion} ({league}) | Path of Trade",
+      "title": "Comprar {category} de {gameVersion} — Orbes e Moedas na {league} | Path of Trade",
       "description": "Encontre o melhor preço para {category} na liga {league} de {gameVersion}. Compre Orbes e Moedas com entrega rápida e negociação segura no Path of Trade.",
       "ogTitle": "Melhores Ofertas de {category} ({league}) | Moedas PoE | Path of Trade",
       "ogDescription": "Não perca as melhores ofertas de {category} para a liga {league}! Preços baixos, entrega imediata e 100% de segurança para sua conta {gameVersion} no Path of Trade."
     },
     "productDetail": {
-      "title": "Comprar {productName} para {gameVersionLabel} — Melhor Preço | Path of Trade",
+      "title": "Comprar {productName} para {gameVersionLabel} — Preço Baixo em Moedas | Path of Trade",
       "description": "Adquira {productName} para {gameVersionLabel} com o melhor preço do mercado. Entrega instantânea e segura. Compre suas moedas PoE agora no Path of Trade!",
       "ogTitle": "Compre {productName} para {gameVersionLabel} | Moeda Segura | Path of Trade",
       "ogDescription": "Garanta seu {productName} em {gameVersionLabel}. Oferecemos o melhor preço, entrega em minutos e transações totalmente seguras. Visite o Path of Trade!"
@@ -88,7 +88,7 @@
       "poe2Description": "Prepare-se para Path of Exile 2 com o Path of Trade! Compre e venda moedas, itens e orbes de PoE 2 com segurança, transações instantâneas e os melhores preços."
     },
     "league": {
-      "title": "Moedas para {league} ({difficulty}) | Path of Trade",
+      "title": "Comprar Moedas {league} ({difficulty}) — Divines e Chaos | Path of Trade",
       "description": "Compre Moedas de {league} em PoE ({difficulty}). Melhores preços para Orbes Exaltados, do Caos e Divinos em Path of Exile {poeVersion}. Entrega instantânea!",
       "ogTitle": "Compre Moedas para a Liga {league} de PoE | Path of Trade",
       "ogDescription": "Negociação segura de moedas para a liga {league} ({difficulty}). Estoque em tempo real de Orbes do Caos, Exaltados e Divinos para PoE {poeVersion}."
@@ -137,7 +137,8 @@
     "terms-of-service": "Termos de Serviço",
     "refund-policy": "Política de Reembolso",
     "legal": "Legal",
-    "price-tracker": "Tracker de Preços"
+    "price-tracker": "Tracker de Preços",
+    "active-leagues": "Ligas Ativas"
   },
   "faq": {
     "faq-title": "Perguntas Frequentes (FAQ)",
@@ -1135,5 +1136,42 @@
         }
       }
     }
+  },
+  "AuthorPage": {
+    "posts-by": "Posts por {author}",
+    "no-posts": "Nenhum post ainda"
+  },
+  "AuthorsPage": {
+    "title": "Nossos Autores",
+    "description": "Conheça a equipe de escritores por trás dos guias e artigos do Path of Trade",
+    "no-authors": "Nenhum autor encontrado"
+  },
+  "PriceComparison": {
+    "title": "Comparação de Preços",
+    "description": "Compare preços entre poe.ninja e o Currency Exchange oficial do PoE",
+    "filters": "Filtros",
+    "game": "Jogo",
+    "league": "Liga",
+    "refresh": "Atualizar",
+    "loading": "Carregando...",
+    "last-update": "Última atualização",
+    "item": "Item",
+    "difference": "Diferença",
+    "status": "Status",
+    "ninja-higher": "Ninja maior",
+    "exchange-higher": "Exchange maior",
+    "similar": "Similar",
+    "large-gap": "Grande diferença",
+    "sources": "Fontes",
+    "ninja-desc": "Preços agregados do trade site, atualizados frequentemente",
+    "exchange-desc": "API oficial do PoE para bulk exchange (trocas em massa)",
+    "arbitrage-note": "Diferenças grandes podem indicar oportunidades de arbitragem ou liquidez diferente entre os mercados."
+  },
+  "Breadcrumb": {
+    "home": "Início",
+    "products": "Produtos",
+    "blog": "Blog",
+    "games": "Jogos",
+    "authors": "Autores"
   }
 }

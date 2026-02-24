@@ -117,3 +117,11 @@ export const productQuery = `*[_type == "product"]{
   updatedAt,
   "slug": slug.current
 }`;
+
+export const allAuthorsQuery = groq`*[_type == "author" && defined(slug.current)]{
+  _id,
+  name,
+  "slug": slug.current,
+  image,
+  bio
+}`;
