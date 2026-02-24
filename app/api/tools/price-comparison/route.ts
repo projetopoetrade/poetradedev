@@ -3,25 +3,6 @@ import { createClient } from '@/utils/supabase/server';
 
 export const revalidate = 300;
 
-interface NinjaCurrency {
-  currencyTypeName: string;
-  chaosEquivalent: number;
-  receiveSparkLine?: { data: number[]; totalChange: number } | null;
-}
-
-interface ExchangeItem {
-  id: string;
-  name: string;
-  icon?: string;
-  poeTradeId?: string;
-}
-
-interface ExchangeLine {
-  id: string;
-  equivalent?: number;
-  listingCount?: number;
-}
-
 interface PriceItem {
   name: string;
   icon: string;
@@ -31,6 +12,9 @@ interface PriceItem {
   differencePercent: number | null;
   ninjaListingCount: number | null;
   exchangeListingCount: number | null;
+  weSellThis: boolean;
+  ourPriceUSD: number | null;
+  ourPriceChaos: number | null;
 }
 
 const POE1_NINJA_BASE = 'https://poe.ninja/api/data';
@@ -95,118 +79,6 @@ async function fetchNinjaPrices(game: 'poe1' | 'poe2', league: string): Promise<
   return result;
 }
 
-async function fetchExchangePrices(game: 'poe1' | 'poe2', league: string): Promise<Map<string, { chaos: number; listingCount: number | null }>> {
-  const result = new Map<string, { chaos: number; listingCount: number | null }>();
-  
-  try {
-    const leagueParam = encodeURIComponent(league);
-    let url: string;
-    
-    if (game === 'poe2') {
-      url = `https://www.pathofexile.com/api/poe2/trade2/data/compactcurrencyitems?league=${leagueParam}`;
-    } else {
-      url = `https://www.pathofexile.com/api/trade/data/compactcurrencyitems?league=${leagueParam}`;
-    }
-    
-    const res = await fetch(url, {
-      next: { revalidate: 300 },
-      headers: { 'User-Agent': 'PathOfTrade/1.0 (pathoftrade.net)' },
-    });
-    
-    if (!res.ok) return result;
-    
-    const data = await res.json();
-    
-    const itemIdMap = new Map<string, string>();
-    for (const item of data.result || []) {
-      const name = item.name || item.text;
-      if (name && item.id) {
-        itemIdMap.set(name.toLowerCase(), item.id);
-      }
-    }
-    
-    const chaosId = itemIdMap.get('chaos orb') || itemIdMap.get('chaos');
-    
-    if (!chaosId) return result;
-    
-    let exchangeUrl: string;
-    if (game === 'poe2') {
-      exchangeUrl = `https://www.pathofexile.com/api/poe2/trade2/exchange/${leagueParam}`;
-    } else {
-      exchangeUrl = `https://www.pathofexile.com/api/trade/exchange/${leagueParam}`;
-    }
-    
-    const exchangeRequests: { want: string[]; have: string[] }[] = [];
-    const itemsToQuery = Array.from(itemIdMap.entries()).filter(([name]) => name !== 'chaos orb' && name !== 'chaos');
-    
-    for (const [name, id] of itemsToQuery) {
-      exchangeRequests.push({
-        want: [id],
-        have: [chaosId],
-      });
-    }
-    
-    const BATCH_SIZE = 10;
-    for (let i = 0; i < exchangeRequests.length; i += BATCH_SIZE) {
-      const batch = exchangeRequests.slice(i, i + BATCH_SIZE);
-      
-      const requestBody = {
-        queries: batch,
-      };
-      
-      try {
-        const exchangeRes = await fetch(exchangeUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'User-Agent': 'PathOfTrade/1.0 (pathoftrade.net)',
-          },
-          body: JSON.stringify(requestBody),
-        });
-        
-        if (!exchangeRes.ok) continue;
-        
-        const exchangeData = await exchangeRes.json();
-        
-        for (let j = 0; j < batch.length; j++) {
-          const itemName = itemsToQuery[i + j]?.[0];
-          const queryResult = exchangeData[j];
-          
-          if (itemName && queryResult?.result?.length > 0) {
-            const listings = queryResult.result.slice(0, 10);
-            let totalChaos = 0;
-            let count = 0;
-            
-            for (const listing of listings) {
-              if (listing.offer?.amount && listing.offer?.exchange_amount) {
-                const chaosPerItem = listing.offer.exchange_amount / listing.offer.amount;
-                totalChaos += chaosPerItem;
-                count++;
-              }
-            }
-            
-            if (count > 0) {
-              result.set(itemName, {
-                chaos: totalChaos / count,
-                listingCount: queryResult.result.length,
-              });
-            }
-          }
-        }
-        
-        await new Promise(resolve => setTimeout(resolve, 200));
-      } catch (batchError) {
-        console.error('[price-comparison] Exchange batch error:', batchError);
-      }
-    }
-    
-  } catch (error) {
-    console.error('[price-comparison] Exchange fetch error:', error);
-  }
-  
-  return result;
-}
-
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const game = (searchParams.get('game') || 'poe1') as 'poe1' | 'poe2';
@@ -227,40 +99,70 @@ export async function GET(request: NextRequest) {
     
     const ninjaLeague = leagueData?.poe_ninja_name || league;
     
-    const [ninjaData, exchangeData] = await Promise.all([
+    const [ninjaData, divineProduct, products] = await Promise.all([
       fetchNinjaPrices(game, ninjaLeague),
-      fetchExchangePrices(game, league),
+      supabase
+        .from('products')
+        .select('price')
+        .ilike('name', '%divine orb%')
+        .eq('gameVersion', game === 'poe1' ? 'path-of-exile-1' : 'path-of-exile-2')
+        .limit(1)
+        .single(),
+      supabase
+        .from('products')
+        .select('name, price, slug, in_stock')
+        .eq('gameVersion', game === 'poe1' ? 'path-of-exile-1' : 'path-of-exile-2')
+        .eq('is_listed', true),
     ]);
+    
+    const divinePriceUSD = divineProduct?.price ?? 0.15;
+    
+    const productMap = new Map<string, { price: number; slug: string; inStock: boolean }>();
+    for (const p of products || []) {
+      productMap.set(p.name.toLowerCase(), { price: p.price, slug: p.slug, inStock: p.in_stock ?? false });
+    }
     
     const items: PriceItem[] = [];
     
     for (const [nameLower, ninjaInfo] of ninjaData) {
-      const exchangeInfo = exchangeData.get(nameLower);
+      const product = productMap.get(nameLower);
       
       const ninjaChaos = ninjaInfo.chaos;
-      const exchangeChaos = exchangeInfo?.chaos ?? null;
       
-      let difference: number | null = null;
+      let ourPriceUSD: number | null = null;
+      let ourPriceChaos: number | null = null;
       let differencePercent: number | null = null;
       
-      if (exchangeChaos !== null && exchangeChaos > 0) {
-        difference = ninjaChaos - exchangeChaos;
-        differencePercent = (difference / exchangeChaos) * 100;
+      if (product && product.price > 0) {
+        ourPriceUSD = product.price;
+        ourPriceChaos = (product.price / divinePriceUSD) * ninjaChaos;
+        
+        if (ninjaChaos > 0 && ourPriceChaos > 0) {
+          const pricePerUnitChaos = ninjaChaos;
+          differencePercent = ((ourPriceChaos - pricePerUnitChaos) / pricePerUnitChaos) * 100;
+        }
       }
       
       items.push({
         name: nameLower.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
         icon: ninjaInfo.icon,
         ninjaChaos,
-        exchangeChaos,
-        difference,
+        exchangeChaos: ourPriceChaos,
+        difference: ourPriceChaos ? ourPriceChaos - ninjaChaos : null,
         differencePercent,
         ninjaListingCount: ninjaInfo.listingCount,
-        exchangeListingCount: exchangeInfo?.listingCount ?? null,
+        exchangeListingCount: null,
+        weSellThis: !!product,
+        ourPriceUSD,
+        ourPriceChaos,
       });
     }
     
     items.sort((a, b) => {
+      const aWeSell = a.weSellThis ? 0 : 1;
+      const bWeSell = b.weSellThis ? 0 : 1;
+      if (aWeSell !== bWeSell) return aWeSell - bWeSell;
+      
       const aPct = Math.abs(a.differencePercent ?? 0);
       const bPct = Math.abs(b.differencePercent ?? 0);
       return bPct - aPct;
@@ -272,9 +174,10 @@ export async function GET(request: NextRequest) {
         game,
         league,
         ninjaLeague,
+        divinePriceUSD,
         fetchedAt: new Date().toISOString(),
         ninjaItems: ninjaData.size,
-        exchangeItems: exchangeData.size,
+        productsWeSell: items.filter(i => i.weSellThis).length,
       },
     });
     

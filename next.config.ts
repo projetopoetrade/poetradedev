@@ -3,10 +3,13 @@ import createNextIntlPlugin from "next-intl/plugin";
 
 const nextConfig: NextConfig = {
 
-  images: {
+images: {
     remotePatterns: [
       {
         hostname: "cdn.sanity.io",
+      },
+      {
+        hostname: "web.poecdn.com",
       },
     ],
   },

@@ -16,7 +16,8 @@
       "Bash(cd:*)",
       "Bash(find:*)",
       "Bash(head:*)",
-      "Bash(tail:*)"
+      "Bash(tail:*)",
+      "WebFetch(domain:poe.ninja)"
     ]
   }
 }

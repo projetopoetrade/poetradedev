@@ -2,7 +2,7 @@ import { Metadata } from 'next'
 import { setRequestLocale } from 'next-intl/server'
 import { buildCanonical, buildBreadcrumbSchema } from '@/lib/utils'
 import { Link } from '@/i18n/navigation'
-import { ArrowLeft, BarChart2, Dices } from 'lucide-react'
+import { ArrowLeft, BarChart2, Dices, Sword } from 'lucide-react'
 
 export const revalidate = 3600
 
@@ -66,6 +66,15 @@ export default async function ToolsHubPage(props: {
         ? 'Indeciso no league start? Deixa o destino decidir. Filtros por game, tags e ascendancy.'
         : "Can't decide what to play? Let fate choose your league start build. Filter by game, tags and ascendancy.",
       badge: isPt ? 'Em Breve' : 'Coming Soon',
+    },
+    {
+      href: '/tools/pob-viewer',
+      icon: <Sword className="h-8 w-8 text-primary" />,
+      title: isPt ? 'Visualizador de Build' : 'PoB Viewer',
+      description: isPt
+        ? 'Cole seu código Path of Building e veja sua build completa: stats, equipamentos e gems.'
+        : 'Paste your Path of Building code and visualize your complete build: stats, equipment and gems.',
+      badge: isPt ? 'Novo' : 'New',
     },
   ]
 

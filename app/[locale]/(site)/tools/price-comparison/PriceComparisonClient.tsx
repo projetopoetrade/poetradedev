@@ -23,6 +23,10 @@ interface PriceData {
   differencePercent: number | null;
   ninjaListingCount: number | null;
   exchangeListingCount: number | null;
+  weSellThis: boolean;
+  ourPriceUSD: number | null;
+  ourPriceChaos: number | null;
+  divineValue: number | null;
 }
 
 interface Props {
@@ -41,14 +45,14 @@ export default function PriceComparisonClient({ locale, initialGame, initialLeag
   const [sortBy, setSortBy] = useState<"name" | "difference">("difference");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
+  const [currencyMode, setCurrencyMode] = useState<"chaos" | "divine">("chaos");
+  const [divinePrice, setDivinePrice] = useState<number>(0);
 
   useEffect(() => {
     fetch("/api/tools/leagues")
       .then((res) => res.json())
       .then((data) => {
-        const activeLeagues = (data.leagues || []).filter(
-          (l: { isActive: boolean }) => l.isActive
-        );
+        const activeLeagues = data.leagues || [];
         setLeagues(activeLeagues);
         if (!league && activeLeagues.length > 0) {
           const defaultLeague = activeLeagues.find(

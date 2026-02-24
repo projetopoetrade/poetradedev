@@ -26,7 +26,8 @@ export async function GET() {
         const poe1Leagues = data?.filter(l => l.gameVersion === 'path-of-exile-1') || []
         const poe2Leagues = data?.filter(l => l.gameVersion === 'path-of-exile-2') || []
 
-        return NextResponse.json({
+return NextResponse.json({
+            leagues: data || [],
             poe1: poe1Leagues,
             poe2: poe2Leagues,
         })
