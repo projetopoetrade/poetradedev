@@ -19,7 +19,7 @@ export default function Home() {
     alternateName: tSchema("alternateName"),
     description: tSchema("description"),
     url: process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net",
-    logo: `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"}/logo.png`,
+    logo: `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"}/logo.webp`,
     offers: {
       "@type": "AggregateOffer",
       priceCurrency: "USD",
@@ -29,7 +29,7 @@ export default function Home() {
         name: "Path of Trade",
         description: tSchema("sellerDescription"),
         url: process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net",
-        logo: `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"}/logo.png`,
+        logo: `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"}/logo.webp`,
       },
     },
     serviceType: "Currency Trading",

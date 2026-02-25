@@ -64,9 +64,11 @@ export interface PobMasterySelection {
 export interface PobSocketedJewel {
   nodeId: number
   name: string
+  baseName?: string   // base type quando diferente do nome (ex: "New Item" + "Viridian Jewel")
   rarity: string
   isCluster: boolean
   mods: string[]
+  iconUrl?: string
 }
 
 export interface PobTreeSpec {
@@ -95,6 +97,16 @@ export interface PobBuildData {
 }
 
 // --- Mod parsing ---
+
+/** Returns true if a mod line applies given the active variant set.
+ *  Lines with no {variant:N} tag always apply.
+ *  Lines with {variant:N,M,...} apply only if at least one N is in activeVariants. */
+function isModForActiveVariants(line: string, activeVariants: Set<number>): boolean {
+  if (activeVariants.size === 0) return true
+  const m = line.match(/\{variant:([^}]+)\}/)
+  if (!m) return true
+  return m[1].split(',').some(s => activeVariants.has(parseInt(s.trim(), 10)))
+}
 
 function parseModLine(line: string, section: "implicit" | "explicit"): ParsedMod {
   // Strip {range:N} annotations first
@@ -321,9 +333,21 @@ function parseItemText(rawLines: string[]): Omit<PobItem, 'slot' | 'iconUrl'> {
     //   Crafted: true
     //   Prefix: ...
     //   Suffix: ...
+    // Ou, para itens criados no PoB, duas linhas antes dos metadados:
+    //   New Item
+    //   Viridian Jewel
+    //   Crafted: true
+    //   ...
     name = rawLines[0] || ''
     baseName = name
     idx = 1
+
+    // Se rawLines[1] não é um par key-value (não contém ':'), é o base type separado.
+    // Ex: "New Item" + "Viridian Jewel", "New Item" + "Large Cluster Jewel"
+    if (rawLines[1] && !rawLines[1].includes(':')) {
+      baseName = rawLines[1]
+      idx = 2
+    }
 
     // Heurística simples de raridade: se tiver Prefix/Suffix diferente de None,
     // tratamos como Magic; senão deixamos como Normal.
@@ -343,6 +367,7 @@ function parseItemText(rawLines: string[]): Omit<PobItem, 'slot' | 'iconUrl'> {
     // Ex.: "Bountiful Eternal Life Flask" -> "Eternal Life Flask"
     //      "Gold Flask of the Antelope"   -> "Gold Flask"
     //      "Horticultural Prismatic Tincture of Overpowering" -> "Prismatic Tincture"
+    // Nota: detecta no `name` (rawLines[0]) pois o base type de flasks está no nome completo.
     const detectedTincture = detectTinctureBaseTypeFromName(name)
     const detectedFlask = detectFlaskBaseTypeFromName(name)
     if (detectedTincture) {
@@ -362,6 +387,9 @@ function parseItemText(rawLines: string[]): Omit<PobItem, 'slot' | 'iconUrl'> {
   let fractured = false
   const influences: string[] = []
   let implicitsCount = 0
+  let selectedVariant: number | undefined
+  let selectedAltVariant: number | undefined
+  let selectedAltVariantTwo: number | undefined
 
   // Scan header lines until "Implicits:"
   while (idx < rawLines.length) {
@@ -382,17 +410,24 @@ function parseItemText(rawLines: string[]): Omit<PobItem, 'slot' | 'iconUrl'> {
       const m = line.match(/(\d+)/)
       if (m) armour = parseInt(m[1], 10)
     } else if (/^Evasion(?: Rating)?:/i.test(line)) {
-      // PoB pode exportar como "Evasion: 1663" ou "Evasion Rating: 1663"
       const m = line.match(/(\d+)/)
       if (m) evasion = parseInt(m[1], 10)
     } else if (/^Energy(?: Shield)?:/i.test(line) || /^EnergyShield:/i.test(line)) {
-      // PoB pode exportar como "Energy Shield: X", "Energy: X" ou "EnergyShield: X"
       const m = line.match(/(\d+)/)
       if (m) energyShield = parseInt(m[1], 10)
     } else if (line === 'Corrupted') {
       corrupted = true
     } else if (line === 'Fractured Item') {
       fractured = true
+    } else if (line.startsWith('Selected Alt Variant Two:')) {
+      const v = parseInt(line.split(':')[1]?.trim() || '', 10)
+      if (!isNaN(v)) selectedAltVariantTwo = v
+    } else if (line.startsWith('Selected Alt Variant:')) {
+      const v = parseInt(line.split(':')[1]?.trim() || '', 10)
+      if (!isNaN(v)) selectedAltVariant = v
+    } else if (line.startsWith('Selected Variant:')) {
+      const v = parseInt(line.split(':')[1]?.trim() || '', 10)
+      if (!isNaN(v)) selectedVariant = v
     } else if (line.endsWith(' Item')) {
       const lower = line.toLowerCase()
       if (lower === 'shaper item') influences.push('shaper')
@@ -405,11 +440,19 @@ function parseItemText(rawLines: string[]): Omit<PobItem, 'slot' | 'iconUrl'> {
     idx++
   }
 
+  // Build active variant set from selected variants
+  const activeVariants = new Set<number>()
+  if (selectedVariant !== undefined) activeVariants.add(selectedVariant)
+  if (selectedAltVariant !== undefined) activeVariants.add(selectedAltVariant)
+  if (selectedAltVariantTwo !== undefined) activeVariants.add(selectedAltVariantTwo)
+
   // Parse implicits (exactly implicitsCount lines)
   const implicits: ParsedMod[] = []
   for (let i = 0; i < implicitsCount && idx < rawLines.length; i++) {
     const line = rawLines[idx++]
-    if (line) implicits.push(parseModLine(line, 'implicit'))
+    if (line && isModForActiveVariants(line, activeVariants)) {
+      implicits.push(parseModLine(line, 'implicit'))
+    }
   }
 
   // Parse explicits (remaining lines)
@@ -431,6 +474,7 @@ function parseItemText(rawLines: string[]): Omit<PobItem, 'slot' | 'iconUrl'> {
     }
     if (NON_MOD_LINES.has(line)) continue
     if (line.startsWith('Note:')) continue
+    if (!isModForActiveVariants(line, activeVariants)) continue
     explicits.push(parseModLine(line, 'explicit'))
   }
 
@@ -615,6 +659,9 @@ export async function parsePobXml(xmlString: string): Promise<PobBuildData> {
   const itemsNode = doc.getElementsByTagName('Items')[0]
   const rawItemMap: Record<string, string[]> = {}
 
+  // Fetch icon map upfront — needed by both Items (equipment) and Tree (socketed jewels)
+  const iconMap = await getItemIconMap()
+
   if (itemsNode) {
     const itemNodes = itemsNode.getElementsByTagName('Item')
     for (let i = 0; i < itemNodes.length; i++) {
@@ -623,9 +670,6 @@ export async function parsePobXml(xmlString: string): Promise<PobBuildData> {
       const rawText = item.textContent || ''
       rawItemMap[id] = rawText.trim().split('\n').map((l: string) => l.trim()).filter(Boolean)
     }
-
-    // Fetch icons (unique + base types) in parallel with item parsing
-    const iconMap = await getItemIconMap()
 
     const itemSetNodes = itemsNode.getElementsByTagName('ItemSet')
     for (let i = 0; i < itemSetNodes.length; i++) {
@@ -836,7 +880,13 @@ export async function parsePobXml(xmlString: string): Promise<PobBuildData> {
           ...parsed.implicits.map(m => m.text),
           ...parsed.explicits.map(m => m.text),
         ]
-        socketedJewels.push({ nodeId, name: parsed.name, rarity: parsed.rarity, isCluster, mods })
+        // Para jewels únicos (Watcher's Eye, Forbidden Flame, etc.) busca a URL do poe.ninja CDN.
+        // Jewels comuns (Cobalt, Crimson, etc.) ficam com imagem local via GEM_JEWEL_IMAGE_MAP no cliente.
+        const iconUrl = parsed.rarity === 'Unique'
+          ? iconMap.get(parsed.name.toLowerCase())
+          : undefined
+        const jewelBaseName = parsed.baseName !== parsed.name ? parsed.baseName : undefined
+        socketedJewels.push({ nodeId, name: parsed.name, baseName: jewelBaseName, rarity: parsed.rarity, isCluster, mods, iconUrl })
       }
 
       return { title: raw.title, nodes: raw.nodes, keystones, masteries, socketedJewels }

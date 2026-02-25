@@ -101,7 +101,7 @@ const SingleBlogPage = async (props: PageProps) => {
       name: "Path of Trade",
       logo: {
         "@type": "ImageObject",
-        url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"}/logo.png`
+        url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"}/logo.webp`
       }
     },
     mainEntityOfPage: {

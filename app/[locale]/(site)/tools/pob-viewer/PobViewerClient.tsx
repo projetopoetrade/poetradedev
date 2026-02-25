@@ -20,7 +20,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import type { PobBuildData, PobItem, PobKeystone, PobTreeSpec } from "@/lib/pob-parser";
+import type {
+  PobBuildData,
+  PobItem,
+  PobKeystone,
+  PobTreeSpec,
+} from "@/lib/pob-parser";
+import { GEM_JEWEL_IMAGE_MAP } from "./gem-jewel-image-map";
 
 interface Props {
   locale: string;
@@ -194,7 +200,8 @@ const UNIQUE_FLASK_ICON_URLS: Record<string, string> = {
   "Divination Distillate": "/flask_images/divination-distillate.webp",
   "Doedre's Elixir": "/flask_images/doedres-elixir.webp",
   "Dying Sun": "/flask_images/dying-sun.webp",
-  "Elixir of the Unbroken Circle": "/flask_images/elixir-of-the-unbroken-circle.webp",
+  "Elixir of the Unbroken Circle":
+    "/flask_images/elixir-of-the-unbroken-circle.webp",
   "Forbidden Taste": "/flask_images/forbidden-taste.webp",
   "Kiara's Determination": "/flask_images/kiaras-determination.webp",
   "Lavianga's Spirit": "/flask_images/laviangas-spirit.webp",
@@ -204,7 +211,8 @@ const UNIQUE_FLASK_ICON_URLS: Record<string, string> = {
   Progenesis: "/flask_images/progenesis.webp",
   "Replica Lavianga's Spirit": "/flask_images/replica-laviangas-spirit.webp",
   "Replica Rumi's Concoction": "/flask_images/replica-rumis-concoction.webp",
-  "Replica Sorrow of the Divine": "/flask_images/replica-sorrow-of-the-divine.webp",
+  "Replica Sorrow of the Divine":
+    "/flask_images/replica-sorrow-of-the-divine.webp",
   "Replica Witchfire Brew": "/flask_images/replica-witchfire-brew.webp",
   Rotgut: "/flask_images/rotgut.webp",
   "Rumi's Concoction": "/flask_images/rumis-concoction.webp",
@@ -248,8 +256,50 @@ const UNIQUE_TINCTURE_ICON_URLS: Record<string, string> = {
   "Grasping Nightshade": "/tinctures/Grasping_Nightshade.webp",
 };
 
+const SUPPORT_GEM_ALIASES: Record<string, string> = {
+  "cast on critical strike": "cast-on-crit",
+  "cast when damage taken": "cast-on-dmg-taken",
+  "cold to fire": "coldto-fire",
+  lifetap: "life-tap",
+  "withering touch": "wither-gem-support",
+  "multiple traps": "multi-trap",
+  "trap and mine damage": "trap-and-mine-damage",
+  "greater volley": "greater-volley-support",
+  "energy shield leech": "energy-shield-leechsupport",
+  "chance to flee": "chanceto-flee",
+  "chance to ignite": "chanceto-ignite",
+  "life gain on hit": "lifeon-hit",
+  "life on hit": "lifeon-hit",
+  "mana leech": "mana-leech",
+  "melee damage on full life": "melee-damageon-full-life",
+  "melee physical damage": "increased-physical-damage",
+  "physical damage": "increased-physical-damage",
+  "weapon elemental damage": "weapon-elemental-damage",
+  "elemental damage with attacks": "weapon-elemental-damage",
+  "iron grip support": "iron-grip",
+  "iron will support": "iron-will",
+};
+
+const SKILL_GEM_ALIASES: Record<string, string> = {
+  beserk: "beserk",
+  "purifying flame": "purifying-flame",
+  vitality: "vitality",
+  wrath: "wrath",
+  hatred: "hatred",
+  haste: "haste",
+  grace: "grace",
+  determination: "determination",
+  discipline: "discipline",
+  clarity: "clarity",
+  anger: "anger",
+  pride: "pride-aura",
+};
+
 function toKebab(str: string): string {
-  return str.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  return str
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
 }
 
 function getKeystoneLocalPath(name: string): string {
@@ -259,6 +309,45 @@ function getKeystoneLocalPath(name: string): string {
 function getMasteryLocalPath(masteryName: string): string {
   const base = masteryName.replace(/\s*mastery$/i, "").trim();
   return `/images/mastery/${toKebab(base)}.webp`;
+}
+
+function getGemLocalPath(name: string, isSupport: boolean): string {
+  // Check map first
+  if (GEM_JEWEL_IMAGE_MAP[name]) {
+    return GEM_JEWEL_IMAGE_MAP[name];
+  }
+
+  // Para aliases usamos o nome sem " Support"
+  const normalizedName = isSupport
+    ? name.replace(/\s+Support$/i, "")
+    : name;
+  const lowerName = normalizedName.toLowerCase();
+
+  if (isSupport && SUPPORT_GEM_ALIASES[lowerName]) {
+    return `/images/gem/support/${SUPPORT_GEM_ALIASES[lowerName]}.webp`;
+  }
+  if (!isSupport && SKILL_GEM_ALIASES[lowerName]) {
+    return `/images/gem/skill/${SKILL_GEM_ALIASES[lowerName]}.webp`;
+  }
+
+  // Para o kebab do fallback: support gems usam o nome COMPLETO (ex: "added-cold-damage-support")
+  // pois os arquivos locais seguem esse padrão. Skill/vaal/awakened usam o nome sem sufixo.
+  const kebab = toKebab(normalizedName); // nome sem "Support" — para vaal/awakened checks
+  const fullKebab = toKebab(name);       // nome completo — para support fallback
+
+  if (kebab.startsWith("vaal-")) return `/images/gem/vaal/${fullKebab}.webp`;
+  if (kebab.startsWith("awakened-"))
+    return `/images/gem/awakened/${kebab.replace(/^awakened-/, "")}-plus.webp`;
+  if (isSupport) return `/images/gem/support/${fullKebab}.webp`;
+  return `/images/gem/skill/${kebab}.webp`;
+}
+
+function getJewelLocalPath(name: string): string {
+  // Check map first
+  if (GEM_JEWEL_IMAGE_MAP[name]) {
+    return GEM_JEWEL_IMAGE_MAP[name];
+  }
+  return `/images/jewel/${toKebab(name)}.webp`;
 }
 
 function getEffectiveItemIconUrl(item: PobItem): string | undefined {
@@ -346,12 +435,10 @@ function ItemTooltip({ item }: { item: PobItem }) {
   const influences = item.influences ?? [];
   const isFracturedItem = Boolean(item.fractured);
 
-  const leftInfluenceKey = isFracturedItem
-    ? "fractured"
-    : influences[0];
+  const leftInfluenceKey = isFracturedItem ? "fractured" : influences[0];
   const rightInfluenceKey = isFracturedItem
     ? "fractured"
-    : influences[1] ?? influences[0];
+    : (influences[1] ?? influences[0]);
 
   const leftInfluenceIcon =
     leftInfluenceKey && INFLUENCE_ICONS[leftInfluenceKey];
@@ -392,7 +479,9 @@ function ItemTooltip({ item }: { item: PobItem }) {
         <p
           className="font-semibold text-[20px] leading-tight tracking-wide "
           style={{
-            color: headerTextures ? headerTextures.textColor : `hsl(${nameColorHsl})`,
+            color: headerTextures
+              ? headerTextures.textColor
+              : `hsl(${nameColorHsl})`,
           }}
         >
           {item.name}
@@ -508,13 +597,7 @@ function ItemTooltip({ item }: { item: PobItem }) {
 
         {/* Implicits (não-enchant) */}
         {hasImplicit && (
-          <div
-            className={`${
-              hasEnchant
-                ? ""
-                : "pt-1"
-            }`}
-          >
+          <div className={`${hasEnchant ? "" : "pt-1"}`}>
             {implicitMods.map((mod, i) => (
               <p
                 key={`implicit-${i}`}
@@ -724,10 +807,14 @@ export default function PobViewerClient({ locale }: Props) {
 
   function sendNodesToViewer(nodeIds: number[]) {
     iframeRef.current?.contentWindow?.postMessage(
-      { type: 'loadNodes', nodeIds }, '*'
+      { type: "loadNodes", nodeIds },
+      "*",
     );
   }
-  async function handleAnalyze(from?: string, options?: { updateUrl?: boolean }) {
+  async function handleAnalyze(
+    from?: string,
+    options?: { updateUrl?: boolean },
+  ) {
     const source = (from ?? input).trim();
     if (!source) return;
     setLoading(true);
@@ -795,9 +882,11 @@ export default function PobViewerClient({ locale }: Props) {
   const skillSets = data?.SkillSets ?? [];
 
   const safeItemSetIndex =
-    itemSets.length === 0 ? 0 : Math.min(activeItemSetIndex, itemSets.length - 1);
+    itemSets.length === 0
+      ? 0
+      : Math.min(activeItemSetIndex, itemSets.length - 1);
   const itemSetItems =
-    itemSets.length > 0 ? itemSets[safeItemSetIndex]?.items ?? [] : [];
+    itemSets.length > 0 ? (itemSets[safeItemSetIndex]?.items ?? []) : [];
   const slotMap: Record<string, PobItem> = {};
   for (const item of itemSetItems) {
     const key = normalizeSlotName(item.slot);
@@ -806,15 +895,25 @@ export default function PobViewerClient({ locale }: Props) {
 
   const hasMultipleLoadouts = itemSets.length > 1;
   const hasMultipleSpecs = (treeDetails?.Specs?.length ?? 0) > 1;
-  const activeViewSpec: PobTreeSpec | undefined = treeDetails?.Specs[activeTreeSpecIndex];
+  const activeViewSpec: PobTreeSpec | undefined =
+    treeDetails?.Specs[activeTreeSpecIndex];
 
   // Ao trocar o loadout (ItemSet), mostramos o SkillSet correspondente (por índice) quando disponível.
-  const skillSetIndex = Math.min(safeItemSetIndex, Math.max(0, skillSets.length - 1));
+  const skillSetIndex = Math.min(
+    safeItemSetIndex,
+    Math.max(0, skillSets.length - 1),
+  );
   const activeSkillGroups =
-    skillSets.length > 0 ? skillSets[skillSetIndex]?.skills ?? [] : data?.Skills ?? [];
+    skillSets.length > 0
+      ? (skillSets[skillSetIndex]?.skills ?? [])
+      : (data?.Skills ?? []);
 
   // Dev logging para ajudar a depurar ícones de flasks / items.
-  if (process.env.NODE_ENV !== "production" && data && itemSetItems.length > 0) {
+  if (
+    process.env.NODE_ENV !== "production" &&
+    data &&
+    itemSetItems.length > 0
+  ) {
     // Loga visão geral dos item sets carregados.
     // eslint-disable-next-line no-console
     console.log("[PoB Viewer] ItemSets:", {
@@ -887,245 +986,288 @@ export default function PobViewerClient({ locale }: Props) {
   return (
     <TooltipProvider delayDuration={150}>
       <div className="space-y-8 max-w-7xl mx-auto">
-      {/* Page header */}
-      <header className="space-y-1">
-        <div className="flex items-center gap-2">
-          <Sword className="h-6 w-6 text-primary" />
-          <h1 className="text-2xl font-bold">
-            {isPt ? "Visualizador de Build" : "PoB Viewer"}
-          </h1>
-        </div>
-        <p className="text-muted-foreground text-sm">
-          {isPt
-            ? "Cole seu código Path of Building ou link pobb.in/pastebin para visualizar sua build."
-            : "Paste your Path of Building code or pobb.in/pastebin link to visualize your build."}
-        </p>
-      </header>
+        {/* Page header */}
+        <header className="space-y-1">
+          <div className="flex items-center gap-2">
+            <Sword className="h-6 w-6 text-primary" />
+            <h1 className="text-2xl font-bold">
+              {isPt ? "Visualizador de Build" : "PoB Viewer"}
+            </h1>
+          </div>
+          <p className="text-muted-foreground text-sm">
+            {isPt
+              ? "Cole seu código Path of Building ou link pobb.in/pastebin para visualizar sua build."
+              : "Paste your Path of Building code or pobb.in/pastebin link to visualize your build."}
+          </p>
+        </header>
 
-      {/* Input (inline, some à medida que o PoB é carregado) */}
-      {!data && (
-        <section className="pt-4 space-y-3">
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder={
-              isPt
-                ? "Cole o código PoB ou link (pobb.in / pastebin.com)..."
-                : "Paste the PoB code or link (pobb.in / pastebin.com)..."
-            }
-            className="w-full h-28 rounded-md border border-input/80 bg-background/90 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-primary font-mono"
-          />
-          {error && <p className="text-sm text-destructive">{error}</p>}
-          <Button
-            onClick={() => void handleAnalyze()}
-            disabled={loading || !input.trim()}
-            className="w-full sm:w-auto"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                {isPt ? "Analisando..." : "Analyzing..."}
-              </>
-            ) : isPt ? (
-              "Analisar Build"
-            ) : (
-              "Analyze Build"
-            )}
-          </Button>
-        </section>
-      )}
-
-      {data && (
-        <>
-          {/* Build header: badges + loadout selector na mesma linha */}
-          {buildInfo && (
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div className="flex flex-wrap items-center gap-2">
-                <Badge className="text-sm px-3 py-1 bg-primary/20 text-primary border border-primary/30">
-                  {buildInfo.Ascendancy || buildInfo.Class}
-                </Badge>
-                {buildInfo.Ascendancy &&
-                  buildInfo.Ascendancy !== buildInfo.Class && (
-                    <Badge variant="outline" className="text-sm px-3 py-1">
-                      {buildInfo.Class}
-                    </Badge>
-                  )}
-                <Badge variant="secondary" className="text-sm px-3 py-1">
-                  Lv {buildInfo.Level}
-                </Badge>
-              </div>
-              {hasMultipleLoadouts && (
-                <div className="flex items-center gap-3">
-                  <span className="text-xs text-muted-foreground uppercase tracking-wide font-medium shrink-0">
-                    Loadout
-                  </span>
-                  <Select
-                    value={String(activeItemSetIndex)}
-                    onValueChange={(v) => setActiveItemSetIndex(Number(v))}
-                  >
-                    <SelectTrigger className="w-48 h-8 text-sm">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {itemSets.map((set, idx) => (
-                        <SelectItem key={idx} value={String(idx)}>
-                          {set.title || `${isPt ? "Conjunto" : "Set"} ${idx + 1}`}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+        {/* Input (inline, some à medida que o PoB é carregado) */}
+        {!data && (
+          <section className="pt-4 space-y-3">
+            <textarea
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder={
+                isPt
+                  ? "Cole o código PoB ou link (pobb.in / pastebin.com)..."
+                  : "Paste the PoB code or link (pobb.in / pastebin.com)..."
+              }
+              className="w-full h-28 rounded-md border border-input/80 bg-background/90 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-primary font-mono"
+            />
+            {error && <p className="text-sm text-destructive">{error}</p>}
+            <Button
+              onClick={() => void handleAnalyze()}
+              disabled={loading || !input.trim()}
+              className="w-full sm:w-auto"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  {isPt ? "Analisando..." : "Analyzing..."}
+                </>
+              ) : isPt ? (
+                "Analisar Build"
+              ) : (
+                "Analyze Build"
               )}
-            </div>
-          )}
+            </Button>
+          </section>
+        )}
 
-          {/* Equipment */}
-          {itemSets.length > 0 && (
-            <section className="space-y-3">
-              <h2 className="text-sm font-semibold text-muted-foreground tracking-wide uppercase">
-                {isPt ? "Equipamentos" : "Equipment"}
-              </h2>
-
-              {/* Itens do conjunto ativo */}
-              {itemSetItems.length > 0 && (
-              <div className="bg-background p-5 sm:p-6 rounded-xl border border-border/40 flex flex-col items-center shadow-[0_18px_40px_rgba(0,0,0,0.45)]">
-                <div
-                  className="grid gap-1 justify-center mx-auto"
-                  style={{
-                    gridTemplateColumns:
-                      "64px 64px 64px 64px 64px 64px 64px 64px 64px 64px",
-                    gridAutoRows: "64px",
-                  }}
-                >
-                  {EQUIPMENT_GRID.map(({ slot, col, row }) => (
-                    <div key={slot} style={{ gridColumn: col, gridRow: row }}>
-                      <ItemSlotCard item={slotMap[slot]} slotName={slot} />
-                    </div>
-                  ))}
+        {data && (
+          <>
+            {/* Build header: badges + loadout selector na mesma linha */}
+            {buildInfo && (
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex flex-wrap items-center gap-2">
+                  <Badge className="text-sm px-3 py-1 bg-primary/20 text-primary border border-primary/30">
+                    {buildInfo.Ascendancy || buildInfo.Class}
+                  </Badge>
+                  {buildInfo.Ascendancy &&
+                    buildInfo.Ascendancy !== buildInfo.Class && (
+                      <Badge variant="outline" className="text-sm px-3 py-1">
+                        {buildInfo.Class}
+                      </Badge>
+                    )}
+                  <Badge variant="secondary" className="text-sm px-3 py-1">
+                    Lv {buildInfo.Level}
+                  </Badge>
                 </div>
-
-                {/* Flasks */}
-                <div className="flex justify-center gap-1.5 pt-4">
-                  {FLASK_SLOTS.map((slotName) => (
-                    <div key={slotName} className="w-[64px] h-[128px]">
-                      <ItemSlotCard
-                        item={slotMap[slotName]}
-                        slotName={slotName}
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-              )}
-
-              {/* Jewels socketed na tree */}
-              {(activeViewSpec?.socketedJewels?.length ?? 0) > 0 && (
-                <div className="bg-background p-4 rounded-xl border border-border/40">
-                  <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-2">
-                    {isPt ? "Jewels na Árvore" : "Jewels in Tree"}
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {activeViewSpec!.socketedJewels.map((j, i) => {
-                      const badgeClass = j.isCluster
-                        ? "bg-purple-500/15 text-purple-300 border-purple-500/30 border cursor-default"
-                        : j.rarity === "Unique"
-                        ? "bg-orange-500/15 text-orange-300 border-orange-500/30 border cursor-default"
-                        : "bg-muted/40 text-muted-foreground border-border/40 border cursor-default";
-                      const badge = <Badge className={badgeClass}>{j.name}</Badge>;
-                      if (!j.mods?.length) return <span key={i}>{badge}</span>;
-                      return (
-                        <Tooltip key={i}>
-                          <TooltipTrigger asChild>{badge}</TooltipTrigger>
-                          <TooltipContent className="max-w-xs text-left space-y-0.5 p-2">
-                            <p className="text-xs font-semibold mb-1 opacity-70">{j.name}</p>
-                            {j.mods.map((mod, k) => (
-                              <p key={k} className="text-xs leading-snug">{mod}</p>
-                            ))}
-                          </TooltipContent>
-                        </Tooltip>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-            </section>
-          )}
-
-          {/* Compact key stats under visualizer */}
-          {Object.keys(stats).length > 0 && (
-            <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-muted-foreground bg-muted/10 border border-border/40 rounded-md px-3 py-2">
-              {stats["Total DPS"] && (
-                <span className="inline-flex items-baseline gap-1 font-semibold text-primary">
-                  <span className="uppercase tracking-wide">
-                    {isPt ? "DPS Total" : "Total DPS"}:
-                  </span>
-                  <span className="tabular-nums text-sm">{stats["Total DPS"]}</span>
-                </span>
-              )}
-              {[
-                { key: "Effective Hit Pool", label: "EHP" },
-                { key: "Life", label: "Life" },
-                { key: "Energy Shield", label: "ES" },
-                {
-                  key: "Movement Speed",
-                  label: isPt ? "Vel. Movimento" : "Move Speed",
-                },
-              ]
-                .filter(({ key }) => stats[key])
-                .map(({ key, label }) => (
-                  <span key={key} className="inline-flex items-baseline gap-1">
-                    <span className="uppercase tracking-wide opacity-80">
-                      {label}:
+                {hasMultipleLoadouts && (
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs text-muted-foreground uppercase tracking-wide font-medium shrink-0">
+                      Loadout
                     </span>
-                    <span className="tabular-nums">{stats[key]}</span>
-                  </span>
-                ))}
-            </div>
-          )}
+                    <Select
+                      value={String(activeItemSetIndex)}
+                      onValueChange={(v) => setActiveItemSetIndex(Number(v))}
+                    >
+                      <SelectTrigger className="w-48 h-8 text-sm">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {itemSets.map((set, idx) => (
+                          <SelectItem key={idx} value={String(idx)}>
+                            {set.title ||
+                              `${isPt ? "Conjunto" : "Set"} ${idx + 1}`}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+              </div>
+            )}
 
-          {/* Skills / Gems */}
-          {activeSkillGroups.length > 0 && (
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base">Skills &amp; Gems</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {activeSkillGroups.map((group, i) => (
-                  <div
-                    key={i}
-                    className="rounded-lg border border-border/50 bg-slate-950/30 p-3"
-                  >
-                    <p className="text-xs text-muted-foreground mb-2 font-medium uppercase tracking-wide">
-                      {group.slot}
-                    </p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {group.gems.map((gem, j) => (
-                        <Badge
-                          key={j}
-                          variant="outline"
-                          className={
-                            (gem.is_support
-                              ? "border-blue-500/50 text-blue-300 bg-blue-950/20"
-                              : "border-red-500/40 text-red-300 bg-red-950/20") +
-                            " text-[15px]"
-                          }
+            {/* Equipment */}
+            {itemSets.length > 0 && (
+              <section className="space-y-3">
+                <h2 className="text-sm font-semibold text-muted-foreground tracking-wide uppercase">
+                  {isPt ? "Equipamentos" : "Equipment"}
+                </h2>
+
+                {/* Itens do conjunto ativo */}
+                {itemSetItems.length > 0 && (
+                  <div className="bg-background p-5 sm:p-6 rounded-xl border border-border/40 flex flex-col items-center shadow-[0_18px_40px_rgba(0,0,0,0.45)]">
+                    <div
+                      className="grid gap-1 justify-center mx-auto"
+                      style={{
+                        gridTemplateColumns:
+                          "64px 64px 64px 64px 64px 64px 64px 64px 64px 64px",
+                        gridAutoRows: "64px",
+                      }}
+                    >
+                      {EQUIPMENT_GRID.map(({ slot, col, row }) => (
+                        <div
+                          key={slot}
+                          style={{ gridColumn: col, gridRow: row }}
                         >
-                          {gem.name}
-                          <span className="ml-1 text-muted-foreground text-[10px]">
-                            {gem.level}/{gem.quality}Q
-                          </span>
-                        </Badge>
+                          <ItemSlotCard item={slotMap[slot]} slotName={slot} />
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Flasks */}
+                    <div className="flex justify-center gap-1.5 pt-4">
+                      {FLASK_SLOTS.map((slotName) => (
+                        <div key={slotName} className="w-[64px] h-[128px]">
+                          <ItemSlotCard
+                            item={slotMap[slotName]}
+                            slotName={slotName}
+                          />
+                        </div>
                       ))}
                     </div>
                   </div>
-                ))}
-              </CardContent>
-            </Card>
-          )}
+                )}
 
-          {/* Passive Tree */}
-          {treeDetails &&
-            treeDetails.NodesCount > 0 && (
+                {/* Jewels socketed na tree */}
+                {(activeViewSpec?.socketedJewels?.length ?? 0) > 0 && (
+                  <div className="bg-background p-4 rounded-xl border border-border/40">
+                    <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-2">
+                      {isPt ? "Jewels na Árvore" : "Jewels in Tree"}
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {activeViewSpec!.socketedJewels.map((j, i) => {
+                        const badgeClass = j.isCluster
+                          ? "bg-purple-500/15 text-purple-300 border-purple-500/30 border cursor-default flex items-center gap-1 pl-1"
+                          : j.rarity === "Unique"
+                            ? "bg-orange-500/15 text-orange-300 border-orange-500/30 border cursor-default flex items-center gap-1 pl-1"
+                            : "bg-muted/40 text-muted-foreground border-border/40 border cursor-default flex items-center gap-1 pl-1";
+                        const jewelIcon = (
+                          <img
+                            src={j.iconUrl ?? getJewelLocalPath(j.baseName ?? j.name)}
+                            alt=""
+                            width={18}
+                            height={18}
+                            className="shrink-0 rounded-sm"
+                            onError={(e) => {
+                              e.currentTarget.style.display = "none";
+                            }}
+                          />
+                        );
+                        // Se o nome for genérico ("New Item"), mostra o base type
+                        const jewelDisplayName =
+                          j.name === "New Item" ? (j.baseName ?? j.name) : j.name;
+                        const badge = (
+                          <Badge className={badgeClass}>
+                            {jewelIcon}
+                            {jewelDisplayName}
+                          </Badge>
+                        );
+                        if (!j.mods?.length)
+                          return <span key={i}>{badge}</span>;
+                        return (
+                          <Tooltip key={i}>
+                            <TooltipTrigger asChild>{badge}</TooltipTrigger>
+                            <TooltipContent className="max-w-xs text-left space-y-0.5 p-2">
+                              <p className="text-xs font-semibold mb-1 opacity-70">
+                                {jewelDisplayName}
+                              </p>
+                              {j.mods.map((mod, k) => (
+                                <p key={k} className="text-xs leading-snug">
+                                  {mod}
+                                </p>
+                              ))}
+                            </TooltipContent>
+                          </Tooltip>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </section>
+            )}
+
+            {/* Compact key stats under visualizer */}
+            {Object.keys(stats).length > 0 && (
+              <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-muted-foreground bg-muted/10 border border-border/40 rounded-md px-3 py-2">
+                {stats["Total DPS"] && (
+                  <span className="inline-flex items-baseline gap-1 font-semibold text-primary">
+                    <span className="uppercase tracking-wide">
+                      {isPt ? "DPS Total" : "Total DPS"}:
+                    </span>
+                    <span className="tabular-nums text-sm">
+                      {stats["Total DPS"]}
+                    </span>
+                  </span>
+                )}
+                {[
+                  { key: "Effective Hit Pool", label: "EHP" },
+                  { key: "Life", label: "Life" },
+                  { key: "Energy Shield", label: "ES" },
+                  {
+                    key: "Movement Speed",
+                    label: isPt ? "Vel. Movimento" : "Move Speed",
+                  },
+                ]
+                  .filter(({ key }) => stats[key])
+                  .map(({ key, label }) => (
+                    <span
+                      key={key}
+                      className="inline-flex items-baseline gap-1"
+                    >
+                      <span className="uppercase tracking-wide opacity-80">
+                        {label}:
+                      </span>
+                      <span className="tabular-nums">{stats[key]}</span>
+                    </span>
+                  ))}
+              </div>
+            )}
+
+            {/* Skills / Gems */}
+            {activeSkillGroups.length > 0 && (
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base">Skills &amp; Gems</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {activeSkillGroups.map((group, i) => (
+                    <div
+                      key={i}
+                      className="rounded-lg border border-border/50 bg-slate-950/30 p-3"
+                    >
+                      <p className="text-xs text-muted-foreground mb-2 font-medium uppercase tracking-wide">
+                        {group.slot}
+                      </p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {group.gems.map((gem, j) => (
+                          <Badge
+                            key={j}
+                            variant="outline"
+                            className={
+                              (gem.is_support
+                                ? "border-blue-500/50 text-blue-300 bg-blue-950/20"
+                                : "border-red-500/40 text-red-300 bg-red-950/20") +
+                              " text-[15px] flex items-center gap-1 pl-1"
+                            }
+                          >
+                            <img
+                              src={getGemLocalPath(gem.name, gem.is_support)}
+                              alt=""
+                              width={18}
+                              height={18}
+                              className="shrink-0 rounded-sm"
+                              onError={(e) => {
+                                e.currentTarget.style.display = "none";
+                              }}
+                            />
+                            {gem.name}
+                            <span className="ml-1 text-muted-foreground text-[10px]">
+                              {gem.level}/{gem.quality}Q
+                            </span>
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Passive Tree */}
+            {treeDetails && treeDetails.NodesCount > 0 && (
               <Card>
                 <CardHeader className="pb-3">
                   <CardTitle className="text-base">
@@ -1143,7 +1285,9 @@ export default function PobViewerClient({ locale }: Props) {
                         onValueChange={(v) => {
                           const idx = Number(v);
                           setActiveTreeSpecIndex(idx);
-                          sendNodesToViewer(treeDetails.Specs[idx]?.nodes ?? []);
+                          sendNodesToViewer(
+                            treeDetails.Specs[idx]?.nodes ?? [],
+                          );
                         }}
                       >
                         <SelectTrigger className="w-56 h-8 text-sm">
@@ -1161,13 +1305,16 @@ export default function PobViewerClient({ locale }: Props) {
                   )}
 
                   {/* Grid: iframe 75% | sidebar 25% */}
-                  <div className="grid gap-4" style={{ gridTemplateColumns: '3fr 1fr' }}>
+                  <div
+                    className="grid gap-4"
+                    style={{ gridTemplateColumns: "3fr 1fr" }}
+                  >
                     <iframe
                       ref={iframeRef}
                       src="/tools/viewer.html"
                       title="Passive Skill Tree"
                       className="w-full rounded-lg border border-zinc-700"
-                      style={{ height: '600px', background: '#0c0c0c' }}
+                      style={{ height: "600px", background: "#0c0c0c" }}
                       onLoad={() => {
                         const nodes = activeViewSpec?.nodes;
                         if (nodes?.length) sendNodesToViewer(nodes);
@@ -1175,7 +1322,10 @@ export default function PobViewerClient({ locale }: Props) {
                     />
 
                     {/* Sidebar: Keystones + Masteries */}
-                    <div className="overflow-y-auto space-y-5 pr-1" style={{ maxHeight: '600px' }}>
+                    <div
+                      className="overflow-y-auto space-y-5 pr-1"
+                      style={{ maxHeight: "600px" }}
+                    >
                       {(activeViewSpec?.keystones?.length ?? 0) > 0 && (
                         <div>
                           <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-2">
@@ -1190,7 +1340,9 @@ export default function PobViewerClient({ locale }: Props) {
                                   width={28}
                                   height={28}
                                   className="shrink-0 rounded-sm"
-                                  onError={(e) => { e.currentTarget.style.display = "none"; }}
+                                  onError={(e) => {
+                                    e.currentTarget.style.display = "none";
+                                  }}
                                 />
                                 <span className="text-xs font-semibold text-yellow-300 leading-tight">
                                   {k.name}
@@ -1202,9 +1354,9 @@ export default function PobViewerClient({ locale }: Props) {
                       )}
 
                       {(() => {
-                        const resolvedMasteries = (activeViewSpec?.masteries ?? []).filter(
-                          m => m.stats.length > 0
-                        );
+                        const resolvedMasteries = (
+                          activeViewSpec?.masteries ?? []
+                        ).filter((m) => m.stats.length > 0);
                         return resolvedMasteries.length > 0 ? (
                           <div>
                             <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-2">
@@ -1220,14 +1372,19 @@ export default function PobViewerClient({ locale }: Props) {
                                       width={24}
                                       height={24}
                                       className="shrink-0 rounded-sm"
-                                      onError={(e) => { e.currentTarget.style.display = "none"; }}
+                                      onError={(e) => {
+                                        e.currentTarget.style.display = "none";
+                                      }}
                                     />
                                     <span className="text-[11px] font-semibold text-amber-400/80 uppercase tracking-wide leading-tight">
                                       {m.masteryName}
                                     </span>
                                   </div>
                                   {m.stats.map((s, j) => (
-                                    <span key={j} className="text-xs text-blue-300 leading-snug pl-8">
+                                    <span
+                                      key={j}
+                                      className="text-xs text-blue-300 leading-snug pl-8"
+                                    >
                                       {s}
                                     </span>
                                   ))}
@@ -1248,8 +1405,8 @@ export default function PobViewerClient({ locale }: Props) {
                 </CardContent>
               </Card>
             )}
-        </>
-      )}
+          </>
+        )}
       </div>
     </TooltipProvider>
   );

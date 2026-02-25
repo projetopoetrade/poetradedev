@@ -104,7 +104,7 @@ export async function POST(req: NextRequest) {
                     price: 0,                // Default starting price
                     is_listed: false,        // Important: keep unlisted
                     in_stock: false,
-                    imgUrl: `/images/products/${productSlug}.png`, // Automatically map to local path
+                    imgUrl: `/images/products/${productSlug}.webp`, // Automatically map to local path
                 });
 
                 // Add to existingSet to avoid duplicates in this loop if ninjaItems had weird dupes

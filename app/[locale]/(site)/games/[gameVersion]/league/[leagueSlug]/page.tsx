@@ -176,7 +176,7 @@ export default async function LeaguePage(props: PageProps) {
         publisher: {
             "@type": "Organization",
             name: "Path of Trade",
-            logo: { "@type": "ImageObject", url: `${SITE_URL}/logo.png` },
+            logo: { "@type": "ImageObject", url: `${SITE_URL}/logo.webp` },
         },
         breadcrumb: {
             "@context": "https://schema.org",
