@@ -1,12 +1,10 @@
 import HeaderAuth from "@/components/header-auth";
+import { SiteNavbar } from "@/components/site-navbar";
 import { GoogleTagManager } from "@next/third-parties/google";
 import { Roboto, Source_Sans_3 } from "next/font/google";
 import { ThemeProvider } from "next-themes";
-import Link from "next/link";
-import Image from "next/image";
 import { CurrencyProvider } from "@/lib/contexts/currency-context";
 import { CartProvider } from "@/lib/contexts/cart-context";
-import CartDropdown from "@/components/cart-dropdown";
 import { Analytics } from "@vercel/analytics/react";
 import ConsentedProviders from "@/components/consented-providers";
 import "../globals.css";
@@ -58,11 +56,11 @@ export async function generateMetadata(props: {
     // Configurações de Ícones
     icons: {
       icon: [
-        { url: "/images/favicon/favicon-96x96.png", sizes: "96x96", type: "image/png" },
+        { url: "/images/favicon/favicon-96x96.webp", sizes: "96x96", type: "image/webp" },
         { url: "/images/favicon/favicon.svg", type: "image/svg+xml" }
       ],
       shortcut: "/images/favicon/favicon.ico",
-      apple: "/images/favicon/apple-touch-icon.png"
+      apple: "/images/favicon/apple-touch-icon.webp"
     },
     appleWebApp: {
       title: "Path of Trade"
@@ -195,36 +193,9 @@ export default async function RootLayout({
 
           <CurrencyProvider>
             <CartProvider>
-              <nav className="w-full flex justify-center border-b border-b-foreground/10 h-20 fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-background/40 supports-[backdrop-filter]:bg-background/40 ">
-                <div className="w-full max-w-6xl flex items-center text-sm">
-                  <div className="flex-1">{/* Left empty space */}</div>
-                  <div className="flex-1 flex justify-center ">
-                    <Link href="/" className="py-2 flex items-center">
-                      <Image
-                        src="/images/logo.webp"
-                        alt="Path of Trade - Buy POE 1 & 2 Currency"
-                        width={100}
-                        height={100}
-                        priority
-                        fetchPriority="high"
-                        quality={90}
-                        sizes="(max-width: 768px) 100px, 100px"
-                      />
-                    </Link>
-                  </div>
-                  <div className="flex-[1.2] flex justify-end items-center gap-3">
-                    <CartDropdown />
-                    <div className="hidden md:flex items-center gap-3">
-                      <HeaderAuth />
-                    </div>
-                    <div className="md:hidden flex items-center">
-                      <HeaderAuth />
-                    </div>
-                  </div>
-                </div>
-              </nav>
+              <SiteNavbar locale={locale} desktopAuth={<HeaderAuth />} />
 
-              <div className="pt-[68px]">
+              <div className="pt-16">
                 {children}
               </div>
               <Footer locale={locale} />
