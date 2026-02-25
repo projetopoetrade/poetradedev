@@ -24,6 +24,7 @@ import type {
   PobBuildData,
   PobItem,
   PobKeystone,
+  PobSocketedJewel,
   PobTreeSpec,
 } from "@/lib/pob-parser";
 import { GEM_JEWEL_IMAGE_MAP } from "./gem-jewel-image-map";
@@ -98,6 +99,8 @@ const INFLUENCE_ICONS: Record<string, string> = {
   hunter: "/pob-influence/hunter.webp",
   warlord: "/pob-influence/warlord.webp",
   fractured: "/pob-influence/fractured.webp",
+  searing: "/pob-influence/searing.webp",
+  eater: "/pob-influence/eater.webp",
 };
 
 const HEADER_TEXTURES: Record<
@@ -256,29 +259,9 @@ const UNIQUE_TINCTURE_ICON_URLS: Record<string, string> = {
   "Grasping Nightshade": "/tinctures/Grasping_Nightshade.webp",
 };
 
-const SUPPORT_GEM_ALIASES: Record<string, string> = {
-  "cast on critical strike": "cast-on-crit",
-  "cast when damage taken": "cast-on-dmg-taken",
-  "cold to fire": "coldto-fire",
-  lifetap: "life-tap",
-  "withering touch": "wither-gem-support",
-  "multiple traps": "multi-trap",
-  "trap and mine damage": "trap-and-mine-damage",
-  "greater volley": "greater-volley-support",
-  "energy shield leech": "energy-shield-leechsupport",
-  "chance to flee": "chanceto-flee",
-  "chance to ignite": "chanceto-ignite",
-  "life gain on hit": "lifeon-hit",
-  "life on hit": "lifeon-hit",
-  "mana leech": "mana-leech",
-  "melee damage on full life": "melee-damageon-full-life",
-  "melee physical damage": "increased-physical-damage",
-  "physical damage": "increased-physical-damage",
-  "weapon elemental damage": "weapon-elemental-damage",
-  "elemental damage with attacks": "weapon-elemental-damage",
-  "iron grip support": "iron-grip",
-  "iron will support": "iron-will",
-};
+// Mapeamentos especiais para skill gems cujo arquivo não segue o kebab padrão do nome.
+// (ex: "Pride" → arquivo "pride-aura.webp")
+// Support gems NÃO precisam de aliases: o padrão "nome-support.webp" cobre todos os casos.
 
 const SKILL_GEM_ALIASES: Record<string, string> = {
   beserk: "beserk",
@@ -317,28 +300,30 @@ function getGemLocalPath(name: string, isSupport: boolean): string {
     return GEM_JEWEL_IMAGE_MAP[name];
   }
 
-  // Para aliases usamos o nome sem " Support"
-  const normalizedName = isSupport
-    ? name.replace(/\s+Support$/i, "")
-    : name;
-  const lowerName = normalizedName.toLowerCase();
-
-  if (isSupport && SUPPORT_GEM_ALIASES[lowerName]) {
-    return `/images/gem/support/${SUPPORT_GEM_ALIASES[lowerName]}.webp`;
-  }
+  // Skill gems com arquivo que não segue o kebab padrão (ex: Pride → pride-aura.webp)
+  const lowerName = name.toLowerCase().replace(/\s+support$/i, "");
   if (!isSupport && SKILL_GEM_ALIASES[lowerName]) {
     return `/images/gem/skill/${SKILL_GEM_ALIASES[lowerName]}.webp`;
   }
 
-  // Para o kebab do fallback: support gems usam o nome COMPLETO (ex: "added-cold-damage-support")
-  // pois os arquivos locais seguem esse padrão. Skill/vaal/awakened usam o nome sem sufixo.
-  const kebab = toKebab(normalizedName); // nome sem "Support" — para vaal/awakened checks
+  // Para o kebab: usamos o nome sem " Support" para checks de vaal/awakened,
+  // e o nome completo para o fallback de support.
+  const normalizedName = name.replace(/\s+Support$/i, "");
+  const kebab = toKebab(normalizedName); // sem "Support" — para vaal/awakened checks
   const fullKebab = toKebab(name);       // nome completo — para support fallback
 
   if (kebab.startsWith("vaal-")) return `/images/gem/vaal/${fullKebab}.webp`;
   if (kebab.startsWith("awakened-"))
-    return `/images/gem/awakened/${kebab.replace(/^awakened-/, "")}-plus.webp`;
-  if (isSupport) return `/images/gem/support/${fullKebab}.webp`;
+    return `/images/gem/awakened/${fullKebab.endsWith("-support") ? fullKebab : `${fullKebab}-support`}.webp`;
+  if (isSupport) {
+    // Arquivos de support seguem o padrão "nome-support.webp".
+    // Se o nameSpec do PoB não inclui "Support" (ex: "Faster Attacks"),
+    // o fullKebab não terá o sufixo — adicionamos aqui.
+    const supportFilename = fullKebab.endsWith("-support")
+      ? fullKebab
+      : `${fullKebab}-support`;
+    return `/images/gem/support/${supportFilename}.webp`;
+  }
   return `/images/gem/skill/${kebab}.webp`;
 }
 
@@ -477,7 +462,7 @@ function ItemTooltip({ item }: { item: PobItem }) {
         }
       >
         <p
-          className="font-semibold text-[20px] leading-tight tracking-wide "
+          className={`font-semibold leading-tight tracking-wide ${item.rarity === "Magic" ? "text-[15px]" : "text-[20px]"}`}
           style={{
             color: headerTextures
               ? headerTextures.textColor
@@ -521,7 +506,9 @@ function ItemTooltip({ item }: { item: PobItem }) {
           item.sockets ||
           item.armour ||
           item.evasion ||
-          item.energyShield) && (
+          item.energyShield ||
+          item.physDamage ||
+          item.eleDamage) && (
           <div className="space-y-1.5 border-b border-slate-600/60 pb-2">
             <div className="flex flex-wrap justify-center gap-x-4 gap-y-0.5 text-slate-300 text-[12px]">
               {item.quality !== undefined && (
@@ -541,6 +528,54 @@ function ItemTooltip({ item }: { item: PobItem }) {
                 </span>
               )}
             </div>
+
+            {/* Weapon DPS */}
+            {(item.physDamage || item.eleDamage) && item.aps !== undefined && (() => {
+              const aps = item.aps!
+              const pDPS = item.physDamage
+                ? (((item.physDamage[0] + item.physDamage[1]) / 2) * aps)
+                : 0
+              const eDPS = item.eleDamage
+                ? (((item.eleDamage[0] + item.eleDamage[1]) / 2) * aps)
+                : 0
+              const totalDPS = pDPS + eDPS
+              return (
+                <div className="mt-1 flex flex-col items-center gap-1 text-slate-300 text-[12px]">
+                  {item.physDamage && (
+                    <span>
+                      Physical Damage:{" "}
+                      <span className="text-slate-100 font-semibold">
+                        {item.physDamage[0]}-{item.physDamage[1]}
+                      </span>
+                      {" "}·{" "}
+                      <span className="text-sky-300 font-semibold">
+                        {pDPS.toFixed(1)} pDPS
+                      </span>
+                    </span>
+                  )}
+                  {item.eleDamage && (
+                    <span>
+                      Elemental Damage:{" "}
+                      <span className="text-slate-100 font-semibold">
+                        {item.eleDamage[0]}-{item.eleDamage[1]}
+                      </span>
+                      {" "}·{" "}
+                      <span className="text-orange-300 font-semibold">
+                        {eDPS.toFixed(1)} eDPS
+                      </span>
+                    </span>
+                  )}
+                  <span>
+                    Attacks per Second:{" "}
+                    <span className="text-slate-100 font-semibold">{aps.toFixed(2)}</span>
+                    {" "}·{" "}
+                    <span className="text-yellow-300 font-semibold">
+                      {totalDPS.toFixed(1)} Total DPS
+                    </span>
+                  </span>
+                </div>
+              )
+            })()}
 
             {(item.armour || item.evasion || item.energyShield) && (
               <div className="mt-1 flex flex-col items-center gap-1 text-slate-300 text-[12px]">
@@ -791,6 +826,61 @@ function ItemSlotCard({
   );
 }
 
+// ─── Jewel slot card (mesmo estilo de ItemSlotCard: slot + imagem ao centro) ──
+
+function JewelSlotCard({ jewel }: { jewel: PobSocketedJewel }) {
+  const displayName =
+    jewel.name === "New Item" ? (jewel.baseName ?? jewel.name) : jewel.name;
+  const iconUrl =
+    jewel.iconUrl ?? getJewelLocalPath(jewel.baseName ?? jewel.name);
+  const borderHsl = jewel.isCluster
+    ? "270, 60%, 55%"
+    : (RARITY_BORDER_HSL[jewel.rarity] ?? RARITY_BORDER_HSL.Normal);
+
+  const content = (
+    <button
+      type="button"
+      className="group relative rounded-sm border w-full h-full flex flex-col items-center justify-center bg-[#1a1c23]/80 hover:bg-[#252834] transition-colors cursor-default overflow-hidden outline-none focus:outline-none focus-visible:outline-none focus-visible:ring-0"
+      style={{
+        borderColor: `hsla(${borderHsl}, 0.25)`,
+        boxShadow: "inset 0 0 15px rgba(0,0,0,0.5)",
+      }}
+    >
+      <div className="flex items-center justify-center p-1">
+        <Image
+          src={iconUrl}
+          alt={displayName}
+          width={52}
+          height={52}
+          className="object-contain drop-shadow-[0_0_8px_rgba(0,0,0,0.8)]"
+          unoptimized
+          onError={(e) => {
+            e.currentTarget.style.display = "none";
+          }}
+        />
+      </div>
+    </button>
+  );
+
+  if (!jewel.mods?.length) {
+    return <span className="block w-full h-full">{content}</span>;
+  }
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>{content}</TooltipTrigger>
+      <TooltipContent className="max-w-xs text-left space-y-0.5 p-2">
+        <p className="text-xs font-semibold mb-1 opacity-70">{displayName}</p>
+        {jewel.mods.map((mod, k) => (
+          <p key={k} className="text-xs leading-snug">
+            {mod}
+          </p>
+        ))}
+      </TooltipContent>
+    </Tooltip>
+  );
+}
+
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export default function PobViewerClient({ locale }: Props) {
@@ -804,6 +894,10 @@ export default function PobViewerClient({ locale }: Props) {
   const [activeItemSetIndex, setActiveItemSetIndex] = useState(0);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [activeTreeSpecIndex, setActiveTreeSpecIndex] = useState(0);
+  const [gemInfoMap, setGemInfoMap] = useState<Record<string, {
+    primary_attribute: string | null
+    gem_description: string | null
+  }>>({});
 
   function sendNodesToViewer(nodeIds: number[]) {
     iframeRef.current?.contentWindow?.postMessage(
@@ -940,6 +1034,35 @@ export default function PobViewerClient({ locale }: Props) {
     // eslint-disable-next-line no-console
     console.log("[PoB Viewer] Flask slots debug:", flaskSlotsDebug);
   }
+
+  // Buscar primary_attribute e descrição das gems após build carregado
+  useEffect(() => {
+    if (!data) return
+    const allGems = (data.SkillSets ?? []).flatMap((ss) =>
+      (ss.skills ?? []).flatMap((sg) => sg.gems ?? [])
+    )
+    const uniqueNames = [...new Set(allGems.map((g) => g.name))]
+    if (uniqueNames.length === 0) return
+
+    console.log(`[PoB] Buscando info de ${uniqueNames.length} gems:`, uniqueNames)
+
+    const encoded = uniqueNames.map(encodeURIComponent).join(',')
+    const url = `/api/tools/poe-gems/info?names=${encoded}`
+    console.log(`[PoB] GET ${url}`)
+
+    fetch(url)
+      .then(async (r) => {
+        const json = await r.json()
+        const matched = Object.keys(json)
+        const missing = uniqueNames.filter((n) => !json[n])
+        console.log(`[PoB] Gems com match (${matched.length}/${uniqueNames.length}):`, matched)
+        if (missing.length > 0)
+          console.warn(`[PoB] Gems sem match no DB (${missing.length}):`, missing)
+        console.log('[PoB] gemInfoMap completo:', json)
+        setGemInfoMap(json)
+      })
+      .catch((err) => console.error('[PoB] Erro ao buscar gem info:', err))
+  }, [data])
 
   // Auto-carregar PoB se houver ?code= na URL
   useEffect(() => {
@@ -1121,58 +1244,21 @@ export default function PobViewerClient({ locale }: Props) {
                   </div>
                 )}
 
-                {/* Jewels socketed na tree */}
+                {/* Jewels socketed na tree (slots com imagem ao centro, igual aos items) */}
                 {(activeViewSpec?.socketedJewels?.length ?? 0) > 0 && (
                   <div className="bg-background p-4 rounded-xl border border-border/40">
                     <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-2">
                       {isPt ? "Jewels na Árvore" : "Jewels in Tree"}
                     </p>
                     <div className="flex flex-wrap gap-2">
-                      {activeViewSpec!.socketedJewels.map((j, i) => {
-                        const badgeClass = j.isCluster
-                          ? "bg-purple-500/15 text-purple-300 border-purple-500/30 border cursor-default flex items-center gap-1 pl-1"
-                          : j.rarity === "Unique"
-                            ? "bg-orange-500/15 text-orange-300 border-orange-500/30 border cursor-default flex items-center gap-1 pl-1"
-                            : "bg-muted/40 text-muted-foreground border-border/40 border cursor-default flex items-center gap-1 pl-1";
-                        const jewelIcon = (
-                          <img
-                            src={j.iconUrl ?? getJewelLocalPath(j.baseName ?? j.name)}
-                            alt=""
-                            width={18}
-                            height={18}
-                            className="shrink-0 rounded-sm"
-                            onError={(e) => {
-                              e.currentTarget.style.display = "none";
-                            }}
-                          />
-                        );
-                        // Se o nome for genérico ("New Item"), mostra o base type
-                        const jewelDisplayName =
-                          j.name === "New Item" ? (j.baseName ?? j.name) : j.name;
-                        const badge = (
-                          <Badge className={badgeClass}>
-                            {jewelIcon}
-                            {jewelDisplayName}
-                          </Badge>
-                        );
-                        if (!j.mods?.length)
-                          return <span key={i}>{badge}</span>;
-                        return (
-                          <Tooltip key={i}>
-                            <TooltipTrigger asChild>{badge}</TooltipTrigger>
-                            <TooltipContent className="max-w-xs text-left space-y-0.5 p-2">
-                              <p className="text-xs font-semibold mb-1 opacity-70">
-                                {jewelDisplayName}
-                              </p>
-                              {j.mods.map((mod, k) => (
-                                <p key={k} className="text-xs leading-snug">
-                                  {mod}
-                                </p>
-                              ))}
-                            </TooltipContent>
-                          </Tooltip>
-                        );
-                      })}
+                      {activeViewSpec!.socketedJewels.map((j, i) => (
+                        <div
+                          key={j.nodeId ?? i}
+                          className="w-[64px] h-[64px] shrink-0 rounded-sm overflow-hidden"
+                        >
+                          <JewelSlotCard jewel={j} />
+                        </div>
+                      ))}
                     </div>
                   </div>
                 )}
@@ -1222,7 +1308,7 @@ export default function PobViewerClient({ locale }: Props) {
                 <CardHeader className="pb-3">
                   <CardTitle className="text-base">Skills &amp; Gems</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-3">
+                <CardContent className="grid gap-3 md:grid-cols-2">
                   {activeSkillGroups.map((group, i) => (
                     <div
                       key={i}
@@ -1231,34 +1317,67 @@ export default function PobViewerClient({ locale }: Props) {
                       <p className="text-xs text-muted-foreground mb-2 font-medium uppercase tracking-wide">
                         {group.slot}
                       </p>
-                      <div className="flex flex-wrap gap-1.5">
-                        {group.gems.map((gem, j) => (
-                          <Badge
-                            key={j}
-                            variant="outline"
-                            className={
-                              (gem.is_support
-                                ? "border-blue-500/50 text-blue-300 bg-blue-950/20"
-                                : "border-red-500/40 text-red-300 bg-red-950/20") +
-                              " text-[15px] flex items-center gap-1 pl-1"
-                            }
-                          >
-                            <img
-                              src={getGemLocalPath(gem.name, gem.is_support)}
-                              alt=""
-                              width={18}
-                              height={18}
+                      <div className="flex flex-col gap-1.5">
+                        <TooltipProvider delayDuration={300}>
+                        {group.gems.map((gem, j) => {
+                          const info = gemInfoMap[gem.name]
+                          const attr = info?.primary_attribute ?? (gem.is_support ? "support" : "strength")
+                          const badgeClass =
+                            attr === "intelligence" ? "border-blue-500/50 text-blue-300 bg-blue-950/20" :
+                            attr === "dexterity"    ? "border-green-500/50 text-green-300 bg-green-950/20" :
+                            attr === "none"         ? "border-slate-500/50 text-slate-300 bg-slate-950/20" :
+                            /* strength / support / default */ "border-red-500/40 text-red-300 bg-red-950/20"
+
+                          const badge = (
+                            <Badge
+                              key={j}
+                              variant="outline"
+                              className={
+                                badgeClass +
+                                " text-[14px] flex items-center justify-between gap-2 px-2 py-1.5 cursor-default w-full"
+                              }
+                            >
+                              <img
+                                src={getGemLocalPath(gem.name, gem.is_support)}
+                                alt=""
+                              width={20}
+                              height={20}
                               className="shrink-0 rounded-sm"
-                              onError={(e) => {
-                                e.currentTarget.style.display = "none";
-                              }}
-                            />
-                            {gem.name}
-                            <span className="ml-1 text-muted-foreground text-[10px]">
-                              {gem.level}/{gem.quality}Q
-                            </span>
-                          </Badge>
-                        ))}
+                                onError={(e) => {
+                                  const path = new URL(e.currentTarget.src).pathname;
+                                  console.warn(`[PoB] gem sem imagem: "${gem.name}" (${gem.is_support ? "support" : "skill"}) → ${path}`);
+                                  e.currentTarget.style.display = "none";
+                                }}
+                              />
+                              <span className="flex-1 truncate">{gem.name}</span>
+                              <span className="ml-1 text-muted-foreground text-[11px]">
+                                {gem.level}/{gem.quality}Q
+                              </span>
+                            </Badge>
+                          )
+
+                          if (!info?.gem_description) return badge
+
+                          return (
+                            <Tooltip key={j}>
+                              <TooltipTrigger asChild>{badge}</TooltipTrigger>
+                              <TooltipContent
+                                side="top"
+                                className="max-w-[280px] space-y-1.5 text-left p-3"
+                              >
+                                <p className="font-semibold text-[13px]">{gem.name}</p>
+                                <p className="text-muted-foreground text-[11px] leading-snug">
+                                  {info.gem_description}
+                                </p>
+                                <div className="flex gap-3 text-[11px] pt-0.5 border-t border-border/40">
+                                  <span>Level <span className="text-foreground font-medium">{gem.level}</span></span>
+                                  <span>Quality <span className="text-sky-400 font-medium">+{gem.quality}%</span></span>
+                                </div>
+                              </TooltipContent>
+                            </Tooltip>
+                          )
+                        })}
+                        </TooltipProvider>
                       </div>
                     </div>
                   ))}

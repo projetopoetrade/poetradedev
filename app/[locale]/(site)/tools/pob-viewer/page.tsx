@@ -54,7 +54,7 @@ export default async function PobViewerPage(props: PageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 min-h-[calc(100vh-10rem)]">
         <PobViewerClient locale={locale} />
       </div>
     </>

@@ -37,6 +37,9 @@ export interface PobItem {
   armour?: number
   evasion?: number
   energyShield?: number
+  physDamage?: [number, number]   // [min, max] physical damage
+  eleDamage?: [number, number]    // [min, max] summed elemental damage (fire+cold+lightning)
+  aps?: number                    // attacks per second
   corrupted?: boolean
   fractured?: boolean
   influences?: string[]
@@ -146,8 +149,18 @@ function parseModLine(line: string, section: "implicit" | "explicit"): ParsedMod
 }
 
 const NON_MOD_LINES = new Set([
-  'Corrupted', 'Mirrored', 'Synthesised Item', 'Unidentified', 'Split',
+  'Corrupted', 'Mirrored', 'Synthesised Item', 'Unidentified', 'Split', 'Historic',
 ])
+
+// --- Item name normalization ---
+//
+// PoB adiciona metadados entre colchetes em alguns itens únicos.
+// Ex: "Lethal Pride [16062; 2; Wind Dancer]" → "Lethal Pride"
+//     "Glorious Vanity [11908; 1; Xibaqua]"  → "Glorious Vanity"
+// Removemos esse sufixo para que o lookup por nome (poe.ninja, mapeamentos locais) funcione.
+function normalizeItemName(name: string): string {
+  return name.replace(/\s*\[.*?\]\s*$/, '').trim()
+}
 
 // --- Flask / Tincture base type normalization ---
 //
@@ -302,7 +315,7 @@ function parseItemText(rawLines: string[]): Omit<PobItem, 'slot' | 'iconUrl'> {
     idx = 1
 
     if (rarity === 'Unique' || rarity === 'Rare') {
-      name = rawLines[idx++] || ''
+      name = normalizeItemName(rawLines[idx++] || '')
       baseName = rawLines[idx++] || ''
     } else if (rarity === 'Magic') {
       // Em muitos exports novos do PoB, itens mágicos seguem:
@@ -310,11 +323,11 @@ function parseItemText(rawLines: string[]): Omit<PobItem, 'slot' | 'iconUrl'> {
       //   linha 1: nome mágico (ex: "Bountiful Eternal Life Flask")
       //   linha 2: base type (ex: "Eternal Life Flask")
       // Quando a segunda linha existir, usamos como baseName para bater com poe.ninja.
-      name = rawLines[idx++] || ''
+      name = normalizeItemName(rawLines[idx++] || '')
       baseName = rawLines[idx++] || name
     } else {
       // Normal
-      name = rawLines[idx++] || ''
+      name = normalizeItemName(rawLines[idx++] || '')
       baseName = name
     }
 
@@ -338,7 +351,7 @@ function parseItemText(rawLines: string[]): Omit<PobItem, 'slot' | 'iconUrl'> {
     //   Viridian Jewel
     //   Crafted: true
     //   ...
-    name = rawLines[0] || ''
+    name = normalizeItemName(rawLines[0] || '')
     baseName = name
     idx = 1
 
@@ -383,6 +396,9 @@ function parseItemText(rawLines: string[]): Omit<PobItem, 'slot' | 'iconUrl'> {
   let armour: number | undefined
   let evasion: number | undefined
   let energyShield: number | undefined
+  let physDamage: [number, number] | undefined
+  let eleDamage: [number, number] | undefined
+  let aps: number | undefined
   let corrupted = false
   let fractured = false
   const influences: string[] = []
@@ -415,6 +431,21 @@ function parseItemText(rawLines: string[]): Omit<PobItem, 'slot' | 'iconUrl'> {
     } else if (/^Energy(?: Shield)?:/i.test(line) || /^EnergyShield:/i.test(line)) {
       const m = line.match(/(\d+)/)
       if (m) energyShield = parseInt(m[1], 10)
+    } else if (/^Physical Damage:/i.test(line)) {
+      const m = line.match(/(\d+)-(\d+)/)
+      if (m) physDamage = [parseInt(m[1], 10), parseInt(m[2], 10)]
+    } else if (/^Elemental Damage:/i.test(line)) {
+      // Formato: "Elemental Damage: 20-40 (Fire), 10-30 (Cold), 5-15 (Lightning)"
+      // Soma todos os pares X-Y encontrados na linha
+      const pairs = [...line.matchAll(/(\d+)-(\d+)/g)]
+      if (pairs.length > 0) {
+        const eleMin = pairs.reduce((s, p) => s + parseInt(p[1], 10), 0)
+        const eleMax = pairs.reduce((s, p) => s + parseInt(p[2], 10), 0)
+        eleDamage = [eleMin, eleMax]
+      }
+    } else if (/^Attacks per Second:/i.test(line)) {
+      const m = line.match(/([\d.]+)/)
+      if (m) aps = parseFloat(m[1])
     } else if (line === 'Corrupted') {
       corrupted = true
     } else if (line === 'Fractured Item') {
@@ -436,6 +467,8 @@ function parseItemText(rawLines: string[]): Omit<PobItem, 'slot' | 'iconUrl'> {
       else if (lower === 'redeemer item') influences.push('redeemer')
       else if (lower === 'hunter item') influences.push('hunter')
       else if (lower === 'warlord item') influences.push('warlord')
+      else if (lower === 'searing exarch item') influences.push('searing')
+      else if (lower === 'eater of worlds item') influences.push('eater')
     }
     idx++
   }
@@ -470,6 +503,8 @@ function parseItemText(rawLines: string[]): Omit<PobItem, 'slot' | 'iconUrl'> {
       else if (lower === 'redeemer item') influences.push('redeemer')
       else if (lower === 'hunter item') influences.push('hunter')
       else if (lower === 'warlord item') influences.push('warlord')
+      else if (lower === 'searing exarch item') influences.push('searing')
+      else if (lower === 'eater of worlds item') influences.push('eater')
       continue
     }
     if (NON_MOD_LINES.has(line)) continue
@@ -488,6 +523,9 @@ function parseItemText(rawLines: string[]): Omit<PobItem, 'slot' | 'iconUrl'> {
     armour,
     evasion,
     energyShield,
+    physDamage,
+    eleDamage,
+    aps,
     corrupted,
     fractured,
     influences,
@@ -742,8 +780,11 @@ export async function parsePobXml(xmlString: string): Promise<PobBuildData> {
           const gem = gemNodes[gi]
           const gemName = gem.getAttribute('nameSpec') || ''
           if (!gemName) continue
+          const skillId = gem.getAttribute('skillId') || ''
           const isSupport =
-            gemName.includes('Support') || (gem.getAttribute('skillId') || '').endsWith('Support')
+            gemName.includes('Support') ||
+            skillId.startsWith('Support') ||
+            skillId.endsWith('Support')
           gems.push({
             name: gemName,
             level: parseInt(gem.getAttribute('level') || '1', 10),
