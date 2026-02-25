@@ -129,10 +129,15 @@ export default async function RootLayout({
 }>) {
   const {locale} = await params;
   const headersList = await headers();
-  const pathname = headersList.get('x-pathname') || '';
-  
-  // Check if this is an admin route
-  const isAdminRoute = pathname.includes('/admin');
+  // x-pathname is set by the middleware; next-url is a built-in Next.js header
+  // that's always available as a reliable fallback.
+  const pathname =
+    headersList.get('x-pathname') ||
+    headersList.get('next-url') ||
+    '';
+
+  const isAdminRoute =
+    pathname.includes('/admin') || pathname.includes('/studio');
 
   setRequestLocale(locale);
   const messages = await getMessages();

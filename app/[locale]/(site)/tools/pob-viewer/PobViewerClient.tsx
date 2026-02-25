@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Loader2, Sword, ClipboardCopy } from "lucide-react";
+import { Loader2, Sword, ClipboardCopy, Check, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -600,7 +600,7 @@ function ItemTooltip({ item, compact = false }: { item: PobItem; compact?: boole
             </div>
 
             {/* Weapon DPS */}
-            {(item.physDamage || item.eleDamage) &&
+            {(item.physDamage || item.eleDamage || item.chaosDamage) &&
               item.aps !== undefined &&
               (() => {
                 const aps = item.aps!;
@@ -610,7 +610,10 @@ function ItemTooltip({ item, compact = false }: { item: PobItem; compact?: boole
                 const eDPS = item.eleDamage
                   ? ((item.eleDamage[0] + item.eleDamage[1]) / 2) * aps
                   : 0;
-                const totalDPS = pDPS + eDPS;
+                const cDPS = item.chaosDamage
+                  ? ((item.chaosDamage[0] + item.chaosDamage[1]) / 2) * aps
+                  : 0;
+                const totalDPS = pDPS + eDPS + cDPS;
                 return (
                   <div className="mt-1 flex flex-col items-center gap-1 text-slate-300 text-[12px]">
                     {item.physDamage && (
@@ -637,16 +640,47 @@ function ItemTooltip({ item, compact = false }: { item: PobItem; compact?: boole
                         </span>
                       </span>
                     )}
+                    {item.chaosDamage && (
+                      <span>
+                        Chaos Damage:{" "}
+                        <span className="text-slate-100 font-semibold">
+                          {item.chaosDamage[0]}-{item.chaosDamage[1]}
+                        </span>{" "}
+                        ·{" "}
+                        <span className="text-purple-400 font-semibold">
+                          {cDPS.toFixed(1)} cDPS
+                        </span>
+                      </span>
+                    )}
                     <span>
                       Attacks per Second:{" "}
                       <span className="text-slate-100 font-semibold">
                         {aps.toFixed(2)}
-                      </span>{" "}
-                      ·{" "}
-                      <span className="text-yellow-300 font-semibold">
-                        {totalDPS.toFixed(1)} Total DPS
                       </span>
                     </span>
+                    {item.critChance !== undefined && (
+                      <span>
+                        Crit Chance:{" "}
+                        <span className="text-slate-100 font-semibold">
+                          {item.critChance.toFixed(2)}%
+                        </span>
+                      </span>
+                    )}
+                    <span className="border-t border-slate-600/50 pt-1 mt-0.5 w-full text-center">
+                      <span className="text-yellow-300 font-bold">
+                        {item.isEstimatedDps ? "~" : ""}{totalDPS.toFixed(1)} Total DPS
+                      </span>
+                      {pDPS > 0 && eDPS + cDPS > 0 && (
+                        <span className="text-slate-500 ml-2">
+                          ({pDPS.toFixed(0)} phys + {(eDPS + cDPS).toFixed(0)} ele/chaos)
+                        </span>
+                      )}
+                    </span>
+                    {item.isEstimatedDps && (
+                      <span className="text-slate-500 text-[10px] italic w-full text-center">
+                        estimated from base type
+                      </span>
+                    )}
                   </div>
                 );
               })()}
@@ -1089,6 +1123,10 @@ export default function PobViewerClient({ locale }: Props) {
   );
   const [isInitialLoad, setIsInitialLoad] = useState(hasUrlParam);
   const [isMobile, setIsMobile] = useState(false);
+  const [sharedBuildId, setSharedBuildId] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+  const [pobKey, setPobKey] = useState<string | null>(null);
+  const [pobLoading, setPobLoading] = useState(false);
 
   useEffect(() => {
     const mq = window.matchMedia("(pointer: coarse)");
@@ -1138,6 +1176,8 @@ export default function PobViewerClient({ locale }: Props) {
     setLoading(true);
     setError(null);
     setData(null);
+    setSharedBuildId(null);
+    setPobKey(null);
     try {
       // 1) Criar/obter hash compartilhável no Supabase
       let sharedId: string | null = null;
@@ -1150,6 +1190,7 @@ export default function PobViewerClient({ locale }: Props) {
         const shareJson = await shareRes.json();
         if (shareRes.ok && shareJson.id) {
           sharedId = shareJson.id as string;
+          setSharedBuildId(shareJson.id as string);
         }
       } catch {
         // Se der erro no share, seguimos apenas com o parse normal
@@ -1258,6 +1299,55 @@ export default function PobViewerClient({ locale }: Props) {
 
     // eslint-disable-next-line no-console
     console.log("[PoB Viewer] Flask slots debug:", flaskSlotsDebug);
+
+    // ── Weapon DPS debug (client) ──────────────────────────────────────────
+    const weaponSlots = ["Weapon 1", "Weapon 2"] as const;
+    for (const slot of weaponSlots) {
+      const w = slotMap[slot];
+      if (!w) {
+        // eslint-disable-next-line no-console
+        console.log(`[PoB Viewer] ${slot}: vazio`);
+        continue;
+      }
+      const aps = w.aps;
+      const pDPS =
+        w.physDamage && aps
+          ? (((w.physDamage[0] + w.physDamage[1]) / 2) * aps).toFixed(1)
+          : null;
+      const eDPS =
+        w.eleDamage && aps
+          ? (((w.eleDamage[0] + w.eleDamage[1]) / 2) * aps).toFixed(1)
+          : null;
+      const cDPS =
+        w.chaosDamage && aps
+          ? (((w.chaosDamage[0] + w.chaosDamage[1]) / 2) * aps).toFixed(1)
+          : null;
+      // eslint-disable-next-line no-console
+      console.log(`[PoB Viewer] ${slot}: "${w.name}" (${w.rarity})`, {
+        physDamage:  w.physDamage  ?? "—",
+        eleDamage:   w.eleDamage   ?? "—",
+        chaosDamage: w.chaosDamage ?? "—",
+        critChance:  w.critChance != null ? `${w.critChance}%` : "—",
+        aps:         aps           ?? "—",
+        pDPS:        pDPS          ?? "—",
+        eDPS:        eDPS          ?? "—",
+        cDPS:        cDPS          ?? "—",
+        totalDPS: aps
+          ? (
+              (w.physDamage
+                ? ((w.physDamage[0] + w.physDamage[1]) / 2) * aps
+                : 0) +
+              (w.eleDamage
+                ? ((w.eleDamage[0] + w.eleDamage[1]) / 2) * aps
+                : 0) +
+              (w.chaosDamage
+                ? ((w.chaosDamage[0] + w.chaosDamage[1]) / 2) * aps
+                : 0)
+            ).toFixed(1)
+          : "—",
+      });
+    }
+    // ──────────────────────────────────────────────────────────────────────
   }
 
   // Buscar primary_attribute e descrição das gems após build carregado
@@ -1491,6 +1581,105 @@ export default function PobViewerClient({ locale }: Props) {
                         </span>
                       </span>
                     )}
+                  </div>
+                )}
+
+                {/* Open in PoB + Copy Code buttons */}
+                {input.trim() && (
+                  <div className="ml-auto flex items-center gap-1.5">
+                    <TooltipProvider delayDuration={300}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            onClick={async () => {
+                              console.log("[OpenInPoB] botão clicado");
+                              if (pobKey) {
+                                const existingUrl = `pob://pobbin/${pobKey}`;
+                                console.log("[OpenInPoB] reutilizando chave existente:", pobKey);
+                                console.log("[OpenInPoB] abrindo URL:", existingUrl);
+                                window.location.href = existingUrl;
+                                return;
+                              }
+                              const code = input.trim();
+                              console.log("[OpenInPoB] código (primeiros 80 chars):", code.slice(0, 80));
+                              console.log("[OpenInPoB] tamanho do código:", code.length);
+                              setPobLoading(true);
+                              try {
+                                console.log("[OpenInPoB] chamando /api/tools/pob-viewer/pobbin...");
+                                const res = await fetch("/api/tools/pob-viewer/pobbin", {
+                                  method: "POST",
+                                  headers: { "Content-Type": "application/json" },
+                                  body: JSON.stringify({ code }),
+                                });
+                                console.log("[OpenInPoB] resposta status:", res.status, res.statusText);
+                                const json = await res.json() as { key?: string; error?: string };
+                                console.log("[OpenInPoB] resposta json:", json);
+                                if (json.key) {
+                                  console.log("[OpenInPoB] chave recebida:", json.key);
+                                  const pobUrl = `pob://pobbin/${json.key}`;
+                                  console.log("[OpenInPoB] abrindo URL:", pobUrl);
+                                  setPobKey(json.key);
+                                  window.location.href = pobUrl;
+                                } else {
+                                  console.error("[OpenInPoB] sem chave na resposta:", json);
+                                }
+                              } catch (err) {
+                                console.error("[OpenInPoB] erro na requisição:", err);
+                              } finally {
+                                setPobLoading(false);
+                              }
+                            }}
+                            disabled={pobLoading}
+                            className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-medium rounded-md border border-amber-500/40 bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                          >
+                            {pobLoading ? (
+                              <Loader2 className="w-3 h-3 animate-spin" />
+                            ) : (
+                              <ExternalLink className="w-3 h-3" />
+                            )}
+                            {pobLoading
+                              ? isPt ? "Gerando..." : "Generating..."
+                              : "Open in PoB"}
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom" className="text-xs max-w-[220px] text-center">
+                          {isPt
+                            ? "Abre a build no Path of Building (requer PoB instalado)"
+                            : "Opens the build in Path of Building (requires PoB installed)"}
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                    <TooltipProvider delayDuration={300}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            onClick={() => {
+                              void navigator.clipboard
+                                .writeText(input.trim())
+                                .then(() => {
+                                  setCopied(true);
+                                  setTimeout(() => setCopied(false), 2000);
+                                });
+                            }}
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-medium rounded-md border border-border/60 bg-muted/40 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                          >
+                            {copied ? (
+                              <Check className="w-3 h-3 text-green-400" />
+                            ) : (
+                              <ClipboardCopy className="w-3 h-3" />
+                            )}
+                            {copied
+                              ? isPt ? "Copiado!" : "Copied!"
+                              : isPt ? "Copiar código" : "Copy code"}
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom" className="text-xs">
+                          {isPt
+                            ? "Copia o código PoB para a área de transferência"
+                            : "Copy PoB code to clipboard"}
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   </div>
                 )}
 

@@ -4,6 +4,8 @@ import { PortableText } from "@portabletext/react";
 import { getImageDimensions } from "@sanity/asset-utils";
 import urlBuilder from "@sanity/image-url";
 import Image from "next/image";
+import { PoeItemBlogCard } from "@/components/poe/PoeItemBlogCard";
+import type { SanityPoeItem } from "@/components/poe/PoeItemBlogCard";
 
 
 // lazy-loaded image component
@@ -65,6 +67,9 @@ const components = {
   types: {
     image: ImageComponent,
     table: Table,
+    poeItem: ({ value }: { value: SanityPoeItem }) => (
+      <PoeItemBlogCard value={value} />
+    ),
   },
 };
 

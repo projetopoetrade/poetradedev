@@ -97,6 +97,12 @@ const blockContent = {
         withFilename: false,
       },
     },
+
+    {
+      type: "poeItem",
+      name: "poeItem",
+      title: "PoE Item",
+    },
   ],
 };
 export default blockContent;
