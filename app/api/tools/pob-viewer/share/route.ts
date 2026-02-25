@@ -1,18 +1,40 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
+import crypto from "crypto";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-// POST /api/tools/pob-viewer/share
-// Body: { pobCode: string }
-// Returns: { id: string }
+const BASE62_CHARS =
+  "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+function toBase62(buffer: Buffer): string {
+  let num = BigInt("0x" + buffer.toString("hex"));
+  let result = "";
+  const zero = BigInt(0);
+  const sixtyTwo = BigInt(62);
+  while (num > zero) {
+    result = BASE62_CHARS[Number(num % sixtyTwo)] + result;
+    num = num / sixtyTwo;
+  }
+  return result;
+}
+
+function generateShortHash(pobCode: string): string {
+  const hash = crypto.createHash("sha256").update(pobCode).digest();
+  return toBase62(hash).slice(0, 10);
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { pobCode } = body as { pobCode?: string };
 
-    if (!pobCode || typeof pobCode !== "string" || pobCode.trim().length === 0) {
+    if (
+      !pobCode ||
+      typeof pobCode !== "string" ||
+      pobCode.trim().length === 0
+    ) {
       return NextResponse.json(
         { error: "pobCode é obrigatório." },
         { status: 400 },
@@ -21,23 +43,22 @@ export async function POST(request: NextRequest) {
 
     const supabase = await createClient();
     const trimmed = pobCode.trim();
+    const pobHash = generateShortHash(trimmed);
 
-    // 1) Verifica se já existe um registro com o mesmo pob_code
     const existing = await supabase
       .from("pob_builds")
-      .select("id")
-      .eq("pob_code", trimmed)
+      .select("pob_hash")
+      .eq("pob_hash", pobHash)
       .maybeSingle();
 
-    if (existing.data?.id) {
-      return NextResponse.json({ id: existing.data.id });
+    if (existing.data?.pob_hash) {
+      return NextResponse.json({ id: existing.data.pob_hash });
     }
 
-    // 2) Se não existir, cria um novo
     const { data, error } = await supabase
       .from("pob_builds")
-      .insert({ pob_code: trimmed })
-      .select("id")
+      .insert({ pob_code: trimmed, pob_hash: pobHash })
+      .select("pob_hash")
       .single();
 
     if (error) {
@@ -48,7 +69,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    return NextResponse.json({ id: data.id });
+    return NextResponse.json({ id: data.pob_hash });
   } catch (err: unknown) {
     const message =
       err instanceof Error ? err.message : "Erro ao criar link compartilhável.";
@@ -57,18 +78,13 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// GET /api/tools/pob-viewer/share?id=<uuid>
-// Returns: { pobCode: string }
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
     if (!id) {
-      return NextResponse.json(
-        { error: "id é obrigatório." },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "id é obrigatório." }, { status: 400 });
     }
 
     const supabase = await createClient();
@@ -76,7 +92,7 @@ export async function GET(request: NextRequest) {
     const { data, error } = await supabase
       .from("pob_builds")
       .select("pob_code")
-      .eq("id", id)
+      .eq("pob_hash", id)
       .single();
 
     if (error) {
@@ -95,4 +111,3 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
-

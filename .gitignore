@@ -42,3 +42,15 @@ public/sitemap*.xml
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local IDE / agent tooling (não deve ir para o repositório)
+/.vscode/
+/.agents/
+/.claude/
+/.cursor/
+
+# artefatos locais de testes/relatórios
+/report.json
+/test-tree-url/
+/test_webhook.py
+/skills-lock.json

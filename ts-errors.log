@@ -1,7 +1,0 @@
-﻿.next/types/validator.ts(458,39): error TS2306: File 'C:/Users/alexa/Documents/poetrade-dev/app/api/orders/create/route.ts' is not a module.
-app/api/sitemap-data/route.ts(11,25): error TS2554: Expected 1-3 arguments, but got 0.
-components/ui/toaster.tsx(3,26): error TS2307: Cannot find module '@/components/hooks/use-toast' or its corresponding type declarations.
-components/ui/toaster.tsx(18,31): error TS7031: Binding element 'id' implicitly has an 'any' type.
-components/ui/toaster.tsx(18,35): error TS7031: Binding element 'title' implicitly has an 'any' type.
-components/ui/toaster.tsx(18,42): error TS7031: Binding element 'description' implicitly has an 'any' type.
-components/ui/toaster.tsx(18,55): error TS7031: Binding element 'action' implicitly has an 'any' type.

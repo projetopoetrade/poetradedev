@@ -1,99 +1,91 @@
+# Scripts de Análise de Keywords
 
+Este diretório contém scripts para análise e monitoramento das keywords geradas automaticamente pelo sistema.
 
-<p align="center">
- The fastest way to build apps with Next.js and Supabase
-</p>
+## 📊 analyze-keywords.js
 
-<p align="center">
-  <a href="#features"><strong>Features</strong></a> ·
-  <a href="#demo"><strong>Demo</strong></a> ·
-  <a href="#deploy-to-vercel"><strong>Deploy to Vercel</strong></a> ·
-  <a href="#clone-and-run-locally"><strong>Clone and run locally</strong></a> ·
-  <a href="#feedback-and-issues"><strong>Feedback and issues</strong></a>
-  <a href="#more-supabase-examples"><strong>More Examples</strong></a>
-</p>
-<br/>
+Script que analisa todas as keywords geradas para todas as páginas do site.
 
-## Features
+### Como usar:
 
-- Works across the entire [Next.js](https://nextjs.org) stack
-  - App Router
-  - Pages Router
-  - Middleware
-  - Client
-  - Server
-  - It just works!
-- supabase-ssr. A package to configure Supabase Auth to use cookies
-- Styling with [Tailwind CSS](https://tailwindcss.com)
-- Components with [shadcn/ui](https://ui.shadcn.com/)
-- Optional deployment with [Supabase Vercel Integration and Vercel deploy](#deploy-your-own)
-  - Environment variables automatically assigned to Vercel project
+```bash
+# Executar análise manual
+npm run analyze-keywords
 
-## Demo
+# Executar após build (automático)
+npm run build
+```
 
-You can view a fully working demo at (https://demo-nextjs-with-supabase.vercel.app/).
+### O que o script faz:
 
-## Deploy to Vercel
+1. **Gera keywords para diferentes tipos de páginas:**
+   - Homepage (EN/PT-BR)
+   - Páginas de produtos com diferentes parâmetros
+   - Páginas de versões do jogo
+   - Páginas de ligas
+   - Páginas de produtos por categoria/dificuldade
 
-Vercel deployment will guide you through creating a Supabase account and project.
+2. **Analisa estatísticas:**
+   - Total de páginas analisadas
+   - Distribuição por idioma
+   - Distribuição por tipo de página
+   - Top 20 keywords mais comuns
+   - Keywords de compra específicas
+   - Keywords de liga específicas
 
-After installation of the Supabase integration, all relevant environment variables will be assigned to the project so the deployment is fully functioning.
+3. **Mostra exemplos:**
+   - Exemplos de páginas específicas com suas keywords
+   - Demonstra como as keywords são geradas com parâmetros
 
-The above will also clone the Starter kit to your GitHub, you can clone that locally and develop locally.
+### Exemplo de output:
 
-If you wish to just develop locally and not deploy to Vercel, [follow the steps below](#clone-and-run-locally).
+```
+🔍 ANÁLISE DE KEYWORDS - TODAS AS PÁGINAS
+================================================================================
 
-## Clone and run locally
+📊 ESTATÍSTICAS GERAIS:
+Total de páginas: 132
+Páginas em inglês: 66
+Páginas em português: 66
 
-1. You'll first need a Supabase project which can be made [via the Supabase dashboard](https://database.new)
+🏆 TOP 20 KEYWORDS MAIS COMUNS:
+ 1. orb                             72x ████████████████████████████████████
+ 2. league                          63x ███████████████████████████████
+ 3. season                          63x ███████████████████████████████
+ 4. comprar moedas liga             60x ██████████████████████████████
+ 5. hardcore                        50x █████████████████████████
+ ...
 
-2. Create a Next.js app using the Supabase Starter template npx command
+💰 KEYWORDS DE COMPRA (22):
+  buy divine orbs: 6x (EN: 6, PT-BR: 0)
+  comprar divine orb poe: 6x (EN: 0, PT-BR: 6)
+  ...
 
-   ```bash
-   npx create-next-app --example with-supabase with-supabase-app
-   ```
+🏆 KEYWORDS DE LIGA (10):
+  league: 63x (EN: 63, PT-BR: 0)
+  comprar moedas liga: 60x (EN: 0, PT-BR: 60)
+  ...
+```
 
-   ```bash
-   yarn create next-app --example with-supabase with-supabase-app
-   ```
+### Configuração no package.json:
 
-   ```bash
-   pnpm create next-app --example with-supabase with-supabase-app
-   ```
+```json
+{
+  "scripts": {
+    "postbuild": "next-sitemap && node scripts/analyze-keywords.js",
+    "analyze-keywords": "node scripts/analyze-keywords.js"
+  }
+}
+```
 
-3. Use `cd` to change into the app's directory
+### Benefícios:
 
-   ```bash
-   cd with-supabase-app
-   ```
+- ✅ **Monitoramento automático** das keywords após cada build
+- ✅ **Análise completa** de cobertura SEO
+- ✅ **Identificação de gaps** em keywords
+- ✅ **Verificação de consistência** entre idiomas
+- ✅ **Métricas de performance** SEO
 
-4. Rename `.env.example` to `.env.local` and update the following:
+### Personalização:
 
-   ```
-   NEXT_PUBLIC_SUPABASE_URL=[INSERT SUPABASE PROJECT URL]
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=[INSERT SUPABASE PROJECT API ANON KEY]
-   ```
-
-   Both `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` can be found in [your Supabase project's API settings](https://app.supabase.com/project/_/settings/api)
-
-5. You can now run the Next.js local development server:
-
-   ```bash
-   npm run dev
-   ```
-
-   The starter kit should now be running on [localhost:3000](http://localhost:3000/).
-
-6. This template comes with the default shadcn/ui style initialized. If you instead want other ui.shadcn styles, delete `components.json` and [re-install shadcn/ui](https://ui.shadcn.com/docs/installation/next)
-
-> Check out [the docs for Local Development](https://supabase.com/docs/guides/getting-started/local-development) to also run Supabase locally.
-
-## Feedback and issues
-
-Please file feedback and issues over on the [Supabase GitHub org](https://github.com/supabase/supabase/issues/new/choose).
-
-## More Supabase examples
-
-- [Next.js Subscription Payments Starter](https://github.com/vercel/nextjs-subscription-payments)
-- [Cookie-based Auth and the Next.js 13 App Router (free course)](https://youtube.com/playlist?list=PL5S4mPUpp4OtMhpnp93EFSo42iQ40XjbF)
-- [Supabase Auth and the Next.js App Router](https://github.com/supabase/supabase/tree/master/examples/auth/nextjs)
+Para adicionar novos tipos de páginas ou modificar a análise, edite o arquivo `scripts/analyze-keywords.js` e ajuste a função `generatePageKeywords()`.
