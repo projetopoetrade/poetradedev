@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -7,7 +7,7 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background: #0c0c0c; overflow: hidden; font-family: 'Segoe UI', sans-serif; }
-        #canvas { display: block; cursor: grab; }
+        #canvas { display: block; cursor: grab; touch-action: none; }
         #canvas:active { cursor: grabbing; }
 
         #tooltip {
@@ -165,6 +165,83 @@
         offsetY += e.clientY - s.y;
         render();
     };
+
+    // Touch events: 1 finger = pan, 2 fingers = pinch-zoom, tap = tooltip
+    let _touchStartDist = null;
+    let _touchStartScale = null;
+    let _pinchCx = 0, _pinchCy = 0;
+    let _touchMoved = false;
+
+    canvas.addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        if (e.touches.length === 1) {
+            dragging = true;
+            dragX = e.touches[0].clientX - offsetX;
+            dragY = e.touches[0].clientY - offsetY;
+            _touchMoved = false;
+        } else if (e.touches.length === 2) {
+            dragging = false;
+            _touchStartDist = Math.hypot(
+                e.touches[0].clientX - e.touches[1].clientX,
+                e.touches[0].clientY - e.touches[1].clientY
+            );
+            _touchStartScale = scale;
+            _pinchCx = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+            _pinchCy = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+            _touchMoved = true;
+        }
+    }, { passive: false });
+
+    canvas.addEventListener('touchmove', function(e) {
+        e.preventDefault();
+        if (e.touches.length === 1 && dragging) {
+            const nx = e.touches[0].clientX - dragX;
+            const ny = e.touches[0].clientY - dragY;
+            if (Math.abs(nx - offsetX) > 3 || Math.abs(ny - offsetY) > 3) _touchMoved = true;
+            offsetX = nx; offsetY = ny;
+            render();
+        } else if (e.touches.length === 2 && _touchStartDist !== null) {
+            const dist = Math.hypot(
+                e.touches[0].clientX - e.touches[1].clientX,
+                e.touches[0].clientY - e.touches[1].clientY
+            );
+            const cx = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+            const cy = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+            const w = screenToWorld(cx, cy);
+            scale = Math.max(0.03, Math.min(3, _touchStartScale * (dist / _touchStartDist)));
+            const s = worldToScreen(w.x, w.y);
+            offsetX += cx - s.x;
+            offsetY += cy - s.y;
+            _pinchCx = cx; _pinchCy = cy;
+            render();
+        }
+    }, { passive: false });
+
+    canvas.addEventListener('touchend', function(e) {
+        e.preventDefault();
+        if (!_touchMoved && e.changedTouches.length === 1) {
+            const t = e.changedTouches[0];
+            const node = findNode(t.clientX, t.clientY);
+            const tip = document.getElementById('tooltip');
+            if (node) {
+                tip.style.display = 'block';
+                tip.style.left = Math.min(t.clientX + 12, window.innerWidth - 310) + 'px';
+                tip.style.top  = Math.min(t.clientY + 12, window.innerHeight - 120) + 'px';
+                const nameEl = tip.querySelector('.name');
+                nameEl.textContent = node.name || 'Node';
+                nameEl.className = 'name' + (node.isNotable ? ' notable' : node.isKeystone ? ' keystone' : '');
+                let statsHtml = node.ascendancyName ? '<span style="color:#88ccff">' + node.ascendancyName + '</span><br>' : '';
+                statsHtml += (node.stats || []).join('<br>');
+                tip.querySelector('.stats').innerHTML = statsHtml;
+                setTimeout(function() { tip.style.display = 'none'; }, 2500);
+            } else {
+                tip.style.display = 'none';
+            }
+        }
+        dragging = false;
+        _touchStartDist = null;
+        _touchMoved = false;
+    }, { passive: false });
     window.onresize = resize;
     
     // PoB loading

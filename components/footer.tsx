@@ -16,7 +16,7 @@ export default async function Footer({ locale = 'en' }: FooterProps) {
   return (
     <footer className="w-full bg-black/40 text-white py-8 px-4 md:px-10">
       <div className="container mx-auto max-w-7xl">
-        <div className="grid grid-cols-2 md:grid-cols-6 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-8">
           {/* Logo and Social Links */}
           <div className="flex flex-col items-center md:items-start space-y-4">
             <Link href="/">
@@ -80,8 +80,25 @@ export default async function Footer({ locale = 'en' }: FooterProps) {
             <Link href="/products" className="text-gray-300 hover:text-white text-sm transition-colors">
               {t('products')}
             </Link>
+            <Link href="/blog" className="text-gray-300 hover:text-white text-sm transition-colors">
+              {t('blog')}
+            </Link>
+          </div>
+
+          {/* Tools Links */}
+          <div className="flex flex-col space-y-3">
+            <h3 className="font-bold text-sm uppercase tracking-wider mb-1">Tools</h3>
+            <Link href="/tools" className="text-gray-300 hover:text-white text-sm transition-colors">
+              All Tools
+            </Link>
             <Link href="/tools/price-tracker" className="text-gray-300 hover:text-white text-sm transition-colors">
-              {t('price-tracker')}
+              Price Tracker
+            </Link>
+            <Link href="/tools/pob-viewer" className="text-gray-300 hover:text-white text-sm transition-colors">
+              PoB Viewer
+            </Link>
+            <Link href="/tools/build-randomizer" className="text-gray-300 hover:text-white text-sm transition-colors">
+              Build Randomizer
             </Link>
           </div>
 
@@ -134,9 +151,6 @@ export default async function Footer({ locale = 'en' }: FooterProps) {
             </Link>
             <Link href="/faq" className="text-gray-300 hover:text-white text-sm transition-colors">
               {t('faq')}
-            </Link>
-            <Link href="/blog" className="text-gray-300 hover:text-white text-sm transition-colors">
-              {t('blog')}
             </Link>
           </div>
 

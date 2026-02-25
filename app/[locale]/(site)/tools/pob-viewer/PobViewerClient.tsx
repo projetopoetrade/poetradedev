@@ -20,6 +20,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import type {
   PobBuildData,
   PobItem,
@@ -368,6 +373,61 @@ function normalizeSlotName(slot: string): string {
   return slot;
 }
 
+// ─── SmartTooltip ─────────────────────────────────────────────────────────────
+// Hover no desktop, click no mobile (pointer: coarse).
+
+function SmartTooltip({
+  children,
+  content,
+  side = "right",
+  align = "start",
+  isMobile,
+}: {
+  children: React.ReactElement;
+  content: React.ReactNode;
+  side?: "left" | "right" | "top" | "bottom";
+  align?: "start" | "center" | "end";
+  isMobile: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+
+  if (!isMobile) {
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>{children}</TooltipTrigger>
+        <TooltipContent
+          side={side}
+          align={align}
+          sideOffset={8}
+          className="p-0 border-none bg-transparent shadow-none w-auto min-w-0"
+        >
+          {content}
+        </TooltipContent>
+      </Tooltip>
+    );
+  }
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        {/* cloneElement para adicionar onClick sem perder props existentes */}
+        {children}
+      </PopoverTrigger>
+      <PopoverContent
+        side="bottom"
+        align="center"
+        sideOffset={6}
+        className="p-0 border-none bg-transparent shadow-none w-auto min-w-0 max-w-[95vw] overflow-auto"
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
+        {content}
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+// ─── Socket display ───────────────────────────────────────────────────────────
+
 function SocketDisplay({ sockets }: { sockets: string }) {
   const groups = sockets.split(" ").filter(Boolean);
   return (
@@ -412,7 +472,7 @@ function SocketDisplay({ sockets }: { sockets: string }) {
 
 // ─── Item tooltip (PoE style) ─────────────────────────────────────────────────
 
-function ItemTooltip({ item }: { item: PobItem }) {
+function ItemTooltip({ item, compact = false }: { item: PobItem; compact?: boolean }) {
   const nameColorHsl =
     RARITY_NAME_COLOR_HSL[item.rarity] ?? RARITY_NAME_COLOR_HSL.Normal;
   const headerTextures = HEADER_TEXTURES[item.rarity];
@@ -443,11 +503,21 @@ function ItemTooltip({ item }: { item: PobItem }) {
   const hasExplicit = explicitMods.length > 0;
   const effectiveIconUrl = getEffectiveItemIconUrl(item);
 
+  // Tamanhos adaptados para modo compacto (mobile)
+  const w        = compact ? "w-[min(300px,88vw)]" : "w-[420px]";
+  const baseText = compact ? "text-[12px]"          : "text-[14px]";
+  const hdrPad   = compact ? "px-4 py-1"            : "px-6 py-1.5";
+  const bodyPad  = compact ? "px-4 py-1.5"          : "px-6 py-2";
+  const nameSz   = compact
+    ? (item.rarity === "Magic" ? "text-[13px]" : "text-[16px]")
+    : (item.rarity === "Magic" ? "text-[15px]" : "text-[20px]");
+  const baseSz   = compact ? "text-[11px]" : "text-[13px]";
+
   return (
-    <div className="w-[420px] text-[14px] leading-snug overflow-hidden rounded shadow-xl bg-black/80 font-fontin">
+    <div className={`${w} ${baseText} leading-snug overflow-hidden rounded shadow-xl bg-black/80 font-fontin`}>
       {/* Header: name + base type */}
       <div
-        className="px-6 py-1.5 text-center relative"
+        className={`${hdrPad} text-center relative`}
         style={
           headerTextures
             ? {
@@ -462,7 +532,7 @@ function ItemTooltip({ item }: { item: PobItem }) {
         }
       >
         <p
-          className={`font-semibold leading-tight tracking-wide ${item.rarity === "Magic" ? "text-[15px]" : "text-[20px]"}`}
+          className={`font-semibold leading-tight tracking-wide ${nameSz}`}
           style={{
             color: headerTextures
               ? headerTextures.textColor
@@ -472,7 +542,7 @@ function ItemTooltip({ item }: { item: PobItem }) {
           {item.name}
         </p>
         {item.baseName && item.baseName !== item.name && (
-          <p className="text-slate-200 text-[13px] mt-0.5">{item.baseName}</p>
+          <p className={`text-slate-200 ${baseSz} mt-0.5`}>{item.baseName}</p>
         )}
 
         {leftInfluenceIcon && (
@@ -499,7 +569,7 @@ function ItemTooltip({ item }: { item: PobItem }) {
         )}
       </div>
 
-      <div className="px-6 py-2 space-y-3 bg-black/80 text-center">
+      <div className={`${bodyPad} space-y-3 bg-black/80 text-center`}>
         {/* Properties */}
         {(item.quality ||
           item.itemLevel ||
@@ -772,9 +842,11 @@ function EmptySlot({ label }: { label: string }) {
 function ItemSlotCard({
   item,
   slotName,
+  isMobile = false,
 }: {
   item?: PobItem;
   slotName: string;
+  isMobile?: boolean;
 }) {
   if (!item) return <EmptySlot label={SLOT_LABEL[slotName] ?? slotName} />;
 
@@ -783,56 +855,55 @@ function ItemSlotCard({
   const isCorruptedUnique = item.corrupted && item.rarity === "Unique";
   const effectiveIconUrl = getEffectiveItemIconUrl(item);
 
+  const trigger = (
+    <button
+      className="group relative rounded-sm border w-full h-full flex flex-col items-center justify-center bg-[#1a1c23]/80 hover:bg-[#252834] transition-colors cursor-pointer overflow-hidden outline-none focus:outline-none focus-visible:outline-none focus-visible:ring-0"
+      style={{
+        borderColor: `hsla(${borderColorHsl}, 0.25)`,
+        boxShadow: isCorruptedUnique
+          ? `inset 0 0 11px -4px hsla(0, 100%, 41%, 0.5)`
+          : "inset 0 0 15px rgba(0,0,0,0.5)",
+      }}
+    >
+      {effectiveIconUrl ? (
+        <div className="relative w-full h-full flex items-center justify-center p-1">
+          <Image
+            src={effectiveIconUrl}
+            alt={item.name}
+            fill
+            className="object-contain drop-shadow-[0_0_8px_rgba(0,0,0,0.8)]"
+            unoptimized
+          />
+        </div>
+      ) : (
+        <div className="flex items-center justify-center w-full h-full">
+          <div
+            className="w-4 h-4 rounded-sm"
+            style={{
+              backgroundColor: `hsla(${borderColorHsl}, 0.4)`,
+              transform: "rotate(45deg)",
+            }}
+          />
+        </div>
+      )}
+    </button>
+  );
+
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <button
-          className="group relative rounded-sm border w-full h-full flex flex-col items-center justify-center bg-[#1a1c23]/80 hover:bg-[#252834] transition-colors cursor-pointer overflow-hidden outline-none focus:outline-none focus-visible:outline-none focus-visible:ring-0"
-          style={{
-            borderColor: `hsla(${borderColorHsl}, 0.25)`,
-            boxShadow: isCorruptedUnique
-              ? `inset 0 0 11px -4px hsla(0, 100%, 41%, 0.5)`
-              : "inset 0 0 15px rgba(0,0,0,0.5)",
-          }}
-        >
-          {effectiveIconUrl ? (
-            <div className="relative w-full h-full flex items-center justify-center p-1">
-              <Image
-                src={effectiveIconUrl}
-                alt={item.name}
-                fill
-                className="object-contain drop-shadow-[0_0_8px_rgba(0,0,0,0.8)]"
-                unoptimized
-              />
-            </div>
-          ) : (
-            <div className="flex items-center justify-center w-full h-full">
-              <div
-                className="w-4 h-4 rounded-sm"
-                style={{
-                  backgroundColor: `hsla(${borderColorHsl}, 0.4)`,
-                  transform: "rotate(45deg)",
-                }}
-              />
-            </div>
-          )}
-        </button>
-      </TooltipTrigger>
-      <TooltipContent
-        side="right"
-        align="start"
-        sideOffset={8}
-        className="p-0 border-none bg-transparent shadow-none w-auto min-w-0"
-      >
-        <ItemTooltip item={item} />
-      </TooltipContent>
-    </Tooltip>
+    <SmartTooltip
+      content={<ItemTooltip item={item} compact={isMobile} />}
+      side="right"
+      align="start"
+      isMobile={isMobile}
+    >
+      {trigger}
+    </SmartTooltip>
   );
 }
 
 // ─── Jewel Tooltip (same style as ItemTooltip) ─────────────────────────────────
 
-function JewelTooltip({ jewel }: { jewel: PobSocketedJewel }) {
+function JewelTooltip({ jewel, compact = false }: { jewel: PobSocketedJewel; compact?: boolean }) {
   const displayName =
     jewel.name === "New Item" ? (jewel.baseName ?? jewel.name) : jewel.name;
 
@@ -846,10 +917,19 @@ function JewelTooltip({ jewel }: { jewel: PobSocketedJewel }) {
   const hasImplicits = implicits.length > 0;
   const hasExplicits = explicits.length > 0;
 
+  const w        = compact ? "w-[min(300px,88vw)]" : "w-[420px]";
+  const baseText = compact ? "text-[12px]"          : "text-[14px]";
+  const hdrPad   = compact ? "px-4 py-1"            : "px-6 py-1.5";
+  const bodyPad  = compact ? "px-4 py-1.5"          : "px-6 py-2";
+  const nameSz   = compact
+    ? (rarity === "Magic" ? "text-[13px]" : "text-[16px]")
+    : (rarity === "Magic" ? "text-[15px]" : "text-[20px]");
+  const baseSz   = compact ? "text-[11px]" : "text-[13px]";
+
   return (
-    <div className="w-[420px] text-[14px] leading-snug overflow-hidden rounded shadow-xl bg-black/80 font-fontin">
+    <div className={`${w} ${baseText} leading-snug overflow-hidden rounded shadow-xl bg-black/80 font-fontin`}>
       <div
-        className="px-6 py-1.5 text-center relative"
+        className={`${hdrPad} text-center relative`}
         style={
           headerTextures
             ? {
@@ -864,7 +944,7 @@ function JewelTooltip({ jewel }: { jewel: PobSocketedJewel }) {
         }
       >
         <p
-          className={`font-semibold leading-tight tracking-wide ${rarity === "Magic" ? "text-[15px]" : "text-[20px]"}`}
+          className={`font-semibold leading-tight tracking-wide ${nameSz}`}
           style={{
             color: headerTextures
               ? headerTextures.textColor
@@ -876,13 +956,13 @@ function JewelTooltip({ jewel }: { jewel: PobSocketedJewel }) {
         {jewel.baseName &&
           jewel.baseName !== jewel.name &&
           jewel.name !== "New Item" && (
-            <p className="text-slate-200 text-[13px] mt-0.5">
+            <p className={`text-slate-200 ${baseSz} mt-0.5`}>
               {jewel.baseName}
             </p>
           )}
       </div>
 
-      <div className="px-6 py-2 space-y-2 bg-black/80 text-center">
+      <div className={`${bodyPad} space-y-2 bg-black/80 text-center`}>
         {hasImplicits && (
           <div className="space-y-0.5">
             {implicits.map((mod, i) => (
@@ -929,7 +1009,13 @@ function JewelTooltip({ jewel }: { jewel: PobSocketedJewel }) {
 
 // ─── Jewel slot card (mesmo estilo de ItemSlotCard: slot + imagem ao centro) ──
 
-function JewelSlotCard({ jewel }: { jewel: PobSocketedJewel }) {
+function JewelSlotCard({
+  jewel,
+  isMobile = false,
+}: {
+  jewel: PobSocketedJewel;
+  isMobile?: boolean;
+}) {
   const displayName =
     jewel.name === "New Item" ? (jewel.baseName ?? jewel.name) : jewel.name;
   const iconUrl =
@@ -938,10 +1024,10 @@ function JewelSlotCard({ jewel }: { jewel: PobSocketedJewel }) {
     ? "270, 60%, 55%"
     : (RARITY_BORDER_HSL[jewel.rarity] ?? RARITY_BORDER_HSL.Normal);
 
-  const content = (
+  const trigger = (
     <button
       type="button"
-      className="group relative rounded-sm border w-full h-full flex flex-col items-center justify-center bg-[#1a1c23]/80 hover:bg-[#252834] transition-colors cursor-default overflow-hidden outline-none focus:outline-none focus-visible:outline-none focus-visible:ring-0"
+      className="group relative rounded-sm border w-full h-full flex flex-col items-center justify-center bg-[#1a1c23]/80 hover:bg-[#252834] transition-colors cursor-pointer overflow-hidden outline-none focus:outline-none focus-visible:outline-none focus-visible:ring-0"
       style={{
         borderColor: `hsla(${borderHsl}, 0.25)`,
         boxShadow: "inset 0 0 15px rgba(0,0,0,0.5)",
@@ -964,17 +1050,14 @@ function JewelSlotCard({ jewel }: { jewel: PobSocketedJewel }) {
   );
 
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>{content}</TooltipTrigger>
-      <TooltipContent
-        side="right"
-        align="start"
-        sideOffset={8}
-        className="p-0 border-none bg-transparent shadow-none w-auto min-w-0"
-      >
-        <JewelTooltip jewel={jewel} />
-      </TooltipContent>
-    </Tooltip>
+    <SmartTooltip
+      content={<JewelTooltip jewel={jewel} compact={isMobile} />}
+      side="right"
+      align="start"
+      isMobile={isMobile}
+    >
+      {trigger}
+    </SmartTooltip>
   );
 }
 
@@ -1005,6 +1088,15 @@ export default function PobViewerClient({ locale }: Props) {
     searchParams.get("id") || searchParams.get("code"),
   );
   const [isInitialLoad, setIsInitialLoad] = useState(hasUrlParam);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(pointer: coarse)");
+    setIsMobile(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
 
   function formatMovementSpeed(value: string): string {
     const match = value.match(/^([\d.]+)x$/);
@@ -1440,38 +1532,61 @@ export default function PobViewerClient({ locale }: Props) {
                 {/* Itens do conjunto ativo */}
                 {itemSetItems.length > 0 && (
                   <div className="bg-background p-3 sm:p-4 rounded-xl border border-border/40 flex flex-col md:flex-row items-start gap-4 shadow-[0_18px_40px_rgba(0,0,0,0.45)]">
-                    <div className="flex flex-col items-center">
+                    <div className="flex flex-col items-center w-full md:w-auto">
+                      {/*
+                        Mobile: escala o grid para caber na tela.
+                        Grid natural = 10 cols × 60px = 600px.
+                        scale(0.58) → ~348px visual, cabe em qualquer iPhone 6+.
+                        transform não afeta layout → wrapper com altura fixa para
+                        compensar o espaço que o elemento ainda ocupa no DOM.
+                        (6 rows × 60px + flasks 132px) × 0.58 ≈ 287px
+                      */}
                       <div
-                        className="grid gap-0.5 justify-center mx-auto"
-                        style={{
-                          gridTemplateColumns:
-                            "60px 60px 60px 60px 60px 60px 60px 60px 60px 60px",
-                          gridAutoRows: "60px",
-                        }}
+                        className="w-full flex justify-center overflow-hidden"
+                        style={isMobile ? { height: "293px" } : undefined}
                       >
-                        {EQUIPMENT_GRID.map(({ slot, col, row }) => (
+                        <div
+                          style={
+                            isMobile
+                              ? { transform: "scale(0.58)", transformOrigin: "top center" }
+                              : undefined
+                          }
+                        >
                           <div
-                            key={slot}
-                            style={{ gridColumn: col, gridRow: row }}
+                            className="grid gap-0.5 justify-center"
+                            style={{
+                              gridTemplateColumns:
+                                "60px 60px 60px 60px 60px 60px 60px 60px 60px 60px",
+                              gridAutoRows: "60px",
+                            }}
                           >
-                            <ItemSlotCard
-                              item={slotMap[slot]}
-                              slotName={slot}
-                            />
+                            {EQUIPMENT_GRID.map(({ slot, col, row }) => (
+                              <div
+                                key={slot}
+                                style={{ gridColumn: col, gridRow: row }}
+                              >
+                                <ItemSlotCard
+                                  item={slotMap[slot]}
+                                  slotName={slot}
+                                  isMobile={isMobile}
+                                />
+                              </div>
+                            ))}
                           </div>
-                        ))}
-                      </div>
 
-                      {/* Flasks */}
-                      <div className="flex justify-center gap-1 pt-3">
-                        {FLASK_SLOTS.map((slotName) => (
-                          <div key={slotName} className="w-[60px] h-[120px]">
-                            <ItemSlotCard
-                              item={slotMap[slotName]}
-                              slotName={slotName}
-                            />
+                          {/* Flasks */}
+                          <div className="flex justify-center gap-1 pt-3">
+                            {FLASK_SLOTS.map((slotName) => (
+                              <div key={slotName} className="w-[60px] h-[120px]">
+                                <ItemSlotCard
+                                  item={slotMap[slotName]}
+                                  slotName={slotName}
+                                  isMobile={isMobile}
+                                />
+                              </div>
+                            ))}
                           </div>
-                        ))}
+                        </div>
                       </div>
 
                       {/* Jewels socketed na tree - abaixo das flasks */}
@@ -1486,7 +1601,7 @@ export default function PobViewerClient({ locale }: Props) {
                                 key={j.nodeId ?? i}
                                 className="w-[60px] h-[60px] shrink-0 rounded-sm overflow-hidden"
                               >
-                                <JewelSlotCard jewel={j} />
+                                <JewelSlotCard jewel={j} isMobile={isMobile} />
                               </div>
                             ))}
                           </div>
@@ -1568,37 +1683,41 @@ export default function PobViewerClient({ locale }: Props) {
 
                                     if (!info?.gem_description) return badge;
 
+                                    const gemTooltipContent = (
+                                      <div className="max-w-[240px] space-y-1 text-left p-2.5 bg-popover text-popover-foreground rounded-md border border-border shadow-md">
+                                        <p className="font-semibold text-[12px]">
+                                          {gem.name}
+                                        </p>
+                                        <p className="text-muted-foreground text-[10px] leading-snug">
+                                          {info.gem_description}
+                                        </p>
+                                        <div className="flex gap-2 text-[10px] pt-0.5 border-t border-border/40">
+                                          <span>
+                                            Lv{" "}
+                                            <span className="text-foreground font-medium">
+                                              {gem.level}
+                                            </span>
+                                          </span>
+                                          <span>
+                                            Q{" "}
+                                            <span className="text-sky-400 font-medium">
+                                              +{gem.quality}%
+                                            </span>
+                                          </span>
+                                        </div>
+                                      </div>
+                                    );
+
                                     return (
-                                      <Tooltip key={j}>
-                                        <TooltipTrigger asChild>
-                                          {badge}
-                                        </TooltipTrigger>
-                                        <TooltipContent
-                                          side="left"
-                                          className="max-w-[240px] space-y-1 text-left p-2.5"
-                                        >
-                                          <p className="font-semibold text-[12px]">
-                                            {gem.name}
-                                          </p>
-                                          <p className="text-muted-foreground text-[10px] leading-snug">
-                                            {info.gem_description}
-                                          </p>
-                                          <div className="flex gap-2 text-[10px] pt-0.5 border-t border-border/40">
-                                            <span>
-                                              Lv{" "}
-                                              <span className="text-foreground font-medium">
-                                                {gem.level}
-                                              </span>
-                                            </span>
-                                            <span>
-                                              Q{" "}
-                                              <span className="text-sky-400 font-medium">
-                                                +{gem.quality}%
-                                              </span>
-                                            </span>
-                                          </div>
-                                        </TooltipContent>
-                                      </Tooltip>
+                                      <SmartTooltip
+                                        key={j}
+                                        content={gemTooltipContent}
+                                        side="left"
+                                        align="start"
+                                        isMobile={isMobile}
+                                      >
+                                        {badge}
+                                      </SmartTooltip>
                                     );
                                   })}
                                 </TooltipProvider>
@@ -1669,17 +1788,17 @@ export default function PobViewerClient({ locale }: Props) {
                     </div>
                   )}
 
-                  {/* Grid: iframe 75% | sidebar 25% */}
-                  <div
-                    className="grid gap-4"
-                    style={{ gridTemplateColumns: "3fr 1fr" }}
-                  >
+                  {/* Grid: iframe 75% | sidebar 25% no desktop; stack no mobile */}
+                  <div className="grid gap-4 grid-cols-1 md:grid-cols-[3fr_1fr]">
                     <iframe
                       ref={iframeRef}
                       src="/tools/viewer.html"
                       title="Passive Skill Tree"
                       className="w-full rounded-lg border border-zinc-700"
-                      style={{ height: "600px", background: "#0c0c0c" }}
+                      style={{
+                        height: isMobile ? "320px" : "600px",
+                        background: "#0c0c0c",
+                      }}
                       onLoad={() => {
                         const nodes = activeViewSpec?.nodes;
                         if (nodes?.length) sendNodesToViewer(nodes);
@@ -1689,7 +1808,7 @@ export default function PobViewerClient({ locale }: Props) {
                     {/* Sidebar: Keystones + Masteries */}
                     <div
                       className="overflow-y-auto space-y-5 pr-1"
-                      style={{ maxHeight: "600px" }}
+                      style={{ maxHeight: isMobile ? "none" : "600px" }}
                     >
                       {(activeViewSpec?.keystones?.length ?? 0) > 0 && (
                         <div>

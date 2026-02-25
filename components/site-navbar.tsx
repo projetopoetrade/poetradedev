@@ -9,7 +9,6 @@ import {
   ShoppingBag,
   BarChart2,
   Sword,
-  GitCompare,
   Search,
 } from 'lucide-react'
 import { Link } from '@/i18n/navigation'
@@ -80,11 +79,6 @@ const NAV_ITEMS: NavItem[] = [
         href: '/tools/pob-viewer',
         icon: <Sword className="h-4 w-4" />,
         badge: 'New',
-      },
-      {
-        label: 'Price Comparison',
-        href: '/tools/price-comparison',
-        icon: <GitCompare className="h-4 w-4" />,
       },
     ],
   },
