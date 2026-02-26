@@ -36,6 +36,29 @@ export default function BuildsClient({ builds, total, page, locale, leagues }: B
         </p>
       </div>
 
+      {/* Build Randomizer CTA */}
+      <div className="mb-8 p-6 rounded-xl border border-amber-500/20 bg-amber-500/5 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div>
+          <h2 className="text-xl font-semibold text-amber-400 mb-1">
+            {locale === "pt-br" ? "Indeciso sobre o que jogar?" : "Undecided on what to play?"}
+          </h2>
+          <p className="text-sm text-amber-200/70">
+            {locale === "pt-br"
+              ? "Use o nosso Build Randomizer para sortear um league starter baseado nos filtros que você gosta."
+              : "Use our Build Randomizer to roll a league starter based on the filters you like."}
+          </p>
+        </div>
+        <button
+          onClick={() => router.push(`/${locale}/tools/build-randomizer`)}
+          className="shrink-0 px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-black font-medium rounded-lg transition-colors flex items-center gap-2 text-sm"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+          </svg>
+          {locale === "pt-br" ? "Abrir Build Randomizer" : "Open Build Randomizer"}
+        </button>
+      </div>
+
       {/* Filters */}
       <div className="mb-6">
         <BuildFilters leagues={leagues} />
@@ -75,11 +98,10 @@ export default function BuildsClient({ builds, total, page, locale, leagues }: B
             <button
               key={p}
               onClick={() => goToPage(p)}
-              className={`px-3 py-1.5 text-sm rounded border transition-colors ${
-                p === page
+              className={`px-3 py-1.5 text-sm rounded border transition-colors ${p === page
                   ? 'bg-amber-500/20 border-amber-500/50 text-amber-300'
                   : 'border-gray-700/50 text-gray-400 hover:text-white hover:border-gray-500'
-              }`}
+                }`}
             >
               {p}
             </button>

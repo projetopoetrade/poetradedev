@@ -422,4 +422,58 @@ export const getRelatedBuilds = async (
   return builds.slice(0, limit);
 };
 
+export const getRandomBuilds = async (params: {
+  gameVersion?: string;
+  league?: string;
+  class?: string;
+  ascendancy?: string;
+  tags?: string[];
+  onlyLeagueStarters?: boolean;
+  difficulty?: string;
+  budget?: string;
+}): Promise<Build[]> => {
+  const {
+    gameVersion,
+    league,
+    class: poeClass,
+    ascendancy,
+    tags,
+    onlyLeagueStarters,
+    difficulty,
+    budget,
+  } = params;
+  const supabase = await createClient();
+
+  let query = supabase
+    .from('builds')
+    .select('*')
+    .eq('is_published', true)
+    .order('created_at', { ascending: false })
+    .limit(50);
+
+  if (gameVersion) query = query.eq('game_version', gameVersion);
+  if (league) query = query.eq('league', league);
+  if (poeClass) query = query.eq('class', poeClass);
+  if (ascendancy) query = query.eq('ascendancy', ascendancy);
+  if (difficulty) query = query.eq('difficulty', difficulty);
+  if (budget) query = query.eq('budget', budget);
+
+  let filterTags = tags || [];
+  if (onlyLeagueStarters && !filterTags.includes('league-starter')) {
+    filterTags = [...filterTags, 'league-starter'];
+  }
+
+  if (filterTags.length > 0) {
+    query = query.contains('tags', filterTags);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error('[getRandomBuilds] Error:', error.message);
+    throw new Error('Could not fetch random builds');
+  }
+
+  return (data as Build[]) || [];
+};
 

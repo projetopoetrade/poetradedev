@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const ASCENDANCY_PROMO_MAP: Record<string, string> = {
   // PoE 1 — promo images from pathofexile.com/ascendancy/classes
@@ -70,69 +70,39 @@ const ASCENDANCY_INGAME_MAP: Record<string, string> = {
 };
 
 const ASCENDANCY_ICON_MAP: Record<string, string> = {
-  // PoE 1 — small icons from poedb.tw
-  Necromancer:
-    "https://cdn.poedb.tw/image/Art/2DArt/UIImages/Common/IconInt_Necromancer.webp",
-  Elementalist:
-    "https://cdn.poedb.tw/image/Art/2DArt/UIImages/Common/IconInt_Elementalist.webp",
-  Occultist:
-    "https://cdn.poedb.tw/image/Art/2DArt/UIImages/Common/IconInt_Occultist.webp",
-  Assassin:
-    "https://cdn.poedb.tw/image/Art/2DArt/UIImages/Common/IconDexInt_Assassin.webp",
-  Trickster:
-    "https://cdn.poedb.tw/image/Art/2DArt/UIImages/Common/IconDexInt_Trickster.webp",
-  Saboteur:
-    "https://cdn.poedb.tw/image/Art/2DArt/UIImages/Common/IconDexInt_Saboteur.webp",
-  Deadeye:
-    "https://cdn.poedb.tw/image/Art/2DArt/UIImages/Common/IconDex_Deadeye.webp",
-  Pathfinder:
-    "https://cdn.poedb.tw/image/Art/2DArt/UIImages/Common/IconDex_Pathfinder.webp",
-  Warden:
-    "https://cdn.poedb.tw/image/Art/2DArt/UIImages/Common/IconDex_Raider.webp",
-  Slayer:
-    "https://cdn.poedb.tw/image/Art/2DArt/UIImages/Common/IconStrDex_Slayer.webp",
-  Gladiator:
-    "https://cdn.poedb.tw/image/Art/2DArt/UIImages/Common/IconStrDex_Gladiator.webp",
-  Champion:
-    "https://cdn.poedb.tw/image/Art/2DArt/UIImages/Common/IconStrDex_Champion.webp",
-  Juggernaut:
-    "https://cdn.poedb.tw/image/Art/2DArt/UIImages/Common/IconStr_Juggernaut.webp",
-  Berserker:
-    "https://cdn.poedb.tw/image/Art/2DArt/UIImages/Common/IconStr_Berserker.webp",
-  Chieftain:
-    "https://cdn.poedb.tw/image/Art/2DArt/UIImages/Common/IconStr_Chieftain.webp",
-  Inquisitor:
-    "https://cdn.poedb.tw/image/Art/2DArt/UIImages/Common/IconStrInt_Inquisitor.webp",
-  Hierophant:
-    "https://cdn.poedb.tw/image/Art/2DArt/UIImages/Common/IconStrInt_Hierophant.webp",
-  Guardian:
-    "https://cdn.poedb.tw/image/Art/2DArt/UIImages/Common/IconStrInt_Guardian.webp",
-  Ascendant:
-    "https://cdn.poedb.tw/image/Art/2DArt/UIImages/Common/IconStrDexInt_Ascendant.webp",
-  // PoE 2 icons
-  Infernalist:
-    "https://cdn.poedb.tw/image/Art/2DArt/UIImages/Common/IconInt_Infernalist.webp",
-  "Blood Mage":
-    "https://cdn.poedb.tw/image/Art/2DArt/UIImages/Common/IconInt_BloodMage.webp",
-  Titan:
-    "https://cdn.poedb.tw/image/Art/2DArt/UIImages/Common/IconStr_Titan.webp",
-  Warbringer:
-    "https://cdn.poedb.tw/image/Art/2DArt/UIImages/Common/IconStr_Warbringer.webp",
-  Witchhunter:
-    "https://cdn.poedb.tw/image/Art/2DArt/UIImages/Common/IconDexInt_Witchhunter.webp",
-  "Gemling Legionnaire":
-    "https://cdn.poedb.tw/image/Art/2DArt/UIImages/Common/IconDexInt_GemlingLegionnaire.webp",
-  Invoker:
-    "https://cdn.poedb.tw/image/Art/2DArt/UIImages/Common/IconDexInt_Invoker.webp",
-  "Acolyte of Chayula":
-    "https://cdn.poedb.tw/image/Art/2DArt/UIImages/Common/IconDexInt_AcolyteOfChayula.webp",
-  Stormweaver:
-    "https://cdn.poedb.tw/image/Art/2DArt/UIImages/Common/IconInt_Stormweaver.webp",
-  Chronomancer:
-    "https://cdn.poedb.tw/image/Art/2DArt/UIImages/Common/IconInt_Chronomancer.webp",
+  // PoE 1 — local icons from public/images/ascendancy
+  Necromancer: "/images/ascendancy/poe1/Necromancer.png",
+  Elementalist: "/images/ascendancy/poe1/Elementalist.png",
+  Occultist: "/images/ascendancy/poe1/Occultist.png",
+  Assassin: "/images/ascendancy/poe1/Assassin.png",
+  Trickster: "/images/ascendancy/poe1/Trickster.png",
+  Saboteur: "/images/ascendancy/poe1/Saboteur.png",
+  Deadeye: "/images/ascendancy/poe1/Deadeye.png",
+  Pathfinder: "/images/ascendancy/poe1/Pathfinder.png",
+  Warden: "/images/ascendancy/poe1/Warden.png",
+  Slayer: "/images/ascendancy/poe1/Slayer.png",
+  Gladiator: "/images/ascendancy/poe1/Gladiator.png",
+  Champion: "/images/ascendancy/poe1/Champion.png",
+  Juggernaut: "/images/ascendancy/poe1/Juggernaut.png",
+  Berserker: "/images/ascendancy/poe1/Berserker.png",
+  Chieftain: "/images/ascendancy/poe1/Chieftain.png",
+  Inquisitor: "/images/ascendancy/poe1/Inquisitor.png",
+  Hierophant: "/images/ascendancy/poe1/Hierophant.png",
+  Guardian: "/images/ascendancy/poe1/Guardian.png",
+  Ascendant: "/images/ascendancy/poe1/Ascendant.png",
   // PoE 1 fallback
-  Raider:
-    "https://cdn.poedb.tw/image/Art/2DArt/UIImages/Common/IconDex_Raider.webp",
+  Raider: "/images/ascendancy/poe1/Deadeye.png",
+  // PoE 2 — local icons from public/images/ascendancy
+  Infernalist: "/images/ascendancy/poe2/Infernalist.png",
+  "Blood Mage": "/images/ascendancy/poe2/Blood Mage.png",
+  Titan: "/images/ascendancy/poe2/Titan.png",
+  Warbringer: "/images/ascendancy/poe2/Warbringer.png",
+  Witchhunter: "/images/ascendancy/poe2/Witchhunter.png",
+  "Gemling Legionnaire": "/images/ascendancy/poe2/Gemling Legionnaire.png",
+  Invoker: "/images/ascendancy/poe2/Invoker.png",
+  "Acolyte of Chayula": "/images/ascendancy/poe2/Acolyte of Chayula.png",
+  Stormweaver: "/images/ascendancy/poe2/Stormweaver.png",
+  Chronomancer: "/images/ascendancy/poe2/Chronomancer.png",
 };
 
 type ImageVariant = "full" | "icon";
@@ -192,6 +162,11 @@ export default function AscendancyImage({
   const cdnUrl = getAscendancyUrl(ascendancy, gameVersion, variant);
   const [src, setSrc] = useState<string>(imageUrl || cdnUrl || "");
   const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    setSrc(imageUrl || cdnUrl || "");
+    setFailed(false);
+  }, [imageUrl, cdnUrl]);
 
   const handleError = () => {
     if (src !== cdnUrl && cdnUrl) {
