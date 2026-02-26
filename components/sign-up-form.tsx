@@ -153,7 +153,7 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
                 className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5"
                 disabled={isLoading}
               >
-                {isLoading ? 'Creating Account...' : 'Create Account'}
+                Create Account
               </Button>
             </div>
 

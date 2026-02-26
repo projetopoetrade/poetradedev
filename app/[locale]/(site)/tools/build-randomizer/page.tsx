@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition, useEffect } from "react";
+import { useState, useTransition, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Dices, RefreshCw, ArrowRight, Play } from "lucide-react";
@@ -25,11 +25,12 @@ import type { Build } from "@/lib/interface";
 
 type RandomizerStatus = "idle" | "loading" | "animating" | "finished" | "empty";
 
-export default function BuildRandomizerPage({
-    params,
-}: {
-    params: { locale: string };
-}) {
+export default function BuildRandomizerPage(
+    props: {
+        params: Promise<{ locale: string }>;
+    }
+) {
+    const params = use(props.params);
     const router = useRouter();
     const locale = params?.locale || "en";
 

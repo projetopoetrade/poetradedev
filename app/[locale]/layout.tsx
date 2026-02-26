@@ -43,7 +43,7 @@ export async function generateMetadata(props: {
   // 3. Prepara os Hreflangs dinâmicos
   // Precisamos saber qual é a "rota base" sem o locale para montar os links alternativos
   const pathWithoutLocale = getPathWithoutLocale(rawPathname, locale);
-  
+
   // Define os prefixos corretos para cada língua
   const enPath = pathWithoutLocale === '/' ? '/' : pathWithoutLocale;
   const ptPath = pathWithoutLocale === '/' ? '/pt-br' : `/pt-br${pathWithoutLocale}`;
@@ -52,7 +52,7 @@ export async function generateMetadata(props: {
     metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"),
     title: t("layout.title"),
     description: t("layout.description"),
-    
+
     // Configurações de Ícones
     icons: {
       icon: [
@@ -73,7 +73,7 @@ export async function generateMetadata(props: {
     alternates: {
       // Canonical aponta para a página atual
       canonical: canonical,
-      
+
       // Languages apontam para as versões equivalentes
       languages: {
         'en': buildCanonical(enPath, 'en'),
@@ -120,14 +120,14 @@ const sourceSans = Source_Sans_3({
 });
 
 
-export default async function RootLayout({
-  children,
-  params
-}: Readonly<{
-  children: React.ReactNode;
-  params: Promise<{locale: string}>;
-}>) {
-  const {locale} = await params;
+export default async function RootLayout(
+  props: Readonly<{
+    children: React.ReactNode;
+    params: Promise<{ locale: string }>;
+  }>
+) {
+  const { children, params } = props;
+  const { locale } = await params;
   const headersList = await headers();
   // x-pathname is set by the middleware; next-url is a built-in Next.js header
   // that's always available as a reliable fallback.
@@ -160,7 +160,7 @@ export default async function RootLayout({
           >
             <NextIntlClientProvider locale={locale} messages={messages}>
               {children}
-              <Toaster 
+              <Toaster
                 position="top-center"
                 toastOptions={{
                   style: {
@@ -194,33 +194,33 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-                        <NextIntlClientProvider locale={locale} messages={messages}>
+          <NextIntlClientProvider locale={locale} messages={messages}>
 
-          <CurrencyProvider>
-            <CartProvider>
-              <SiteNavbar locale={locale} desktopAuth={<HeaderAuth />} />
+            <CurrencyProvider>
+              <CartProvider>
+                <SiteNavbar locale={locale} desktopAuth={<HeaderAuth />} />
 
-              <div className="pt-16">
-                {children}
-              </div>
-              <Footer locale={locale} />
-              <ConsentedProviders />
-              <CookieConsent locale={locale} />
-              <Toaster 
-                position="top-center"
-                toastOptions={{
-                  style: {
-                    background: 'hsl(var(--background))',
-                    color: 'hsl(var(--foreground))',
-                    border: '1px solid hsl(var(--border))',
-                  },
-                  className: 'border border-border',
-                  duration: 3000,
-                }}
-                richColors
-              />
-            </CartProvider>
-          </CurrencyProvider>
+                <div className="pt-16">
+                  {children}
+                </div>
+                <Footer locale={locale} />
+                <ConsentedProviders />
+                <CookieConsent locale={locale} />
+                <Toaster
+                  position="top-center"
+                  toastOptions={{
+                    style: {
+                      background: 'hsl(var(--background))',
+                      color: 'hsl(var(--foreground))',
+                      border: '1px solid hsl(var(--border))',
+                    },
+                    className: 'border border-border',
+                    duration: 3000,
+                  }}
+                  richColors
+                />
+              </CartProvider>
+            </CurrencyProvider>
           </NextIntlClientProvider>
         </ThemeProvider>
       </body>
