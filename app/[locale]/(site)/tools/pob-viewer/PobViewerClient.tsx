@@ -1686,6 +1686,18 @@ export default function PobViewerClient({ locale }: Props) {
               </section>
             )}
 
+            {/* Build Notes (from PoB Notes tab) */}
+            {data?.Notes?.trim() && (
+              <section className="rounded-lg border border-border/50 bg-background px-3 py-3">
+                <h2 className="text-sm font-semibold text-muted-foreground tracking-wide uppercase mb-2">
+                  {isPt ? "Notas da build" : "Build notes"}
+                </h2>
+                <div className="text-sm text-foreground/90 whitespace-pre-wrap break-words">
+                  {data.Notes}
+                </div>
+              </section>
+            )}
+
             {/* Equipment */}
             {itemSets.length > 0 && (
               <section className="space-y-3">

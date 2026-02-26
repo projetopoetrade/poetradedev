@@ -1,6 +1,6 @@
 # Estado Atual do Projeto — PathOfTrade
 
-> Gerado em: 25/02/2026  
+> Atualizado em: 25/02/2026
 > Caminho: `c:\Users\alexa\Documents\poetrade-dev`
 
 ---
@@ -104,7 +104,8 @@ poetrade-dev/
 | `products` | Produtos sincronizados do Sanity (moedas, itens, serviços) |
 | `orders` | Pedidos com status, itens, pagamento Stripe/PIX |
 | `currency_rates` | Taxas de câmbio BRL/USD/EUR com função SQL de conversão |
-| `pob_builds` | Builds do Path of Building compartilhados por hash curto |
+| `pob_builds` | Builds do Path of Building compartilhados por hash curto (geradas por usuários via PoB Viewer) |
+| `builds` | **[NOVO]** Builds curadas pelo admin com guia, tags, ascendência, código PoB — ver `docs/BUILDS_FEATURE.md` |
 | `items` | Dados completos de itens PoE (via PoE Wiki Cargo) |
 | `skill_gems` | Dados de skill gems PoE (atributos, tags, variantes) |
 
@@ -182,6 +183,10 @@ Todas as tabelas têm RLS ativado. Padrão:
 | `/api/admin/products/delete` | DELETE | Remove produto |
 | `/api/admin/orders` | GET | Lista pedidos (admin) |
 | `/api/admin/sync-ninja` | POST | Sincroniza preços poe.ninja |
+| `/api/admin/builds` | GET | Lista todas as builds (incluindo rascunhos) |
+| `/api/admin/builds` | POST | Cria nova build curada |
+| `/api/admin/builds/[id]` | PATCH | Edita build (qualquer campo, incluindo toggle is_published) |
+| `/api/admin/builds/[id]` | DELETE | Remove build |
 
 ### Webhooks
 
@@ -210,6 +215,15 @@ Todas as tabelas têm RLS ativado. Padrão:
 - **PoB Viewer** — visualiza e compartilha builds do Path of Building
 - **Gem Browser** — busca e filtra skill gems com dados da Wiki PoE
 
+### Builds **[NOVO — fev/2026]**
+- Listagem pública em `/builds` com filtros (gameVersion, league, class, ascendancy, tags)
+- Página individual `/builds/[slug]` com guia completo, stats e botão "Open in PoB Viewer"
+- Imagem da ascendência por upload ou fallback automático do CDN do PoE
+- Admin CRUD em `/admin/dashboard` → seção "Builds"
+- SEO completo: canonical, hreflang, JSON-LD ItemList + Article
+- Incluso no sitemap automático
+- Ver documentação detalhada: `docs/BUILDS_FEATURE.md`
+
 ### Blog
 - Posts com Portable Text (Sanity)
 - Categorias, autores, paginação
@@ -226,6 +240,7 @@ Todas as tabelas têm RLS ativado. Padrão:
 - Gerenciamento de ligas (criar, clonar, editar, deletar)
 - Gerenciamento de produtos (editar, deletar, sincronizar com poe.ninja)
 - Visualização de pedidos
+- **Gerenciamento de Builds** — criar, publicar/despublicar e excluir builds curadas **[NOVO]**
 - Sanity Studio embutido em `/admin/studio`
 
 ### Auth
@@ -292,3 +307,5 @@ Todas as tabelas têm RLS ativado. Padrão:
 | 6 | Sanity Studio em `/admin/studio` sem proteção de rota visível além da autenticação Sanity |
 | 7 | Script `postbuild` encadeia `next-sitemap` e `analyze-keywords.js` |
 | 8 | `upscayl-node` como dependência de produção (binário pesado) |
+| 9 | Tabela `builds` criada mas **migration ainda não aplicada** — rodar `supabase db push` ou SQL manual no Studio antes de usar |
+| 10 | CDN URLs de ascendência em `lib/builds-data.ts` são estáticas — se a GGG mudar os paths, atualizar o mapa manualmente |

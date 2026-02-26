@@ -7,7 +7,8 @@ import table from "./table";
 import product from "./product";
 import league from "./league";
 import poeItem from "./poe-item";
+import buildGuide from "./buildGuide";
 
-const schemas = [post, author, category, blockContent, code, table, product, league, poeItem];
+const schemas = [post, author, category, blockContent, code, table, product, league, poeItem, buildGuide];
 
 export default schemas;

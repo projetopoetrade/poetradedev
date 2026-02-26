@@ -125,3 +125,7 @@ export const allAuthorsQuery = groq`*[_type == "author" && defined(slug.current)
   image,
   bio
 }`;
+
+export const buildGuideBySlugQuery = groq`*[_type == "buildGuide" && slug.current == $slug][0]{
+  body
+}`;

@@ -4,6 +4,7 @@ const {
   getSitemapLeagues,
   getSitemapLeaguesFromSanity,
   getSitemapLeagueSlugPages,
+  getSitemapBuilds,
 } = require('./lib/sitemap-data-fetchers.js');
 
 /** @type {import('next-sitemap').IConfig} */
@@ -51,6 +52,7 @@ module.exports = {
     // 1. PÁGINAS ESTÁTICAS
     // ============================================================
     const staticPages = [
+      { path: '/builds', priority: 0.85, changefreq: 'weekly' },
       { path: '/', priority: 1.0, changefreq: 'daily' },
       { path: '/blog', priority: 0.8, changefreq: 'weekly' },
       { path: '/contact', priority: 0.4, changefreq: 'monthly' },
@@ -89,11 +91,12 @@ module.exports = {
     });
 
     // Fetch Data
-    const [posts, products, sanityLeagues, leagueSlugPages] = await Promise.all([
+    const [posts, products, sanityLeagues, leagueSlugPages, builds] = await Promise.all([
       getSitemapPosts(),
       getSitemapProducts(),
       getSitemapLeaguesFromSanity(),
       getSitemapLeagueSlugPages(),
+      getSitemapBuilds(),
     ]);
 
     // ============================================================
@@ -203,6 +206,25 @@ module.exports = {
         locales.forEach((locale) => {
           paths.push({
             loc: locale === defaultLocale ? path : `/${locale}${path}`,
+            lastmod: lastmod || defaultLastMod,
+            changefreq: 'weekly',
+            priority: 0.8,
+            alternateRefs: alternates,
+          });
+        });
+      });
+    }
+
+    // ============================================================
+    // 6. BUILDS INDIVIDUAIS
+    // ============================================================
+    if (builds && builds.length > 0) {
+      builds.forEach(({ slug, lastmod }) => {
+        const buildPath = `/builds/${slug}`;
+        const alternates = generateAlternateRefs(buildPath);
+        locales.forEach((locale) => {
+          paths.push({
+            loc: locale === defaultLocale ? buildPath : `/${locale}${buildPath}`,
             lastmod: lastmod || defaultLastMod,
             changefreq: 'weekly',
             priority: 0.8,

@@ -22,3 +22,29 @@ export type PageProps = Promise<{
   league: string;
   difficulty: string;
 }>
+
+export interface Build {
+  id: string;
+  title: string;
+  slug: string;
+  description?: string;
+  game_version: 'path-of-exile-1' | 'path-of-exile-2';
+  league?: string;
+  class: string;
+  ascendancy: string;
+  main_skill?: string;
+  tags: string[];
+  difficulty?: 'easy' | 'medium' | 'hard';
+  budget?: 'cheap' | 'medium' | 'expensive';
+  pob_code: string;
+  pob_hash?: string;
+  image_url?: string;
+  video_url?: string;
+  guide_content?: string;
+  seo_title?: string;
+  seo_description?: string;
+  is_published: boolean;
+  author?: string;
+  created_at: string;
+  updated_at: string;
+}

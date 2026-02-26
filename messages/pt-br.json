@@ -1173,5 +1173,33 @@
     "blog": "Blog",
     "games": "Jogos",
     "authors": "Autores"
+  },
+  "Builds": {
+    "pageTitle": "Builds PoE",
+    "pageSubtitle": "Navegue por builds curadas para Path of Exile",
+    "filterAll": "Todos",
+    "filterClass": "Classe",
+    "filterAscendancy": "Ascendência",
+    "filterLeague": "Liga",
+    "filterTags": "Tipo de Build",
+    "searchPlaceholder": "Buscar builds...",
+    "openInPobViewer": "Abrir no PoB Viewer",
+    "viewGuide": "Ver Guia da Build",
+    "noBuildsFound": "Nenhuma build encontrada",
+    "tagLeagueStarter": "League Starter",
+    "tagEndgame": "Endgame",
+    "tagSpeedFarm": "Speed Farm",
+    "tagBossKiller": "Boss Killer",
+    "tagSsfViable": "Viável em SSF",
+    "tagHardcore": "Hardcore",
+    "difficultyEasy": "Fácil",
+    "difficultyMedium": "Médio",
+    "difficultyHard": "Difícil",
+    "budgetCheap": "Barato",
+    "budgetMedium": "Médio",
+    "budgetExpensive": "Caro",
+    "mainSkill": "Skill Principal",
+    "difficulty": "Dificuldade",
+    "budget": "Budget"
   }
 }

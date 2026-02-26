@@ -3,7 +3,7 @@ import { encodedRedirect } from "@/utils/utils";
 import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import type { Product } from "@/lib/interface";
+import type { Product, Build } from "@/lib/interface";
 
 export const signUpAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
@@ -315,6 +315,111 @@ export const getDifficulties = async (gameVersion: 'path-of-exile-1' | 'path-of-
   }
 
   return data;
+};
+
+// --- Builds ---
+
+export const getBuilds = async (params: {
+  gameVersion?: string;
+  league?: string;
+  class?: string;
+  ascendancy?: string;
+  tags?: string[];
+  search?: string;
+  page?: number;
+  limit?: number;
+}): Promise<{ builds: Build[]; total: number }> => {
+  const { gameVersion, league, class: poeClass, ascendancy, tags, search, page = 1, limit = 12 } = params;
+  const supabase = await createClient();
+
+  let query = supabase
+    .from('builds')
+    .select('*', { count: 'exact' })
+    .eq('is_published', true)
+    .order('created_at', { ascending: false });
+
+  if (gameVersion) query = query.eq('game_version', gameVersion);
+  if (league) query = query.eq('league', league);
+  if (poeClass) query = query.eq('class', poeClass);
+  if (ascendancy) query = query.eq('ascendancy', ascendancy);
+  if (tags && tags.length > 0) query = query.overlaps('tags', tags);
+  if (search) query = query.ilike('title', `%${search}%`);
+
+  const from = (page - 1) * limit;
+  const to = from + limit - 1;
+  query = query.range(from, to);
+
+  const { data, error, count } = await query;
+
+  if (error) {
+    console.error('[getBuilds] Error:', error.message);
+    throw new Error('Could not fetch builds');
+  }
+
+  return { builds: (data as Build[]) || [], total: count || 0 };
+};
+
+export const getBuildBySlug = async (slug: string): Promise<Build | null> => {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('builds')
+    .select('*')
+    .eq('slug', slug)
+    .eq('is_published', true)
+    .single();
+
+  if (error) return null;
+  return data as Build;
+};
+
+export const getBuildsAdmin = async (): Promise<Build[]> => {
+  const { createAdminClient } = await import('@/utils/supabase/admin');
+  const supabase = createAdminClient();
+  const { data, error } = await supabase
+    .from('builds')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('[getBuildsAdmin] Error:', error.message);
+    throw new Error('Could not fetch builds');
+  }
+
+  return (data as Build[]) || [];
+};
+
+export const getPublishedBuildSlugs = async (): Promise<string[]> => {
+  // Uses admin client (no cookies) — safe for generateStaticParams / build-time calls
+  const { createAdminClient } = await import('@/utils/supabase/admin');
+  const supabase = createAdminClient();
+  const { data } = await supabase
+    .from('builds')
+    .select('slug')
+    .eq('is_published', true);
+
+  return (data || []).map((b) => b.slug);
+};
+
+export const getRelatedBuilds = async (
+  currentSlug: string,
+  limit: number = 3,
+  options?: { class?: string; ascendancy?: string }
+): Promise<Build[]> => {
+  const supabase = await createClient();
+  let query = supabase
+    .from('builds')
+    .select('*')
+    .eq('is_published', true)
+    .neq('slug', currentSlug)
+    .order('created_at', { ascending: false })
+    .limit(limit * 2);
+
+  if (options?.ascendancy) query = query.eq('ascendancy', options.ascendancy);
+  else if (options?.class) query = query.eq('class', options.class);
+
+  const { data } = await query;
+  const builds = (data as Build[]) || [];
+  return builds.slice(0, limit);
 };
 
 

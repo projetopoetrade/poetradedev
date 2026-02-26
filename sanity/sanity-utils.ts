@@ -1,7 +1,7 @@
 import ImageUrlBuilder from "@sanity/image-url";
 import { createClient, type QueryParams } from "next-sanity";
 import clientConfig from "./config/client-config";
-import { postQuery, postQueryBySlug, productQuery, postQueryByCategory, postQueryByCategoryAndGameVersion, leagueBySlugQuery, allLeaguesQuery, liveLeagueQuery, postQueryByAuthor, allAuthorsQuery } from "./sanity-query";
+import { postQuery, postQueryBySlug, productQuery, postQueryByCategory, postQueryByCategoryAndGameVersion, leagueBySlugQuery, allLeaguesQuery, liveLeagueQuery, postQueryByAuthor, allAuthorsQuery, buildGuideBySlugQuery } from "./sanity-query";
 import { Blog } from "@/types/blog";
 import { SanityImageSource } from "@sanity/image-url/lib/types/types";
 import type { Product } from "@/lib/interface";
@@ -127,6 +127,17 @@ export const getPostBySlug = async (slug: string, language: string) => {
   });
 
   return data;
+};
+
+export type BuildGuideSanity = { body: unknown } | null;
+
+export const getBuildGuideBySlug = async (slug: string): Promise<BuildGuideSanity> => {
+  const data = await sanityFetch<{ body: unknown } | null>({
+    query: buildGuideBySlugQuery,
+    qParams: { slug },
+    tags: ["buildGuide"],
+  });
+  return data && Array.isArray(data.body) && data.body.length > 0 ? data : null;
 };
 
 export const getPostsByCategoryAndGameVersion = async (categorySlug: string, gameVersion: string, language: string) => {

@@ -97,6 +97,8 @@ export interface PobTreeDetails {
 export interface PobBuildData {
   BuildInfo: { Class: string; Ascendancy: string; Level: string };
   Stats: Record<string, string>;
+  /** Build notes from PoB (Notes tab). Optional; only present when the build has notes. */
+  Notes?: string;
   ItemSets: PobItemSet[];
   SkillSets: PobSkillSet[];
   Skills: PobSkillGroup[];
@@ -1264,6 +1266,13 @@ export async function parsePobXml(xmlString: string): Promise<PobBuildData> {
         result.Stats[statsKeys[statName]] = formatted;
       }
     }
+  }
+
+  // --- 1b. Build Notes (PoB "Notes" tab) ---
+  const notesNodes = doc.getElementsByTagName("Notes");
+  if (notesNodes.length > 0 && notesNodes[0].textContent) {
+    const raw = (notesNodes[0].textContent || "").trim();
+    if (raw) result.Notes = raw;
   }
 
   // --- 2. Items ---

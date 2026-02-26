@@ -11,7 +11,8 @@ import {
   Home,
   ChevronRight,
   RefreshCw,
-  Database
+  Database,
+  Sword
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -43,6 +44,10 @@ export default function AdminDashboard() {
         return 'Pedidos';
       case 'cache':
         return 'Gerenciar Cache';
+      case 'builds':
+        return 'Builds';
+      case 'add-build':
+        return 'Nova Build';
       default:
         return 'Dashboard';
     }
@@ -147,6 +152,34 @@ export default function AdminDashboard() {
             >
               <Database className="h-4 w-4" />
               <span>Cache</span>
+            </button>
+
+            <div className="pt-2 pb-1 px-3">
+              <span className="text-[10px] uppercase tracking-wider text-foreground/40 font-medium">Builds</span>
+            </div>
+
+            <button
+              onClick={() => setActiveView('builds')}
+              className={`w-full flex items-center gap-2 px-3 py-2 rounded-md text-left transition-colors ${
+                activeView === 'builds'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-foreground/80 hover:text-foreground hover:bg-foreground/5'
+              }`}
+            >
+              <Sword className="h-4 w-4" />
+              <span>Gerenciar Builds</span>
+            </button>
+
+            <button
+              onClick={() => setActiveView('add-build')}
+              className={`w-full flex items-center gap-2 px-3 py-2 rounded-md text-left transition-colors ${
+                activeView === 'add-build'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-foreground/80 hover:text-foreground hover:bg-foreground/5'
+              }`}
+            >
+              <Plus className="h-4 w-4" />
+              <span>Nova Build</span>
             </button>
           </nav>
         </aside>
