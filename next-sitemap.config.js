@@ -14,10 +14,10 @@ module.exports = {
   generateRobotsTxt: true,
   sitemapSize: 5000,
 
-// Clean Crawl Budget: Exclude internal/private routes (images allowed for Google Images)
+  // Clean Crawl Budget: Exclude internal/private routes (images allowed for Google Images)
   exclude: ['/admin', '/api', '/_next', '/cart', '/auth', '/tools/price-comparison'],
 
-// Robots.txt options: Block admin and private routes only (images allowed for Google Images)
+  // Robots.txt options: Block admin and private routes only (images allowed for Google Images)
   robotsTxtOptions: {
     policies: [
       {
@@ -36,6 +36,11 @@ module.exports = {
     const locales = ['en', 'pt-br'];
     const defaultLocale = 'en';
 
+    // Capture the base siteUrl once — config.siteUrl can be mutated per-page by next-sitemap
+    // and would otherwise cause path duplication in xhtml:link hrefs (e.g. /builds/builds)
+    // Strip trailing slash to avoid double slashes when concatenating with leading-slash paths
+    const baseSiteUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://www.pathoftrade.net').replace(/\/$/, '');
+
     // Helper to generate Hreflang alternateRefs for a given base path
     const generateAlternateRefs = (basePath) => {
       return locales.map(locale => {
@@ -43,8 +48,9 @@ module.exports = {
         // Ensure we don't end up with double slashes if basePath is /
         const cleanPath = localePath === '/' ? '/' : localePath.replace(/\/$/, '');
         return {
-          href: `${config.siteUrl}${cleanPath}`,
+          href: `${baseSiteUrl}${cleanPath}`,
           hreflang: locale,
+          hrefIsAbsolute: true,  // tells next-sitemap not to prepend field.loc to the href
         };
       });
     };

@@ -5,6 +5,8 @@ import { PortableText, type PortableTextComponents } from "@portabletext/react";
 import { getImageDimensions } from "@sanity/asset-utils";
 import urlBuilder from "@sanity/image-url";
 import Image from "next/image";
+import Link from "next/link";
+import React from "react";
 import { PoeItemBlogCard } from "@/components/poe/PoeItemBlogCard";
 import type { SanityPoeItem } from "@/components/poe/PoeItemBlogCard";
 
@@ -60,7 +62,63 @@ const TableComponent = ({ value }: { value: any }) => {
   );
 };
 
+// --- Auto-Link Text Parser ---
+const POE_CURRENCIES: Record<string, string> = {
+  "divine orb": "divine-orb",
+  "divine orbs": "divine-orb",
+  "chaos orb": "chaos-orb",
+  "chaos orbs": "chaos-orb",
+  "mirror of kalandra": "mirror-of-kalandra",
+  "mirrors of kalandra": "mirror-of-kalandra",
+  "exalted orb": "exalted-orb",
+  "exalted orbs": "exalted-orb",
+  "hinekora's lock": "hinekora-s-lock",
+  "hinekoras lock": "hinekora-s-lock",
+  "mirror": "mirror-of-kalandra",
+  "divine": "divine-orb",
+  "divines": "divine-orb",
+  "chaos": "chaos-orb",
+};
+
+// Regex to match any of the currency keys, case-insensitive
+const currencyRegex = new RegExp(
+  `\\b(${Object.keys(POE_CURRENCIES).join("|")})\\b`,
+  "gi"
+);
+
+function renderTextWithLinks(text: string) {
+  const parts = text.split(currencyRegex);
+  return parts.map((part, i) => {
+    const lowerPart = part.toLowerCase();
+    if (POE_CURRENCIES[lowerPart]) {
+      return (
+        <Link
+          key={i}
+          href={`/products/${POE_CURRENCIES[lowerPart]}`}
+          className="text-amber-600 dark:text-amber-500 hover:text-amber-700 dark:hover:text-amber-400 font-semibold transition-colors underline decoration-amber-500/30 underline-offset-2"
+          title={`Buy ${part}`}
+        >
+          {part}
+        </Link>
+      );
+    }
+    return part;
+  });
+}
+
 export const blockContentComponents: PortableTextComponents = {
+  block: {
+    normal: ({ children }: any) => {
+      // If the children array contains strings, intercept them and wrap with Links
+      const newChildren = React.Children.map(children, (child) => {
+        if (typeof child === "string") {
+          return renderTextWithLinks(child);
+        }
+        return child;
+      });
+      return <p className="leading-relax mb-4">{newChildren}</p>;
+    },
+  },
   types: {
     image: ImageComponent,
     table: TableComponent,

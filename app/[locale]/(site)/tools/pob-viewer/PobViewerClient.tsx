@@ -2,8 +2,15 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Loader2, Sword, ClipboardCopy, Check, ExternalLink } from "lucide-react";
+import {
+  Loader2,
+  Sword,
+  ClipboardCopy,
+  Check,
+  ExternalLink,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -472,7 +479,13 @@ function SocketDisplay({ sockets }: { sockets: string }) {
 
 // ─── Item tooltip (PoE style) ─────────────────────────────────────────────────
 
-function ItemTooltip({ item, compact = false }: { item: PobItem; compact?: boolean }) {
+function ItemTooltip({
+  item,
+  compact = false,
+}: {
+  item: PobItem;
+  compact?: boolean;
+}) {
   const nameColorHsl =
     RARITY_NAME_COLOR_HSL[item.rarity] ?? RARITY_NAME_COLOR_HSL.Normal;
   const headerTextures = HEADER_TEXTURES[item.rarity];
@@ -504,17 +517,23 @@ function ItemTooltip({ item, compact = false }: { item: PobItem; compact?: boole
   const effectiveIconUrl = getEffectiveItemIconUrl(item);
 
   // Tamanhos adaptados para modo compacto (mobile)
-  const w        = compact ? "w-[min(300px,88vw)]" : "w-[420px]";
-  const baseText = compact ? "text-[12px]"          : "text-[14px]";
-  const hdrPad   = compact ? "px-4 py-1"            : "px-6 py-1.5";
-  const bodyPad  = compact ? "px-4 py-1.5"          : "px-6 py-2";
-  const nameSz   = compact
-    ? (item.rarity === "Magic" ? "text-[13px]" : "text-[16px]")
-    : (item.rarity === "Magic" ? "text-[15px]" : "text-[20px]");
-  const baseSz   = compact ? "text-[11px]" : "text-[13px]";
+  const w = compact ? "w-[min(300px,88vw)]" : "w-[420px]";
+  const baseText = compact ? "text-[12px]" : "text-[14px]";
+  const hdrPad = compact ? "px-4 py-1" : "px-6 py-1.5";
+  const bodyPad = compact ? "px-4 py-1.5" : "px-6 py-2";
+  const nameSz = compact
+    ? item.rarity === "Magic"
+      ? "text-[13px]"
+      : "text-[16px]"
+    : item.rarity === "Magic"
+      ? "text-[15px]"
+      : "text-[20px]";
+  const baseSz = compact ? "text-[11px]" : "text-[13px]";
 
   return (
-    <div className={`${w} ${baseText} leading-snug overflow-hidden rounded shadow-xl bg-black/80 font-fontin`}>
+    <div
+      className={`${w} ${baseText} leading-snug overflow-hidden rounded shadow-xl bg-black/80 font-fontin`}
+    >
       {/* Header: name + base type */}
       <div
         className={`${hdrPad} text-center relative`}
@@ -668,11 +687,13 @@ function ItemTooltip({ item, compact = false }: { item: PobItem; compact?: boole
                     )}
                     <span className="border-t border-slate-600/50 pt-1 mt-0.5 w-full text-center">
                       <span className="text-yellow-300 font-bold">
-                        {item.isEstimatedDps ? "~" : ""}{totalDPS.toFixed(1)} Total DPS
+                        {item.isEstimatedDps ? "~" : ""}
+                        {totalDPS.toFixed(1)} Total DPS
                       </span>
                       {pDPS > 0 && eDPS + cDPS > 0 && (
                         <span className="text-slate-500 ml-2">
-                          ({pDPS.toFixed(0)} phys + {(eDPS + cDPS).toFixed(0)} ele/chaos)
+                          ({pDPS.toFixed(0)} phys + {(eDPS + cDPS).toFixed(0)}{" "}
+                          ele/chaos)
                         </span>
                       )}
                     </span>
@@ -937,7 +958,13 @@ function ItemSlotCard({
 
 // ─── Jewel Tooltip (same style as ItemTooltip) ─────────────────────────────────
 
-function JewelTooltip({ jewel, compact = false }: { jewel: PobSocketedJewel; compact?: boolean }) {
+function JewelTooltip({
+  jewel,
+  compact = false,
+}: {
+  jewel: PobSocketedJewel;
+  compact?: boolean;
+}) {
   const displayName =
     jewel.name === "New Item" ? (jewel.baseName ?? jewel.name) : jewel.name;
 
@@ -951,17 +978,23 @@ function JewelTooltip({ jewel, compact = false }: { jewel: PobSocketedJewel; com
   const hasImplicits = implicits.length > 0;
   const hasExplicits = explicits.length > 0;
 
-  const w        = compact ? "w-[min(300px,88vw)]" : "w-[420px]";
-  const baseText = compact ? "text-[12px]"          : "text-[14px]";
-  const hdrPad   = compact ? "px-4 py-1"            : "px-6 py-1.5";
-  const bodyPad  = compact ? "px-4 py-1.5"          : "px-6 py-2";
-  const nameSz   = compact
-    ? (rarity === "Magic" ? "text-[13px]" : "text-[16px]")
-    : (rarity === "Magic" ? "text-[15px]" : "text-[20px]");
-  const baseSz   = compact ? "text-[11px]" : "text-[13px]";
+  const w = compact ? "w-[min(300px,88vw)]" : "w-[420px]";
+  const baseText = compact ? "text-[12px]" : "text-[14px]";
+  const hdrPad = compact ? "px-4 py-1" : "px-6 py-1.5";
+  const bodyPad = compact ? "px-4 py-1.5" : "px-6 py-2";
+  const nameSz = compact
+    ? rarity === "Magic"
+      ? "text-[13px]"
+      : "text-[16px]"
+    : rarity === "Magic"
+      ? "text-[15px]"
+      : "text-[20px]";
+  const baseSz = compact ? "text-[11px]" : "text-[13px]";
 
   return (
-    <div className={`${w} ${baseText} leading-snug overflow-hidden rounded shadow-xl bg-black/80 font-fontin`}>
+    <div
+      className={`${w} ${baseText} leading-snug overflow-hidden rounded shadow-xl bg-black/80 font-fontin`}
+    >
       <div
         className={`${hdrPad} text-center relative`}
         style={
@@ -1101,6 +1134,12 @@ export default function PobViewerClient({ locale }: Props) {
   const isPt = locale === "pt-br";
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  // Get referrer info from URL params
+  const referrerFrom = searchParams.get("from");
+  const referrerBuildSlug = searchParams.get("buildSlug");
+  const hasReferrer = referrerFrom === "build" && referrerBuildSlug;
+
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -1324,14 +1363,14 @@ export default function PobViewerClient({ locale }: Props) {
           : null;
       // eslint-disable-next-line no-console
       console.log(`[PoB Viewer] ${slot}: "${w.name}" (${w.rarity})`, {
-        physDamage:  w.physDamage  ?? "—",
-        eleDamage:   w.eleDamage   ?? "—",
+        physDamage: w.physDamage ?? "—",
+        eleDamage: w.eleDamage ?? "—",
         chaosDamage: w.chaosDamage ?? "—",
-        critChance:  w.critChance != null ? `${w.critChance}%` : "—",
-        aps:         aps           ?? "—",
-        pDPS:        pDPS          ?? "—",
-        eDPS:        eDPS          ?? "—",
-        cDPS:        cDPS          ?? "—",
+        critChance: w.critChance != null ? `${w.critChance}%` : "—",
+        aps: aps ?? "—",
+        pDPS: pDPS ?? "—",
+        eDPS: eDPS ?? "—",
+        cDPS: cDPS ?? "—",
         totalDPS: aps
           ? (
               (w.physDamage
@@ -1446,16 +1485,39 @@ export default function PobViewerClient({ locale }: Props) {
 
   return (
     <TooltipProvider delayDuration={150}>
-      <div
-        className={`max-w-7xl mx-auto ${data ? "space-y-5" : "space-y-8"}`}
-      >
+      <div className={`max-w-7xl mx-auto ${data ? "space-y-5" : "space-y-8"}`}>
+        {/* Back to Build link (when coming from a build page) */}
+        {hasReferrer && (
+          <Link
+            href={`/${locale}/builds/${referrerBuildSlug}`}
+            className="inline-flex items-center gap-1.5 text-sm text-primary hover:text-primary/80 transition-colors"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="m15 18-6-6 6-6" />
+            </svg>
+            {isPt ? "Voltar para a Build" : "Back to Build Guide"}
+          </Link>
+        )}
+
         {/* Page header */}
         <header className={data ? "space-y-0.5" : "space-y-1"}>
           <div className="flex items-center gap-2">
             <Sword
               className={data ? "h-5 w-5 text-primary" : "h-6 w-6 text-primary"}
             />
-            <h1 className={data ? "text-xl font-semibold" : "text-2xl font-bold"}>
+            <h1
+              className={data ? "text-xl font-semibold" : "text-2xl font-bold"}
+            >
               {isPt ? "Visualizador de Build" : "PoB Viewer"}
             </h1>
           </div>
@@ -1595,36 +1657,74 @@ export default function PobViewerClient({ locale }: Props) {
                               console.log("[OpenInPoB] botão clicado");
                               if (pobKey) {
                                 const existingUrl = `pob://pobbin/${pobKey}`;
-                                console.log("[OpenInPoB] reutilizando chave existente:", pobKey);
-                                console.log("[OpenInPoB] abrindo URL:", existingUrl);
+                                console.log(
+                                  "[OpenInPoB] reutilizando chave existente:",
+                                  pobKey,
+                                );
+                                console.log(
+                                  "[OpenInPoB] abrindo URL:",
+                                  existingUrl,
+                                );
                                 window.location.href = existingUrl;
                                 return;
                               }
                               const code = input.trim();
-                              console.log("[OpenInPoB] código (primeiros 80 chars):", code.slice(0, 80));
-                              console.log("[OpenInPoB] tamanho do código:", code.length);
+                              console.log(
+                                "[OpenInPoB] código (primeiros 80 chars):",
+                                code.slice(0, 80),
+                              );
+                              console.log(
+                                "[OpenInPoB] tamanho do código:",
+                                code.length,
+                              );
                               setPobLoading(true);
                               try {
-                                console.log("[OpenInPoB] chamando /api/tools/pob-viewer/pobbin...");
-                                const res = await fetch("/api/tools/pob-viewer/pobbin", {
-                                  method: "POST",
-                                  headers: { "Content-Type": "application/json" },
-                                  body: JSON.stringify({ code }),
-                                });
-                                console.log("[OpenInPoB] resposta status:", res.status, res.statusText);
-                                const json = await res.json() as { key?: string; error?: string };
+                                console.log(
+                                  "[OpenInPoB] chamando /api/tools/pob-viewer/pobbin...",
+                                );
+                                const res = await fetch(
+                                  "/api/tools/pob-viewer/pobbin",
+                                  {
+                                    method: "POST",
+                                    headers: {
+                                      "Content-Type": "application/json",
+                                    },
+                                    body: JSON.stringify({ code }),
+                                  },
+                                );
+                                console.log(
+                                  "[OpenInPoB] resposta status:",
+                                  res.status,
+                                  res.statusText,
+                                );
+                                const json = (await res.json()) as {
+                                  key?: string;
+                                  error?: string;
+                                };
                                 console.log("[OpenInPoB] resposta json:", json);
                                 if (json.key) {
-                                  console.log("[OpenInPoB] chave recebida:", json.key);
+                                  console.log(
+                                    "[OpenInPoB] chave recebida:",
+                                    json.key,
+                                  );
                                   const pobUrl = `pob://pobbin/${json.key}`;
-                                  console.log("[OpenInPoB] abrindo URL:", pobUrl);
+                                  console.log(
+                                    "[OpenInPoB] abrindo URL:",
+                                    pobUrl,
+                                  );
                                   setPobKey(json.key);
                                   window.location.href = pobUrl;
                                 } else {
-                                  console.error("[OpenInPoB] sem chave na resposta:", json);
+                                  console.error(
+                                    "[OpenInPoB] sem chave na resposta:",
+                                    json,
+                                  );
                                 }
                               } catch (err) {
-                                console.error("[OpenInPoB] erro na requisição:", err);
+                                console.error(
+                                  "[OpenInPoB] erro na requisição:",
+                                  err,
+                                );
                               } finally {
                                 setPobLoading(false);
                               }
@@ -1638,11 +1738,16 @@ export default function PobViewerClient({ locale }: Props) {
                               <ExternalLink className="w-3 h-3" />
                             )}
                             {pobLoading
-                              ? isPt ? "Gerando..." : "Generating..."
+                              ? isPt
+                                ? "Gerando..."
+                                : "Generating..."
                               : "Open in PoB"}
                           </button>
                         </TooltipTrigger>
-                        <TooltipContent side="bottom" className="text-xs max-w-[220px] text-center">
+                        <TooltipContent
+                          side="bottom"
+                          className="text-xs max-w-[220px] text-center"
+                        >
                           {isPt
                             ? "Abre a build no Path of Building (requer PoB instalado)"
                             : "Opens the build in Path of Building (requires PoB installed)"}
@@ -1669,8 +1774,12 @@ export default function PobViewerClient({ locale }: Props) {
                               <ClipboardCopy className="w-3 h-3" />
                             )}
                             {copied
-                              ? isPt ? "Copiado!" : "Copied!"
-                              : isPt ? "Copiar código" : "Copy code"}
+                              ? isPt
+                                ? "Copiado!"
+                                : "Copied!"
+                              : isPt
+                                ? "Copiar código"
+                                : "Copy code"}
                           </button>
                         </TooltipTrigger>
                         <TooltipContent side="bottom" className="text-xs">
@@ -1682,7 +1791,6 @@ export default function PobViewerClient({ locale }: Props) {
                     </TooltipProvider>
                   </div>
                 )}
-
               </section>
             )}
 
@@ -1749,7 +1857,10 @@ export default function PobViewerClient({ locale }: Props) {
                         <div
                           style={
                             isMobile
-                              ? { transform: "scale(0.58)", transformOrigin: "top center" }
+                              ? {
+                                  transform: "scale(0.58)",
+                                  transformOrigin: "top center",
+                                }
                               : undefined
                           }
                         >
@@ -1778,7 +1889,10 @@ export default function PobViewerClient({ locale }: Props) {
                           {/* Flasks */}
                           <div className="flex justify-center gap-1 pt-3">
                             {FLASK_SLOTS.map((slotName) => (
-                              <div key={slotName} className="w-[60px] h-[120px]">
+                              <div
+                                key={slotName}
+                                className="w-[60px] h-[120px]"
+                              >
                                 <ItemSlotCard
                                   item={slotMap[slotName]}
                                   slotName={slotName}
@@ -1935,10 +2049,7 @@ export default function PobViewerClient({ locale }: Props) {
                               </div>
                               <div className="flex-1 flex flex-col gap-2">
                                 {rightGroups.map((group, i) =>
-                                  renderGroupCard(
-                                    group,
-                                    i + leftGroups.length,
-                                  ),
+                                  renderGroupCard(group, i + leftGroups.length),
                                 )}
                               </div>
                             </div>

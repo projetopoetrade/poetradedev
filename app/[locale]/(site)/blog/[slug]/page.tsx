@@ -45,12 +45,18 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
       description: post.metadata,
       url: canonical,
       type: "article",
-      siteName: t("siteName")
+      publishedTime: post.publishedAt,
+      modifiedTime: post.publishedAt,
+      authors: [post.author.name],
+      siteName: t("siteName"),
+      images: post.mainImage ? [{ url: post.mainImage }] : undefined,
     },
     twitter: {
       card: "summary_large_image",
       title: titleWithSuffix,
-      description: post.metadata
+      description: post.metadata,
+      creator: post.author.name,
+      images: post.mainImage ? [post.mainImage] : undefined,
     },
     keywords: generateKeywords({
       locale,
@@ -115,12 +121,12 @@ const SingleBlogPage = async (props: PageProps) => {
 
   const breadcrumbSchema = buildBreadcrumbSchema([
     { name: 'Home', url: '/' },
-    { name: 'Blog', url: '/blog' },
-    { name: post.title, url: `/blog/${slug}` },
+    { name: 'Blog', url: `/${locale}/blog` },
+    { name: post.title, url: `/${locale}/blog/${slug}` },
   ]);
 
   return (
-    <article className="max-w-5xl mx-auto px-4 py-12">
+    <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleStructuredData) }}
@@ -129,61 +135,64 @@ const SingleBlogPage = async (props: PageProps) => {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
-      <Breadcrumb
-        items={[
-          { label: locale === 'pt-br' ? 'Blog' : 'Blog', href: '/blog' },
-          { label: post.title },
-        ]}
-      />
-      <Link
-        href={`/${locale}/blog`}
-        className="inline-flex items-center px-4 py-2 rounded-lg text-gray-600 dark:text-gray-200 hover:text-gray-200 dark:hover:text-white mb-8 transition-all duration-200  group"
-      >
-        <svg
-          className="w-5 h-5 mr-2 transform group-hover:-translate-x-1 transition-transform duration-200"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M10 19l-7-7m0 0l7-7m-7 7h18"
-          />
-        </svg>
-        <span className="font-medium">Back to Blog</span>
-      </Link>
-      <div className="mb-10">
-        <h1 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900 dark:text-white">
-          {post.title}
-        </h1>
 
-        <div className="flex items-center gap-4 text-gray-600 dark:text-gray-400 mb-8">
-          <time className="text-sm">
-            {new Date(post.publishedAt).toLocaleDateString(locale, {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric'
-            })}
-          </time>
-          <span className="text-sm">•</span>
-          <span className="text-sm">By {post.author.name}</span>
+      <article className="max-w-5xl mx-auto px-4 py-12">
+        <Breadcrumb
+          items={[
+            { label: locale === 'pt-br' ? 'Blog' : 'Blog', href: '/blog' },
+            { label: post.title },
+          ]}
+        />
+        <Link
+          href={`/${locale}/blog`}
+          className="inline-flex items-center px-4 py-2 rounded-lg text-gray-600 dark:text-gray-200 hover:text-gray-200 dark:hover:text-white mb-8 transition-all duration-200  group"
+        >
+          <svg
+            className="w-5 h-5 mr-2 transform group-hover:-translate-x-1 transition-transform duration-200"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M10 19l-7-7m0 0l7-7m-7 7h18"
+            />
+          </svg>
+          <span className="font-medium">Back to Blog</span>
+        </Link>
+        <div className="mb-10">
+          <h1 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900 dark:text-white">
+            {post.title}
+          </h1>
+
+          <div className="flex items-center gap-4 text-gray-600 dark:text-gray-400 mb-8">
+            <time className="text-sm">
+              {new Date(post.publishedAt).toLocaleDateString(locale, {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              })}
+            </time>
+            <span className="text-sm">•</span>
+            <span className="text-sm">By {post.author.name}</span>
+          </div>
+
+          <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+            {post.metadata}
+          </p>
         </div>
 
-        <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
-          {post.metadata}
-        </p>
-      </div>
+        <div className="prose prose-lg dark:prose-invert max-w-none">
+          <RenderBodyContent post={post} />
+        </div>
 
-      <div className="prose prose-lg dark:prose-invert max-w-none">
-        <RenderBodyContent post={post} />
-      </div>
-
-      {relatedPosts.length > 0 && (
-        <RelatedPosts posts={relatedPosts} locale={locale} />
-      )}
-    </article>
+        {relatedPosts.length > 0 && (
+          <RelatedPosts posts={relatedPosts} locale={locale} />
+        )}
+      </article>
+    </>
   );
 };
 
