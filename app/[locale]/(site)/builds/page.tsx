@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { Metadata } from "next";
-import { buildAbsoluteUrl } from "@/lib/utils";
+import { buildAbsoluteUrl, buildBreadcrumbSchema } from "@/lib/utils";
 import { getBuilds } from "@/app/actions";
 import BuildsClient from "./BuildsClient";
 
@@ -84,27 +84,80 @@ export default async function BuildsPage({ params, searchParams }: Props) {
   const leagues = Array.from(new Set(allBuildsForLeagues.builds.map((b) => b.league).filter(Boolean) as string[])).sort();
 
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.pathoftrade.net';
+  const localePath = locale === 'en' ? '' : `/${locale}`;
+  const buildsUrl = `${baseUrl}${localePath}/builds`;
+
+  const breadcrumbSchema = buildBreadcrumbSchema([
+    { name: 'Home', url: `${baseUrl}${localePath}` },
+    { name: 'Builds', url: buildsUrl },
+  ]);
 
   // JSON-LD ItemList
-  const jsonLd = {
+  const itemListSchema = {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
     name: 'Path of Exile Builds',
-    url: locale === 'en' ? `${baseUrl}/builds` : `${baseUrl}/pt-br/builds`,
+    url: buildsUrl,
     numberOfItems: total,
     itemListElement: builds.map((build, i) => ({
       '@type': 'ListItem',
       position: i + 1 + (page - 1) * 12,
       url: buildAbsoluteUrl(`/builds/${build.slug}`),
       name: build.title,
+      description: build.description ?? undefined,
     })),
+  };
+
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: locale === 'pt-br' ? 'Qual a melhor build para começar uma liga em Path of Exile?' : 'What is the best league starter build in Path of Exile?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: locale === 'pt-br'
+            ? 'Os melhores league starters são builds que funcionam bem com equipamentos básicos: Righteous Fire, Lightning Arrow, Boneshatter e Arc são escolhas clássicas por escalarem com pouco investimento e terem boa progressão para o endgame.'
+            : 'The best league starters are builds that perform well with minimal gear: Righteous Fire, Lightning Arrow, Boneshatter, and Arc are perennial picks because they scale on a low budget and transition smoothly into endgame.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: locale === 'pt-br' ? 'Como abro uma build no Path of Building?' : 'How do I open a build in Path of Building?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: locale === 'pt-br'
+            ? 'Use o PoB Viewer da Path of Trade para colar qualquer código de build e visualizar a árvore passiva, gemas e equipamentos diretamente no navegador, sem instalar nada.'
+            : 'Use the Path of Trade PoB Viewer to paste any build code and inspect the passive tree, skill gems, and gear directly in your browser — no installation required.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: locale === 'pt-br' ? 'Qual a diferença entre uma build SSF e uma build padrão?' : 'What is the difference between an SSF build and a standard build?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: locale === 'pt-br'
+            ? 'Builds SSF (Solo Self-Found) são projetadas para funcionar apenas com itens que você mesmo encontra, sem depender do mercado. Elas priorizam habilidades que não dependem de únicos caros ou craft avançado.'
+            : 'SSF (Solo Self-Found) builds are designed to function using only items you find yourself, without relying on trade. They prioritise skills that do not depend on expensive uniques or endgame crafting.',
+        },
+      },
+    ],
   };
 
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
       <Suspense>
         <BuildsClient

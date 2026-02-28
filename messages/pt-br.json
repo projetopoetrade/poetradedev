@@ -1177,6 +1177,9 @@
   "Builds": {
     "pageTitle": "Builds PoE",
     "pageSubtitle": "Navegue por builds curadas para Path of Exile",
+    "leagueBuildsTitle": "Builds {league}",
+    "leagueBuildsDescription": "Confira as melhores builds de Path of Exile para {league}.",
+    "leagueBuildsNoResults": "Nenhuma build encontrada para esta liga ainda.",
     "filterAll": "Todos",
     "filterClass": "Classe",
     "filterAscendancy": "Ascendência",

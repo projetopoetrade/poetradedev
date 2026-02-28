@@ -10,6 +10,8 @@ import {
   BarChart2,
   Sword,
   Search,
+  LayoutGrid,
+  Dices,
 } from 'lucide-react'
 import { Link } from '@/i18n/navigation'
 import { Button } from '@/components/ui/button'
@@ -66,6 +68,26 @@ const NAV_ITEMS: NavItem[] = [
     ],
   },
   {
+    label: 'Builds',
+    items: [
+      {
+        label: 'PoE 1 Builds',
+        href: '/games/path-of-exile-1/builds',
+        icon: <Sword className="h-4 w-4" />,
+      },
+      {
+        label: 'PoE 2 Builds',
+        href: '/games/path-of-exile-2/builds',
+        icon: <Sword className="h-4 w-4" />,
+      },
+      {
+        label: 'All Builds',
+        href: '/builds',
+        icon: <LayoutGrid className="h-4 w-4" />,
+      },
+    ],
+  },
+  {
     label: 'Tools',
     items: [
       {
@@ -78,6 +100,12 @@ const NAV_ITEMS: NavItem[] = [
         label: 'PoB Viewer',
         href: '/tools/pob-viewer',
         icon: <Sword className="h-4 w-4" />,
+        badge: 'New',
+      },
+      {
+        label: 'Build Randomizer',
+        href: '/tools/build-randomizer',
+        icon: <Dices className="h-4 w-4" />,
         badge: 'New',
       },
     ],

@@ -5,6 +5,7 @@ const {
   getSitemapLeaguesFromSanity,
   getSitemapLeagueSlugPages,
   getSitemapBuilds,
+  getSitemapLeagueBuilds,
 } = require('./lib/sitemap-data-fetchers.js');
 
 /** @type {import('next-sitemap').IConfig} */
@@ -61,6 +62,8 @@ module.exports = {
       { path: '/terms', priority: 0.3, changefreq: 'yearly' },
       { path: '/games/path-of-exile-1', priority: 0.9, changefreq: 'weekly' },
       { path: '/games/path-of-exile-2', priority: 0.9, changefreq: 'weekly' },
+      { path: '/games/path-of-exile-1/builds', priority: 0.85, changefreq: 'weekly' },
+      { path: '/games/path-of-exile-2/builds', priority: 0.85, changefreq: 'weekly' },
       { path: '/tools', priority: 0.8, changefreq: 'monthly' },
       { path: '/tools/price-tracker', priority: 0.85, changefreq: 'daily' },
       { path: '/products', priority: 0.85, changefreq: 'daily' },
@@ -91,12 +94,13 @@ module.exports = {
     });
 
     // Fetch Data
-    const [posts, products, sanityLeagues, leagueSlugPages, builds] = await Promise.all([
+    const [posts, products, sanityLeagues, leagueSlugPages, builds, leagueBuilds] = await Promise.all([
       getSitemapPosts(),
       getSitemapProducts(),
       getSitemapLeaguesFromSanity(),
       getSitemapLeagueSlugPages(),
       getSitemapBuilds(),
+      getSitemapLeagueBuilds(),
     ]);
 
     // ============================================================
@@ -228,6 +232,25 @@ module.exports = {
             lastmod: lastmod || defaultLastMod,
             changefreq: 'weekly',
             priority: 0.8,
+            alternateRefs: alternates,
+          });
+        });
+      });
+    }
+
+    // ============================================================
+    // 7. BUILDS POR LIGA (/builds/league/[slug])
+    // ============================================================
+    if (leagueBuilds && leagueBuilds.length > 0) {
+      leagueBuilds.forEach(({ slug, lastmod }) => {
+        const leagueBuildPath = `/builds/league/${slug}`;
+        const alternates = generateAlternateRefs(leagueBuildPath);
+        locales.forEach((locale) => {
+          paths.push({
+            loc: locale === defaultLocale ? leagueBuildPath : `/${locale}${leagueBuildPath}`,
+            lastmod: lastmod || defaultLastMod,
+            changefreq: 'weekly',
+            priority: 0.75,
             alternateRefs: alternates,
           });
         });

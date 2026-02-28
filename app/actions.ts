@@ -322,6 +322,7 @@ export const getDifficulties = async (gameVersion: 'path-of-exile-1' | 'path-of-
 export const getBuilds = async (params: {
   gameVersion?: string;
   league?: string;
+  leagueSlug?: string;
   class?: string;
   ascendancy?: string;
   tags?: string[];
@@ -329,7 +330,7 @@ export const getBuilds = async (params: {
   page?: number;
   limit?: number;
 }): Promise<{ builds: Build[]; total: number }> => {
-  const { gameVersion, league, class: poeClass, ascendancy, tags, search, page = 1, limit = 12 } = params;
+  const { gameVersion, league, leagueSlug, class: poeClass, ascendancy, tags, search, page = 1, limit = 12 } = params;
   const supabase = await createClient();
 
   let query = supabase
@@ -340,6 +341,8 @@ export const getBuilds = async (params: {
 
   if (gameVersion) query = query.eq('game_version', gameVersion);
   if (league) query = query.eq('league', league);
+  // leagueSlug converte "keepers-of-the-flame" → ilike "keepers of the flame"
+  if (leagueSlug) query = query.ilike('league', leagueSlug.replace(/-/g, ' '));
   if (poeClass) query = query.eq('class', poeClass);
   if (ascendancy) query = query.eq('ascendancy', ascendancy);
   if (tags && tags.length > 0) query = query.overlaps('tags', tags);
@@ -398,6 +401,26 @@ export const getPublishedBuildSlugs = async (): Promise<string[]> => {
     .eq('is_published', true);
 
   return (data || []).map((b) => b.slug);
+};
+
+export const getPublishedLeagueSlugsFromBuilds = async (): Promise<string[]> => {
+  // Uses admin client — safe for generateStaticParams / build-time calls
+  const { createAdminClient } = await import('@/utils/supabase/admin');
+  const supabase = createAdminClient();
+  const { data } = await supabase
+    .from('builds')
+    .select('league')
+    .eq('is_published', true)
+    .not('league', 'is', null);
+
+  // The `league` field stores display names (e.g. "Keepers of the Flame").
+  // Slugify them so generateStaticParams returns valid URL segments.
+  const slugify = (name: string) =>
+    name.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+
+  const allLeagues = (data || []).map((b) => b.league).filter(Boolean) as string[];
+  const uniqueSlugs = Array.from(new Set(allLeagues.map(slugify)));
+  return uniqueSlugs;
 };
 
 export const getRelatedBuilds = async (

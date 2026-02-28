@@ -7,6 +7,11 @@ interface League {
   imageUrl: string;
   gameVersion: "path-of-exile-1" | "path-of-exile-2";
   description?: string;
+  league_slug?: string;
+  isActive?: boolean;
+  is_published?: boolean;
+  difficulty?: string;
+  poe_ninja_name?: string;
 }
 
 export async function POST(req: Request) {
@@ -29,9 +34,9 @@ export async function POST(req: Request) {
     const league: League = await req.json();
 
     // Validação
-    if (!league.name || !league.imageUrl || !league.gameVersion) {
+    if (!league.name || !league.imageUrl || !league.gameVersion || !league.league_slug) {
       return NextResponse.json(
-        { error: 'Name, imageUrl, and gameVersion are required' },
+        { error: 'Name, imageUrl, gameVersion, and league_slug are required' },
         { status: 400 }
       );
     }
@@ -47,7 +52,17 @@ export async function POST(req: Request) {
     const adminSupabase = createAdminClient();
     const { data, error } = await adminSupabase
       .from('leagues')
-      .insert([league])
+      .insert([{
+        name: league.name,
+        imageUrl: league.imageUrl,
+        gameVersion: league.gameVersion,
+        description: league.description ?? null,
+        league_slug: league.league_slug,
+        isActive: league.isActive ?? true,
+        is_published: league.is_published ?? false,
+        difficulty: league.difficulty ?? 'softcore',
+        poe_ninja_name: league.poe_ninja_name ?? null,
+      }])
       .select();
 
     if (error) {

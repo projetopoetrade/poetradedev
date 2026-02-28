@@ -12,7 +12,8 @@ import {
   ChevronRight,
   RefreshCw,
   Database,
-  Sword
+  Sword,
+  List
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -38,6 +39,8 @@ export default function AdminDashboard() {
         return 'Produtos em Massa';
       case 'add-league':
         return 'Nova Liga';
+      case 'manage-leagues':
+        return 'Gerenciar Ligas';
       case 'manage-products':
         return 'Gerenciar Produtos';
       case 'orders':
@@ -106,6 +109,10 @@ export default function AdminDashboard() {
               <span>Produtos em Massa</span>
             </button>
             
+            <div className="pt-2 pb-1 px-3">
+              <span className="text-[10px] uppercase tracking-wider text-foreground/40 font-medium">Ligas</span>
+            </div>
+
             <button
               onClick={() => setActiveView('add-league')}
               className={`w-full flex items-center gap-2 px-3 py-2 rounded-md text-left transition-colors ${
@@ -114,10 +121,22 @@ export default function AdminDashboard() {
                   : 'text-foreground/80 hover:text-foreground hover:bg-foreground/5'
               }`}
             >
-              <Users className="h-4 w-4" />
+              <Plus className="h-4 w-4" />
               <span>Nova Liga</span>
             </button>
-            
+
+            <button
+              onClick={() => setActiveView('manage-leagues')}
+              className={`w-full flex items-center gap-2 px-3 py-2 rounded-md text-left transition-colors ${
+                activeView === 'manage-leagues'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-foreground/80 hover:text-foreground hover:bg-foreground/5'
+              }`}
+            >
+              <List className="h-4 w-4" />
+              <span>Gerenciar Ligas</span>
+            </button>
+
             <button
               onClick={() => setActiveView('manage-products')}
               className={`w-full flex items-center gap-2 px-3 py-2 rounded-md text-left transition-colors ${

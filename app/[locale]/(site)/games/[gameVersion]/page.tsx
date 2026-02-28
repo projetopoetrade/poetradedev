@@ -6,7 +6,6 @@ import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { buildCanonical, generateKeywords, buildBreadcrumbSchema } from "@/lib/utils";
 import { Link } from "@/i18n/navigation";
-import { ArrowLeft } from "lucide-react";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 
 // ISR: revalidate cache every 5 minutes
@@ -114,16 +113,6 @@ export default async function Page({
             { label: gameTitle },
           ]}
         />
-        <div>
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors group"
-            aria-label={t("backToHome")}
-          >
-            <ArrowLeft className="h-5 w-5 group-hover:-translate-x-1 transition-transform" />
-            <span className="text-sm md:text-base font-semibold">{t("backToHome")}</span>
-          </Link>
-        </div>
       <LeagueSelectionPage gameVersion={gameVersion} />
         <section className="mb-12">
           <article className="space-y-8">

@@ -1,6 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { createAdminClient } from "@/utils/supabase/admin";
+import crypto from "crypto";
+
+const BASE62_CHARS =
+  "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+function toBase62(buffer: Buffer): string {
+  let num = BigInt("0x" + buffer.toString("hex"));
+  let result = "";
+  const zero = BigInt(0);
+  const sixtyTwo = BigInt(62);
+  while (num > zero) {
+    result = BASE62_CHARS[Number(num % sixtyTwo)] + result;
+    num = num / sixtyTwo;
+  }
+  return result;
+}
+
+function generateShortHash(pobCode: string): string {
+  const hash = crypto.createHash("sha256").update(pobCode).digest();
+  return toBase62(hash).slice(0, 10);
+}
 
 // GET — listar todas as builds (admin, incluindo não publicadas)
 export async function GET(req: NextRequest) {
@@ -47,7 +68,28 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields: title, slug, pob_code, class, ascendancy, game_version' }, { status: 400 });
     }
 
+    const trimmedPobCode = body.pob_code.trim();
+    const pobHash = body.pob_hash || generateShortHash(trimmedPobCode);
+
     const adminSupabase = createAdminClient();
+
+    // Assegura que o pob está gravado na tabela pob_builds, como no pobviewer
+    const { data: existingPob } = await adminSupabase
+      .from('pob_builds')
+      .select('pob_hash')
+      .eq('pob_hash', pobHash)
+      .maybeSingle();
+
+    if (!existingPob?.pob_hash) {
+      const insertPobRes = await adminSupabase
+        .from('pob_builds')
+        .insert({ pob_code: trimmedPobCode, pob_hash: pobHash });
+
+      if (insertPobRes.error) {
+        console.error('[admin/builds POST] Failed to insert into pob_builds:', insertPobRes.error);
+      }
+    }
+
     const { data, error } = await adminSupabase
       .from('builds')
       .insert({
@@ -62,8 +104,8 @@ export async function POST(req: NextRequest) {
         tags: body.tags ?? [],
         difficulty: body.difficulty ?? null,
         budget: body.budget ?? null,
-        pob_code: body.pob_code,
-        pob_hash: body.pob_hash ?? null,
+        pob_code: trimmedPobCode,
+        pob_hash: pobHash,
         image_url: body.image_url ?? null,
         video_url: body.video_url ?? null,
         guide_content: body.guide_content ?? null,

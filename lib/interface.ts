@@ -30,6 +30,7 @@ export interface Build {
   description?: string;
   game_version: 'path-of-exile-1' | 'path-of-exile-2';
   league?: string;
+  league_slug?: string;
   class: string;
   ascendancy: string;
   main_skill?: string;

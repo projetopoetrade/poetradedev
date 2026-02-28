@@ -16,6 +16,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import {
   Popover,
   PopoverContent,
@@ -155,6 +156,24 @@ export default function DashboardViews({
   >([]);
   const [loadingLeaguesForFilter, setLoadingLeaguesForFilter] = useState(false);
 
+  // Manage Leagues view state
+  type LeagueAdmin = {
+    id: string;
+    name: string;
+    gameVersion: string;
+    imageUrl: string;
+    description: string | null;
+    isActive: boolean;
+    is_published: boolean;
+    difficulty: string | null;
+    poe_ninja_name: string | null;
+    league_slug: string | null;
+    updated_at: string | null;
+  };
+  const [leaguesList, setLeaguesList] = useState<LeagueAdmin[]>([]);
+  const [leaguesListLoading, setLeaguesListLoading] = useState(false);
+  const [leaguesGameVersionFilter, setLeaguesGameVersionFilter] = useState<"all" | "path-of-exile-1" | "path-of-exile-2">("all");
+
   // Orders management states
   const [ordersLoading, setOrdersLoading] = useState(false);
   const [selectedStatuses, setSelectedStatuses] = useState<
@@ -188,12 +207,22 @@ export default function DashboardViews({
     gameVersion: "path-of-exile-1" | "path-of-exile-2";
     description: string;
     cloneFromLeague?: string;
+    league_slug: string;
+    isActive: boolean;
+    is_published: boolean;
+    difficulty: string;
+    poe_ninja_name: string;
   }>({
     name: "",
     imageUrl: "",
     gameVersion: "path-of-exile-1",
     description: "",
     cloneFromLeague: "",
+    league_slug: "",
+    isActive: true,
+    is_published: false,
+    difficulty: "softcore",
+    poe_ninja_name: "",
   });
 
   // Leagues state for product form
@@ -294,6 +323,55 @@ export default function DashboardViews({
       console.error("Erro ao buscar dados do dashboard:", e);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchLeagues = async () => {
+    setLeaguesListLoading(true);
+    try {
+      const res = await fetch("/api/admin/leagues/all", { cache: "no-store" });
+      if (!res.ok) throw new Error("Failed to fetch leagues");
+      const data = await res.json();
+      setLeaguesList(data);
+    } catch (e) {
+      console.error("Erro ao buscar ligas:", e);
+      toast.error("Erro ao carregar ligas");
+    } finally {
+      setLeaguesListLoading(false);
+    }
+  };
+
+  const handleLeagueToggle = async (id: string, field: "isActive" | "is_published", value: boolean) => {
+    // Optimistic update
+    setLeaguesList((prev) =>
+      prev.map((l) => (l.id === id ? { ...l, [field]: value } : l))
+    );
+    try {
+      const res = await fetch("/api/admin/leagues/all", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, [field]: value }),
+      });
+      if (!res.ok) throw new Error("Failed to update league");
+    } catch {
+      // Rollback on error
+      setLeaguesList((prev) =>
+        prev.map((l) => (l.id === id ? { ...l, [field]: !value } : l))
+      );
+      toast.error("Erro ao atualizar liga");
+    }
+  };
+
+  const handleLeagueDelete = async (id: string, name: string) => {
+    if (!confirm(`Tem certeza que deseja deletar a liga "${name}"? Esta ação não pode ser desfeita.`)) return;
+    try {
+      const res = await fetch(`/api/admin/leagues/delete?id=${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Failed to delete league");
+      setLeaguesList((prev) => prev.filter((l) => l.id !== id));
+      toast.success(`Liga "${name}" deletada com sucesso`);
+      fetchAll();
+    } catch {
+      toast.error("Erro ao deletar liga");
     }
   };
 
@@ -485,6 +563,11 @@ export default function DashboardViews({
         gameVersion: "path-of-exile-1",
         description: "",
         cloneFromLeague: "",
+        league_slug: "",
+        isActive: true,
+        is_published: false,
+        difficulty: "softcore",
+        poe_ninja_name: "",
       });
       toast.success("League added successfully!");
 
@@ -1750,6 +1833,7 @@ export default function DashboardViews({
               <CardContent>
                 <form onSubmit={handleLeagueSubmit} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Nome */}
                     <div className="space-y-2">
                       <Label htmlFor="name" className="text-foreground">
                         Nome da Liga
@@ -1758,33 +1842,51 @@ export default function DashboardViews({
                         id="name"
                         required
                         value={leagueForm.name}
-                        onChange={(e) =>
-                          setLeagueForm({ ...leagueForm, name: e.target.value })
-                        }
+                        onChange={(e) => {
+                          const name = e.target.value;
+                          const autoSlug = name
+                            .toLowerCase()
+                            .trim()
+                            .replace(/\s+/g, "-")
+                            .replace(/[^a-z0-9-]/g, "");
+                          setLeagueForm({
+                            ...leagueForm,
+                            name,
+                            league_slug: autoSlug,
+                          });
+                        }}
                         className="bg-card border-border text-card-foreground focus:border-primary"
-                        placeholder="Digite o nome da liga"
+                        placeholder="ex: Settlers of Kalguur"
                       />
                     </div>
 
+                    {/* Slug */}
                     <div className="space-y-2">
-                      <Label htmlFor="imageUrl" className="text-foreground">
-                        URL da Imagem
+                      <Label htmlFor="league_slug" className="text-foreground">
+                        Slug da Liga
                       </Label>
                       <Input
-                        id="imageUrl"
+                        id="league_slug"
                         required
-                        value={leagueForm.imageUrl}
+                        value={leagueForm.league_slug}
                         onChange={(e) =>
                           setLeagueForm({
                             ...leagueForm,
-                            imageUrl: e.target.value,
+                            league_slug: e.target.value
+                              .toLowerCase()
+                              .replace(/\s+/g, "-")
+                              .replace(/[^a-z0-9-]/g, ""),
                           })
                         }
                         className="bg-card border-border text-card-foreground focus:border-primary"
-                        placeholder="Digite a URL da imagem"
+                        placeholder="ex: settlers-of-kalguur"
                       />
+                      <p className="text-xs text-muted-foreground">
+                        Gerado automaticamente a partir do nome. Usado nas URLs de builds.
+                      </p>
                     </div>
 
+                    {/* Versão do Jogo */}
                     <div className="space-y-2">
                       <Label className="text-foreground">Versão do Jogo</Label>
                       <Select
@@ -1809,6 +1911,69 @@ export default function DashboardViews({
                       </Select>
                     </div>
 
+                    {/* Difficulty */}
+                    <div className="space-y-2">
+                      <Label className="text-foreground">Dificuldade</Label>
+                      <Select
+                        value={leagueForm.difficulty}
+                        onValueChange={(value) =>
+                          setLeagueForm({ ...leagueForm, difficulty: value })
+                        }
+                      >
+                        <SelectTrigger className="bg-card border-border text-card-foreground focus:border-primary">
+                          <SelectValue placeholder="Selecione a dificuldade" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-card border-border">
+                          <SelectItem value="softcore">Softcore</SelectItem>
+                          <SelectItem value="hardcore">Hardcore</SelectItem>
+                          <SelectItem value="standard">Standard</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* URL da Imagem */}
+                    <div className="space-y-2">
+                      <Label htmlFor="imageUrl" className="text-foreground">
+                        URL da Imagem
+                      </Label>
+                      <Input
+                        id="imageUrl"
+                        required
+                        value={leagueForm.imageUrl}
+                        onChange={(e) =>
+                          setLeagueForm({
+                            ...leagueForm,
+                            imageUrl: e.target.value,
+                          })
+                        }
+                        className="bg-card border-border text-card-foreground focus:border-primary"
+                        placeholder="https://..."
+                      />
+                    </div>
+
+                    {/* poe.ninja name */}
+                    <div className="space-y-2">
+                      <Label htmlFor="poe_ninja_name" className="text-foreground">
+                        Nome no poe.ninja
+                      </Label>
+                      <Input
+                        id="poe_ninja_name"
+                        value={leagueForm.poe_ninja_name}
+                        onChange={(e) =>
+                          setLeagueForm({
+                            ...leagueForm,
+                            poe_ninja_name: e.target.value,
+                          })
+                        }
+                        className="bg-card border-border text-card-foreground focus:border-primary"
+                        placeholder="ex: Settlers"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Nome exato usado pela API do poe.ninja para buscar preços.
+                      </p>
+                    </div>
+
+                    {/* Clone de liga */}
                     <div className="space-y-2">
                       <Label className="text-foreground">
                         Clonar itens de uma liga existente (Opcional)
@@ -1843,6 +2008,7 @@ export default function DashboardViews({
                       </p>
                     </div>
 
+                    {/* Descrição */}
                     <div className="space-y-2 md:col-span-2">
                       <Label htmlFor="description" className="text-foreground">
                         Descrição
@@ -1857,8 +2023,47 @@ export default function DashboardViews({
                           })
                         }
                         className="w-full bg-card border border-border text-card-foreground focus:border-primary min-h-[100px] resize-y rounded-md p-2"
-                        placeholder="Digite a descrição da liga"
+                        placeholder="Descrição da liga (opcional)"
                       />
+                    </div>
+
+                    {/* Toggles: isActive + is_published */}
+                    <div className="md:col-span-2 flex flex-wrap gap-8">
+                      <div className="flex items-center gap-3">
+                        <Switch
+                          id="isActive"
+                          checked={leagueForm.isActive}
+                          onCheckedChange={(checked) =>
+                            setLeagueForm({ ...leagueForm, isActive: checked })
+                          }
+                        />
+                        <div>
+                          <Label htmlFor="isActive" className="text-foreground font-medium cursor-pointer">
+                            Liga Ativa
+                          </Label>
+                          <p className="text-xs text-muted-foreground">
+                            Liga aparece nos filtros de produtos
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <Switch
+                          id="is_published"
+                          checked={leagueForm.is_published}
+                          onCheckedChange={(checked) =>
+                            setLeagueForm({ ...leagueForm, is_published: checked })
+                          }
+                        />
+                        <div>
+                          <Label htmlFor="is_published" className="text-foreground font-medium cursor-pointer">
+                            Publicada
+                          </Label>
+                          <p className="text-xs text-muted-foreground">
+                            Liga visível publicamente no site
+                          </p>
+                        </div>
+                      </div>
                     </div>
                   </div>
 
@@ -2081,24 +2286,160 @@ export default function DashboardViews({
           </div>
         );
 
-      case "manage-leagues":
+      case "manage-leagues": {
+        if (!leaguesListLoading && leaguesList.length === 0) {
+          fetchLeagues();
+        }
+
+        const filteredLeagues =
+          leaguesGameVersionFilter === "all"
+            ? leaguesList
+            : leaguesList.filter((l) => l.gameVersion === leaguesGameVersionFilter);
+
         return (
           <div className="space-y-6">
             <Card className="bg-card border-border">
               <CardHeader>
-                <CardTitle className="text-card-foreground">
-                  Gerenciar Ligas
-                </CardTitle>
+                <div className="flex items-center justify-between flex-wrap gap-3">
+                  <CardTitle className="text-card-foreground">
+                    Gerenciar Ligas
+                    {leaguesList.length > 0 && (
+                      <span className="ml-2 text-sm font-normal text-muted-foreground">
+                        ({filteredLeagues.length} de {leaguesList.length})
+                      </span>
+                    )}
+                  </CardTitle>
+                  <div className="flex items-center gap-2">
+                    <Select
+                      value={leaguesGameVersionFilter}
+                      onValueChange={(v) => setLeaguesGameVersionFilter(v as "all" | "path-of-exile-1" | "path-of-exile-2")}
+                    >
+                      <SelectTrigger className="w-44 bg-card border-border text-card-foreground text-sm">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-card border-border">
+                        <SelectItem value="all">Todas as versões</SelectItem>
+                        <SelectItem value="path-of-exile-1">Path of Exile 1</SelectItem>
+                        <SelectItem value="path-of-exile-2">Path of Exile 2</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={fetchLeagues}
+                      disabled={leaguesListLoading}
+                      className="border-border text-foreground hover:bg-accent"
+                    >
+                      {leaguesListLoading ? "Carregando..." : "Atualizar"}
+                    </Button>
+                  </div>
+                </div>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">
-                  Funcionalidade de gerenciamento de ligas será implementada
-                  aqui.
-                </p>
+                {leaguesListLoading ? (
+                  <div className="flex justify-center py-12">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+                  </div>
+                ) : filteredLeagues.length === 0 ? (
+                  <p className="text-muted-foreground text-center py-8">
+                    Nenhuma liga encontrada.
+                  </p>
+                ) : (
+                  <div className="space-y-3">
+                    {filteredLeagues.map((league) => (
+                      <div
+                        key={league.id}
+                        className="p-4 border border-border rounded-lg bg-muted/20 flex flex-col gap-3"
+                      >
+                        {/* Header da liga */}
+                        <div className="flex items-start justify-between gap-3 flex-wrap">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <h3 className="font-semibold text-card-foreground truncate">
+                                {league.name}
+                              </h3>
+                              <Badge
+                                variant="outline"
+                                className={
+                                  league.gameVersion === "path-of-exile-2"
+                                    ? "border-blue-500/40 text-blue-400 text-[10px]"
+                                    : "border-amber-500/40 text-amber-400 text-[10px]"
+                                }
+                              >
+                                {league.gameVersion === "path-of-exile-2" ? "PoE 2" : "PoE 1"}
+                              </Badge>
+                              {league.difficulty && (
+                                <Badge variant="outline" className="border-border text-muted-foreground text-[10px]">
+                                  {league.difficulty}
+                                </Badge>
+                              )}
+                            </div>
+                            {/* Metadados */}
+                            <div className="mt-1 flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-muted-foreground">
+                              {league.league_slug && (
+                                <span>
+                                  <span className="text-foreground/50">slug:</span>{" "}
+                                  <code className="text-[11px] bg-muted px-1 rounded">{league.league_slug}</code>
+                                </span>
+                              )}
+                              {league.poe_ninja_name && (
+                                <span>
+                                  <span className="text-foreground/50">poe.ninja:</span>{" "}
+                                  {league.poe_ninja_name}
+                                </span>
+                              )}
+                              {league.updated_at && (
+                                <span>
+                                  <span className="text-foreground/50">atualizada:</span>{" "}
+                                  {new Date(league.updated_at).toLocaleDateString("pt-BR")}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Botão deletar */}
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleLeagueDelete(league.id, league.name)}
+                            className="text-destructive hover:text-destructive hover:bg-destructive/10 shrink-0"
+                          >
+                            Deletar
+                          </Button>
+                        </div>
+
+                        {/* Toggles */}
+                        <div className="flex flex-wrap gap-6 pt-1 border-t border-border/50">
+                          <div className="flex items-center gap-2">
+                            <Switch
+                              id={`active-${league.id}`}
+                              checked={league.isActive}
+                              onCheckedChange={(v) => handleLeagueToggle(league.id, "isActive", v)}
+                            />
+                            <Label htmlFor={`active-${league.id}`} className="text-sm text-muted-foreground cursor-pointer">
+                              Liga ativa
+                            </Label>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Switch
+                              id={`published-${league.id}`}
+                              checked={league.is_published}
+                              onCheckedChange={(v) => handleLeagueToggle(league.id, "is_published", v)}
+                            />
+                            <Label htmlFor={`published-${league.id}`} className="text-sm text-muted-foreground cursor-pointer">
+                              Publicada
+                            </Label>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
         );
+      }
 
       case "orders":
         if (ordersLoading) {

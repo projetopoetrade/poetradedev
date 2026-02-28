@@ -479,6 +479,24 @@ return (
                         </div>
                     )}
 
+                    {/* Builds by League cross-link */}
+                    <section className="container mx-auto px-4 pb-4">
+                        <div className="max-w-2xl mx-auto text-center bg-muted/30 border border-border rounded-xl p-6">
+                            <p className="font-semibold text-foreground mb-2">
+                                {locale === "pt-br"
+                                    ? `Builds curadas para ${league.title}`
+                                    : `Curated builds for ${league.title}`}
+                            </p>
+                            <Button asChild variant="outline">
+                                <Link href={`/builds/league/${leagueSlug}`}>
+                                    {locale === "pt-br"
+                                        ? `Ver Builds de ${league.title} →`
+                                        : `View ${league.title} Builds →`}
+                                </Link>
+                            </Button>
+                        </div>
+                    </section>
+
                     {/* CTA */}
                     <section className="container mx-auto px-4 py-16">
                         <div className="text-center">
