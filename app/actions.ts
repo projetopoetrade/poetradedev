@@ -114,8 +114,6 @@ export const signWithGoogle = async () => {
   const supabase = await createClient();
   const origin = (await headers()).get("origin");
 
-  // Add log to help diagnose performance
-  console.log("Connecting to Google OAuth...");
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
@@ -132,8 +130,6 @@ export const signWithDiscord = async () => {
   const supabase = await createClient();
   const origin = (await headers()).get("origin");
 
-  // Add log to help diagnose performance
-  console.log("Connecting to Discord OAuth...");
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'discord',
@@ -362,6 +358,18 @@ export const getBuilds = async (params: {
   return { builds: (data as Build[]) || [], total: count || 0 };
 };
 
+export const getDistinctBuildLeagues = async (): Promise<string[]> => {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from('builds')
+    .select('league')
+    .eq('is_published', true)
+    .not('league', 'is', null);
+
+  if (!data) return [];
+  return Array.from(new Set(data.map((b) => b.league).filter(Boolean) as string[])).sort();
+};
+
 export const getBuildBySlug = async (slug: string): Promise<Build | null> => {
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -500,3 +508,35 @@ export const getRandomBuilds = async (params: {
   return (data as Build[]) || [];
 };
 
+
+// --- Orders ---
+
+export const getUserOrders = async (): Promise<import('@/types').Order[]> => {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return [];
+
+  const { data } = await supabase
+    .from('orders')
+    .select('*')
+    .eq('user_id', user.id)
+    .order('created_at', { ascending: false });
+
+  return (data as import('@/types').Order[]) || [];
+};
+
+export const getOrderById = async (id: string): Promise<import('@/types').Order | null> => {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
+
+  const { data, error } = await supabase
+    .from('orders')
+    .select('*')
+    .eq('id', id)
+    .eq('user_id', user.id)
+    .single();
+
+  if (error) return null;
+  return data as import('@/types').Order;
+};

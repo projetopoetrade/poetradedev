@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
-import { createAdminClient } from "@/utils/supabase/admin";
+import { createAdminClient, isAdmin } from "@/utils/supabase/admin";
 
 // GET - Buscar ligas por versão do jogo (admin)
 export async function GET(req: NextRequest) {
@@ -16,8 +16,9 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // TODO: Adicionar verificação de role admin aqui
-    // Por enquanto, qualquer usuário autenticado pode ver as ligas
+    if (!isAdmin(user.id)) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
 
     // Obter gameVersion dos query params
     const { searchParams } = new URL(req.url);

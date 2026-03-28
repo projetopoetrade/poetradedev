@@ -19,7 +19,14 @@
       "Bash(tail:*)",
       "WebFetch(domain:poe.ninja)",
       "Bash(node:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(while read:*)",
+      "Bash(do echo:*)",
+      "Read(//c/Users/alexa/Documents/poetrade-dev/**)",
+      "Bash(done)",
+      "Bash(find /c/Users/alexa/Documents/poetrade-dev/app/[locale]/\\\\\\(site\\\\\\) -type f -name \"page.tsx\")",
+      "Bash(find /c/Users/alexa/Documents/poetrade-dev/app/[locale]/\\\\\\(site\\\\\\) -name \"page.tsx\" -type f)",
+      "Bash(git:*)"
     ]
   }
 }

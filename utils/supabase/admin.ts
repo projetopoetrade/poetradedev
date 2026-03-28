@@ -1,6 +1,16 @@
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 
 /**
+ * Verifica se um userId é o administrador do sistema.
+ * Configure ADMIN_USER_ID no .env.local com o UUID do seu usuário Supabase.
+ */
+export function isAdmin(userId: string): boolean {
+  const adminId = process.env.ADMIN_USER_ID;
+  if (!adminId) return false;
+  return userId === adminId;
+}
+
+/**
  * Cria um cliente Supabase com privilégios administrativos usando a SERVICE_ROLE_KEY
  * 
  * ATENÇÃO: Este cliente bypassa Row Level Security (RLS)!

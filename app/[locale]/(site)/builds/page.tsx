@@ -1,10 +1,10 @@
 import { Suspense } from "react";
 import { Metadata } from "next";
 import { buildAbsoluteUrl, buildBreadcrumbSchema } from "@/lib/utils";
-import { getBuilds } from "@/app/actions";
+import { getBuilds, getDistinctBuildLeagues } from "@/app/actions";
 import BuildsClient from "./BuildsClient";
 
-export const revalidate = 300;
+export const revalidate = 3600;
 
 interface Props {
   params: Promise<{ locale: string }>;
@@ -80,8 +80,7 @@ export default async function BuildsPage({ params, searchParams }: Props) {
   });
 
   // Unique leagues from all published builds for filter options
-  const allBuildsForLeagues = await getBuilds({ limit: 500 });
-  const leagues = Array.from(new Set(allBuildsForLeagues.builds.map((b) => b.league).filter(Boolean) as string[])).sort();
+  const leagues = await getDistinctBuildLeagues();
 
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.pathoftrade.net';
   const localePath = locale === 'en' ? '' : `/${locale}`;

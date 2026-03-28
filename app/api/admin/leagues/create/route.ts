@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
-import { createAdminClient } from "@/utils/supabase/admin";
+import { createAdminClient, isAdmin } from "@/utils/supabase/admin";
 
 interface League {
   name: string;
@@ -27,9 +27,9 @@ export async function POST(req: Request) {
       );
     }
 
-    // TODO: Adicionar verificação de role admin aqui
-    // Por exemplo: verificar se user tem role 'admin' em uma tabela user_roles
-    // Por enquanto, qualquer usuário autenticado pode criar (AJUSTAR EM PRODUÇÃO)
+    if (!isAdmin(user.id)) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
 
     const league: League = await req.json();
 

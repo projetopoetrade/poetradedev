@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
-import { createAdminClient } from "@/utils/supabase/admin";
+import { createAdminClient, isAdmin } from "@/utils/supabase/admin";
 
 export async function DELETE(req: Request) {
   try {
@@ -15,9 +15,9 @@ export async function DELETE(req: Request) {
       );
     }
 
-    // TODO: Adicionar verificação de role admin aqui
-    // Por exemplo: verificar se user tem role 'admin' em uma tabela user_roles
-    // Por enquanto, qualquer usuário autenticado pode deletar (AJUSTAR EM PRODUÇÃO)
+    if (!isAdmin(user.id)) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
 
     const { searchParams } = new URL(req.url);
     const leagueId = searchParams.get('id');

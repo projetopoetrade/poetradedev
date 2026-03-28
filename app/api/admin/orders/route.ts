@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
-import { createAdminClient } from "@/utils/supabase/admin";
+import { createAdminClient, isAdmin } from "@/utils/supabase/admin";
 
 // GET - Buscar todas as orders (admin)
 export async function GET(req: Request) {
@@ -16,9 +16,9 @@ export async function GET(req: Request) {
       );
     }
 
-    // TODO: Adicionar verificação de role admin aqui
-    // Por exemplo: verificar se user tem role 'admin' em uma tabela user_roles
-    // Por enquanto, qualquer usuário autenticado pode ver todas as orders (AJUSTAR EM PRODUÇÃO)
+    if (!isAdmin(user.id)) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
 
     // Usar admin client para buscar todas as orders (bypassa RLS)
     const adminSupabase = createAdminClient();
@@ -59,9 +59,9 @@ export async function PATCH(req: Request) {
       );
     }
 
-    // TODO: Adicionar verificação de role admin aqui
-    // Por exemplo: verificar se user tem role 'admin' em uma tabela user_roles
-    // Por enquanto, qualquer usuário autenticado pode atualizar (AJUSTAR EM PRODUÇÃO)
+    if (!isAdmin(user.id)) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
 
     const { orderId, status } = await req.json();
 

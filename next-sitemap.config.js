@@ -1,8 +1,6 @@
 const {
   getSitemapPosts,
   getSitemapProducts,
-  getSitemapLeagues,
-  getSitemapLeaguesFromSanity,
   getSitemapLeagueSlugPages,
   getSitemapBuilds,
   getSitemapLeagueBuilds,
@@ -100,10 +98,9 @@ module.exports = {
     });
 
     // Fetch Data
-    const [posts, products, sanityLeagues, leagueSlugPages, builds, leagueBuilds] = await Promise.all([
+    const [posts, products, leagueSlugPages, builds, leagueBuilds] = await Promise.all([
       getSitemapPosts(),
       getSitemapProducts(),
-      getSitemapLeaguesFromSanity(),
       getSitemapLeagueSlugPages(),
       getSitemapBuilds(),
       getSitemapLeagueBuilds(),
@@ -144,36 +141,7 @@ module.exports = {
     }
 
     // ============================================================
-    // 3. LEAGUE PAGES (from Sanity)
-    // ============================================================
-    if (sanityLeagues && sanityLeagues.length > 0) {
-      sanityLeagues.forEach((league) => {
-        if (league && league.slug) {
-          // New hierarchical route structure
-          const leaguePath = `/games/${league.gameVersion || 'path-of-exile-1'}/league/${league.slug}`;
-          const alternates = generateAlternateRefs(leaguePath);
-
-          // Priority based on status
-          const priority = league.status === 'live' ? 0.9 : league.status === 'announced' ? 0.85 : 0.7;
-          const changefreq = league.status === 'live' ? 'weekly' : 'monthly';
-
-          locales.forEach((locale) => {
-            const localePath = locale === defaultLocale ? leaguePath : `/${locale}${leaguePath}`;
-
-            paths.push({
-              loc: localePath,
-              lastmod: league.lastmod || defaultLastMod,
-              changefreq,
-              priority,
-              alternateRefs: alternates,
-            });
-          });
-        }
-      });
-    }
-
-    // ============================================================
-    // 4. BLOG POSTS
+    // 3. BLOG POSTS
     // ============================================================
     if (posts && posts.length > 0) {
       posts.forEach((post) => {

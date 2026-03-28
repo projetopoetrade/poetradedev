@@ -5,6 +5,15 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+/**
+ * Retorna o prefixo de locale para uso em paths.
+ * 'en' (default) → ''
+ * 'pt-br' → '/pt-br'
+ */
+export function localePath(locale: string, defaultLocale = 'en'): string {
+  return locale === defaultLocale ? '' : `/${locale}`;
+}
+
 export function buildAbsoluteUrl(pathOrUrl: string): string {
   try {
     const url = new URL(pathOrUrl, process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net");

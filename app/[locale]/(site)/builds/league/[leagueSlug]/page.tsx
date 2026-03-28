@@ -9,7 +9,7 @@ import BuildCard from "@/components/Builds/BuildCard";
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 
-export const revalidate = 300;
+export const revalidate = 7200;
 
 interface Props {
   params: Promise<{ locale: string; leagueSlug: string }>;
@@ -96,13 +96,9 @@ export default async function LeagueBuildsPage({ params }: Props) {
 
   // Try to enrich with Sanity league data (optional)
   let leagueTitle = toLeagueTitle(leagueSlug);
-  let sanityLeagueSlug: string | null = null;
   try {
     const sanityLeague = await getLeagueBySlug(leagueSlug);
-    if (sanityLeague?.title) {
-      leagueTitle = sanityLeague.title;
-      sanityLeagueSlug = sanityLeague.slug;
-    }
+    if (sanityLeague?.title) leagueTitle = sanityLeague.title;
   } catch {
     // Non-blocking
   }
@@ -129,11 +125,6 @@ export default async function LeagueBuildsPage({ params }: Props) {
       name: build.title,
     })),
   };
-
-  const leaguePageHref =
-    sanityLeagueSlug
-      ? `/games/path-of-exile-1/league/${sanityLeagueSlug}`
-      : null;
 
   // Define FAQ data once — schema and UI both derive from this array
   const faqItems: { q: string; a: string }[] =
@@ -217,15 +208,6 @@ export default async function LeagueBuildsPage({ params }: Props) {
             <span className="text-xs text-gray-500">
               {total} build{total !== 1 ? "s" : ""}
             </span>
-            {leaguePageHref && (
-              <Button asChild variant="outline" size="sm" className="border-gray-700 text-gray-400 hover:text-white text-xs">
-                <Link href={leaguePageHref}>
-                  {locale === "pt-br"
-                    ? `Guia da Liga ${leagueTitle} →`
-                    : `${leagueTitle} League Guide →`}
-                </Link>
-              </Button>
-            )}
           </div>
         </div>
 

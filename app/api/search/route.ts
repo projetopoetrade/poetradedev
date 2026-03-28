@@ -3,7 +3,7 @@ import { createClient as createSupabase } from '@/utils/supabase/server'
 import { client as sanityClient } from '@/sanity/lib/client'
 import { groq } from 'next-sanity'
 
-export const revalidate = 0
+export const revalidate = 60
 
 // ─── Sanity queries ───────────────────────────────────────────────────────────
 
