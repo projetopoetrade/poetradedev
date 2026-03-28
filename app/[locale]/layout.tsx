@@ -204,6 +204,7 @@ export default async function RootLayout(
                   {children}
                 </div>
                 <Footer locale={locale} />
+                <Analytics />
                 <ConsentedProviders />
                 <CookieConsent locale={locale} />
                 <Toaster

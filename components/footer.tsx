@@ -16,7 +16,7 @@ export default async function Footer({ locale = 'en' }: FooterProps) {
   return (
     <footer className="w-full bg-black/40 text-white py-8 px-4 md:px-10">
       <div className="container mx-auto max-w-7xl">
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-8">
           {/* Logo and Social Links */}
           <div className="flex flex-col items-center md:items-start space-y-4">
             <Link href="/">
@@ -122,48 +122,19 @@ export default async function Footer({ locale = 'en' }: FooterProps) {
             </Link>
           </div>
 
-          {/* Builds Links */}
-          <div className="flex flex-col space-y-3">
-            <h3 className="font-bold text-sm uppercase tracking-wider mb-1">Builds</h3>
-            <Link href="/games/path-of-exile-1/builds" className="text-gray-300 hover:text-white text-sm transition-colors">
-              PoE 1 Builds
-            </Link>
-            <Link href="/games/path-of-exile-2/builds" className="text-gray-300 hover:text-white text-sm transition-colors">
-              PoE 2 Builds
-            </Link>
-            <Link href="/builds" className="text-gray-300 hover:text-white text-sm transition-colors">
-              All Builds
-            </Link>
-            {leagues && leagues.slice(0, 2).map((league) => {
-              const leagueSlug = league.name.toLowerCase().replace(/\s+/g, '-');
-              return (
-                <Link
-                  key={`builds-league-${leagueSlug}`}
-                  href={`/builds/league/${leagueSlug}`}
-                  className="text-gray-300 hover:text-white text-sm transition-colors"
-                >
-                  {league.name} Builds
-                </Link>
-              );
-            })}
-          </div>
-
           {/* Active Leagues */}
           <div className="flex flex-col space-y-3">
             <h3 className="font-bold text-sm uppercase tracking-wider mb-1">{t('active-leagues')}</h3>
             {leagues && leagues.length > 0 ? (
-              leagues.slice(0, 5).map((league) => {
-                const leagueSlug = league.name.toLowerCase().replace(/\s+/g, '-');
-                return (
-                  <Link 
-                    key={`league-${league.gameVersion}-${league.name}`}
-                    href={`/games/${league.gameVersion}/league/${leagueSlug}`}
-                    className="text-gray-300 hover:text-white text-sm transition-colors"
-                  >
-                    {league.name}
-                  </Link>
-                );
-              })
+              leagues.slice(0, 5).map((league) => (
+                <Link
+                  key={`league-${league.gameVersion}-${league.name}`}
+                  href={`/games/${league.gameVersion}/currency?league=${encodeURIComponent(league.name)}`}
+                  className="text-gray-300 hover:text-white text-sm transition-colors"
+                >
+                  {league.name}
+                </Link>
+              ))
             ) : (
               <span className="text-gray-500 text-sm">No active leagues</span>
             )}

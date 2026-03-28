@@ -185,8 +185,12 @@ export async function generateMetadata(props: {
 
 export default async function CategoryPage(props: {
   params: Promise<{ gameVersion: string; category: string; locale: string }>;
+  searchParams: Promise<{ league?: string }>;
 }) {
-  const { gameVersion, category, locale } = await props.params;
+  const [{ gameVersion, category, locale }, searchParams] = await Promise.all([
+    props.params,
+    props.searchParams,
+  ]);
 
   if (!CATEGORIES.includes(category as CategorySlug)) notFound();
   if (!GAME_VERSIONS.includes(gameVersion as any)) notFound();
@@ -199,10 +203,14 @@ export default async function CategoryPage(props: {
   const gameLabel = gameLabels[gameVersion]?.[isPtBr ? "pt-br" : "en"] ?? gameVersion;
   const gameShort = isPoe2 ? "PoE 2" : "PoE 1";
 
+  let allLeagues: { name: string }[] = [];
   let defaultLeague: string | undefined;
   try {
-    const leagues = await getLeagues(gameVersion as any);
-    defaultLeague = leagues?.[0]?.name;
+    allLeagues = await getLeagues(gameVersion as any);
+    const requestedLeague = searchParams.league;
+    defaultLeague = requestedLeague
+      ? (allLeagues.find((l) => l.name === requestedLeague)?.name ?? allLeagues[0]?.name)
+      : allLeagues[0]?.name;
   } catch {}
 
   const [products, blogPosts] = await Promise.all([
@@ -317,6 +325,32 @@ export default async function CategoryPage(props: {
           );
         })}
       </div>
+
+      {/* League Switcher */}
+      {allLeagues.length > 1 && (
+        <div className="flex items-center gap-2 mb-6 flex-wrap">
+          <span className="text-xs text-muted-foreground shrink-0">
+            {isPtBr ? "Liga:" : "League:"}
+          </span>
+          {allLeagues.map((league) => {
+            const isActive = league.name === defaultLeague;
+            const localePfx = locale === "en" ? "" : `/${locale}`;
+            return (
+              <Link
+                key={league.name}
+                href={`${localePfx}/games/${gameVersion}/${category}?league=${encodeURIComponent(league.name)}`}
+                className={`text-xs px-3 py-1 rounded-full border transition-colors ${
+                  isActive
+                    ? "border-primary text-primary bg-primary/10"
+                    : "border-border text-muted-foreground hover:border-foreground hover:text-foreground"
+                }`}
+              >
+                {league.name}
+              </Link>
+            );
+          })}
+        </div>
+      )}
 
       {/* Product count */}
       <p className="text-xs text-muted-foreground mb-5">
