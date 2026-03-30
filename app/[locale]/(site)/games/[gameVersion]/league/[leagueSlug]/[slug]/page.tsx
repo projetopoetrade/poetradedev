@@ -9,6 +9,8 @@ import { generateKeywords, buildBreadcrumbSchema } from "@/lib/utils";
 import { encodeProductName } from "@/utils/url-helper";
 import CategoryItemCard from "@/components/category-item-card";
 import type { Product } from "@/lib/interface";
+import { getProductBySlug } from "@/sanity/sanity-utils";
+import ProductContent from "@/components/product-detail/ProductContent";
 
 export const revalidate = 300;
 
@@ -40,8 +42,9 @@ const SITE_URL = (
 // meta  → used in <meta description> (~155 chars max, no price)
 // body  → used in page intro paragraph (richer, may include price)
 
-type DescFn = (league: string, price?: string) => string;
-interface CopyPair { meta: DescFn; body: DescFn }
+type MetaFn = (league: string) => string;
+type BodyFn = (league: string, price?: string) => React.ReactNode;
+interface CopyPair { meta: MetaFn; body: BodyFn }
 type LocaleCopy = { en: CopyPair; "pt-br": CopyPair };
 type CopyMap = { "path-of-exile-1": LocaleCopy; "path-of-exile-2": LocaleCopy };
 
@@ -50,29 +53,59 @@ const productCopy: Record<KeyProductSlug, CopyMap> = {
     "path-of-exile-1": {
       en: {
         meta: (l) =>
-          `Buy Divine Orbs for the ${l} league in Path of Exile 1 — reroll explicit modifier values on rare and unique items. Fast in-game delivery.`,
-        body: (l, p) =>
-          `Divine Orbs are the most in-demand currency in ${l} for rerolling explicit modifier values on rare and unique items. They set the standard for high-end crafting and top-tier trades${p ? ` — current price: $${p}` : ""}. Buy securely at Path of Trade and receive delivery in-game within minutes.`,
+          `Buy Divine Orbs for the ${l} league in Path of Exile 1 — the ultimate currency for endgame crafting. Secure purchase and fast in-game delivery.`,
+        body: (l, p) => (
+          <div className="space-y-4">
+            <p><strong>Divine Orb: The Ultimate Endgame Currency in {l}</strong></p>
+            <p>Highly coveted and rare, the <strong>Divine Orb</strong> stands out as the game's premium optimization currency in Path of Exile 1. Used to completely reroll the values of explicit modifiers on your gear, the Divine Orb is the key to unlocking your build's true pinnacle potential {p ? `(currently priced at $${p})` : ""}.</p>
+            <h3 className="text-lg font-semibold text-foreground mt-4">Mechanics and Strategic Utility</h3>
+            <p className="pl-4 border-l-2 border-primary/40 text-sm"><em>Modifier Rerolling:</em> The primary use of a Divine Orb is fine-tuning elite gear. If you own an item with top-tier affixes but low numeric rolls, this orb is your solution to maximizing your setup in the {l} economy.<br />
+            <em>Advanced Crafting:</em> Metamod crafting and locking affixes tax players heavily in Divine Orbs.</p>
+            <h3 className="text-lg font-semibold text-foreground mt-4">Why Buy Divine Orbs?</h3>
+            <p>They are extremely rare drops from monsters, requiring hundreds of hours of focused farming. It has become the gold standard of the trade economy. If you are looking to buy <strong>PoE Divine Orbs in {l}</strong> safely, our site provides ultra-fast in-game delivery. Skip the heavy grind and jump straight into bossing!</p>
+          </div>
+        ),
       },
       "pt-br": {
         meta: (l) =>
-          `Compre Divine Orbs para a liga ${l} em Path of Exile 1 — rerrole modificadores em itens raros e únicos. Entrega rápida no jogo.`,
-        body: (l, p) =>
-          `Divine Orbs são a moeda mais procurada em ${l} para rerolar os valores de modificadores explícitos em itens raros e únicos. São a referência para craft de alto nível e negociações de ponta${p ? ` — preço atual: $${p}` : ""}. Compre com segurança no Path of Trade e receba no jogo em minutos.`,
+          `Compre Divine Orbs para a liga ${l} em Path of Exile 1 — rerrole modificadores com a moeda definitiva. Entrega rápida e segura no jogo.`,
+        body: (l, p) => (
+          <div className="space-y-4">
+            <p><strong>Divine Orb: A Moeda Definitiva para Otimização na liga {l}</strong></p>
+            <p>No vasto mundo de Path of Exile 1, a <strong>Divine Orb</strong> se destaca como a moeda mais valiosa do meta. Utilizada para redefinir completamente os valores numéricos de modificadores explícitos em itens (raros e únicos), ela é a chave de ouro para desbloquear o verdadeiro potencial da sua build {p ? `(hoje disponível por $${p})` : ""}.</p>
+            <h3 className="text-lg font-semibold text-foreground mt-4">Mecânicas e Utilidade Estratégica</h3>
+            <p className="pl-4 border-l-2 border-primary/40 text-sm"><em>Re-rolagem de Modificadores:</em> O seu principal uso é a otimização fina. Possui um item com modifiers perfeitos mas *rolls* baixos? Essa moeda garante a chance de atingir os números máximos essenciais para o endgame da liga {l}.<br />
+            <em>Crafting Avançado e Meta-Craft:</em> Modificadores de bancada (benchcrafting) que travam prefixos ou sufixos cobram uma pesada taxa em Divine Orbs.</p>
+            <h3 className="text-lg font-semibold text-foreground mt-4">Onde Adquirir e Por Que Comprar?</h3>
+            <p>Elas são drops raríssimos, e sua extrema utilidade a tornou a "moeda de papel" central do jogo para *trades* massivos. Se você quer poupar centenas de horas e busca comprar <strong>Divine Orbs PoE na liga {l}</strong>, nós oferecemos a entrega via trade in-game de forma discreta e ultra veloz. Pule o grind e domine o Atlas!</p>
+          </div>
+        ),
       },
     },
     "path-of-exile-2": {
       en: {
         meta: (l) =>
           `Buy Divine Orbs for the ${l} league in Path of Exile 2 — cornerstone endgame crafting currency. Secure purchase and fast in-game delivery.`,
-        body: (l, p) =>
-          `In Path of Exile 2, Divine Orbs reroll modifier values on items, making them the cornerstone of ${l} endgame crafting. Demand stays high as players push pinnacle content${p ? ` — current price: $${p}` : ""}. Secure yours at Path of Trade with guaranteed fast delivery.`,
+        body: (l, p) => (
+          <div className="space-y-4">
+            <p><strong>Divine Orb: The Cornerstone of PoE 2 Endgame in {l}</strong></p>
+            <p>In Path of Exile 2, Divine Orbs reroll modifier values on items, retaining their legendary status as the single most important currency for endgame scaling. Demand stays highly elevated as players push pinnacle content to optimize perfect bases {p ? `(current price: $${p})` : ""}.</p>
+            <h3 className="text-lg font-semibold text-foreground mt-4">Maximizing Your Gear</h3>
+            <p>Whether you're rerolling a nearly perfect weapon or paying premium prices for uncorrupted endgame gear on the trade board, Divine Orbs dictate the {l} economy. Secure yours at Path of Trade with guaranteed fast delivery, skipping the brutal RNG of natural drops.</p>
+          </div>
+        )
       },
       "pt-br": {
         meta: (l) =>
           `Compre Divine Orbs para a liga ${l} em Path of Exile 2 — moeda essencial de endgame. Compra segura e entrega rápida no jogo.`,
-        body: (l, p) =>
-          `Em Path of Exile 2, Divine Orbs rerrolam valores de modificadores em itens, tornando-os o alicerce do craft de endgame em ${l}. A demanda se mantém alta conforme os jogadores avançam no conteúdo de pináculo${p ? ` — preço atual: $${p}` : ""}. Garanta os seus no Path of Trade com entrega rápida garantida.`,
+        body: (l, p) => (
+          <div className="space-y-4">
+            <p><strong>Divine Orb: O Alicerce do Endgame de PoE 2 na liga {l}</strong></p>
+            <p>Em Path of Exile 2, a <strong>Divine Orb</strong> mantém o seu trono como a moeda mais crítica do sistema de crafting e trocas. Responsável por re-rolar os valores dos modificadores numéricos dos itens, ela ganha força à medida que os jogadores otimizam bases complexas {p ? `(preço da cotação atual: $${p})` : ""}.</p>
+            <h3 className="text-lg font-semibold text-foreground mt-4">Compra e Economia</h3>
+            <p>Seja preparando o melhor equipamento da sua build ou pagando caríssimo por uma arma recém-adquirida num trade complexo, tudo flui ao redor das Divine Orbs na liga {l}. Compre com segurança no Path of Trade e fuja do *RNG* impiedoso do drop rate do PoE 2, recebendo o item rapidamente em seu personagem dentro do jogo.</p>
+          </div>
+        )
       },
     },
   },
@@ -82,28 +115,54 @@ const productCopy: Record<KeyProductSlug, CopyMap> = {
       en: {
         meta: (l) =>
           `Buy Chaos Orbs for the ${l} league in Path of Exile 1 — the backbone of in-game trading and crafting. Bulk available, fast delivery.`,
-        body: (l, p) =>
-          `Chaos Orbs are the backbone of the ${l} trading economy — the standard unit of exchange for most item transactions and a crafting tool that rerolls all modifiers on a rare item${p ? `. Current price: $${p}` : ""}. Whether stocking up for crafting sessions or bulk trading, Path of Trade has you covered.`,
+        body: (l, p) => (
+          <div className="space-y-4">
+            <p><strong>Chaos Orb: The Backbone of the {l} Economy</strong></p>
+            <p>The <strong>Chaos Orb</strong> is the most recognized and heavily traded currency in Path of Exile 1. Widely accepted as the silver standard for all player-to-player transactions, it also serves a crucial crafting purpose: rerolling all modifiers on a rare item ${p ? `(currently priced at $${p})` : ""}.</p>
+            <h3 className="text-lg font-semibold text-foreground mt-4">Trading and Crafting Utility</h3>
+            <p className="pl-4 border-l-2 border-primary/40 text-sm"><em>Trading Standard:</em> Nearly all low to mid-tier items are priced in Chaos Orbs. If you are starting out or upgrading to your endgame setup, having a healthy stack of chaos is mandatory.<br />
+            <em>Map Enhancements:</em> They are the primary currency used in the map device to add powerful modifiers (like Ambush or Legion) to your endgame maps, directly boosting your loot returns.</p>
+            <h3 className="text-lg font-semibold text-foreground mt-4">Skip the Grind</h3>
+            <p>Farming hundreds of chaos through recipes or raw drops can be exhausting. If you want to instantly buy <strong>Chaos Orbs in {l}</strong>, our service offers affordable, bulk quantities delivered discreetly to your character via safe in-game trades.</p>
+          </div>
+        )
       },
       "pt-br": {
         meta: (l) =>
           `Compre Chaos Orbs para a liga ${l} em Path of Exile 1 — a espinha dorsal das trocas e crafting. Volume disponível, entrega rápida.`,
-        body: (l, p) =>
-          `Chaos Orbs são a espinha dorsal da economia de trocas em ${l} — a unidade padrão de câmbio para a maioria das transações e uma ferramenta que rerola todos os modificadores de um item raro${p ? `. Preço atual: $${p}` : ""}. Seja para sessões de craft ou compras em volume, o Path of Trade tem o que você precisa.`,
+        body: (l, p) => (
+          <div className="space-y-4">
+            <p><strong>Chaos Orb: A Espinha Dorsal da Economia em {l}</strong></p>
+            <p>A <strong>Chaos Orb</strong> é a moeda mais reconhecida e transacionada do Path of Exile 1. Aceita mundialmente como o "padrão prata" para todas as negociações entre jogadores, ela também possui uma função essencial de crafting: redefinir todos os modificadores de um item raro ${p ? `(hoje custando cerca de $${p})` : ""}.</p>
+            <h3 className="text-lg font-semibold text-foreground mt-4">Utilidade em Trocas e Mapas</h3>
+            <p className="pl-4 border-l-2 border-primary/40 text-sm"><em>Moeda de Troca:</em> A gigantesca maioria dos equipamentos e fragmentos de mid-game são precificados em Chaos. Para sair da campanha e montar a sua build, ter centenas na sua stash é vital.<br />
+            <em>Dispositivo de Mapas (Map Device):</em> Elas são a moeda cobrada pelo jogo para injetar mecânicas valiosas (como Ambush ou Legion) nos seus mapas, o que aumenta absurdamente seus lucros (juice).</p>
+            <h3 className="text-lg font-semibold text-foreground mt-4">Por Que Comprar Nossos Estoques?</h3>
+            <p>Fazer a receita de Chaos (Chaos Recipe) ou farmar do zero pode consumir o final de semana inteiro. Se você deseja <strong>comprar Chaos Orbs PoE na liga {l}</strong> de imediato, nosso site garante grandes volumes com descontos para compra em atacado (bulk), entregues rapidamente no seu *hideout*.</p>
+          </div>
+        )
       },
     },
     "path-of-exile-2": {
       en: {
         meta: (l) =>
           `Buy Chaos Orbs for the ${l} league in Path of Exile 2 — universal trade currency and crafting staple. Fast, secure in-game delivery.`,
-        body: (l, p) =>
-          `In Path of Exile 2, Chaos Orbs remain a pillar of the ${l} economy — both a crafting tool and a universal medium of exchange. Stocking up early in the league unlocks better gear and profitable trade opportunities${p ? `. Current price: $${p}` : ""}. Order now for fast in-game delivery.`,
+        body: (l, p) => (
+          <div className="space-y-4">
+            <p><strong>Chaos Orb: The Trading Pillar of {l}</strong></p>
+            <p>In Path of Exile 2, Chaos Orbs remain the undisputed silver standard of the {l} economy, functioning both as a core crafting tool and a universal medium of exchange. Stocking up early unlocks immediate power upgrades {p ? `(current value: $${p})` : ""}.</p>
+          </div>
+        )
       },
       "pt-br": {
         meta: (l) =>
           `Compre Chaos Orbs para a liga ${l} em Path of Exile 2 — moeda universal de troca e craft essencial. Entrega segura e rápida.`,
-        body: (l, p) =>
-          `Em Path of Exile 2, Chaos Orbs continuam sendo um pilar da economia de ${l}, servindo como ferramenta de craft e meio universal de troca. Acumular Chaos cedo na liga abre portas para gear melhor e oportunidades lucrativas${p ? `. Preço atual: $${p}` : ""}. Faça seu pedido para entrega rápida no jogo.`,
+        body: (l, p) => (
+          <div className="space-y-4">
+            <p><strong>Chaos Orb: O Pilar de Trocas da {l}</strong></p>
+            <p>No Path of Exile 2, as Chaos Orbs mantêm seu reinado inabalável como a moeda de troca padrão da liga {l}. Acumular grandes lotes cedo garante a fluidez que você precisa para trocar itens constantemente e testar todas as novas builds {p ? `(valor de momento: $${p})` : ""}.</p>
+          </div>
+        )
       },
     },
   },
@@ -113,28 +172,45 @@ const productCopy: Record<KeyProductSlug, CopyMap> = {
       en: {
         meta: (l) =>
           `Buy a Mirror of Kalandra for the ${l} league in Path of Exile 1 — the rarest currency, creates a perfect duplicate of any non-unique item.`,
-        body: (l, p) =>
-          `The Mirror of Kalandra is the rarest and most coveted currency in ${l} — it creates a perfect duplicate of any non-unique item while keeping the original intact. Whether mirroring a flawlessly crafted weapon or investing in the ${l} economy${p ? `, priced at $${p}` : ""}, Path of Trade offers discreet and secure delivery.`,
+        body: (l, p) => (
+          <div className="space-y-4">
+            <p><strong>Mirror of Kalandra: The Crown Jewel of {l}</strong></p>
+            <p>The <strong>Mirror of Kalandra</strong> is the rarest, most expensive, and most coveted currency in Path of Exile 1. It operates with a simple but devastatingly powerful effect: it creates a perfect duplicate of any non-unique item ${p ? `(available for $${p})` : ""}.</p>
+          </div>
+        )
       },
       "pt-br": {
         meta: (l) =>
           `Compre Mirror of Kalandra para a liga ${l} em Path of Exile 1 — a moeda mais rara do jogo, duplica qualquer item não-único.`,
-        body: (l, p) =>
-          `O Mirror of Kalandra é a moeda mais rara e cobiçada de ${l} — cria uma cópia perfeita de qualquer item não-único, mantendo o original intacto. Seja para espelhar uma arma craftada com perfeição ou investir na economia de ${l}${p ? `, disponível por $${p}` : ""}, o Path of Trade oferece entrega discreta e segura.`,
+        body: (l, p) => (
+          <div className="space-y-4">
+            <p><strong>Mirror of Kalandra: A Joia da Coroa em {l}</strong></p>
+            <p>O <strong>Mirror of Kalandra</strong> é indiscutivelmente a moeda mais rara e prestigiosa do Path of Exile 1. Seu efeito é simétrico e definitivo: ele cria uma cópia espelhada idêntica de qualquer item não-único, permitindo que a comunidade compartilhe armas perfeitas elaboradas após meses de craft {p ? `(adquira por $${p})` : ""}.</p>
+            <p>Se você busca <strong className="text-primary">comprar Mirror of Kalandra</strong> para dominar a economia ou espelhar a arma mais destrutiva do servidor, oferecemos máxima segurança e total sigilo.</p>
+          </div>
+        )
       },
     },
     "path-of-exile-2": {
       en: {
         meta: (l) =>
           `Buy a Mirror of Kalandra for the ${l} league in Path of Exile 2 — duplicate the perfect item and maximize your endgame power.`,
-        body: (l, p) =>
-          `In Path of Exile 2, the Mirror of Kalandra holds its legendary status as the ultimate endgame investment in ${l}. Duplicating the perfect item grants lasting power across multiple build iterations${p ? ` — priced at $${p}` : ""}. Buy yours securely at Path of Trade with guaranteed fast delivery.`,
+        body: (l, p) => (
+          <div className="space-y-4">
+            <p><strong>Mirror of Kalandra: The Ultimate PoE 2 Investment</strong></p>
+            <p>In Path of Exile 2, the Mirror holds its legendary status as the ultimate endgame wealth asset in {l}. Duplicating perfect uncorrupted gear grants lasting power ${p ? `(priced at $${p})` : ""}.</p>
+          </div>
+        )
       },
       "pt-br": {
         meta: (l) =>
           `Compre Mirror of Kalandra para a liga ${l} em Path of Exile 2 — duplique o item perfeito e maximize seu poder de endgame.`,
-        body: (l, p) =>
-          `Em Path of Exile 2, o Mirror of Kalandra mantém seu status lendário como o investimento definitivo de endgame em ${l}. Duplicar o item perfeito garante poder duradouro em múltiplas builds${p ? ` — disponível por $${p}` : ""}. Compre o seu com segurança no Path of Trade com entrega garantida.`,
+        body: (l, p) => (
+          <div className="space-y-4">
+            <p><strong>Mirror of Kalandra: O Investimento Supremo no PoE 2</strong></p>
+            <p>Em Path of Exile 2, o Mirror sustenta seu panteão lendário como o maior ativo de retenção de valor e endgame power de {l}. Duplicar uma peça perfeita é o objetivo final de qualquer liga {p ? `(orçado em $${p})` : ""}. Venda ou compre com suporte VIP no Path of Trade.</p>
+          </div>
+        )
       },
     },
   },
@@ -146,14 +222,22 @@ const categoryCopy: Record<CategorySlug, CopyMap> = {
       en: {
         meta: (l) =>
           `Buy Path of Exile 1 currency for the ${l} league — Divine Orbs, Chaos Orbs, Exalted Orbs and more. Daily updated prices and fast in-game delivery.`,
-        body: (l) =>
-          `Browse the full selection of Path of Exile 1 currency for ${l} — Divine Orbs, Chaos Orbs, Exalted Orbs and every crafting material you need to progress. All listings are in-league, updated daily to match the ${l} economy, and delivered via the official in-game trade window.`,
+        body: (l) => (
+          <div className="space-y-4">
+            <p>Browse the full selection of Path of Exile 1 currency for the <strong>{l} league</strong>. From essential crafting materials like Chaos Orbs to pinnacle meta-currency like the Divine Orb and Mirror of Kalandra, this is your one-stop shop to fuel your endgame build.</p>
+            <p>Our listings are monitored around the clock to ensure you receive the most competitive rates mirroring the current {l} economy. Skip the endless grinding and gear up immediately for your map-juicing strategies with our secure, fast, and 24/7 in-game delivery.</p>
+          </div>
+        )
       },
       "pt-br": {
         meta: (l) =>
           `Compre moedas de Path of Exile 1 para a liga ${l} — Divine Orbs, Chaos Orbs, Exalted Orbs e muito mais. Preços atualizados diariamente.`,
-        body: (l) =>
-          `Navegue pela seleção completa de moedas de Path of Exile 1 para ${l} — Divine Orbs, Chaos Orbs, Exalted Orbs e todos os materiais de craft que você precisa para progredir. Todos os itens são da liga, atualizados diariamente para refletir a economia de ${l}, e entregues pela janela de troca oficial do jogo.`,
+        body: (l) => (
+          <div className="space-y-4">
+            <p>Navegue pela seleção completa de <strong>moedas de Path of Exile 1 para a liga {l}</strong>. Desde materiais essenciais de crafting como Chaos Orbs até as cobiçadas Divine Orbs e o glorioso Mirror of Kalandra, esta é sua loja definitiva para alavancar sua build no endgame.</p>
+            <p>Nossos estoques em {l} são monitorados 24 horas por dia para garantir cotações extremamente competitivas que refletem o mercado do jogo em tempo real. Pare de bater a cabeça no longo grind de mapas T1 e pule a fase chata comprando suas orbs favoritas com entrega via *trade in-game* segura e quase instantânea.</p>
+          </div>
+        )
       },
     },
     "path-of-exile-2": {
@@ -177,14 +261,22 @@ const categoryCopy: Record<CategorySlug, CopyMap> = {
       en: {
         meta: (l) =>
           `Buy Path of Exile 1 items for the ${l} league — unique weapons, armor, jewels and endgame gear. Hand-selected and verified, fast delivery.`,
-        body: (l) =>
-          `Find hand-selected Path of Exile 1 items for the ${l} league — unique weapons, powerful body armour, high-quality flasks, rare jewels and endgame gear. Every item is verified before listing. Skip the RNG grind and gear up for ${l} endgame content with fast in-game delivery.`,
+        body: (l) => (
+          <div className="space-y-4">
+            <p>Find hand-selected Path of Exile 1 items for the <strong>{l} league</strong>. We offer unique weapons, powerful body armour like Headhunter and Mageblood, high-quality flasks, rare jewels, and pre-crafted endgame gear.</p>
+            <p>Every item is verified and securely stocked before being listed. Skip the frustration of endless trade whispers and unresponsive players. Gear up immediately with our automated delivery system and jump straight into bossing or heavy mapping.</p>
+          </div>
+        )
       },
       "pt-br": {
         meta: (l) =>
           `Compre itens de Path of Exile 1 para a liga ${l} — armas únicas, armaduras, joias e gear de endgame. Selecionados e verificados, entrega rápida.`,
-        body: (l) =>
-          `Encontre itens selecionados de Path of Exile 1 para a liga ${l} — armas únicas, armaduras poderosas, frascos de alta qualidade, joias raras e gear de endgame. Cada item é verificado antes de ser listado. Pule o RNG e equipe-se para o endgame de ${l} com entrega rápida no jogo.`,
+        body: (l) => (
+          <div className="space-y-4">
+            <p>Encontre itens premium e selecionados de Path of Exile 1 para a <strong>liga {l}</strong>. Navegue por armas únicas de alto DPS, armaduras cobiçadas como o cinto Mageblood ou Headhunter, frascos raros e joias exclusivas para as builds correntes do meta.</p>
+            <p>Comprar equipamentos cruciais nunca foi tão fácil. Pule totalmente o estresse do trade oficial com jogadores que não respondem. Nós garantimos o estoque de tudo que está listado. Compre e receba *in-game* em minutos para você finalmente conseguir fechar o conteúdo pinnacle sem dores de cabeça!</p>
+          </div>
+        )
       },
     },
     "path-of-exile-2": {
@@ -597,9 +689,9 @@ export default async function LeagueSlugPage(props: {
             </span>
           </div>
           <h1 className="text-3xl md:text-4xl font-bold mb-3">{h1}</h1>
-          <p className="text-muted-foreground max-w-2xl text-sm md:text-base leading-relaxed">
+          <div className="text-muted-foreground w-full text-sm md:text-base leading-relaxed max-w-none">
             {bodyText}
-          </p>
+          </div>
         </div>
 
         {/* Product count */}
@@ -677,7 +769,15 @@ export default async function LeagueSlugPage(props: {
     : [];
 
   const price = product?.price.toFixed(2);
-  const bodyText = productCopy[productSlug][gv][loc].body(league.name, price);
+  const bodyText = productCopy[productSlug]?.[gv]?.[loc]?.body(league.name, price) || "";
+
+  // ── BUSCA NO SANITY ────────────────────────────────────────────────────────
+  let productSanity: any = null;
+  if (product) {
+    productSanity = await getProductBySlug(product.slug);
+  }
+  const sanityLocaleKey = loc === 'pt-br' ? 'pt_br' : 'en';
+  const sanityContent = productSanity?.body?.[sanityLocaleKey];
 
   const h1 = isPt
     ? `Comprar ${productName} — ${league.name}`
@@ -779,9 +879,9 @@ export default async function LeagueSlugPage(props: {
           </span>
         </div>
         <h1 className="text-3xl md:text-4xl font-bold mb-3">{h1}</h1>
-        <p className="text-muted-foreground max-w-2xl text-sm md:text-base leading-relaxed">
+        <div className="text-muted-foreground w-full text-sm md:text-base leading-relaxed max-w-none">
           {bodyText}
-        </p>
+        </div>
       </div>
 
       {/* Product card or not-found notice */}
@@ -823,6 +923,18 @@ export default async function LeagueSlugPage(props: {
             ? `${productName} não está disponível para a liga ${league.name} no momento.`
             : `${productName} is not currently available for the ${league.name} league.`}
         </div>
+      )}
+
+      {/* Sanity Rich Content (SEO Bomb) */}
+      {sanityContent && (
+        <section className="mb-12">
+          <div className="p-6 md:p-8 bg-muted/10 rounded-2xl border border-white/5 prose prose-invert prose-slate max-w-none">
+            <h2 className="text-2xl font-bold text-gray-100 mb-6">
+              {isPt ? `Mais sobre ${productName}` : `More about ${productName}`}
+            </h2>
+            <ProductContent content={sanityContent} />
+          </div>
+        </section>
       )}
 
       {/* Related products */}

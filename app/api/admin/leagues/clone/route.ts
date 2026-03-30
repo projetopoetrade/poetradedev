@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createAdminClient } from "@/utils/supabase/admin";
+import { createClient } from "@/utils/supabase/server";
+import { createAdminClient, isAdmin } from "@/utils/supabase/admin";
 
 export async function POST(req: NextRequest) {
     try {
@@ -7,9 +8,24 @@ export async function POST(req: NextRequest) {
         const authHeader = req.headers.get("authorization");
         const secret = process.env.CRON_SECRET || process.env.ADMIN_SECRET;
 
-        // In production, enforce secret. (In your architecture, a user might also call this 
-        // passing an Authorization header from the frontend logic).
-        if (secret && authHeader !== `Bearer ${secret}`) {
+        let isAuthenticated = false;
+
+        // Check if called via secret (e.g. cron job)
+        if (secret && authHeader === `Bearer ${secret}`) {
+            isAuthenticated = true;
+        }
+
+        // If not authenticated via secret, check Supabase session
+        if (!isAuthenticated) {
+            const supabaseUser = await createClient();
+            const { data: { user }, error: authError } = await supabaseUser.auth.getUser();
+
+            if (!authError && user && isAdmin(user.id)) {
+                isAuthenticated = true;
+            }
+        }
+
+        if (!isAuthenticated) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
