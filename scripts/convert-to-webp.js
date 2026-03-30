@@ -3,7 +3,7 @@ const fs = require('fs').promises;
 const path = require('path');
 
 // Caminho para a pasta onde o seu script PowerShell salvou as imagens
-const imagesRoot = path.join(__dirname, 'public', 'images');
+const imagesRoot = path.join(__dirname, '..', 'public', 'images', 'products');
 
 async function processDirectory(dir) {
     try {

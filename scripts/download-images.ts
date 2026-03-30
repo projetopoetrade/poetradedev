@@ -106,7 +106,7 @@ async function runImageDownloader() {
                 continue;
             }
 
-            const fileName = `${product.slug}.png`;
+            const fileName = `${product.slug}.webp`;
             const destPath = path.join(imgDir, fileName);
             const dbImgUrl = `/images/products/${fileName}`;
 
@@ -122,7 +122,13 @@ async function runImageDownloader() {
                 // Remove querystrings if any in the CDN url before downloading
                 const cleanIconUrl = ninjaIconUrl;
 
-                await downloadImage(cleanIconUrl, destPath);
+                const tempPath = destPath.replace('.webp', '.tmp.png');
+                await downloadImage(cleanIconUrl, tempPath);
+
+                // Converter para WebP usando sharp
+                const sharp = require('sharp');
+                await sharp(tempPath).webp({ quality: 80, effort: 6 }).toFile(destPath);
+                fs.unlinkSync(tempPath);
 
                 // Update Supabase with the new local URL path
                 const { error: updateError } = await supabase

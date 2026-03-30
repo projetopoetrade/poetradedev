@@ -214,7 +214,7 @@ export default async function CategoryPage(props: {
   } catch {}
 
   const [products, blogPosts] = await Promise.all([
-    getProductsWithParams({ gameVersion, category: categoryDbValue[cat], league: defaultLeague }),
+    getProductsWithParams({ gameVersion, category: categoryDbValue[cat], league: defaultLeague, orderByPrice: 'desc' }),
     getRecentPostsByGameVersion(gameVersion, locale, 3).catch(() => [] as Blog[]),
   ]);
 

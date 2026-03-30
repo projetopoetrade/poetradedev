@@ -285,7 +285,7 @@ export const getProductsWithParams = async (
   if (league) query = query.eq('league', league);
   if (difficulty) query = query.eq('difficulty', difficulty);
   if (category) query = query.ilike('category', category);
-  if (search) query = query.ilike('name', `%${search}%`);
+  if (search) query = query.ilike('name', `%${search.replace(/\s+/g, '%')}%`);
   if (orderByPrice) query = query.order('price', { ascending: orderByPrice === 'asc' });
 
   const { data, error } = await query;

@@ -51,7 +51,7 @@ async function upscaleAllImages() {
             '-m', modelsPath,
             '-n', 'realesrgan-x4plus', // Model included in upscayl-node
             '-s', '4', // 4x scale
-            '-f', 'png' // Forçar saída PNG
+            '-f', 'webp' // Forçar saída WEBP para não perdermos a otimização
         ];
 
         try {
