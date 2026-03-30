@@ -1,6 +1,7 @@
 "use server";
 import { encodedRedirect } from "@/utils/utils";
 import { createClient } from "@/utils/supabase/server";
+import { createPublicClient } from "@/utils/supabase/public";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import type { Product, Build } from "@/lib/interface";
@@ -218,7 +219,7 @@ export const newProduct = async (product: Product) => {
 };
 
 export const getLeagues = async (gameVersion: 'path-of-exile-1' | 'path-of-exile-2') => {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from('leagues')
     .select('*')
@@ -234,7 +235,7 @@ export const getLeagues = async (gameVersion: 'path-of-exile-1' | 'path-of-exile
 };
 
 export const getAllActiveLeagues = async (): Promise<{ name: string; gameVersion: string }[]> => {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from('leagues')
     .select('name, gameVersion')
@@ -251,7 +252,7 @@ export const getLeagueBySlugFromSupabase = async (
   leagueSlug: string,
   gameVersion: string
 ): Promise<{ name: string; gameVersion: string } | null> => {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data } = await supabase
     .from('leagues')
     .select('name, gameVersion')
@@ -276,7 +277,7 @@ export const getProductsWithParams = async (
   }
 ): Promise<Product[]> => {
   const { gameVersion, league, difficulty, category, search, isListed, orderByPrice } = params;
-  const supabase = await createClient();
+  const supabase = createPublicClient();
 
   let query = supabase.from('products').select('*');
 
@@ -285,7 +286,7 @@ export const getProductsWithParams = async (
   if (league) query = query.eq('league', league);
   if (difficulty) query = query.eq('difficulty', difficulty);
   if (category) query = query.ilike('category', category);
-  if (search) query = query.ilike('name', `%${search.replace(/\s+/g, '%')}%`);
+  if (search && typeof search === 'string') query = query.ilike('name', `%${search.replace(/\s+/g, '%')}%`);
   if (orderByPrice) query = query.order('price', { ascending: orderByPrice === 'asc' });
 
   const { data, error } = await query;
@@ -299,7 +300,7 @@ export const getProductsWithParams = async (
 };
 
 export const getDifficulties = async (gameVersion: 'path-of-exile-1' | 'path-of-exile-2') => {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from('difficulties')
     .select('*')
