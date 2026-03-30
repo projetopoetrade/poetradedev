@@ -7,8 +7,8 @@
  * Handles special characters in currency names
  */
 export const encodeProductName = (name: string): string => {
-  // First normalize the string (handle accents, etc.)
-  const normalized = name.normalize('NFD');
+  // First normalize the string (handle accents, etc.) and lowercase
+  const normalized = name.toLowerCase().normalize('NFD');
 
   // Replace spaces with hyphens and remove problematic characters
   const slugified = normalized

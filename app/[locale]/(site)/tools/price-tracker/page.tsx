@@ -28,7 +28,44 @@ export async function generateMetadata(props: {
     ? 'Veja preços em tempo real de currency, items únicos, gemas e mais em Path of Exile 1 e 2. Preços em BRL, USD e outras moedas. Atualizado a cada hora.'
     : 'Check real-time prices for currency, unique items, gems, and more in Path of Exile 1 & 2. Prices shown in USD, BRL, and other currencies. Updated every hour.'
 
-  const faqSchema = {
+  const faqSchema = isPt ? {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: 'Com que frequência os preços são atualizados?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Os preços são buscados do poe.ninja e atualizados a cada hora. Os dados refletem o snapshot mais recente do mercado de Path of Exile.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'De onde vêm os preços?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Todos os preços são obtidos do poe.ninja, o agregador de preços em tempo real mais confiável de Path of Exile. Normalizamos e exibimos esses dados com conversões em USD, BRL e outras moedas.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'Como o preço em BRL/USD é calculado?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Convertemos os preços do poe.ninja usando o valor do Divine Orb da nossa loja. A fórmula é: valor em Divine Orb do item × nosso preço do Divine Orb em USD.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'Posso comprar itens diretamente nessa página?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Sim! Itens que o Path of Trade vende exibem um botão "Comprar" que leva diretamente à nossa página de produto com preços competitivos.',
+        },
+      },
+    ],
+  } : {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
     mainEntity: [
@@ -117,12 +154,37 @@ export default async function PriceTrackerPage(props: {
   const isPt = locale === 'pt-br'
 
   const breadcrumbSchema = buildBreadcrumbSchema([
-    { name: 'Home', url: '/' },
-    { name: 'Tools', url: '/tools' },
-    { name: 'Price Tracker', url: '/tools/price-tracker' },
+    { name: isPt ? 'Início' : 'Home', url: '/' },
+    { name: isPt ? 'Ferramentas' : 'Tools', url: '/tools' },
+    { name: isPt ? 'Tracker de Preços' : 'Price Tracker', url: '/tools/price-tracker' },
   ])
 
-  const faqSchema = {
+  const faqSchema = isPt ? {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: 'Com que frequência os preços são atualizados?',
+        acceptedAnswer: { '@type': 'Answer', text: 'Os preços são buscados do poe.ninja e atualizados a cada hora.' },
+      },
+      {
+        '@type': 'Question',
+        name: 'De onde vêm os preços?',
+        acceptedAnswer: { '@type': 'Answer', text: 'Todos os preços são obtidos do poe.ninja, o agregador de preços mais confiável de Path of Exile.' },
+      },
+      {
+        '@type': 'Question',
+        name: 'Como o preço em BRL/USD é calculado?',
+        acceptedAnswer: { '@type': 'Answer', text: 'Convertemos usando o valor do Divine Orb da nossa loja. Fórmula: valor em Divine do item × nosso preço do Divine Orb em USD.' },
+      },
+      {
+        '@type': 'Question',
+        name: 'Posso comprar itens diretamente nessa página?',
+        acceptedAnswer: { '@type': 'Answer', text: 'Sim! Itens que o Path of Trade vende exibem um botão "Comprar" com link direto para a nossa página de produto.' },
+      },
+    ],
+  } : {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
     mainEntity: [

@@ -245,21 +245,27 @@ export default async function ProductDetailPage(props: {
 
     const localeKey = params.locale === 'pt-BR' || params.locale === 'pt-br' ? 'pt_br' : 'en';
 
+    const isPt = params.locale === 'pt-br' || params.locale === 'pt-BR';
+
     const seoTitle = (productSanity as any)?.seoTitle?.[localeKey]
-      || `Buy ${product.name} for ${gameVersionLabel} | Path of Trade`;
+      || (isPt
+        ? `Comprar ${product.name} para ${gameVersionLabel} | Path of Trade`
+        : `Buy ${product.name} for ${gameVersionLabel} | Path of Trade`);
 
     // Transactional description fallback when Sanity has no body text
     const schemaDescription =
       productSanity?.metaDescription?.[localeKey] ||
-      `Buy ${product.name} for ${gameVersionLabel}. Fast in-game delivery, secure trading, best prices at Path of Trade.`;
+      (isPt
+        ? `Compre ${product.name} para ${gameVersionLabel}. Entrega rápida no jogo, negociação segura e melhores preços no Path of Trade.`
+        : `Buy ${product.name} for ${gameVersionLabel}. Fast in-game delivery, secure trading, best prices at Path of Trade.`);
 
     // Canonical URL — buildAbsoluteUrl avoids double-slash when getProductUrl already starts with /
     const schemaUrl = buildAbsoluteUrl(getProductUrl(product.name, params.locale));
 
     // BreadcrumbList schema
     const breadcrumbSchema = buildBreadcrumbSchema([
-      { name: 'Home', url: '/' },
-      { name: 'Products', url: '/products' },
+      { name: isPt ? 'Início' : 'Home', url: '/' },
+      { name: isPt ? 'Produtos' : 'Products', url: '/products' },
       { name: product.name, url: getProductUrl(product.name, params.locale) },
     ]);
 
@@ -432,7 +438,7 @@ return (
         {productSanity?.body?.[params.locale === 'en' ? 'en' : 'pt_br'] && (
           <div className="max-w-6xl mx-auto mt-8">
             <div className="p-4 md:p-6 bg-muted/10 rounded-xl border border-white/5">
-              <h2 className="text-lg font-semibold text-gray-100/40 mb-4">Description</h2>
+              <h2 className="text-lg font-semibold text-gray-100/40 mb-4">{isPt ? 'Descrição' : 'Description'}</h2>
               <ProductContent content={productSanity.body[params.locale === 'en' ? 'en' : 'pt_br']} />
             </div>
           </div>

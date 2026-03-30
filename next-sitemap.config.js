@@ -40,18 +40,29 @@ module.exports = {
     // Strip trailing slash to avoid double slashes when concatenating with leading-slash paths
     const baseSiteUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://www.pathoftrade.net').replace(/\/$/, '');
 
+    // BCP 47 locale map — Google requires pt-BR not pt-br
+    const hreflangMap = { 'pt-br': 'pt-BR', 'en': 'en' };
+
     // Helper to generate Hreflang alternateRefs for a given base path
     const generateAlternateRefs = (basePath) => {
-      return locales.map(locale => {
+      const refs = locales.map(locale => {
         const localePath = locale === defaultLocale ? basePath : `/${locale}${basePath}`;
         // Ensure we don't end up with double slashes if basePath is /
         const cleanPath = localePath === '/' ? '/' : localePath.replace(/\/$/, '');
         return {
           href: `${baseSiteUrl}${cleanPath}`,
-          hreflang: locale,
-          hrefIsAbsolute: true,  // tells next-sitemap not to prepend field.loc to the href
+          hreflang: hreflangMap[locale] || locale,
+          hrefIsAbsolute: true,
         };
       });
+      // x-default aponta para a versão em inglês (padrão)
+      const defaultPath = basePath === '/' ? '/' : basePath.replace(/\/$/, '');
+      refs.push({
+        href: `${baseSiteUrl}${defaultPath}`,
+        hreflang: 'x-default',
+        hrefIsAbsolute: true,
+      });
+      return refs;
     };
 
     // ============================================================
