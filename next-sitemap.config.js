@@ -145,9 +145,9 @@ module.exports = {
           );
           let productPath = `/products/${productSlug}`;
 
-          // HYBRID URL STRATEGY (PoE 2 param)
+          // PoE 2 usa URL por gameVersion no path, PoE 1 mantém /products/[slug]
           if (product.gameVersion === 'path-of-exile-2') {
-            productPath += '?gameVersion=path-of-exile-2';
+            productPath = `/games/path-of-exile-2/products/${productSlug}`;
           }
 
           // Generate alternates tailored to this product's path

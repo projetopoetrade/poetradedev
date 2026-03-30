@@ -25,6 +25,18 @@ const nextConfig: NextConfig = {
         destination: 'https://www.poewiki.net/wiki/:path*',
         permanent: true, // 308 — permanente para transferir link equity
       },
+      {
+        source: '/products/:slug',
+        has: [{ type: 'query', key: 'gameVersion', value: 'path-of-exile-2' }],
+        destination: '/games/path-of-exile-2/products/:slug',
+        permanent: true,
+      },
+      {
+        source: '/pt-br/products/:slug',
+        has: [{ type: 'query', key: 'gameVersion', value: 'path-of-exile-2' }],
+        destination: '/pt-br/games/path-of-exile-2/products/:slug',
+        permanent: true,
+      },
     ];
   },
 

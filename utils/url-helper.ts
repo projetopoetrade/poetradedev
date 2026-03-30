@@ -57,9 +57,9 @@ export const getProductUrl = (
 
   // SEO STRATEGY:
   // PoE 1 -> Clean URL (e.g. /products/divine-orb)
-  // PoE 2 -> Param URL (e.g. /products/divine-orb?gameVersion=path-of-exile-2)
+  // PoE 2 -> Clean URL with gameVersion in path (e.g. /games/path-of-exile-2/products/divine-orb)
   if (gameVersion === 'path-of-exile-2') {
-    baseUrl += `?gameVersion=${gameVersion}`;
+    return `${localePath}/games/path-of-exile-2/products/${slug}`;
   }
 
   return baseUrl;
