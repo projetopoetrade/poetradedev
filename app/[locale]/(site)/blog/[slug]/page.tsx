@@ -54,7 +54,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
       url: canonical,
       type: "article",
       publishedTime: post.publishedAt,
-      modifiedTime: post.publishedAt,
+      modifiedTime: post._updatedAt || post.publishedAt,
       authors: [post.author.name],
       siteName: t("siteName"),
       images: post.mainImage ? [{ url: post.mainImage }] : undefined,

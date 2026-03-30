@@ -29,8 +29,11 @@ module.exports = {
 
   additionalPaths: async (config) => {
     const paths = [];
-    // Lastmod: Current (February 2026)
-    const defaultLastMod = new Date().toISOString();
+    // lastmod dinâmico: só para páginas que realmente mudam a cada deploy
+    const buildLastMod = new Date().toISOString();
+    // Páginas de conteúdo estático — data fixa para não sinalizar "updated" em todo deploy
+    const staticContentLastMod = '2025-06-01T00:00:00.000Z';
+    const legalLastMod = '2025-01-01T00:00:00.000Z';
 
     const locales = ['en', 'pt-br'];
     const defaultLocale = 'en';
@@ -69,26 +72,33 @@ module.exports = {
     // 1. PÁGINAS ESTÁTICAS
     // ============================================================
     const staticPages = [
-      { path: '/builds', priority: 0.85, changefreq: 'weekly' },
-      { path: '/', priority: 1.0, changefreq: 'daily' },
-      { path: '/blog', priority: 0.8, changefreq: 'weekly' },
-      { path: '/contact', priority: 0.4, changefreq: 'monthly' },
-      { path: '/about', priority: 0.5, changefreq: 'monthly' },
-      { path: '/faq', priority: 0.6, changefreq: 'monthly' },
-      { path: '/terms', priority: 0.3, changefreq: 'yearly' },
-      { path: '/games/path-of-exile-1', priority: 0.9, changefreq: 'weekly' },
-      { path: '/games/path-of-exile-2', priority: 0.9, changefreq: 'weekly' },
-      { path: '/games/path-of-exile-1/builds', priority: 0.85, changefreq: 'weekly' },
-      { path: '/games/path-of-exile-2/builds', priority: 0.85, changefreq: 'weekly' },
-      { path: '/tools', priority: 0.8, changefreq: 'monthly' },
-      { path: '/tools/price-tracker', priority: 0.85, changefreq: 'daily' },
-      { path: '/products', priority: 0.85, changefreq: 'daily' },
-      { path: '/games/path-of-exile-1/currency', priority: 0.9, changefreq: 'weekly' },
-      { path: '/games/path-of-exile-2/currency', priority: 0.9, changefreq: 'weekly' },
-      { path: '/games/path-of-exile-1/items', priority: 0.85, changefreq: 'weekly' },
-      { path: '/games/path-of-exile-2/items', priority: 0.85, changefreq: 'weekly' },
-      { path: '/games/path-of-exile-1/services', priority: 0.8, changefreq: 'weekly' },
-      { path: '/games/path-of-exile-2/services', priority: 0.8, changefreq: 'weekly' },
+      // Páginas dinâmicas — lastmod = build time (conteúdo muda a cada deploy/publicação)
+      { path: '/', priority: 1.0, changefreq: 'daily', lastmod: buildLastMod },
+      { path: '/products', priority: 0.85, changefreq: 'daily', lastmod: buildLastMod },
+      { path: '/builds', priority: 0.85, changefreq: 'weekly', lastmod: buildLastMod },
+      { path: '/blog', priority: 0.8, changefreq: 'weekly', lastmod: buildLastMod },
+      { path: '/tools/price-tracker', priority: 0.85, changefreq: 'daily', lastmod: buildLastMod },
+      { path: '/games/path-of-exile-1', priority: 0.9, changefreq: 'weekly', lastmod: buildLastMod },
+      { path: '/games/path-of-exile-2', priority: 0.9, changefreq: 'weekly', lastmod: buildLastMod },
+      { path: '/games/path-of-exile-1/builds', priority: 0.85, changefreq: 'weekly', lastmod: buildLastMod },
+      { path: '/games/path-of-exile-2/builds', priority: 0.85, changefreq: 'weekly', lastmod: buildLastMod },
+      { path: '/games/path-of-exile-1/currency', priority: 0.9, changefreq: 'weekly', lastmod: buildLastMod },
+      { path: '/games/path-of-exile-2/currency', priority: 0.9, changefreq: 'weekly', lastmod: buildLastMod },
+      { path: '/games/path-of-exile-1/items', priority: 0.85, changefreq: 'weekly', lastmod: buildLastMod },
+      { path: '/games/path-of-exile-2/items', priority: 0.85, changefreq: 'weekly', lastmod: buildLastMod },
+      { path: '/games/path-of-exile-1/services', priority: 0.8, changefreq: 'weekly', lastmod: buildLastMod },
+      { path: '/games/path-of-exile-2/services', priority: 0.8, changefreq: 'weekly', lastmod: buildLastMod },
+      // Ferramentas públicas
+      { path: '/tools', priority: 0.8, changefreq: 'monthly', lastmod: staticContentLastMod },
+      { path: '/tools/build-randomizer', priority: 0.7, changefreq: 'monthly', lastmod: staticContentLastMod },
+      { path: '/tools/pob-viewer', priority: 0.7, changefreq: 'monthly', lastmod: staticContentLastMod },
+      // Páginas de conteúdo estático — data fixa (não sinalizar "updated" em todo deploy)
+      { path: '/about', priority: 0.5, changefreq: 'monthly', lastmod: staticContentLastMod },
+      { path: '/contact', priority: 0.4, changefreq: 'monthly', lastmod: staticContentLastMod },
+      { path: '/faq', priority: 0.6, changefreq: 'monthly', lastmod: staticContentLastMod },
+      // Legais — mudam raramente
+      { path: '/terms', priority: 0.3, changefreq: 'yearly', lastmod: legalLastMod },
+      { path: '/privacy', priority: 0.3, changefreq: 'yearly', lastmod: legalLastMod },
     ];
 
     staticPages.forEach((page) => {
@@ -101,7 +111,7 @@ module.exports = {
 
         paths.push({
           loc: finalLoc,
-          lastmod: defaultLastMod,
+          lastmod: page.lastmod,
           changefreq: page.changefreq,
           priority: page.priority,
           alternateRefs: alternates,
@@ -149,7 +159,7 @@ module.exports = {
 
             paths.push({
               loc: localePath,
-              lastmod: product.lastmod || defaultLastMod,
+              lastmod: product.lastmod || buildLastMod,
               changefreq: 'daily',
               priority: product.gameVersion === 'path-of-exile-2' ? 0.85 : 0.9,
               alternateRefs: alternates,
@@ -183,7 +193,7 @@ module.exports = {
 
             paths.push({
               loc: localePath,
-              lastmod: post.lastmod || defaultLastMod,
+              lastmod: post.lastmod || buildLastMod,
               changefreq: 'weekly',
               priority: 0.7,
               alternateRefs: alternates,
@@ -203,7 +213,7 @@ module.exports = {
         locales.forEach((locale) => {
           paths.push({
             loc: locale === defaultLocale ? path : `/${locale}${path}`,
-            lastmod: lastmod || defaultLastMod,
+            lastmod: lastmod || buildLastMod,
             changefreq: 'weekly',
             priority: 0.8,
             alternateRefs: alternates,
@@ -223,7 +233,7 @@ module.exports = {
         locales.forEach((locale) => {
           paths.push({
             loc: locale === defaultLocale ? leaguePath : `/${locale}${leaguePath}`,
-            lastmod: lastmod || defaultLastMod,
+            lastmod: lastmod || buildLastMod,
             changefreq: 'weekly',
             priority: 0.85,
             alternateRefs: alternates,
@@ -242,7 +252,7 @@ module.exports = {
         locales.forEach((locale) => {
           paths.push({
             loc: locale === defaultLocale ? buildPath : `/${locale}${buildPath}`,
-            lastmod: lastmod || defaultLastMod,
+            lastmod: lastmod || buildLastMod,
             changefreq: 'weekly',
             priority: 0.8,
             alternateRefs: alternates,
@@ -261,7 +271,7 @@ module.exports = {
         locales.forEach((locale) => {
           paths.push({
             loc: locale === defaultLocale ? leagueBuildPath : `/${locale}${leagueBuildPath}`,
-            lastmod: lastmod || defaultLastMod,
+            lastmod: lastmod || buildLastMod,
             changefreq: 'weekly',
             priority: 0.75,
             alternateRefs: alternates,

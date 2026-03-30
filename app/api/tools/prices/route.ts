@@ -243,6 +243,7 @@ export async function GET(request: NextRequest) {
 
       return {
         ...item,
+        icon: item.icon?.startsWith('/') ? `https://web.poecdn.com${item.icon}` : item.icon,
         divineValue,
         estimatedUSD,
         weSellThis,
