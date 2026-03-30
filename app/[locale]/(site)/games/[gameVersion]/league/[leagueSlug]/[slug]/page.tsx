@@ -564,6 +564,9 @@ export default async function LeagueSlugPage(props: {
   const league = await getLeagueBySlugFromSupabase(leagueSlug, gameVersion);
   if (!league) notFound();
 
+  const allActiveLeaguesReq = await getAllActiveLeagues();
+  const allActiveLeagues = allActiveLeaguesReq.filter(l => l.gameVersion === gameVersion);
+
   const isPt = locale === "pt-br";
   const loc = isPt ? "pt-br" : "en";
   const gv = gameVersion as "path-of-exile-1" | "path-of-exile-2";
@@ -689,6 +692,27 @@ export default async function LeagueSlugPage(props: {
             </span>
           </div>
           <h1 className="text-3xl md:text-4xl font-bold mb-3">{h1}</h1>
+          
+          {/* Outras ligas */}
+          {allActiveLeagues.length > 1 && (
+            <div className="flex flex-wrap gap-2 items-center mb-4">
+              <span className="text-sm font-medium text-muted-foreground mr-1">
+                {isPt ? "Outras ligas:" : "Other leagues:"}
+              </span>
+              {allActiveLeagues
+                .filter((l) => l.name !== league.name)
+                .map((al) => (
+                  <Link
+                    key={al.name}
+                    href={`/games/${gameVersion}/league/${nameToSlug(al.name)}/${slug}`}
+                    className="text-xs border rounded-full px-3 py-1 hover:bg-primary/10 hover:text-primary hover:border-primary/40 transition-colors"
+                  >
+                    Mudar para {al.name}
+                  </Link>
+                ))}
+            </div>
+          )}
+
           <div className="text-muted-foreground w-full text-sm md:text-base leading-relaxed max-w-none">
             {bodyText}
           </div>
@@ -879,6 +903,27 @@ export default async function LeagueSlugPage(props: {
           </span>
         </div>
         <h1 className="text-3xl md:text-4xl font-bold mb-3">{h1}</h1>
+        
+        {/* Outras ligas */}
+        {allActiveLeagues.length > 1 && (
+          <div className="flex flex-wrap gap-2 items-center mb-4">
+            <span className="text-sm font-medium text-muted-foreground mr-1">
+              {isPt ? "Ver preço na liga:" : "Check price on:"}
+            </span>
+            {allActiveLeagues
+              .filter((l) => l.name !== league.name)
+              .map((al) => (
+                <Link
+                  key={al.name}
+                  href={`/games/${gameVersion}/league/${nameToSlug(al.name)}/${slug}`}
+                  className="text-xs border rounded-full px-3 py-1 hover:bg-primary/10 hover:text-primary hover:border-primary/40 transition-colors"
+                >
+                  Mudar para {al.name}
+                </Link>
+              ))}
+          </div>
+        )}
+
         <div className="text-muted-foreground w-full text-sm md:text-base leading-relaxed max-w-none">
           {bodyText}
         </div>

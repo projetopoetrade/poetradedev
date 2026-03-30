@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import Image from 'next/image'
@@ -17,7 +17,7 @@ import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { TrendingUp, TrendingDown, ShoppingCart, ChevronUp, ChevronDown, ChevronsUpDown, Search, RefreshCw } from 'lucide-react'
 
-// ─── Tipos ────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Tipos â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 interface NormalizedItem {
   name: string
@@ -48,7 +48,7 @@ interface ApiResponse {
 type SortKey = 'name' | 'chaosValue' | 'divineValue' | 'estimatedUSD' | 'trend'
 type SortDir = 'asc' | 'desc'
 
-// ─── Configurações ────────────────────────────────────────────────────────────
+// â”€â”€â”€ ConfiguraÃ§Ãµes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const POE1_CATEGORIES = [
   { value: 'Currency', label: 'Currency' },
@@ -70,7 +70,7 @@ const POE2_CATEGORIES = [
 
 const ITEMS_PER_PAGE = 50
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function formatChaos(value: number): string {
   if (value >= 1000) return `${(value / 1000).toFixed(1)}k`
@@ -90,7 +90,7 @@ function SortIcon({ col, sortKey, sortDir }: { col: SortKey; sortKey: SortKey; s
     : <ChevronDown className="h-3 w-3 inline ml-1" />
 }
 
-// ─── Skeleton ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Skeleton â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function TableSkeleton() {
   return (
@@ -108,10 +108,10 @@ function TableSkeleton() {
   )
 }
 
-// ─── Trend Badge ──────────────────────────────────────────────────────────────
+// â”€â”€â”€ Trend Badge â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function TrendBadge({ sparkline }: { sparkline: NormalizedItem['sparkline'] }) {
-  if (!sparkline) return <span className="text-muted-foreground text-xs">—</span>
+  if (!sparkline) return <span className="text-muted-foreground text-xs">â€”</span>
   const change = sparkline.totalChange
   const isPositive = change >= 0
   return (
@@ -122,7 +122,7 @@ function TrendBadge({ sparkline }: { sparkline: NormalizedItem['sparkline'] }) {
   )
 }
 
-// ─── Row de tabela ────────────────────────────────────────────────────────────
+// â”€â”€â”€ Row de tabela â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function PriceRow({ item, currencyLabel, convertPrice, formatPrice, game, league }: {
   item: NormalizedItem
@@ -173,14 +173,14 @@ function PriceRow({ item, currencyLabel, convertPrice, formatPrice, game, league
         </div>
       </div>
 
-      {/* Chaos — oculto em mobile */}
+      {/* Chaos â€” oculto em mobile */}
       <span className="text-sm text-muted-foreground hidden sm:block">
         {formatChaos(item.chaosValue)}c
       </span>
 
       {/* Divine */}
       <span className="text-sm text-amber-400">
-        {item.divineValue > 0 ? `${formatDivine(item.divineValue)}d` : '—'}
+        {item.divineValue > 0 ? `${formatDivine(item.divineValue)}d` : 'â€”'}
       </span>
 
       {/* Moeda estimada */}
@@ -189,16 +189,16 @@ function PriceRow({ item, currencyLabel, convertPrice, formatPrice, game, league
           <span className="text-sm font-medium">
             {formatPrice(convertedPrice)}
           </span>
-        ) : <span className="text-muted-foreground text-sm">—</span>}
+        ) : <span className="text-muted-foreground text-sm">â€”</span>}
         {item.weSellThis && ourConverted != null && (
           <span className={`text-xs ${isCheaper ? 'text-green-400' : 'text-muted-foreground'}`}>
             Ours: {formatPrice(ourConverted)}
-            {isCheaper && ' ↓'}
+            {isCheaper && ' â†“'}
           </span>
         )}
       </div>
 
-      {/* Trend — oculto em mobile */}
+      {/* Trend â€” oculto em mobile */}
       <div className="hidden sm:block">
         <TrendBadge sparkline={item.sparkline} />
       </div>
@@ -221,7 +221,7 @@ function PriceRow({ item, currencyLabel, convertPrice, formatPrice, game, league
   )
 }
 
-// ─── Mobile Card ──────────────────────────────────────────────────────────────
+// â”€â”€â”€ Mobile Card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function PriceCard({ item, convertPrice, formatPrice, game, league }: {
   item: NormalizedItem
@@ -287,7 +287,7 @@ function PriceCard({ item, convertPrice, formatPrice, game, league }: {
   )
 }
 
-// ─── Componente principal ─────────────────────────────────────────────────────
+// â”€â”€â”€ Componente principal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export default function PriceTrackerClient({ labels }: {
   labels: {
@@ -491,7 +491,7 @@ export default function PriceTrackerClient({ labels }: {
         </Button>
       </div>
 
-      {/* Tabela — desktop */}
+      {/* Tabela â€” desktop */}
       <div className="hidden sm:block">
         {loading ? (
           <TableSkeleton />
@@ -529,8 +529,6 @@ export default function PriceTrackerClient({ labels }: {
                   currencyLabel={currencyLabel}
                   convertPrice={convertPrice}
                   formatPrice={formatPrice}
-                  game={game}
-                  league={league}
                 />
               ))}
             </div>
@@ -538,7 +536,7 @@ export default function PriceTrackerClient({ labels }: {
         )}
       </div>
 
-      {/* Cards — mobile */}
+      {/* Cards â€” mobile */}
       <div className="sm:hidden">
         {loading ? (
           <div className="space-y-2">
@@ -558,15 +556,13 @@ export default function PriceTrackerClient({ labels }: {
                 item={item}
                 convertPrice={convertPrice}
                 formatPrice={formatPrice}
-                game={game}
-                league={league}
               />
             ))}
           </div>
         )}
       </div>
 
-      {/* Paginação */}
+      {/* PaginaÃ§Ã£o */}
       {!loading && !error && totalPages > 1 && (
         <div className="flex items-center justify-between pt-2">
           <span className="text-sm text-muted-foreground">
@@ -590,10 +586,11 @@ export default function PriceTrackerClient({ labels }: {
           <p className="text-xs text-muted-foreground">{labels.disclaimer}</p>
           <p className="text-xs text-muted-foreground">
             {labels.fetchedAt}: {new Date(data.meta.fetchedAt).toLocaleString()}
-            {' '}· Divine Orb = ${data.meta.divineOrbPriceUSD.toFixed(2)} USD
+            {' '}Â· Divine Orb = ${data.meta.divineOrbPriceUSD.toFixed(2)} USD
           </p>
         </div>
       )}
     </div>
   )
 }
+

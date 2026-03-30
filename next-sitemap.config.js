@@ -4,7 +4,7 @@ const {
   getSitemapLeagueSlugPages,
   getSitemapBuilds,
   getSitemapLeagueBuilds,
-  getSitemapLeaguesFromSanity,
+  getSitemapLeaguesFromSupabase,
 } = require('./lib/sitemap-data-fetchers.js');
 
 /** @type {import('next-sitemap').IConfig} */
@@ -99,13 +99,13 @@ module.exports = {
     });
 
     // Fetch Data
-    const [posts, products, leagueSlugPages, builds, leagueBuilds, sanityLeagues] = await Promise.all([
+    const [posts, products, leagueSlugPages, builds, leagueBuilds, activeLeagues] = await Promise.all([
       getSitemapPosts(),
       getSitemapProducts(),
       getSitemapLeagueSlugPages(),
       getSitemapBuilds(),
       getSitemapLeagueBuilds(),
-      getSitemapLeaguesFromSanity(),
+      getSitemapLeaguesFromSupabase(),
     ]);
 
     // ============================================================
@@ -204,8 +204,8 @@ module.exports = {
     // ============================================================
     // 5b. LEAGUE DETAIL PAGES (from Sanity CMS)
     // ============================================================
-    if (sanityLeagues && sanityLeagues.length > 0) {
-      sanityLeagues.forEach(({ slug, gameVersion, lastmod }) => {
+    if (activeLeagues && activeLeagues.length > 0) {
+      activeLeagues.forEach(({ slug, gameVersion, lastmod }) => {
         if (!slug || !gameVersion) return;
         const leaguePath = `/games/${gameVersion}/league/${slug}`;
         const alternates = generateAlternateRefs(leaguePath);
