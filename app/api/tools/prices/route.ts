@@ -23,6 +23,7 @@ interface NormalizedItem {
 // ─── Helpers poe.ninja ────────────────────────────────────────────────────────
 
 const POE1_BASE = 'https://poe.ninja/api/data'
+const POE1_EXCHANGE_BASE = 'https://poe.ninja/poe1/api/economy/exchange'
 const POE2_BASE = 'https://poe.ninja/poe2/api/economy'
 
 const POE1_ENDPOINTS: Record<string, { path: string; type: 'currency' | 'item' }> = {
@@ -44,6 +45,42 @@ async function fetchPoeNinja(
   league: string,
   category: string
 ): Promise<NormalizedItem[]> {
+  // PoE 1 Currency: exchange overview (preços baseados em trades reais, não stash)
+  if (game === 'poe1' && category === 'Currency') {
+    const url = `${POE1_EXCHANGE_BASE}/current/overview?league=${encodeURIComponent(league)}&type=Currency`
+    const res = await fetch(url, {
+      next: { revalidate: 3600 },
+      headers: { 'User-Agent': 'PathOfTrade/1.0 (pathoftrade.net)' },
+    })
+    if (!res.ok) return []
+    const data = await res.json()
+
+    const itemMap: Record<string, { name: string; image: string; detailsId: string }> = {}
+    for (const it of data.items || []) {
+      itemMap[it.id] = { name: it.name, image: it.image || '', detailsId: it.detailsId || it.id }
+    }
+
+    return (data.lines || []).map((line: any) => {
+      const meta = itemMap[line.id] || { name: line.id, image: '', detailsId: line.id }
+      return {
+        name: meta.name,
+        icon: meta.image,
+        category,
+        chaosValue: line.primaryValue ?? 1,
+        divineValue: 0,
+        estimatedUSD: 0,
+        sparkline: line.sparkline
+          ? { data: line.sparkline.data || [], totalChange: line.sparkline.totalChange ?? 0 }
+          : null,
+        listingCount: line.volumePrimaryValue ?? null,
+        detailsId: meta.detailsId,
+        weSellThis: false,
+        inStock: false,
+        ourPriceUSD: null,
+      }
+    })
+  }
+
   let url: string
 
   if (game === 'poe2') {

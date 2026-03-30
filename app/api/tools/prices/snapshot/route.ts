@@ -17,11 +17,7 @@ import { createAdminClient } from '@/utils/supabase/admin'
 // CREATE INDEX IF NOT EXISTS idx_price_history_item ON currency_price_history(item_name, league);
 // CREATE INDEX IF NOT EXISTS idx_price_history_date ON currency_price_history(snapshot_at);
 
-const POE1_BASE = 'https://poe.ninja/api/data'
-
-const SNAPSHOT_CATEGORIES = [
-  { category: 'Currency', type: 'currencyoverview' },
-]
+const POE1_EXCHANGE_BASE = 'https://poe.ninja/poe1/api/economy/exchange'
 
 // Cron job chama este endpoint 1x/hora
 // pg_cron: { "schedule": "0 * * * *", "job": "price-snapshot-hourly" }
@@ -70,8 +66,8 @@ export async function POST(request: NextRequest) {
 
     for (const leagueData of leaguesToProcess) {
       const ninjaName = leagueData.poe_ninja_name || leagueData.name
-      // Snapshot das currencies principais (PoE 1)
-      const currencyUrl = `${POE1_BASE}/currencyoverview?league=${encodeURIComponent(ninjaName)}&type=Currency`
+      // Snapshot das currencies (PoE 1) via exchange overview — preços baseados em trades reais
+      const currencyUrl = `${POE1_EXCHANGE_BASE}/current/overview?league=${encodeURIComponent(ninjaName)}&type=Currency`
       const res = await fetch(currencyUrl, {
         headers: { 'User-Agent': 'PathOfTrade/1.0 (pathoftrade.net)' },
       })
@@ -79,22 +75,28 @@ export async function POST(request: NextRequest) {
       if (!res.ok) continue
       const data = await res.json()
 
+      // Montar mapa id → name a partir do array items[]
+      const itemNameMap: Record<string, string> = {}
+      for (const it of data.items || []) {
+        itemNameMap[it.id] = it.name
+      }
+
       // Descobrir chaos value do Divine Orb
       let divineInChaos = 0
       for (const line of data.lines || []) {
-        if (line.currencyTypeName === 'Divine Orb') {
-          divineInChaos = line.chaosEquivalent ?? 0
+        if (line.id === 'divine') {
+          divineInChaos = line.primaryValue ?? 0
           break
         }
       }
 
       for (const line of data.lines || []) {
-        const chaosValue = line.chaosEquivalent ?? 0
+        const chaosValue = line.primaryValue ?? 0
         const divineValue = divineInChaos > 0 ? chaosValue / divineInChaos : null
         const estimatedUsd = divineValue != null ? divineValue * divineOrbPriceUSD : null
 
         snapshots.push({
-          item_name: line.currencyTypeName,
+          item_name: itemNameMap[line.id] || line.id,
           item_category: 'Currency',
           game_version: 'poe1',
           league: leagueData.name,
