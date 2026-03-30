@@ -3,13 +3,27 @@ import createNextIntlPlugin from "next-intl/plugin";
 
 const nextConfig: NextConfig = {
 
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+        ],
+      },
+    ];
+  },
+
   async redirects() {
     return [
       {
         // Redireciona links /wiki/* que aparecem em blog posts para a PoE Wiki oficial
         source: '/wiki/:path*',
         destination: 'https://www.poewiki.net/wiki/:path*',
-        permanent: false, // 307 — pode mudar para true (308) depois se necessário
+        permanent: true, // 308 — permanente para transferir link equity
       },
     ];
   },

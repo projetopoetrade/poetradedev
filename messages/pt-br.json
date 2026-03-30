@@ -37,7 +37,12 @@
   "HomePage": {
     "why-path-of-trade": "Por que escolher a Path of Trade Net?",
     "choose-your-game": "ESCOLHA SEU JOGO",
-    "h1": "Comprar Currency de Path of Exile (PoE) - Entrega Rápida"
+    "h1": "Comprar Currency de Path of Exile (PoE) - Entrega Rápida",
+    "seoSection": {
+      "title": "Sua Loja de Confiança para Moedas PoE",
+      "p1": "O Path of Trade é o marketplace ideal para jogadores de Path of Exile que precisam de currency rápido. Vendemos Divine Orbs, Chaos Orbs, Exalted Orbs e todas as outras moedas para Path of Exile 1 e Path of Exile 2 — em todas as ligas ativas, incluindo as ligas desafio mais recentes. Cada pedido é entregue no jogo em minutos pela nossa equipe experiente.",
+      "p2": "Seja para se preparar para mapas endgame, craftar seus itens dos sonhos, ou simplesmente dar um boost de currency no início de liga, o Path of Trade oferece os melhores preços, transações seguras via Stripe e PIX, e suporte humano 24/7. Acompanhamos preços em tempo real com nossa ferramenta gratuita Price Tracker para que você sempre saiba que está pagando um preço justo."
+    }
   },
   "Schema": {
     "name": "Path of Trade Net",
@@ -63,6 +68,12 @@
   },
   "SEO": {
     "siteName": "Path of Trade",
+    "home": {
+      "title": "Comprar Moedas PoE — Divine Orbs, Chaos Orbs e Mais | Path of Trade",
+      "description": "Compre moedas de Path of Exile para PoE 1 e PoE 2. Divine Orbs, Chaos Orbs, Exalted Orbs com os melhores preços. Entrega rápida, suporte 24/7, 100% seguro.",
+      "ogTitle": "Comprar Moedas PoE — Rápido e Seguro | Path of Trade",
+      "ogDescription": "Sua loja de confiança de moedas Path of Exile. Compre Divine Orbs, Chaos Orbs e mais para PoE 1 e PoE 2. Entrega em minutos, suporte 24/7."
+    },
     "layout": {
       "title": "Compre Moedas PoE 1 & 2: Entrega em até 30 minutos | Path of Trade",
       "description": "Compre Moedas para Path of Exile ✔️ Orbes Divinos, Exaltados e do Caos com os menores preços. Entrega Rápida, Suporte 24/7 e negociação 100% segura no Path of Trade!",

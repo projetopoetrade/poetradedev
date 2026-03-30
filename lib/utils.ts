@@ -40,14 +40,9 @@ export function getHreflangAlternates(pathsByLocale: Record<string, string>, def
     }
   }
 
-  // Add x-default if provided and it's different from all existing locales
+  // Always add x-default — Google requires it even if it matches an existing locale
   if (defaultLocalePath) {
-    const defaultUrl = buildAbsoluteUrl(defaultLocalePath);
-    // Only add x-default if it's not already covered by another locale
-    const isDuplicate = Object.values(languages).some(url => url === defaultUrl);
-    if (!isDuplicate) {
-      languages['x-default'] = defaultUrl;
-    }
+    languages['x-default'] = buildAbsoluteUrl(defaultLocalePath);
   }
 
   return { languages };

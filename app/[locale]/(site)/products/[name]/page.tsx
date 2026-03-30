@@ -24,8 +24,7 @@ export async function generateStaticParams() {
     const { data } = await supabase
       .from('products')
       .select('slug')
-      .eq('is_listed', true)
-      .limit(20);
+      .eq('is_listed', true);
     
     const locales = ['en', 'pt-br'];
     
@@ -330,14 +329,22 @@ export default async function ProductDetailPage(props: {
       description: schemaDescription,
       image: product.imgUrl,
       sku: product.id?.toString() || product.name.replace(/\s+/g, '-'),
+      brand: {
+        "@type": "Brand",
+        name: gameVersionLabel,
+      },
+      category: product.category || "Currency",
       offers: {
         "@type": "Offer",
         url: schemaUrl,
         priceCurrency: "USD",
         price: product.price,
         priceValidUntil: priceValidUntil,
-        availability: "https://schema.org/InStock",
-        seller: { "@type": "Organization", name: "Path of Trade" }
+        availability: product.in_stock !== false
+          ? "https://schema.org/InStock"
+          : "https://schema.org/OutOfStock",
+        seller: { "@type": "Organization", name: "Path of Trade" },
+        itemCondition: "https://schema.org/NewCondition",
       }
     };
 

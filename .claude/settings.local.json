@@ -26,7 +26,9 @@
       "Bash(done)",
       "Bash(find /c/Users/alexa/Documents/poetrade-dev/app/[locale]/\\\\\\(site\\\\\\) -type f -name \"page.tsx\")",
       "Bash(find /c/Users/alexa/Documents/poetrade-dev/app/[locale]/\\\\\\(site\\\\\\) -name \"page.tsx\" -type f)",
-      "Bash(git:*)"
+      "Bash(git:*)",
+      "Bash(find /c/Users/alexa/Documents/poetrade-dev -maxdepth 2 -type f \\\\\\(-name .env* -o -name *security* -o -name *header* -o -name vercel.json -o -name wrangler.toml \\\\\\))",
+      "Bash(npx next:*)"
     ]
   }
 }

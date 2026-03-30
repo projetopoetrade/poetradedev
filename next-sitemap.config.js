@@ -4,6 +4,7 @@ const {
   getSitemapLeagueSlugPages,
   getSitemapBuilds,
   getSitemapLeagueBuilds,
+  getSitemapLeaguesFromSanity,
 } = require('./lib/sitemap-data-fetchers.js');
 
 /** @type {import('next-sitemap').IConfig} */
@@ -98,12 +99,13 @@ module.exports = {
     });
 
     // Fetch Data
-    const [posts, products, leagueSlugPages, builds, leagueBuilds] = await Promise.all([
+    const [posts, products, leagueSlugPages, builds, leagueBuilds, sanityLeagues] = await Promise.all([
       getSitemapPosts(),
       getSitemapProducts(),
       getSitemapLeagueSlugPages(),
       getSitemapBuilds(),
       getSitemapLeagueBuilds(),
+      getSitemapLeaguesFromSanity(),
     ]);
 
     // ============================================================
@@ -112,8 +114,14 @@ module.exports = {
     if (products && products.length > 0) {
       products.forEach((product) => {
         if (product && product.name) {
-          // Base Clean URL calculation
-          let productSlug = encodeURIComponent(product.name.replace(/ /g, '-').toLowerCase());
+          // Use the DB slug directly if available, otherwise generate from name
+          // This must match url-helper.ts encodeProductName() logic
+          let productSlug = product.slug || encodeURIComponent(
+            product.name.normalize('NFD')
+              .replace(/[\s\+\&\%\#\@\!\(\)\[\]\{\}\:\;\'\"\,\.\?\<\>\/\\\|]/g, '-')
+              .replace(/--+/g, '-')
+              .replace(/^-|-$/g, '')
+          );
           let productPath = `/products/${productSlug}`;
 
           // HYBRID URL STRATEGY (PoE 2 param)
@@ -187,6 +195,26 @@ module.exports = {
             lastmod: lastmod || defaultLastMod,
             changefreq: 'weekly',
             priority: 0.8,
+            alternateRefs: alternates,
+          });
+        });
+      });
+    }
+
+    // ============================================================
+    // 5b. LEAGUE DETAIL PAGES (from Sanity CMS)
+    // ============================================================
+    if (sanityLeagues && sanityLeagues.length > 0) {
+      sanityLeagues.forEach(({ slug, gameVersion, lastmod }) => {
+        if (!slug || !gameVersion) return;
+        const leaguePath = `/games/${gameVersion}/league/${slug}`;
+        const alternates = generateAlternateRefs(leaguePath);
+        locales.forEach((locale) => {
+          paths.push({
+            loc: locale === defaultLocale ? leaguePath : `/${locale}${leaguePath}`,
+            lastmod: lastmod || defaultLastMod,
+            changefreq: 'weekly',
+            priority: 0.85,
             alternateRefs: alternates,
           });
         });

@@ -28,44 +28,7 @@ export default async function Footer({ locale = 'en' }: FooterProps) {
                 className="object-contain"
               />
             </Link>
-            <div className="flex space-x-4">
-              <Link
-                href="#"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="transition-opacity hover:opacity-80"
-                aria-label="Visit our Facebook page"
-              >
-                <FacebookIcon className="h-5 w-5 text-white" />
-              </Link>
-              <Link
-                href="#"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="transition-opacity hover:opacity-80"
-                aria-label="Visit our Twitter page"
-              >
-                <TwitterIcon className="h-5 w-5 text-white" />
-              </Link>
-              <Link
-                href="#"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="transition-opacity hover:opacity-80"
-                aria-label="Visit our Instagram page"
-              >
-                <InstagramIcon className="h-5 w-5 text-white" />
-              </Link>
-              <Link
-                href="#"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="transition-opacity hover:opacity-80"
-                aria-label="Join our Discord server"
-              >
-                <DiscordIcon className="h-5 w-5 text-white" />
-              </Link>
-            </div>
+            {/* Social links will be added when profiles are created */}
           </div>
 
           {/* Main Links */}

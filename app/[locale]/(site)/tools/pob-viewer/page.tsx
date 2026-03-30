@@ -1,6 +1,7 @@
 import { Metadata } from 'next'
 import { setRequestLocale } from 'next-intl/server'
 import { buildCanonical, buildAbsoluteUrl, buildBreadcrumbSchema } from '@/lib/utils'
+import { CurrencyCta } from '@/components/currency-cta'
 import PobViewerClient from './PobViewerClient'
 
 export const revalidate = 3600
@@ -48,14 +49,37 @@ export default async function PobViewerPage(props: PageProps) {
     { name: isPt ? 'Visualizador de Build' : 'PoB Viewer', url: '/tools/pob-viewer' },
   ])
 
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.pathoftrade.net'
+  const webAppSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: isPt ? "Visualizador de Build PoE" : "PoE Build Viewer",
+    description: isPt
+      ? "Cole seu código Path of Building para visualizar sua build"
+      : "Paste your Path of Building code to visualize your PoE build",
+    url: `${baseUrl}/tools/pob-viewer`,
+    applicationCategory: "GameApplication",
+    operatingSystem: "All",
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+    },
+  }
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(webAppSchema) }}
+      />
       <div className="container mx-auto px-4 py-8 min-h-[calc(100vh-10rem)]">
         <PobViewerClient locale={locale} />
+        <CurrencyCta locale={locale} />
       </div>
     </>
   )

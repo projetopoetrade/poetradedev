@@ -99,7 +99,18 @@ export async function generateMetadata(props: {
     keywords: generateKeywords({
       locale,
       customKeywords: ['homepage', 'main page', 'poe trading site']
-    })
+    }),
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+        'max-video-preview': -1,
+      },
+    },
   };
 }
 

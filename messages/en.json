@@ -37,7 +37,12 @@
   "HomePage": {
     "why-path-of-trade": "Why Choose Path of Trade Net?",
     "choose-your-game": "CHOOSE YOUR GAME",
-    "h1": "Buy Path of Exile (PoE) Currency - Fast Delivery"
+    "h1": "Buy Path of Exile (PoE) Currency - Fast Delivery",
+    "seoSection": {
+      "title": "Your Trusted PoE Currency Shop",
+      "p1": "Path of Trade is the go-to marketplace for Path of Exile players who need currency fast. We sell Divine Orbs, Chaos Orbs, Exalted Orbs, and every other currency for both Path of Exile 1 and Path of Exile 2 — across all active leagues including the latest challenge leagues. Every order is delivered in-game within minutes by our experienced trading team.",
+      "p2": "Whether you are gearing up for endgame maps, crafting your dream items, or simply need a currency boost at league start, Path of Trade offers the lowest prices, secure transactions via Stripe and PIX, and 24/7 human support. We track real-time market prices with our free Price Tracker tool so you always know you are getting a fair deal."
+    }
   },
   "Schema": {
     "name": "Path of Trade Net",
@@ -63,6 +68,12 @@
   },
   "SEO": {
     "siteName": "Path of Trade",
+    "home": {
+      "title": "Buy PoE Currency — Divine Orbs, Chaos Orbs & More | Path of Trade",
+      "description": "Buy Path of Exile currency for PoE 1 & PoE 2. Divine Orbs, Chaos Orbs, Exalted Orbs at the best prices. Fast in-game delivery, 24/7 support, 100% secure.",
+      "ogTitle": "Buy PoE Currency — Fast & Secure | Path of Trade",
+      "ogDescription": "Your trusted Path of Exile currency shop. Buy Divine Orbs, Chaos Orbs and more for PoE 1 & PoE 2. Delivery in minutes, 24/7 support."
+    },
     "layout": {
       "title": "Buy PoE 1 & 2 Currency — Delivery in up to 30 Minutes | Path of Trade",
       "description": "Buy Path of Exile Currency ✔️ Divine, Exalted, and Chaos Orbs at the lowest prices. Fast Delivery, 24/7 Support, and 100% safe trading on Path of Trade!",

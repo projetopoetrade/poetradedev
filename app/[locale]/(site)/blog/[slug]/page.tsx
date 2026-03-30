@@ -31,6 +31,9 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
   }
 
   const canonical = buildCanonical(`/${locale}/blog/${slug}`, locale);
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net";
+  const enUrl = `${baseUrl}/blog/${slug}`;
+  const ptUrl = `${baseUrl}/pt-br/blog/${slug}`;
   const siteName = "Path of Trade";
   const titleWithSuffix = `${post.title} | ${siteName}`;
 
@@ -38,7 +41,12 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
     title: titleWithSuffix,
     description: post.metadata,
     alternates: {
-      canonical
+      canonical,
+      languages: {
+        "en": enUrl,
+        "pt-BR": ptUrl,
+        "x-default": enUrl,
+      },
     },
     openGraph: {
       title: titleWithSuffix,

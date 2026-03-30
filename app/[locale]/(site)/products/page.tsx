@@ -10,6 +10,9 @@ import { Link } from "@/i18n/navigation";
 import { ArrowLeft } from "lucide-react";
 import { FilterModalWrapper } from "@/components/filter-modal-wrapper";
 
+// ISR: revalidate every 5 minutes for faster bot crawling
+export const revalidate = 300;
+
 // 1. Definição Correta dos Tipos
 type SearchParams = {
   gameVersion?: string;

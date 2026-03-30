@@ -6,6 +6,7 @@ import {
   buildBreadcrumbSchema,
 } from "@/lib/utils";
 import BuildRandomizerClient from "./BuildRandomizerClient";
+import { CurrencyCta } from "@/components/currency-cta";
 
 export const revalidate = 3600;
 
@@ -143,6 +144,9 @@ export default async function BuildRandomizerPage(props: PageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(webAppSchema) }}
       />
       <BuildRandomizerClient locale={locale} />
+      <div className="container mx-auto px-4 pb-8">
+        <CurrencyCta locale={locale} />
+      </div>
     </>
   );
 }
