@@ -137,12 +137,12 @@ module.exports = {
         if (product && product.name) {
           // Use the DB slug directly if available, otherwise generate from name
           // This must match url-helper.ts encodeProductName() logic
-          let productSlug = product.slug || encodeURIComponent(
+          let productSlug = (product.slug || encodeURIComponent(
             product.name.normalize('NFD')
               .replace(/[\s\+\&\%\#\@\!\(\)\[\]\{\}\:\;\'\"\,\.\?\<\>\/\\\|]/g, '-')
               .replace(/--+/g, '-')
               .replace(/^-|-$/g, '')
-          );
+          )).toLowerCase();
           let productPath = `/products/${productSlug}`;
 
           // PoE 2 usa URL por gameVersion no path, PoE 1 mantém /products/[slug]

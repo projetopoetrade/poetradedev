@@ -93,8 +93,10 @@ export const generateMetadata = async (props: {
     if (productSanity?.metaDescription) sanityMetaDescription = productSanity.metaDescription[localeKey];
   }
 
-  // Canonical: A versão desta página na língua atual e JOGO atual
+  // Canonical & Alternates: use buildCanonical() to produce absolute URLs
+  // that correctly strip the /en/ prefix for the default locale.
   const canonicalPath = getProductUrl(productName, params.locale, undefined, undefined, targetGameVersion);
+  const canonical = buildCanonical(canonicalPath, params.locale);
 
   // Alternates: Versões em outras línguas (mantendo o contexto do jogo)
   const enPath = getProductUrl(productName, 'en', undefined, undefined, targetGameVersion);
@@ -107,18 +109,18 @@ export const generateMetadata = async (props: {
     title,
     description,
     alternates: {
-      canonical: canonicalPath,
+      canonical: canonical,
       languages: {
-        'en': enPath,
-        'pt-BR': ptPath,
-        'x-default': enPath,
+        'en': buildCanonical(enPath, 'en'),
+        'pt-BR': buildCanonical(ptPath, 'pt-br'),
+        'x-default': buildCanonical(enPath, 'en'),
       },
     },
 
     openGraph: {
       title,
       description,
-      url: canonicalPath,
+      url: canonical,
       type: "website",
       siteName: t("siteName"),
       images: productFn?.imgUrl ? [{ url: productFn.imgUrl }] : undefined,

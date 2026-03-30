@@ -8,6 +8,19 @@ import {updateSession} from '@/utils/supabase/middleware';
 const handleI18nRouting = createMiddleware(routing);
 
 export async function middleware(request: NextRequest) {
+  // Redirect uppercase product slugs to lowercase (308 Permanent Redirect)
+  const productMatch = request.nextUrl.pathname.match(
+    /^(\/(?:pt-br\/)?(?:games\/[^/]+\/)?products\/)([^/]+)(\/.*)?$/i
+  );
+  if (productMatch) {
+    const [, prefix, slug, rest = ''] = productMatch;
+    if (slug !== slug.toLowerCase()) {
+      const url = request.nextUrl.clone();
+      url.pathname = prefix + slug.toLowerCase() + rest;
+      return Response.redirect(url, 308);
+    }
+  }
+
   // Este código SÓ será executado para as rotas que NÃO SÃO de API.
   const response = handleI18nRouting(request);
   
