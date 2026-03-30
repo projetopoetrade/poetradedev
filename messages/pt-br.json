@@ -35,44 +35,45 @@
     "ctaButton": "Ver Currency"
   },
   "HomePage": {
-    "why-path-of-trade": "Por que escolher a Path of Trade Net?",
+    "why-path-of-trade": "Por que a Path of Trade é a escolha dos jogadores brasileiros?",
     "choose-your-game": "ESCOLHA SEU JOGO",
-    "h1": "Comprar Currency de Path of Exile (PoE) - Entrega Rápida",
+    "h1": "Compre Currency PoE com PIX — A Loja de Path of Exile do Brasil",
     "seoSection": {
-      "title": "Sua Loja de Confiança para Moedas PoE",
-      "p1": "O Path of Trade é o marketplace ideal para jogadores de Path of Exile que precisam de currency rápido. Vendemos Divine Orbs, Chaos Orbs, Exalted Orbs e todas as outras moedas para Path of Exile 1 e Path of Exile 2 — em todas as ligas ativas, incluindo as ligas desafio mais recentes. Cada pedido é entregue no jogo em minutos pela nossa equipe experiente.",
-      "p2": "Seja para se preparar para mapas endgame, craftar seus itens dos sonhos, ou simplesmente dar um boost de currency no início de liga, o Path of Trade oferece os melhores preços, transações seguras via Stripe e PIX, e suporte humano 24/7. Acompanhamos preços em tempo real com nossa ferramenta gratuita Price Tracker para que você sempre saiba que está pagando um preço justo."
+      "title": "A Loja de Currency PoE Feita para o Brasil",
+      "p1": "A Path of Trade é a única loja de currency de Path of Exile com suporte completo em português e pagamento via PIX. Vendemos Divine Orbs, Chaos Orbs, Exalted Orbs e todas as moedas para PoE 1 e PoE 2 com preços em reais. Nossa equipe de suporte fala português e está disponível 24/7 para ajudar a comunidade brasileira de PoE.",
+      "p2": "Diferente de sites gringos, aqui você paga em BRL com PIX (aprovação instantânea), cartão de crédito via Stripe ou boleto. Entregamos em todas as ligas ativas — Standard, Softcore e Hardcore — em menos de 30 minutos. Use nosso Price Tracker gratuito para acompanhar a cotação das moedas em tempo real e garantir o melhor preço antes de comprar.",
+      "p3": "Seja você um jogador casual que precisa de um boost para progredir nos mapas ou um veterano montando builds de endgame, a Path of Trade tem o estoque e a agilidade que você precisa. Milhares de jogadores brasileiros já confiam na gente — venha descobrir por quê."
     }
   },
   "Schema": {
     "name": "Path of Trade Net",
-    "alternateName": "Comércio de Moedas Path of Exile",
-    "description": "Path of Trade Net - Sua fonte confiável para comércio de moedas de Path of Exile. Compre e venda moedas POE com entrega instantânea. Obtenha os melhores preços, comércio seguro e suporte ao cliente 24/7.",
-    "sellerDescription": "Serviço profissional de comércio de moedas de Path of Exile",
-    "offerName": "Comércio de Moedas POE",
-    "offerDescription": "Serviço seguro e instantâneo de comércio de moedas POE pela Path of Trade Net"
+    "alternateName": "Loja de Currency Path of Exile no Brasil",
+    "description": "Path of Trade Net - Loja brasileira de currency para Path of Exile com pagamento via PIX e preços em reais. Compre Divine Orbs, Chaos Orbs e mais para PoE 1 e PoE 2. Entrega rápida, suporte em português 24/7.",
+    "sellerDescription": "Loja brasileira especializada em currency de Path of Exile com PIX e suporte em português",
+    "offerName": "Currency PoE com PIX",
+    "offerDescription": "Compra segura e instantânea de currency Path of Exile com pagamento via PIX e preços em BRL"
   },
   "Features": {
-    "fast-delivery": "Entrega Rápida",
-    "secure-payment": "Pagamento Seguro",
-    "refund-guarantee": "Garantia de Reembolso",
-    "security-guarantee": "Garantia de Segurança",
-    "24-7-support": "Suporte 24/7",
-    "cheap-prices": "Melhores Preços",
-    "fast-delivery-description": "Receba suas moedas e orbes para PoE 1 & 2 em tempo recorde. Nosso sistema garante uma entrega rápida e segura em até 30 minutos, 24/7.",
-    "secure-payment-description": "Sua segurança é nossa prioridade. Processamos todos os pagamentos através de gateways criptografados e 100% seguros para proteger seus dados.",
-    "refund-guarantee-description": "Compre com total confiança. Se não for possível concluir a sua entrega, garantimos um processo de reembolso rápido e sem complicações.",
-    "security-guarantee-description": "Jogue sem preocupações. Garantimos que todas as transações são feitas de forma segura para proteger sua conta Path of Exile contra qualquer risco.",
-    "24-7-support-description": "Nossa equipe de especialistas em Path of Exile está disponível 24/7. Conte conosco para ajudar com suas compras e tirar qualquer dúvida, a qualquer hora.",
-    "cheap-prices-description": "O melhor preço do mercado, garantido. Oferecemos orbes, moedas e itens de Path of Exile com as cotações mais competitivas para maximizar seu poder de compra."
+    "fast-delivery": "Entrega em 30 min",
+    "secure-payment": "PIX e Cartão",
+    "refund-guarantee": "Reembolso Garantido",
+    "security-guarantee": "Conta Protegida",
+    "24-7-support": "Suporte em Português",
+    "cheap-prices": "Preços em Reais",
+    "fast-delivery-description": "Receba suas moedas e orbes para PoE 1 & 2 em até 30 minutos. Nossa equipe brasileira entrega 24/7, inclusive nos finais de semana e feriados.",
+    "secure-payment-description": "Pague com PIX (aprovação instantânea), cartão de crédito via Stripe ou boleto. Seus dados financeiros são protegidos com criptografia bancária e nunca ficam nos nossos servidores.",
+    "refund-guarantee-description": "Compre sem medo. Se a entrega não for possível, devolvemos 100% do valor — sem burocracia, sem perguntas. Sua confiança é mais importante que qualquer venda.",
+    "security-guarantee-description": "Nunca pedimos login ou senha da sua conta. Todas as trocas são feitas pelo sistema oficial de trade do jogo, protegendo seu personagem e seus itens.",
+    "24-7-support-description": "Fale com a gente em português a qualquer hora. Nossa equipe conhece o jogo e resolve problemas rápido — nada de bots ou respostas automáticas em inglês.",
+    "cheap-prices-description": "Preços em BRL atualizados em tempo real pela nossa ferramenta Price Tracker. Sem surpresas de câmbio ou taxas escondidas — o preço que você vê é o que paga."
   },
   "SEO": {
     "siteName": "Path of Trade",
     "home": {
-      "title": "Comprar Moedas PoE — Divine Orbs, Chaos Orbs e Mais | Path of Trade",
-      "description": "Compre moedas de Path of Exile para PoE 1 e PoE 2. Divine Orbs, Chaos Orbs, Exalted Orbs com os melhores preços. Entrega rápida, suporte 24/7, 100% seguro.",
-      "ogTitle": "Comprar Moedas PoE — Rápido e Seguro | Path of Trade",
-      "ogDescription": "Sua loja de confiança de moedas Path of Exile. Compre Divine Orbs, Chaos Orbs e mais para PoE 1 e PoE 2. Entrega em minutos, suporte 24/7."
+      "title": "Comprar Currency PoE com PIX — Divine Orbs, Chaos Orbs em Reais | Path of Trade",
+      "description": "Compre currency de Path of Exile com PIX e preços em reais. Divine Orbs, Chaos Orbs, Exalted Orbs para PoE 1 e PoE 2. Entrega em até 30 min, suporte em português 24/7.",
+      "ogTitle": "Comprar Currency PoE com PIX — Loja Brasileira | Path of Trade",
+      "ogDescription": "Loja brasileira de currency PoE com PIX e preços em BRL. Divine Orbs, Chaos Orbs e mais para PoE 1 e PoE 2. Entrega em minutos, suporte em português."
     },
     "layout": {
       "title": "Compre Moedas PoE 1 & 2: Entrega em até 30 minutos | Path of Trade",

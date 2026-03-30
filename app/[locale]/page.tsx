@@ -134,6 +134,11 @@ export default function Home() {
           <p className="text-muted-foreground leading-relaxed">
             {t("seoSection.p2")}
           </p>
+          {t.has("seoSection.p3") && (
+            <p className="text-muted-foreground leading-relaxed">
+              {t("seoSection.p3")}
+            </p>
+          )}
         </section>
 
         <CarouselSpacing />
