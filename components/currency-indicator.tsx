@@ -42,13 +42,6 @@ export function CurrencyIndicator({ variant = 'icon' }: CurrencyIndicatorProps) 
   
   const getApiSourceBadge = () => {
     switch (apiSource) {
-      case 'openexchangerates':
-        return (
-          <Badge variant="secondary" className="ml-auto text-[10px] px-1 py-0">
-            <Globe className="h-2.5 w-2.5 mr-1" />
-            <span>OpenExchangeRates</span>
-          </Badge>
-        )
       case 'frankfurter':
         return (
           <Badge variant="outline" className="ml-auto text-[10px] px-1 py-0">

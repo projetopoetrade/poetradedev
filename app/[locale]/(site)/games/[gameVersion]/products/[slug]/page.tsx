@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { parseProductSlug } from "@/utils/url-helper";
-import ProductDetail from "../../../../../../components/product-detail";
+import ProductDetail from "@/components/product-detail";
 import { getProductBySlug } from "@/sanity/sanity-utils";
 import ProductContent from "@/components/product-detail/ProductContent";
 import PriceHistoryChart from "@/components/Product/PriceHistoryChart";

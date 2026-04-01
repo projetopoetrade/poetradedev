@@ -13,7 +13,7 @@ interface CurrencyContextType {
   priceToCents: (price: number) => number
   isLoading: boolean
   refreshRates: () => Promise<void>
-  apiSource: 'openexchangerates' | 'frankfurter' | 'fallback'
+  apiSource: 'frankfurter' | 'fallback'
 }
 
 // Fallback exchange rates in case API fails
@@ -24,25 +24,15 @@ const fallbackRates = {
   BRL: 5.60
 }
 
-const currencySymbols = {
-  USD: '$',
-  EUR: '€',
-  GBP: '£',
-  BRL: 'R$'
-}
-
-// Replace with your actual API key
-const OPEN_EXCHANGE_RATES_APP_ID = process.env.NEXT_PUBLIC_OPEN_EXCHANGE_RATES_API_KEY || ''
-
 const CurrencyContext = createContext<CurrencyContextType | undefined>(undefined)
 
 export function CurrencyProvider({ children }: { children: React.ReactNode }) {
   const [currency, setCurrency] = useState<CurrencyType>('USD')
   const [exchangeRates, setExchangeRates] = useState(fallbackRates)
   const [isLoading, setIsLoading] = useState(false)
-  const [apiSource, setApiSource] = useState<'openexchangerates' | 'frankfurter' | 'fallback'>('fallback')
+  const [apiSource, setApiSource] = useState<'frankfurter' | 'fallback'>('fallback')
   const [isMounted, setIsMounted] = useState(false)
-  
+
   // Handle client-side initialization and load saved currency
   useEffect(() => {
     setIsMounted(true)
@@ -52,73 +42,23 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
     }
   }, [])
 
-  // Fetch exchange rates from API
+  // Fetch exchange rates from our server-cached endpoint (1 external call/day)
   const fetchExchangeRates = async () => {
-    if (!isMounted) return // Don't fetch during SSR
+    if (!isMounted) return
 
     try {
       setIsLoading(true)
-      
-      // First try OpenExchangeRates API (with user's API key)
-      if (OPEN_EXCHANGE_RATES_APP_ID) {
-        try {
-          const response = await fetch(
-            `https://openexchangerates.org/api/latest.json?app_id=${OPEN_EXCHANGE_RATES_APP_ID}&symbols=EUR,GBP,BRL`
-          )
-          
-          if (!response.ok) {
-            throw new Error('Failed to fetch from OpenExchangeRates')
-          }
-          
-          const data = await response.json()
-          
-          if (!data.rates || !data.rates.EUR || !data.rates.GBP || !data.rates.BRL) {
-            throw new Error('Invalid API response format from OpenExchangeRates')
-          }
-          
-          setExchangeRates({
-            USD: 1,
-            EUR: data.rates.EUR,
-            GBP: data.rates.GBP,
-            BRL: data.rates.BRL
-          })
-          
-          setApiSource('openexchangerates')
-          return
-        } catch (openExchangeError) {
-          console.warn('OpenExchangeRates API failed, trying Frankfurter', openExchangeError)
-        }
+
+      const response = await fetch('/api/exchange-rates')
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch exchange rates')
       }
-      
-      // Try Frankfurter API as fallback
-      try {
-        const response = await fetch(
-          'https://api.frankfurter.app/latest?from=USD&to=EUR,GBP,BRL'
-        )
-        
-        if (!response.ok) {
-          throw new Error('Failed to fetch from Frankfurter')
-        }
-        
-        const data = await response.json()
-        
-        if (!data.rates || !data.rates.EUR || !data.rates.GBP || !data.rates.BRL) {
-          throw new Error('Invalid API response format from Frankfurter')
-        }
-        
-        setExchangeRates({
-          USD: 1,
-          EUR: data.rates.EUR,
-          GBP: data.rates.GBP,
-          BRL: data.rates.BRL
-        })
-        
-        setApiSource('frankfurter')
-        return
-      } catch (frankfurterError) {
-        console.error('Frankfurter API failed', frankfurterError)
-        throw new Error('All currency APIs failed')
-      }
+
+      const data = await response.json()
+
+      setExchangeRates(data.rates)
+      setApiSource(data.source)
     } catch (error) {
       console.error('Error fetching exchange rates:', error)
       setExchangeRates(fallbackRates)
@@ -127,14 +67,11 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
       setIsLoading(false)
     }
   }
-  
-  // Fetch rates on mount and set up periodic refresh
-  useEffect(() => {
-    if (!isMounted) return // Don't fetch during SSR
 
+  // Fetch rates on mount
+  useEffect(() => {
+    if (!isMounted) return
     fetchExchangeRates()
-    const intervalId = setInterval(fetchExchangeRates, 6 * 60 * 60 * 1000)
-    return () => clearInterval(intervalId)
   }, [isMounted])
   
   // Save currency preference to localStorage when it changes
