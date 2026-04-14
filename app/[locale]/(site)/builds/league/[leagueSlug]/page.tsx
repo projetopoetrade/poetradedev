@@ -2,7 +2,6 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 import { getBuilds, getPublishedLeagueSlugsFromBuilds } from "@/app/actions";
-import { getLeagueBySlug } from "@/sanity/sanity-utils";
 import { buildAbsoluteUrl, buildBreadcrumbSchema } from "@/lib/utils";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import BuildCard from "@/components/Builds/BuildCard";
@@ -37,14 +36,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale, leagueSlug } = await params;
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net";
 
-  // Try to get a nicer league title from Sanity; fall back to slug conversion
-  let leagueTitle = toLeagueTitle(leagueSlug);
-  try {
-    const sanityLeague = await getLeagueBySlug(leagueSlug);
-    if (sanityLeague?.title) leagueTitle = sanityLeague.title;
-  } catch {
-    // Non-blocking — fall back to generated title
-  }
+  const leagueTitle = toLeagueTitle(leagueSlug);
 
   const titles: Record<string, string> = {
     en: `Best ${leagueTitle} Builds — PoE Build Guides | Path of Trade`,
@@ -94,14 +86,7 @@ export default async function LeagueBuildsPage({ params }: Props) {
 
   if (builds.length === 0) notFound();
 
-  // Try to enrich with Sanity league data (optional)
-  let leagueTitle = toLeagueTitle(leagueSlug);
-  try {
-    const sanityLeague = await getLeagueBySlug(leagueSlug);
-    if (sanityLeague?.title) leagueTitle = sanityLeague.title;
-  } catch {
-    // Non-blocking
-  }
+  const leagueTitle = toLeagueTitle(leagueSlug);
 
   const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net").replace(/\/+$/, "");
   const localePath = locale === "en" ? "" : `/${locale}`;

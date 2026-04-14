@@ -4,7 +4,6 @@ const {
   getSitemapLeagueSlugPages,
   getSitemapBuilds,
   getSitemapLeagueBuilds,
-  getSitemapLeaguesFromSupabase,
 } = require('./lib/sitemap-data-fetchers.js');
 
 /** @type {import('next-sitemap').IConfig} */
@@ -120,13 +119,12 @@ module.exports = {
     });
 
     // Fetch Data
-    const [posts, products, leagueSlugPages, builds, leagueBuilds, activeLeagues] = await Promise.all([
+    const [posts, products, leagueSlugPages, builds, leagueBuilds] = await Promise.all([
       getSitemapPosts(),
       getSitemapProducts(),
       getSitemapLeagueSlugPages(),
       getSitemapBuilds(),
       getSitemapLeagueBuilds(),
-      getSitemapLeaguesFromSupabase(),
     ]);
 
     // ============================================================
@@ -216,26 +214,6 @@ module.exports = {
             lastmod: lastmod || buildLastMod,
             changefreq: 'weekly',
             priority: 0.8,
-            alternateRefs: alternates,
-          });
-        });
-      });
-    }
-
-    // ============================================================
-    // 5b. LEAGUE DETAIL PAGES (from Sanity CMS)
-    // ============================================================
-    if (activeLeagues && activeLeagues.length > 0) {
-      activeLeagues.forEach(({ slug, gameVersion, lastmod }) => {
-        if (!slug || !gameVersion) return;
-        const leaguePath = `/games/${gameVersion}/league/${slug}`;
-        const alternates = generateAlternateRefs(leaguePath);
-        locales.forEach((locale) => {
-          paths.push({
-            loc: locale === defaultLocale ? leaguePath : `/${locale}${leaguePath}`,
-            lastmod: lastmod || buildLastMod,
-            changefreq: 'weekly',
-            priority: 0.85,
             alternateRefs: alternates,
           });
         });

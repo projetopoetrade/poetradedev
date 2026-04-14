@@ -1,7 +1,7 @@
 import ImageUrlBuilder from "@sanity/image-url";
 import { createClient, type QueryParams } from "next-sanity";
 import clientConfig from "./config/client-config";
-import { postQuery, postQueryBySlug, productQuery, postQueryByCategory, postQueryByCategoryAndGameVersion, leagueBySlugQuery, allLeaguesQuery, liveLeagueQuery, postQueryByAuthor, allAuthorsQuery, buildGuideBySlugQuery } from "./sanity-query";
+import { postQuery, postQueryBySlug, productQuery, postQueryByCategory, postQueryByCategoryAndGameVersion, postQueryByAuthor, allAuthorsQuery, buildGuideBySlugQuery } from "./sanity-query";
 import { Blog } from "@/types/blog";
 import { SanityImageSource } from "@sanity/image-url/lib/types/types";
 import type { Product } from "@/lib/interface";
@@ -192,108 +192,6 @@ export async function getRelatedPosts(currentPostSlug: string, language: string,
     tags: ["post"],
   });
 }
-
-// ============================================================
-// LEAGUE
-// ============================================================
-
-export type SanityGggPost = {
-  title: string;
-  url: string;
-  date: string;
-  summary: string;
-};
-
-export type SanityLeagueBuild = {
-  name: string;
-  class: string;
-  tier?: 'S' | 'A' | 'B' | 'C';
-  difficulty?: string;
-  description?: string;
-  pros?: string[];
-  cons?: string[];
-  guideUrl?: string;
-  guides?: { title: string; url: string; author?: string; variant?: string }[];
-  author?: string;
-};
-
-export type SanityLeague = {
-  title: string;
-  slug: string;
-  subtitle?: string;
-  gameVersion: 'path-of-exile-1' | 'path-of-exile-2';
-  patchVersion?: string;
-  status: 'announced' | 'live' | 'ended';
-  launchDate?: string;
-  endDate?: string;
-  datePublished?: string;
-  bannerImage?: { asset: { url: string } };
-  // Pre-launch
-  prelaunchTeaser?: string;
-  prelaunchMediaUrls?: string[];
-  gggPosts?: SanityGggPost[];
-  // Post-launch structured sections
-  tldr?: { title: string; items: { text: string; type?: string }[] };
-  mechanics?: {
-    title: string;
-    description: string;
-    points: { title: string; description: string }[];
-    tradeImpact?: { title: string; points: string[] };
-  };
-  patchNotes?: {
-    title: string;
-    subtitle?: string;
-    officialUrl?: string;
-    officialText?: string;
-    categories: { title: string; changes: string[] }[];
-  };
-  starters?: {
-    title: string;
-    subtitle?: string;
-    tierS?: { title: string; description: string };
-    tierA?: { title: string; description: string };
-    builds: SanityLeagueBuild[];
-  };
-  ctaLink?: string;
-  seoTitle?: string;
-  seoDescription?: string;
-  _updatedAt?: string;
-};
-
-export type SanityLeagueSummary = {
-  slug: string;
-  title: string;
-  status: string;
-  gameVersion: string;
-  launchDate?: string;
-  _updatedAt: string;
-};
-
-export const getLeagueBySlug = async (slug: string): Promise<SanityLeague | null> => {
-  const data = await sanityFetch<SanityLeague>({
-    query: leagueBySlugQuery,
-    qParams: { slug },
-    tags: ["league"],
-  });
-  return data || null;
-};
-
-export const getAllLeagues = async (): Promise<SanityLeagueSummary[]> => {
-  return sanityFetch<SanityLeagueSummary[]>({
-    query: allLeaguesQuery,
-    qParams: {},
-    tags: ["league"],
-  });
-};
-
-export const getLiveLeague = async (): Promise<{ title: string; slug: string; gameVersion: string } | null> => {
-  const data = await sanityFetch<{ title: string; slug: string; gameVersion: string }>({
-    query: liveLeagueQuery,
-    qParams: {},
-    tags: ["league"],
-  });
-  return data || null;
-};
 
 // ============================================================
 // AUTHOR
