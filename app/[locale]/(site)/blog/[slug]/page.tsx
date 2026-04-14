@@ -36,6 +36,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
   const ptUrl = `${baseUrl}/pt-br/blog/${slug}`;
   const siteName = "Path of Trade";
   const titleWithSuffix = `${post.title} | ${siteName}`;
+  const imageUrl = post.mainImage?.asset?.url as string | undefined;
 
   return {
     title: titleWithSuffix,
@@ -55,16 +56,16 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
       type: "article",
       publishedTime: post.publishedAt,
       modifiedTime: post._updatedAt || post.publishedAt,
-      authors: [post.author.name],
+      authors: post.author ? [post.author.name] : undefined,
       siteName: t("siteName"),
-      images: post.mainImage ? [{ url: post.mainImage }] : undefined,
+      images: imageUrl ? [{ url: imageUrl }] : undefined,
     },
     twitter: {
       card: "summary_large_image",
       title: titleWithSuffix,
       description: post.metadata,
-      creator: post.author.name,
-      images: post.mainImage ? [post.mainImage] : undefined,
+      creator: post.author?.name,
+      images: imageUrl ? [imageUrl] : undefined,
     },
     keywords: generateKeywords({
       locale,
@@ -96,19 +97,21 @@ const SingleBlogPage = async (props: PageProps) => {
     return <div className="py-5">Post not found</div>;
   }
 
+  const imageUrl = post.mainImage?.asset?.url as string | undefined;
+
   // Structured data for the blog post
   const articleStructuredData = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     headline: post.title,
     description: post.metadata,
-    image: post.mainImage ? post.mainImage : undefined,
+    image: imageUrl || undefined,
     datePublished: post.publishedAt,
     dateModified: post.publishedAt,
     author: {
       "@type": "Person",
-      name: post.author.name,
-      ...(post.author.image && { image: post.author.image })
+      name: post.author?.name,
+      ...(post.author?.image && { image: post.author.image })
     },
     publisher: {
       "@type": "Organization",
@@ -184,7 +187,7 @@ const SingleBlogPage = async (props: PageProps) => {
               })}
             </time>
             <span className="text-sm">•</span>
-            <span className="text-sm">By {post.author.name}</span>
+            <span className="text-sm">By {post.author?.name}</span>
           </div>
 
           <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
