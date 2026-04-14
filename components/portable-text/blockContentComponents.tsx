@@ -142,32 +142,86 @@ function processChildren(children: React.ReactNode) {
   });
 }
 
-function getFirstTextChild(children: React.ReactNode): string | null {
+function getTextParts(children: React.ReactNode): { first: string | null; full: string | null } {
   const childArray = React.Children.toArray(children);
+  const textParts: string[] = [];
   for (const child of childArray) {
-    if (typeof child === "string" && child.trim()) {
-      return child.trim();
+    if (typeof child === "string") {
+      textParts.push(child);
     }
+    // Non-string children (like <br/>) act as line separators
   }
-  return null;
+  const first = textParts.find(t => t.trim())?.trim() || null;
+  // Join with newline to reconstruct multiline content (PortableText splits \n into separate children with <br/>)
+  const full = textParts.length > 0 ? textParts.join('\n').trim() : null;
+  return { first, full };
+}
+
+function renderMarkdownTable(text: string) {
+  const lines = text.split('\n').filter(l => l.trim());
+  const dataRows = lines.filter(l => {
+    const trimmed = l.trim();
+    // Skip separator rows like | :--- | :--- |
+    return !(trimmed.match(/^\|[\s:-]+\|/) && !trimmed.replace(/[\s|:-]/g, ''));
+  });
+
+  if (dataRows.length === 0) return null;
+
+  const headerCells = dataRows[0].split('|').filter(c => c.trim() !== '');
+  const colCount = headerCells.length;
+
+  return (
+    <div className="mb-6 ml-4 overflow-x-auto">
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="border-b border-gray-700/50">
+            {headerCells.map((cell, i) => (
+              <th key={i} className="px-4 py-2.5 text-left font-semibold text-gray-200">
+                {renderTextWithLinks(cell.trim())}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {dataRows.slice(1).map((row, ri) => {
+            const cells = row.split('|').filter(c => c.trim() !== '');
+            return (
+              <tr key={ri} className="border-b border-gray-800/30">
+                {Array.from({ length: colCount }, (_, ci) => (
+                  <td key={ci} className="px-4 py-2.5 text-gray-300">
+                    {cells[ci] ? renderTextWithLinks(cells[ci].trim()) : ''}
+                  </td>
+                ))}
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
 }
 
 function processNormalBlock(children: React.ReactNode) {
-  const firstText = getFirstTextChild(children);
+  const { first: firstText, full: fullText } = getTextParts(children);
 
   if (firstText) {
     // Horizontal rule: --- or *** or ___
     if (/^(-{3,}|\*{3,}|_{3,})$/.test(firstText)) {
-      return <hr className="my-8 border-gray-700" />;
+      return <hr className="my-8 border-gray-800/50" />;
     }
 
-    // Table separator row (| :--- | :--- |) — skip rendering
+    // Table separator row (single line | :--- | :--- |) — skip rendering
     if (/^\|[\s:-]+\|/.test(firstText) && !firstText.replace(/[\s|:-]/g, '')) {
       return null;
     }
 
-    // Markdown table row: | cell | cell |
-    if (/^\|.+\|/.test(firstText)) {
+    // Markdown table
+    if (/^\|.+\|/.test(firstText) && fullText) {
+      const tableLines = fullText.split('\n').filter(l => l.trim().startsWith('|'));
+      if (tableLines.length > 1) {
+        return renderMarkdownTable(fullText);
+      }
+      // Single-line table row
       const cells = firstText.split('|').filter(c => c.trim() !== '');
       if (cells.length > 0) {
         return (
