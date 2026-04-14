@@ -74,10 +74,6 @@ const POE_CURRENCIES: Record<string, string> = {
   "exalted orbs": "exalted-orb",
   "hinekora's lock": "hinekora-s-lock",
   "hinekoras lock": "hinekora-s-lock",
-  "mirror": "mirror-of-kalandra",
-  "divine": "divine-orb",
-  "divines": "divine-orb",
-  "chaos": "chaos-orb",
 };
 
 // Regex to match any of the currency keys, case-insensitive
@@ -86,14 +82,40 @@ const currencyRegex = new RegExp(
   "gi"
 );
 
+function renderInlineMarkdown(text: string): React.ReactNode[] {
+  // Process **bold** and *italic* markdown
+  const parts: React.ReactNode[] = [];
+  const mdRegex = /(\*\*(.+?)\*\*|\*(.+?)\*)/g;
+  let lastIndex = 0;
+  let match;
+
+  while ((match = mdRegex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index));
+    }
+    if (match[2]) {
+      parts.push(<strong key={match.index}>{match[2]}</strong>);
+    } else if (match[3]) {
+      parts.push(<em key={match.index}>{match[3]}</em>);
+    }
+    lastIndex = mdRegex.lastIndex;
+  }
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+  return parts.length > 0 ? parts : [text];
+}
+
 function renderTextWithLinks(text: string) {
   const parts = text.split(currencyRegex);
-  return parts.map((part, i) => {
+  const result: React.ReactNode[] = [];
+
+  parts.forEach((part, i) => {
     const lowerPart = part.toLowerCase();
     if (POE_CURRENCIES[lowerPart]) {
-      return (
+      result.push(
         <Link
-          key={i}
+          key={`link-${i}`}
           href={`/products/${POE_CURRENCIES[lowerPart]}`}
           className="text-amber-600 dark:text-amber-500 hover:text-amber-700 dark:hover:text-amber-400 font-semibold transition-colors underline decoration-amber-500/30 underline-offset-2"
           title={`Buy ${part}`}
@@ -101,23 +123,123 @@ function renderTextWithLinks(text: string) {
           {part}
         </Link>
       );
+    } else {
+      renderInlineMarkdown(part).forEach((node, j) => {
+        result.push(<React.Fragment key={`md-${i}-${j}`}>{node}</React.Fragment>);
+      });
     }
-    return part;
   });
+
+  return result;
+}
+
+function processChildren(children: React.ReactNode) {
+  return React.Children.map(children, (child) => {
+    if (typeof child === "string") {
+      return renderTextWithLinks(child);
+    }
+    return child;
+  });
+}
+
+function getFirstTextChild(children: React.ReactNode): string | null {
+  const childArray = React.Children.toArray(children);
+  for (const child of childArray) {
+    if (typeof child === "string" && child.trim()) {
+      return child.trim();
+    }
+  }
+  return null;
+}
+
+function processNormalBlock(children: React.ReactNode) {
+  const firstText = getFirstTextChild(children);
+
+  if (firstText) {
+    // Horizontal rule: --- or *** or ___
+    if (/^(-{3,}|\*{3,}|_{3,})$/.test(firstText)) {
+      return <hr className="my-8 border-gray-700" />;
+    }
+
+    // Table separator row (| :--- | :--- |) — skip rendering
+    if (/^\|[\s:-]+\|/.test(firstText) && !firstText.replace(/[\s|:-]/g, '')) {
+      return null;
+    }
+
+    // Markdown table row: | cell | cell |
+    if (/^\|.+\|/.test(firstText)) {
+      const cells = firstText.split('|').filter(c => c.trim() !== '');
+      if (cells.length > 0) {
+        return (
+          <div className="grid gap-px bg-gray-700/50 rounded overflow-hidden mb-px" style={{ gridTemplateColumns: `repeat(${cells.length}, minmax(0, 1fr))` }}>
+            {cells.map((cell, i) => (
+              <div key={i} className="bg-gray-900/80 px-3 py-2 text-sm text-gray-300">
+                {renderTextWithLinks(cell.trim())}
+              </div>
+            ))}
+          </div>
+        );
+      }
+    }
+
+    // Markdown headings — only match if the ENTIRE first text child is a heading
+    const headingMatch = firstText.match(/^(#{1,6})\s+(.+)$/);
+    if (headingMatch) {
+      const level = Math.min(headingMatch[1].length, 4);
+      const headingText = headingMatch[2];
+      const content = renderTextWithLinks(headingText);
+      const headingClasses: Record<number, string> = {
+        1: "text-3xl font-bold mt-10 mb-4 text-white",
+        2: "text-2xl font-bold mt-8 mb-3 text-white",
+        3: "text-xl font-semibold mt-6 mb-2 text-white",
+        4: "text-lg font-semibold mt-4 mb-2 text-white",
+      };
+      const Tag = `h${level}` as keyof JSX.IntrinsicElements;
+
+      // Check if there's additional content after the heading (other children)
+      const childArray = React.Children.toArray(children);
+      const remainingChildren = childArray.slice(1).filter(c => !(typeof c === "string" && !c.trim()));
+      if (remainingChildren.length > 0) {
+        return (
+          <>
+            <Tag className={headingClasses[level]}>{content}</Tag>
+            <p className="leading-relax mb-4">{processChildren(remainingChildren)}</p>
+          </>
+        );
+      }
+      return <Tag className={headingClasses[level]}>{content}</Tag>;
+    }
+  }
+
+  return <p className="leading-relax mb-4">{processChildren(children)}</p>;
 }
 
 export const blockContentComponents: PortableTextComponents = {
   block: {
-    normal: ({ children }: any) => {
-      // If the children array contains strings, intercept them and wrap with Links
-      const newChildren = React.Children.map(children, (child) => {
-        if (typeof child === "string") {
-          return renderTextWithLinks(child);
-        }
-        return child;
-      });
-      return <p className="leading-relax mb-4">{newChildren}</p>;
-    },
+    normal: ({ children }: any) => processNormalBlock(children),
+    h1: ({ children }: any) => <h1 className="text-3xl font-bold mt-10 mb-4 text-white">{processChildren(children)}</h1>,
+    h2: ({ children }: any) => <h2 className="text-2xl font-bold mt-8 mb-3 text-white">{processChildren(children)}</h2>,
+    h3: ({ children }: any) => <h3 className="text-xl font-semibold mt-6 mb-2 text-white">{processChildren(children)}</h3>,
+    h4: ({ children }: any) => <h4 className="text-lg font-semibold mt-4 mb-2 text-white">{processChildren(children)}</h4>,
+    blockquote: ({ children }: any) => <blockquote className="border-l-4 border-amber-500/50 pl-4 my-4 italic text-gray-300">{processChildren(children)}</blockquote>,
+  },
+  list: {
+    bullet: ({ children }: any) => <ul className="list-disc pl-6 mb-4 space-y-1">{children}</ul>,
+    number: ({ children }: any) => <ol className="list-decimal pl-6 mb-4 space-y-1">{children}</ol>,
+  },
+  listItem: {
+    bullet: ({ children }: any) => <li className="text-gray-300">{processChildren(children)}</li>,
+    number: ({ children }: any) => <li className="text-gray-300">{processChildren(children)}</li>,
+  },
+  marks: {
+    strong: ({ children }: any) => <strong className="font-bold text-white">{children}</strong>,
+    em: ({ children }: any) => <em>{children}</em>,
+    code: ({ children }: any) => <code className="bg-gray-800 px-1.5 py-0.5 rounded text-amber-400 text-sm">{children}</code>,
+    link: ({ value, children }: any) => (
+      <a href={value?.href} target="_blank" rel="noopener noreferrer" className="text-amber-500 hover:text-amber-400 underline underline-offset-2">
+        {children}
+      </a>
+    ),
   },
   types: {
     image: ImageComponent,
