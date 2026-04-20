@@ -85,32 +85,40 @@ export async function resolveBlocks(
 function promoteMarkdownHeading(block: any): any {
   if (!block || typeof block !== 'object') return block;
   if (block._type !== 'block' || !Array.isArray(block.children)) return block;
-  // Don't override a style that's already a heading / blockquote
-  if (block.style && block.style !== 'normal' && block.style !== '') return block;
+  // Don't override an explicit heading / blockquote / quote style already set
+  // by the CMS. We only touch blocks where the style is absent, empty, or the
+  // default paragraph.
+  const styleNormalish = !block.style || block.style === 'normal' || block.style === '';
+  if (!styleNormalish) return block;
 
-  // Concatenate leading span text so we can test "does this block START with ##"
-  // without requiring all text to live in the first span.
-  const firstSpanIndex = block.children.findIndex(
-    (c: any) => c?._type === 'span' && typeof c.text === 'string',
+  // Find the first child that has a text property — don't require _type === 'span'
+  // because some imports drop or rename the discriminator.
+  const firstTextIdx = block.children.findIndex(
+    (c: any) => c && typeof c === 'object' && typeof c.text === 'string',
   );
-  if (firstSpanIndex < 0) return block;
+  if (firstTextIdx < 0) return block;
 
   const fullLeading = (block.children as any[])
-    .filter((c) => c?._type === 'span' && typeof c.text === 'string')
+    .filter((c) => c && typeof c === 'object' && typeof c.text === 'string')
     .map((c) => c.text)
     .join('');
 
+  // Full-block heading: `## Title` is the entire text, nothing else follows.
   const m = fullLeading.match(/^\s*(#{1,6})\s+(.+?)\s*$/);
   if (!m) return block;
+  // Reject patterns where the "heading" text is actually a hashtag-like
+  // sentence (e.g., "## " followed by multiple paragraphs worth of content).
+  // A real heading line usually has no embedded newline.
+  if (/\n/.test(fullLeading)) return block;
 
   const level = Math.min(m[1].length, 4);
   const stripRe = /^\s*#{1,6}\s+/;
 
-  // Strip the `## ` prefix from the first span only — subsequent spans keep
+  // Strip the `## ` prefix from the first span only — subsequent children keep
   // any marks they had (links, strong, etc.).
   const newChildren = (block.children as any[]).map((c, idx) => {
-    if (idx !== firstSpanIndex) return c;
-    if (c?._type !== 'span' || typeof c.text !== 'string') return c;
+    if (idx !== firstTextIdx) return c;
+    if (!c || typeof c !== 'object' || typeof c.text !== 'string') return c;
     return { ...c, text: c.text.replace(stripRe, '') };
   });
 
