@@ -84,38 +84,43 @@ export function PoeItemBlogCard({ value }: { value: SanityPoeItem }) {
   return (
     <TooltipProvider delayDuration={150}>
       <SmartTooltip
-        content={<ItemTooltip item={item} compact />}
+        content={<ItemTooltip item={item} compact={isMobile} />}
         side="top"
         align="center"
         isMobile={isMobile}
       >
         <span
-          className="inline-flex items-center cursor-pointer gap-1"
+          className="not-prose inline-flex items-center cursor-pointer gap-1.5 align-middle"
           role="button"
           tabIndex={0}
         >
-          {iconUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <Image
-              src={iconUrl}
-              alt={item.name}
-              width={100}
-              height={100}
-              className="inline-block object-contain shrink-0"
-              onError={(e) => {
-                e.currentTarget.style.display = "none";
-              }}
-            />
-          ) : (
-            // fallback: nome com cor de raridade quando não há ícone
+          {iconUrl && (
+            // Maxroll-style: small square icon (1em-ish) next to the coloured
+            // name. Scales with the surrounding font-size so it never disrupts
+            // the paragraph line-height. Letterboxed via object-contain so
+            // weapons (1×4 aspect) don't stretch.
             <span
-              className="underline decoration-dotted underline-offset-2 font-medium"
-              style={{ color: `hsl(${colorHsl})` }}
+              className="relative inline-block shrink-0"
+              style={{ width: "1.7em", height: "1.7em" }}
             >
-              {item.name}
+              <Image
+                src={iconUrl}
+                alt=""
+                fill
+                sizes="32px"
+                className="object-contain"
+                onError={(e) => {
+                  e.currentTarget.style.display = "none";
+                }}
+              />
             </span>
           )}
-          <span className="sr-only">{item.name}</span>
+          <span
+            className="font-semibold"
+            style={{ color: `hsl(${colorHsl})` }}
+          >
+            {item.name}
+          </span>
         </span>
       </SmartTooltip>
     </TooltipProvider>

@@ -3,12 +3,20 @@
  * Todos os valores são strings HSL (sem o "hsl()" — para uso com hsla() inline).
  */
 
+// Colors are aligned with maxroll.gg's computed values (verified via
+// browser DevTools, Apr 2026) which mirror in-game Path of Exile colors:
+//   Unique  rgb(175, 96, 37)   → hsl(25, 65%, 42%)
+//   Rare    rgb(255, 255, 119) → hsl(60, 100%, 73%)
+//   Magic   rgb(136, 136, 255) → hsl(240, 100%, 77%)
+//   Gem     rgb(27, 162, 155)  → hsl(176, 71%, 37%)
+// Mod-line `normal` is the implicit/explicit blue shared with Magic rarity.
 export const POE_COLORS = {
   rarity: {
-    Unique: "26, 65%, 42%",
+    Unique: "25, 65%, 42%",
     Rare: "60, 100%, 73%",
     Magic: "240, 100%, 77%",
     Normal: "0, 0%, 78%",
+    Gem: "176, 71%, 37%",
   },
   socket: {
     R: "0, 100%, 50%",   // Strength - Red
@@ -18,10 +26,10 @@ export const POE_COLORS = {
     A: "280, 70%, 60%",  // Abyssal
   },
   mod: {
-    normal: "240, 100%, 77%",
-    crafted: "240, 100%, 85%",
-    fractured: "44, 26%, 51%",
-    enchant: "240, 100%, 85%",
+    normal: "240, 100%, 77%",   // rgb(136, 136, 255)
+    crafted: "214, 70%, 83%",   // rgb(184, 218, 242) — horadric-helper "crafted" value
+    fractured: "44, 26%, 51%",  // rgb(162, 145, 98)
+    enchant: "214, 70%, 83%",   // shares crafted blue
     scourge: "20, 100%, 57%",
   },
   link: "0, 0%, 60%",
@@ -39,6 +47,7 @@ export const RARITY_NAME_COLOR_HSL: Record<string, string> = {
   Rare: POE_COLORS.rarity.Rare,
   Magic: POE_COLORS.rarity.Magic,
   Normal: POE_COLORS.rarity.Normal,
+  Gem: POE_COLORS.rarity.Gem,
 };
 
 export const MOD_COLOR_HSL: Record<string, string> = {

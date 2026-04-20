@@ -10,6 +10,7 @@ import {
 } from "@/components/poe/poe-colors";
 import { getEffectiveItemIconUrl } from "@/components/poe/poe-icon-utils";
 
+
 // ─── SocketDisplay ─────────────────────────────────────────────────────────────
 
 export function SocketDisplay({ sockets }: { sockets: string }) {
@@ -92,22 +93,22 @@ export function ItemTooltip({
   const hasExplicit = explicitMods.length > 0;
   const effectiveIconUrl = getEffectiveItemIconUrl(item);
 
-  const w        = compact ? "w-[min(340px,88vw)]" : "w-[420px]";
-  const baseText = compact ? "text-[13px]"         : "text-[14px]";
-  const hdrPad   = compact ? "px-3 "         : "px-6 py-1.5";
-  const bodyPad  = compact ? "px-3"           : "px-6 py-2";
+  const w        = compact ? "w-[min(320px,88vw)]" : "w-[min(440px,92vw)]";
+  const baseText = compact ? "text-[12px]"         : "text-[15px]";
+  const hdrPad   = compact ? "px-3 py-0.5"   : "px-6 py-1.5";
+  const bodyPad  = compact ? "px-3 py-1"     : "px-6 py-2";
   const nameSz   = compact
-    ? (item.rarity === "Magic" ? "text-[12px]" : "text-[14px]")
-    : (item.rarity === "Magic" ? "text-[15px]" : "text-[20px]");
+    ? (item.rarity === "Magic" ? "text-[11px]" : "text-[13px]")
+    : (item.rarity === "Magic" ? "text-[15px]" : "text-[18px]");
   const baseSz   = compact ? "text-[10px]" : "text-[13px]";
-  const bodyGap  = compact ? "space-y-2"   : "space-y-3";
-  const implicitPadTop = compact ? "pt-0.5" : "pt-1";
+  const bodyGap  = compact ? "space-y-1" : "space-y-2";
+  const implicitPadTop = "pt-0";
   const implicitLineClass = compact
-    ? "uppercase leading-tight first-letter:text-[13px]"
-    : "uppercase first-letter:text-[13px]";
+    ? "leading-tight first-letter:text-[12px]"
+    : "leading-tight first-letter:text-[15px]";
 
   return (
-    <div className={`${w} ${baseText} leading-snug overflow-hidden rounded shadow-xl bg-black/80 font-fontin`}>
+    <div className={`not-prose ${w} ${baseText} leading-snug overflow-hidden rounded shadow-xl bg-black/80 font-fontin`}>
       <div
         className={`${hdrPad} text-center relative`}
         style={
@@ -124,7 +125,7 @@ export function ItemTooltip({
         }
       >
         <p
-          className={`font-semibold leading-tight tracking-wide mb-4 pt-2 ${nameSz}`}
+          className={`font-semibold leading-tight tracking-wide ${nameSz}`}
           style={{
             color: headerTextures
               ? headerTextures.textColor
@@ -134,7 +135,7 @@ export function ItemTooltip({
           {item.name}
         </p>
         {item.baseName && item.baseName !== item.name && (
-          <p className={`text-slate-200 ${baseSz} mb-2 pb-2`}>{item.baseName}</p>
+          <p className={`text-slate-200 ${baseSz} leading-tight`}>{item.baseName}</p>
         )}
 
         {leftInfluenceIcon && (
@@ -287,7 +288,7 @@ export function ItemTooltip({
                 )}
                 {item.evasion !== undefined && (
                   <span>
-                    Evasion:{" "}
+                    Evasion Rating:{" "}
                     <span className="text-sky-300 font-semibold">
                       {item.evasion}
                     </span>
@@ -308,12 +309,31 @@ export function ItemTooltip({
           </div>
         )}
 
+        {(item.requiredLevel || item.requiredStr || item.requiredDex || item.requiredInt) && (
+          <div className="text-slate-400 text-[12px] leading-tight">
+            Requires{" "}
+            {[
+              item.requiredLevel && <span key="lvl"><span className="text-slate-200 font-semibold">{item.requiredLevel}</span> Level</span>,
+              item.requiredStr && <span key="str"><span className="text-slate-200 font-semibold">{item.requiredStr}</span> Str</span>,
+              item.requiredDex && <span key="dex"><span className="text-slate-200 font-semibold">{item.requiredDex}</span> Dex</span>,
+              item.requiredInt && <span key="int"><span className="text-slate-200 font-semibold">{item.requiredInt}</span> Int</span>,
+            ]
+              .filter(Boolean)
+              .map((el, i, arr) => (
+                <span key={`req-${i}`}>
+                  {el}
+                  {i < arr.length - 1 && <span className="text-slate-500">, </span>}
+                </span>
+              ))}
+          </div>
+        )}
+
         {hasEnchant && (
-          <div className="pt-1 space-y-0.25">
+          <div className="pt-0.5">
             {enchantMods.map((mod, i) => (
               <p
                 key={`enchant-${i}`}
-                className="uppercase first-letter:text-[13px]"
+                className="leading-tight first-letter:text-[13px]"
                 style={{ color: `hsl(${MOD_COLOR_HSL[mod.type]})` }}
               >
                 {mod.text}
@@ -349,11 +369,15 @@ export function ItemTooltip({
         )}
 
         {hasExplicit && (
-          <div className="space-y-0.5">
+          <div>
             {explicitMods.map((mod, i) => (
               <p
                 key={i}
-                className="uppercase first-letter:text-[14px]"
+                className={
+                  compact
+                    ? "leading-tight first-letter:text-[13px]"
+                    : "leading-tight first-letter:text-[16px]"
+                }
                 style={{
                   color:
                     mod.type === "crafted"
@@ -367,11 +391,23 @@ export function ItemTooltip({
           </div>
         )}
 
-        {item.corrupted && (
-          <div className="border-t border-slate-600/70 pt-2">
-            <p className="text-red-500 font-semibold tracking-wide">
-              Corrupted
-            </p>
+        {(item.corrupted || item.mirrored || item.split) && (
+          <div className="border-t border-slate-600/70 pt-1.5 flex flex-col items-center gap-0.5">
+            {item.mirrored && (
+              <p className="text-[hsl(220,75%,70%)] font-semibold tracking-wide">
+                Mirrored
+              </p>
+            )}
+            {item.split && (
+              <p className="text-[hsl(220,75%,70%)] font-semibold tracking-wide">
+                Split
+              </p>
+            )}
+            {item.corrupted && (
+              <p className="text-red-500 font-semibold tracking-wide">
+                Corrupted
+              </p>
+            )}
           </div>
         )}
 
@@ -413,7 +449,7 @@ export function JewelTooltip({
   const baseSz   = compact ? "text-[11px]" : "text-[13px]";
 
   return (
-    <div className={`${w} ${baseText} leading-snug overflow-hidden rounded shadow-xl bg-black/80 font-fontin`}>
+    <div className={`not-prose ${w} ${baseText} leading-snug overflow-hidden rounded shadow-xl bg-black/80 font-fontin`}>
       <div
         className={`${hdrPad} text-center relative`}
         style={

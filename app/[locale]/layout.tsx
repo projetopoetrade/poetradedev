@@ -2,6 +2,7 @@ import HeaderAuth from "@/components/header-auth";
 import { SiteNavbar } from "@/components/site-navbar";
 import { GoogleTagManager } from "@next/third-parties/google";
 import { Roboto, Source_Sans_3 } from "next/font/google";
+import localFont from "next/font/local";
 import { ThemeProvider } from "next-themes";
 import { CurrencyProvider } from "@/lib/contexts/currency-context";
 import { CartProvider } from "@/lib/contexts/cart-context";
@@ -130,6 +131,19 @@ const sourceSans = Source_Sans_3({
   preload: true,
 });
 
+// Self-hosted Fontin-SmallCaps — exact font the PoE in-game tooltip uses.
+// Sourced from cdnfonts.com's Fontin family (complete glyph set with lowercase
+// small-caps substitutions). An earlier TTF from horadric-helper only had
+// ~41 glyphs (uppercase + digits + punctuation), causing lowercase letters
+// in mod lines to fall back to Roboto. The WOFF file below is the full font.
+const fontin = localFont({
+  src: "../fonts/Fontin-SmallCaps.woff",
+  variable: "--font-fontin",
+  display: "swap",
+  weight: "400",
+  style: "normal",
+});
+
 
 export default async function RootLayout(
   props: Readonly<{
@@ -159,7 +173,7 @@ export default async function RootLayout(
     return (
       <html
         lang={locale}
-        className={`${roboto.variable} ${sourceSans.variable}`}
+        className={`${roboto.variable} ${sourceSans.variable} ${fontin.variable}`}
         suppressHydrationWarning
       >
         <body className="bg-gray-900 text-white" suppressHydrationWarning>

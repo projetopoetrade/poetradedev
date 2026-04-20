@@ -103,10 +103,38 @@ export function parseRawPoeItem(raw: string): PobItem | null {
   let itemLevel: number | undefined;
   let quality: number | undefined;
   let sockets: string | undefined;
+  let armour: number | undefined;
+  let evasion: number | undefined;
+  let energyShield: number | undefined;
+  let physDamage: [number, number] | undefined;
+  let eleDamage: [number, number] | undefined;
+  let chaosDamage: [number, number] | undefined;
+  let critChance: number | undefined;
+  let aps: number | undefined;
+  let requiredLevel: number | undefined;
+  let requiredStr: number | undefined;
+  let requiredDex: number | undefined;
+  let requiredInt: number | undefined;
   let corrupted = false;
+  let mirrored = false;
+  let split = false;
   let fractured = false;
   const influences: string[] = [];
   const modSections: string[][] = [];
+
+  const parseInt0 = (s: string): number | undefined => {
+    const n = parseInt(s.trim(), 10);
+    return isNaN(n) ? undefined : n;
+  };
+
+  const parseFloat0 = (s: string): number | undefined => {
+    const n = parseFloat(s.trim());
+    return isNaN(n) ? undefined : n;
+  };
+
+  // Strip "(augmented)" / "(unmet)" annotations that poe wiki adds
+  const stripAnnotations = (s: string): string =>
+    s.replace(/\s*\((augmented|unmet|fractured|crafted)\)\s*/gi, "").trim();
 
   for (const section of sections.slice(1)) {
     // Detect footer/influence section
@@ -117,8 +145,27 @@ export function parseRawPoeItem(raw: string): PobItem | null {
     if (footerLines.length > 0) {
       if (section.includes("Corrupted")) corrupted = true;
       if (section.includes("Fractured Item")) fractured = true;
+      if (section.includes("Mirrored")) mirrored = true;
+      if (section.includes("Split")) split = true;
       for (const l of section) {
         if (INFLUENCE_MAP[l]) influences.push(INFLUENCE_MAP[l]);
+      }
+      continue;
+    }
+
+    // Detect a Requirements-only section (starts with "Requirements:" marker)
+    if (section[0]?.startsWith("Requirements:")) {
+      for (const line of section.slice(1)) {
+        const bare = stripAnnotations(line);
+        if (bare.startsWith("Level:")) {
+          requiredLevel = parseInt0(bare.slice("Level:".length));
+        } else if (bare.startsWith("Str:") || bare.startsWith("Strength:")) {
+          requiredStr = parseInt0(bare.slice(bare.indexOf(":") + 1));
+        } else if (bare.startsWith("Dex:") || bare.startsWith("Dexterity:")) {
+          requiredDex = parseInt0(bare.slice(bare.indexOf(":") + 1));
+        } else if (bare.startsWith("Int:") || bare.startsWith("Intelligence:")) {
+          requiredInt = parseInt0(bare.slice(bare.indexOf(":") + 1));
+        }
       }
       continue;
     }
@@ -127,17 +174,32 @@ export function parseRawPoeItem(raw: string): PobItem | null {
     const modLines: string[] = [];
     for (const line of section) {
       if (line.startsWith("Item Level:")) {
-        const n = parseInt(line.replace("Item Level:", "").trim());
-        if (!isNaN(n)) itemLevel = n;
+        itemLevel = parseInt0(line.slice("Item Level:".length));
       } else if (line.startsWith("Quality:")) {
         const m = line.match(/\+?(\d+)%/);
         if (m) quality = parseInt(m[1]);
       } else if (line.startsWith("Sockets:")) {
         sockets = line.replace("Sockets:", "").trim();
+      } else if (line.startsWith("Armour:")) {
+        armour = extractLeadingNumber(stripAnnotations(line.slice("Armour:".length)));
+      } else if (line.startsWith("Evasion Rating:")) {
+        evasion = extractLeadingNumber(stripAnnotations(line.slice("Evasion Rating:".length)));
+      } else if (line.startsWith("Energy Shield:")) {
+        energyShield = extractLeadingNumber(stripAnnotations(line.slice("Energy Shield:".length)));
+      } else if (line.startsWith("Physical Damage:")) {
+        physDamage = extractDmgRange(line.slice("Physical Damage:".length)) ?? physDamage;
+      } else if (line.startsWith("Elemental Damage:")) {
+        eleDamage = sumDmgRanges(line.slice("Elemental Damage:".length)) ?? eleDamage;
+      } else if (line.startsWith("Chaos Damage:")) {
+        chaosDamage = extractDmgRange(line.slice("Chaos Damage:".length)) ?? chaosDamage;
+      } else if (line.startsWith("Critical Strike Chance:")) {
+        critChance = parseFloat0(line.replace("Critical Strike Chance:", "").replace("%", ""));
+      } else if (line.startsWith("Attacks per Second:")) {
+        aps = parseFloat0(line.slice("Attacks per Second:".length));
       } else if (!PROPERTY_PATTERN.test(line)) {
         modLines.push(line);
       }
-      // Lines matching PROPERTY_PATTERN (Requirements, Armour, etc.) are ignored
+      // Other PROPERTY_PATTERN lines (Requirements, Stack Size, etc.) are still ignored
     }
 
     if (modLines.length > 0) {
@@ -183,10 +245,53 @@ export function parseRawPoeItem(raw: string): PobItem | null {
     itemLevel,
     quality,
     sockets,
+    armour,
+    evasion,
+    energyShield,
+    physDamage,
+    eleDamage,
+    chaosDamage,
+    critChance,
+    aps,
+    requiredLevel,
+    requiredStr,
+    requiredDex,
+    requiredInt,
     corrupted,
+    mirrored,
+    split,
     fractured,
     influences: influences.length > 0 ? influences : undefined,
     implicits,
     explicits,
   };
+}
+
+// ─── Numeric helpers ──────────────────────────────────────────────────────────
+
+function extractLeadingNumber(s: string): number | undefined {
+  const m = s.trim().match(/(-?\d+(?:\.\d+)?)/);
+  if (!m) return undefined;
+  const n = parseFloat(m[1]);
+  return isNaN(n) ? undefined : Math.round(n);
+}
+
+function extractDmgRange(s: string): [number, number] | undefined {
+  const m = s.trim().match(/(-?\d+)\s*-\s*(-?\d+)/);
+  if (!m) return undefined;
+  return [parseInt(m[1], 10), parseInt(m[2], 10)];
+}
+
+/**
+ * Sums a list of "min-max, min-max, ..." ranges into a single [minSum, maxSum].
+ * The game collapses fire+cold+lightning into a single "Elemental Damage:" line
+ * separated by commas; we mirror that.
+ */
+function sumDmgRanges(s: string): [number, number] | undefined {
+  const ranges = s.split(",").map((p) => extractDmgRange(p)).filter((r): r is [number, number] => !!r);
+  if (!ranges.length) return undefined;
+  return ranges.reduce<[number, number]>(
+    (acc, r) => [acc[0] + r[0], acc[1] + r[1]],
+    [0, 0],
+  );
 }

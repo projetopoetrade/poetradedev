@@ -294,6 +294,13 @@ export const blockContentComponents: PortableTextComponents = {
         {children}
       </a>
     ),
+    // Inline PoE item reference — injected by the placeholder resolver for
+    // `{{item:Name}}`. Renders the same icon+tooltip combo used by
+    // Sanity-authored `poeItem` blocks, but inline inside the paragraph.
+    poeItem: ({ value }: any) => {
+      if (!value?.rawText) return null;
+      return <PoeItemBlogCard value={{ _type: 'poeItem', rawText: value.rawText, iconUrl: value.iconUrl }} />;
+    },
   },
   types: {
     image: ImageComponent,

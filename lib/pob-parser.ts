@@ -43,7 +43,13 @@ export interface PobItem {
   critChance?: number; // critical strike chance (%)
   aps?: number; // attacks per second
   isEstimatedDps?: boolean; // true when DPS was estimated from base type (not from item tooltip)
+  requiredLevel?: number;
+  requiredStr?: number;
+  requiredDex?: number;
+  requiredInt?: number;
   corrupted?: boolean;
+  mirrored?: boolean;
+  split?: boolean;
   fractured?: boolean;
   influences?: string[];
   implicits: ParsedMod[];
