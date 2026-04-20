@@ -26,7 +26,8 @@ export async function fetchItemRaw(name: string): Promise<ItemRawData | null> {
   const engineBase = getEngineBase();
   if (!engineBase) return null;
 
-  const url = `${engineBase}/items/${encodeURIComponent(name)}/raw`;
+  // engineBase already includes the `/items` segment — don't double it here.
+  const url = `${engineBase}/${encodeURIComponent(name)}/raw`;
   const ac = new AbortController();
   const timer = setTimeout(() => ac.abort(), REQUEST_TIMEOUT_MS);
   try {
