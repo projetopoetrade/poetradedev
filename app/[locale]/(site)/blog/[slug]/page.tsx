@@ -18,6 +18,7 @@ interface PageProps {
     slug: string;
     locale: string;
   }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }
 
 export async function generateMetadata(props: PageProps): Promise<Metadata> {
@@ -103,6 +104,20 @@ const SingleBlogPage = async (props: PageProps) => {
   // requests for the same post don't re-hit poe.ninja/engine.
   const resolvedBody = await resolveBlocks(post.body, { locale });
   const postWithResolvedBody = { ...post, body: resolvedBody } as Blog;
+
+  // Temporary debug: ?debug=blocks dumps the first 6 raw + resolved blocks so
+  // we can see the shape the CMS is actually sending. Remove once heading
+  // promotion is verified working.
+  const searchParams = props.searchParams ? await props.searchParams : {};
+  if (searchParams.debug === 'blocks') {
+    const rawSample = Array.isArray(post.body) ? post.body.slice(0, 6) : post.body;
+    const resolvedSample = Array.isArray(resolvedBody) ? resolvedBody.slice(0, 6) : resolvedBody;
+    return (
+      <pre className="p-6 text-xs text-white bg-black min-h-screen overflow-auto font-mono whitespace-pre-wrap">
+        {JSON.stringify({ bodyIsArray: Array.isArray(post.body), rawSample, resolvedSample }, null, 2)}
+      </pre>
+    );
+  }
 
   const imageUrl = post.mainImage?.asset?.url as string | undefined;
 
