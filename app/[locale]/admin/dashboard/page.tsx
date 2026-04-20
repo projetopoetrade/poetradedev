@@ -13,7 +13,10 @@ import {
   RefreshCw,
   Database,
   Sword,
-  List
+  List,
+  Monitor,
+  Wrench,
+  Server,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -51,6 +54,12 @@ export default function AdminDashboard() {
         return 'Builds';
       case 'add-build':
         return 'Nova Build';
+      case 'hardware-deals':
+        return 'Hardware Deals';
+      case 'pc-builder':
+        return 'PC Builder';
+      case 'vm-calculator':
+        return 'VM Calculator';
       default:
         return 'Dashboard';
     }
@@ -199,6 +208,46 @@ export default function AdminDashboard() {
             >
               <Plus className="h-4 w-4" />
               <span>Nova Build</span>
+            </button>
+
+            <div className="pt-2 pb-1 px-3">
+              <span className="text-[10px] uppercase tracking-wider text-foreground/40 font-medium">Hardware</span>
+            </div>
+
+            <button
+              onClick={() => setActiveView('hardware-deals')}
+              className={`w-full flex items-center gap-2 px-3 py-2 rounded-md text-left transition-colors ${
+                activeView === 'hardware-deals'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-foreground/80 hover:text-foreground hover:bg-foreground/5'
+              }`}
+            >
+              <Monitor className="h-4 w-4" />
+              <span>Hardware Deals</span>
+            </button>
+
+            <button
+              onClick={() => setActiveView('pc-builder')}
+              className={`w-full flex items-center gap-2 px-3 py-2 rounded-md text-left transition-colors ${
+                activeView === 'pc-builder'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-foreground/80 hover:text-foreground hover:bg-foreground/5'
+              }`}
+            >
+              <Wrench className="h-4 w-4" />
+              <span>PC Builder</span>
+            </button>
+
+            <button
+              onClick={() => setActiveView('vm-calculator')}
+              className={`w-full flex items-center gap-2 px-3 py-2 rounded-md text-left transition-colors ${
+                activeView === 'vm-calculator'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-foreground/80 hover:text-foreground hover:bg-foreground/5'
+              }`}
+            >
+              <Server className="h-4 w-4" />
+              <span>VM Calculator</span>
             </button>
           </nav>
         </aside>

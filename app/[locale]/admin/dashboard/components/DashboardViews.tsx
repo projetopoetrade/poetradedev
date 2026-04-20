@@ -15,6 +15,9 @@ import ManageOrdersView from "./ManageOrdersView";
 import CacheView from "./CacheView";
 import ManageBuildsView from "./ManageBuildsView";
 import AddBuildView from "./AddBuildView";
+import HardwareDealsView from "./HardwareDealsView";
+import PCBuilderView from "./PCBuilderView";
+import VMCalculatorView from "./VMCalculatorView";
 
 interface DashboardViewsProps {
   activeView: string;
@@ -221,6 +224,15 @@ export default function DashboardViews({
             onCancel={() => onViewChange("builds")}
           />
         );
+
+      case "hardware-deals":
+        return <HardwareDealsView />;
+
+      case "pc-builder":
+        return <PCBuilderView />;
+
+      case "vm-calculator":
+        return <VMCalculatorView />;
 
       default:
         return (
