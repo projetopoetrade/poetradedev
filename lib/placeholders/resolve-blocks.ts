@@ -35,10 +35,21 @@ export async function resolveBlocks(
 ): Promise<PortableTextBlock[]> {
   if (!blocks?.length) return blocks ?? [];
 
+  // 0. Posts imported from the LLM pipeline sometimes land in Sanity as a
+  //    SINGLE block containing the entire article with `\n\n` between
+  //    paragraphs and `## ` markdown markers embedded. Split those into one
+  //    Portable Text block per paragraph so the rest of this pipeline (and
+  //    the site's `blockContentComponents`) can treat each paragraph
+  //    independently — headings, prose, lists.
+  const expandedBlocks: any[] = [];
+  for (const b of blocks) {
+    for (const split of splitMarkdownBlock(b)) expandedBlocks.push(split);
+  }
+
   // 1. Collect every placeholder that needs a data fetch
   const priceNames = new Set<string>();
   const itemNames = new Set<string>();
-  for (const block of blocks) {
+  for (const block of expandedBlocks) {
     for (const ph of collectFromBlock(block)) {
       if (ph.kind === 'price') priceNames.add(ph.value);
       if (ph.kind === 'item') {
@@ -61,7 +72,75 @@ export async function resolveBlocks(
 
   // 3. Walk the tree, transforming spans
   const state: ResolveState = { ctx, prices, items };
-  return blocks.map((b) => transformBlock(promoteMarkdownHeading(b), state));
+  return expandedBlocks.map((b) => transformBlock(promoteMarkdownHeading(b), state));
+}
+
+/**
+ * Takes a Portable Text block that contains a newline-joined markdown
+ * article and returns one block per paragraph. Headings (`^#{1,6}\s+`) get
+ * `style: hN`, list bullets (`^[*-] ` / `^\d+\. `) get `style: normal` but
+ * preserve the leading marker so the existing list fallback in
+ * `blockContentComponents.renderInlineMarkdown` can still style them. All
+ * other paragraphs remain `style: normal`. Blocks that don't have a single
+ * text-carrying child or have no newlines are returned unchanged.
+ */
+function splitMarkdownBlock(block: any): any[] {
+  if (!block || typeof block !== 'object' || block._type !== 'block') return [block];
+  if (!Array.isArray(block.children)) return [block];
+  // Only split unstyled / normal blocks — a pre-formatted `h2` / `blockquote`
+  // is already structured, leave it alone.
+  const styleNormalish = !block.style || block.style === 'normal' || block.style === '';
+  if (!styleNormalish) return [block];
+
+  const textChildren = block.children.filter(
+    (c: any) => c && typeof c === 'object' && typeof c.text === 'string',
+  );
+  // If a block already has multiple children or marks we can't safely split
+  // without losing the mark spans; leave such blocks alone.
+  if (textChildren.length !== 1) return [block];
+  const span = textChildren[0];
+  if (Array.isArray(span.marks) && span.marks.length > 0) return [block];
+  const text: string = span.text;
+  if (!text.includes('\n')) return [block];
+
+  const paragraphs = text.split(/\n{2,}/).map((p) => p.trim()).filter(Boolean);
+  if (paragraphs.length <= 1) return [block];
+
+  const baseKey = block._key ?? 'md';
+  return paragraphs.map((para, i) => {
+    const headingMatch = para.match(/^(#{1,6})\s+(.+)$/);
+    if (headingMatch) {
+      const level = Math.min(headingMatch[1].length, 4);
+      return {
+        _type: 'block',
+        _key: `${baseKey}-${i}-h`,
+        style: `h${level}`,
+        markDefs: [],
+        children: [
+          {
+            _type: 'span',
+            _key: `${baseKey}-${i}-hs`,
+            text: headingMatch[2],
+            marks: [],
+          },
+        ],
+      };
+    }
+    return {
+      _type: 'block',
+      _key: `${baseKey}-${i}`,
+      style: 'normal',
+      markDefs: [],
+      children: [
+        {
+          _type: 'span',
+          _key: `${baseKey}-${i}-s`,
+          text: para,
+          marks: [],
+        },
+      ],
+    };
+  });
 }
 
 // ---------------------------------------------------------------------------
