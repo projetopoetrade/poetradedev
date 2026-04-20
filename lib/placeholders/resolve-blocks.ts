@@ -61,7 +61,60 @@ export async function resolveBlocks(
 
   // 3. Walk the tree, transforming spans
   const state: ResolveState = { ctx, prices, items };
-  return blocks.map((b) => transformBlock(b, state));
+  return blocks.map((b) => transformBlock(promoteMarkdownHeading(b), state));
+}
+
+// ---------------------------------------------------------------------------
+// Markdown heading promotion
+// ---------------------------------------------------------------------------
+
+/**
+ * LLM-generated / imported posts frequently land in Sanity as plain-text
+ * Portable Text spans where lines still begin with `## `. The site's
+ * `processNormalBlock` has a fallback regex that catches those when
+ * `block.style === "normal"`, but we've seen posts where `style` is absent
+ * or a custom value — in those cases the handler never fires and readers
+ * see the literal `##` markers inline.
+ *
+ * This promotion runs at the resolver layer before placeholder expansion:
+ * any `_type: "block"` whose combined span text matches `^#{1,6}\s+…` gets
+ * its `style` rewritten to the matching `h1`–`h4` and the prefix stripped
+ * from the first span. Downstream the blockContentComponents `block.hN`
+ * handlers pick it up correctly regardless of the source `style`.
+ */
+function promoteMarkdownHeading(block: any): any {
+  if (!block || typeof block !== 'object') return block;
+  if (block._type !== 'block' || !Array.isArray(block.children)) return block;
+  // Don't override a style that's already a heading / blockquote
+  if (block.style && block.style !== 'normal' && block.style !== '') return block;
+
+  // Concatenate leading span text so we can test "does this block START with ##"
+  // without requiring all text to live in the first span.
+  const firstSpanIndex = block.children.findIndex(
+    (c: any) => c?._type === 'span' && typeof c.text === 'string',
+  );
+  if (firstSpanIndex < 0) return block;
+
+  const fullLeading = (block.children as any[])
+    .filter((c) => c?._type === 'span' && typeof c.text === 'string')
+    .map((c) => c.text)
+    .join('');
+
+  const m = fullLeading.match(/^\s*(#{1,6})\s+(.+?)\s*$/);
+  if (!m) return block;
+
+  const level = Math.min(m[1].length, 4);
+  const stripRe = /^\s*#{1,6}\s+/;
+
+  // Strip the `## ` prefix from the first span only — subsequent spans keep
+  // any marks they had (links, strong, etc.).
+  const newChildren = (block.children as any[]).map((c, idx) => {
+    if (idx !== firstSpanIndex) return c;
+    if (c?._type !== 'span' || typeof c.text !== 'string') return c;
+    return { ...c, text: c.text.replace(stripRe, '') };
+  });
+
+  return { ...block, style: `h${level}`, children: newChildren };
 }
 
 // ---------------------------------------------------------------------------
