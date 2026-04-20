@@ -8,6 +8,7 @@ import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { buildCanonical, generateKeywords, buildBreadcrumbSchema } from "@/lib/utils";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
+import { resolveBlocks } from "@/lib/placeholders/resolve-blocks";
 
 // ISR: revalidate cache every 5 minutes
 export const revalidate = 300;
@@ -96,6 +97,12 @@ const SingleBlogPage = async (props: PageProps) => {
   if (!post) {
     return <div className="py-5">Post not found</div>;
   }
+
+  // Resolve `{{price:...}}`, `{{link:...}}` etc in the post body with live data.
+  // Runs server-side; cached via Next.js fetch revalidate (5 min) so repeat
+  // requests for the same post don't re-hit poe.ninja/engine.
+  const resolvedBody = await resolveBlocks(post.body, { locale });
+  const postWithResolvedBody = { ...post, body: resolvedBody } as Blog;
 
   const imageUrl = post.mainImage?.asset?.url as string | undefined;
 
@@ -196,7 +203,7 @@ const SingleBlogPage = async (props: PageProps) => {
         </div>
 
         <div className="prose prose-lg dark:prose-invert max-w-none">
-          <RenderBodyContent post={post} />
+          <RenderBodyContent post={postWithResolvedBody} />
         </div>
 
         {relatedPosts.length > 0 && (
