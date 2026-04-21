@@ -195,13 +195,25 @@ export default async function ShowcasePreviewPage() {
         <footer className="space-y-2 border-t border-neutral-800 pt-6 text-xs text-neutral-500">
           <div>
             Source:{" "}
+            {/* Link routes to our in-house PoB viewer (`/tools/pob-viewer`)
+                which decodes via the engine and renders the build inline.
+                The raw pobb.in URL is still surfaced as a secondary link
+                so users can open the original external page if they want
+                to import the build into their own PoB install. */}
+            <Link
+              href={`/tools/pob-viewer?pob=${encodeURIComponent(SHOWCASE_POB_URL)}`}
+              className="text-amber-500 underline underline-offset-2 hover:text-amber-400"
+            >
+              View build in PoB Viewer
+            </Link>
+            {" · "}
             <Link
               href={SHOWCASE_POB_URL}
-              className="text-amber-500 underline underline-offset-2 hover:text-amber-400"
+              className="text-neutral-400 underline underline-offset-2 hover:text-neutral-200"
               target="_blank"
               rel="noopener noreferrer"
             >
-              View build on pobb.in
+              open on pobb.in
             </Link>
           </div>
           <div>

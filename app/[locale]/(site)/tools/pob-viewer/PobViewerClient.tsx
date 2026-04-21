@@ -1427,10 +1427,15 @@ export default function PobViewerClient({ locale }: Props) {
       .catch((err) => console.error("[PoB] Erro ao buscar gem info:", err));
   }, [data]);
 
-  // Auto-carregar PoB se houver ?code= na URL
+  // Auto-carregar PoB se houver ?id= (shared build), ?code= (legacy inline
+  // PoB code), ou ?pob= (pobb.in / pastebin URL). The `pob` param is the
+  // canonical entry point from external deep links (e.g. the showcase page
+  // footer): the engine's decoder accepts the URL directly and follows the
+  // redirect chain itself.
   useEffect(() => {
     const idFromUrl = searchParams.get("id");
     const codeFromUrl = searchParams.get("code"); // suporte legado
+    const pobUrlFromUrl = searchParams.get("pob");
     if (loading || data) return;
 
     const run = async () => {
@@ -1453,6 +1458,10 @@ export default function PobViewerClient({ locale }: Props) {
           const pobCode = String(json.pobCode);
           setInput(pobCode);
           await handleAnalyze(pobCode, { updateUrl: false });
+        } else if (pobUrlFromUrl) {
+          // External URL — let the engine handle the fetch + decode.
+          setInput(pobUrlFromUrl);
+          await handleAnalyze(pobUrlFromUrl, { updateUrl: false });
         } else if (codeFromUrl) {
           setInput(codeFromUrl);
           await handleAnalyze(codeFromUrl, { updateUrl: false });
