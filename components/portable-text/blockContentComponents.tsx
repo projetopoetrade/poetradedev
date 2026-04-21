@@ -4,6 +4,7 @@ import config from "@/sanity/config/client-config";
 import { PortableText, type PortableTextComponents } from "@portabletext/react";
 import { getImageDimensions } from "@sanity/asset-utils";
 import urlBuilder from "@sanity/image-url";
+import { Lexer } from "marked";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
@@ -82,55 +83,72 @@ const currencyRegex = new RegExp(
   "gi"
 );
 
-function renderInlineMarkdown(text: string): React.ReactNode[] {
-  // Process **bold** and *italic* markdown
-  const parts: React.ReactNode[] = [];
-  const mdRegex = /(\*\*(.+?)\*\*|\*(.+?)\*)/g;
-  let lastIndex = 0;
-  let match;
-
-  while ((match = mdRegex.exec(text)) !== null) {
-    if (match.index > lastIndex) {
-      parts.push(text.slice(lastIndex, match.index));
-    }
-    if (match[2]) {
-      parts.push(<strong key={match.index}>{match[2]}</strong>);
-    } else if (match[3]) {
-      parts.push(<em key={match.index}>{match[3]}</em>);
-    }
-    lastIndex = mdRegex.lastIndex;
-  }
-  if (lastIndex < text.length) {
-    parts.push(text.slice(lastIndex));
-  }
-  return parts.length > 0 ? parts : [text];
-}
-
-function renderTextWithLinks(text: string) {
+function applyCurrencyLinks(text: string, baseKey: string): React.ReactNode[] {
+  if (!text) return [];
   const parts = text.split(currencyRegex);
-  const result: React.ReactNode[] = [];
-
-  parts.forEach((part, i) => {
-    const lowerPart = part.toLowerCase();
-    if (POE_CURRENCIES[lowerPart]) {
-      result.push(
+  return parts.map((part, i) => {
+    const lower = part.toLowerCase();
+    if (POE_CURRENCIES[lower]) {
+      return (
         <Link
-          key={`link-${i}`}
-          href={`/products/${POE_CURRENCIES[lowerPart]}`}
+          key={`${baseKey}-c-${i}`}
+          href={`/products/${POE_CURRENCIES[lower]}`}
           className="text-amber-600 dark:text-amber-500 hover:text-amber-700 dark:hover:text-amber-400 font-semibold transition-colors underline decoration-amber-500/30 underline-offset-2"
           title={`Buy ${part}`}
         >
           {part}
         </Link>
       );
-    } else {
-      renderInlineMarkdown(part).forEach((node, j) => {
-        result.push(<React.Fragment key={`md-${i}-${j}`}>{node}</React.Fragment>);
-      });
     }
+    return <React.Fragment key={`${baseKey}-t-${i}`}>{part}</React.Fragment>;
   });
+}
 
-  return result;
+function renderInlineToken(tok: any, key: string): React.ReactNode {
+  switch (tok.type) {
+    case "strong":
+      return <strong key={key} className="font-bold text-white">{renderInlineTokens(tok.tokens, key)}</strong>;
+    case "em":
+      return <em key={key}>{renderInlineTokens(tok.tokens, key)}</em>;
+    case "codespan":
+      return <code key={key} className="bg-gray-800 px-1.5 py-0.5 rounded text-amber-400 text-sm">{tok.text}</code>;
+    case "link":
+      return (
+        <a key={key} href={tok.href} target="_blank" rel="noopener noreferrer" className="text-amber-500 hover:text-amber-400 underline underline-offset-2">
+          {renderInlineTokens(tok.tokens, key)}
+        </a>
+      );
+    case "del":
+      return <s key={key}>{renderInlineTokens(tok.tokens, key)}</s>;
+    case "br":
+      return <br key={key} />;
+    case "html":
+      return null;
+    case "escape":
+      return <React.Fragment key={key}>{tok.text}</React.Fragment>;
+    case "text":
+    default:
+      return <React.Fragment key={key}>{applyCurrencyLinks(tok.text ?? "", key)}</React.Fragment>;
+  }
+}
+
+function renderInlineTokens(tokens: any[] | undefined, baseKey: string): React.ReactNode[] {
+  if (!tokens) return [];
+  return tokens.map((tok, i) => renderInlineToken(tok, `${baseKey}-${i}`));
+}
+
+function renderInlineMarkdown(text: string): React.ReactNode[] {
+  if (!text) return [];
+  try {
+    const tokens = Lexer.lexInline(text);
+    return renderInlineTokens(tokens, "inl");
+  } catch {
+    return applyCurrencyLinks(text, "inl-fallback");
+  }
+}
+
+function renderTextWithLinks(text: string): React.ReactNode[] {
+  return renderInlineMarkdown(text);
 }
 
 function processChildren(children: React.ReactNode) {
@@ -262,6 +280,36 @@ function processNormalBlock(children: React.ReactNode) {
         );
       }
       return <Tag className={headingClasses[level]}>{content}</Tag>;
+    }
+
+    // Markdown list — every line is a bullet (`*` / `-`) or numbered (`1.`).
+    // The LLM-imported posts often dump list items as a single paragraph with
+    // newlines, which would otherwise render as a literal "- foo" run-on.
+    if (fullText && fullText.includes("\n")) {
+      const lines = fullText.split("\n").map((l) => l.trim()).filter(Boolean);
+      if (lines.length >= 2) {
+        const isOrdered = lines.every((l) => /^\d+\.\s+/.test(l));
+        const isBullet = lines.every((l) => /^[*-]\s+/.test(l));
+        if (isOrdered || isBullet) {
+          const items = lines.map((l) => l.replace(/^(?:\d+\.|[*-])\s+/, ""));
+          if (isOrdered) {
+            return (
+              <ol className="list-decimal pl-6 mb-4 space-y-1">
+                {items.map((item, i) => (
+                  <li key={i} className="text-gray-300">{renderTextWithLinks(item)}</li>
+                ))}
+              </ol>
+            );
+          }
+          return (
+            <ul className="list-disc pl-6 mb-4 space-y-1">
+              {items.map((item, i) => (
+                <li key={i} className="text-gray-300">{renderTextWithLinks(item)}</li>
+              ))}
+            </ul>
+          );
+        }
+      }
     }
   }
 
