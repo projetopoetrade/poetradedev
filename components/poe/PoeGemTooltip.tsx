@@ -287,12 +287,17 @@ function parseGemRaw(rawText: string): ParsedGem {
       continue;
     }
 
-    // Tag section: a single line of comma-separated capitalised words,
-    // typically like "Spell, AoE, Fire, Duration".
+    // Tag section: a single line of comma-separated CamelCase tokens,
+    // typically like "Spell, AoE, Fire, Duration". Strict check so
+    // descriptions ("Creates a magical brand which can attach..." — also
+    // a single line with commas) don't get misclassified as tags.
     if (
       lines.length === 1 &&
       lines[0].includes(",") &&
-      !/[A-Z]\w+:\s/.test(lines[0])
+      !lines[0].endsWith(".") &&
+      lines[0]
+        .split(",")
+        .every((part) => /^[A-Z][A-Za-z0-9]*$/.test(part.trim()))
     ) {
       out.tags = lines[0];
       continue;
