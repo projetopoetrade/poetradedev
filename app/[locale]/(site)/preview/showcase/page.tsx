@@ -475,7 +475,9 @@ function statsCaptionBlock(summary: PobSummary): PortableTextBlock[] {
     (g) => g.isUnique && g.canonical && !!g.name,
   );
   const text = chase
-    ? `Core chase item for this build: {{item:${chase.name}}} (around {{price:${chase.name}|divine}} div).`
+    ? // {{price:X|divine}} already resolves to "1.4 div" — do NOT append "div"
+      // or the rendered output reads "around 1.4 div div".
+      `Core chase item for this build: {{item:${chase.name}}} (around {{price:${chase.name}|divine}}).`
     : "Core chase items are in the gear section below — hover any piece for its live tooltip.";
   return [
     {

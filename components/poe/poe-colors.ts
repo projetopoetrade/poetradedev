@@ -51,7 +51,32 @@ export const RARITY_NAME_COLOR_HSL: Record<string, string> = {
   Normal: POE_COLORS.rarity.Normal,
   Gem: POE_COLORS.rarity.Gem,
   Currency: POE_COLORS.rarity.Currency,
+  // Passive-tree node kinds. The engine's `/passives/:name/raw` endpoint
+  // emits `Rarity: <kind>` with the literal kind label, so the parser's
+  // `item.rarity` comes through as "Notable" / "Keystone" / etc. Default to
+  // the in-game warm gold tone (~#f2c94c) for Notables / Keystones /
+  // Masteries, and a muted purple for Ascendancy nodes.
+  Notable: "45, 85%, 62%",
+  Keystone: "45, 85%, 62%",
+  Mastery: "45, 85%, 62%",
+  Ascendancy: "270, 45%, 68%",
+  Passive: "0, 0%, 78%",
+  "Jewel Socket": "0, 0%, 78%",
 };
+
+/**
+ * Rarity labels that correspond to passive-tree nodes. The tooltip renders
+ * these with a dark-slate gradient header (like the gem tooltip) instead of
+ * the coloured gradient used for uniques/rares/etc.
+ */
+export const PASSIVE_RARITIES: ReadonlySet<string> = new Set([
+  "Notable",
+  "Keystone",
+  "Mastery",
+  "Ascendancy",
+  "Passive",
+  "Jewel Socket",
+]);
 
 export const MOD_COLOR_HSL: Record<string, string> = {
   normal: POE_COLORS.mod.normal,

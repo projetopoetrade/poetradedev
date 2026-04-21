@@ -8,6 +8,100 @@ import type {
   SummaryActionResult,
 } from "./types";
 
+// ---------------------------------------------------------------------------
+// Obsolete Awakened support rewrite. Applied on the summary the moment it
+// leaves the decoder so every downstream consumer (engine prose, OpenRouter-
+// direct fallback, deterministic fallback, stats caption, gear placeholders)
+// sees temp-league-valid gem names.
+//
+// SOURCE OF TRUTH: `packages/api/src/modules/knowledge/gem-normalization.ts`
+// in the path-of-trade-content engine repo. Keep this map in sync when the
+// GGG roster changes (historically only on a major league launch). The
+// style-guide doc (`config/style_guide.yaml:banned_entities.obsolete_support_gems`)
+// mirrors the same mapping for the LLM's benefit.
+// ---------------------------------------------------------------------------
+
+const OBSOLETE_AWAKENED_REPLACEMENTS: Record<string, string> = {
+  // Replaced by Greater variants
+  "Awakened Ancestral Call Support": "Greater Ancestral Call Support",
+  "Awakened Chain Support": "Greater Chain Support",
+  "Awakened Fork Support": "Greater Fork Support",
+  "Awakened Greater Multiple Projectiles Support":
+    "Greater Multiple Projectiles Support",
+  "Awakened Multistrike Support": "Greater Multistrike Support",
+  "Awakened Spell Cascade Support": "Greater Spell Cascade Support",
+  "Awakened Spell Echo Support": "Greater Spell Echo Support",
+  "Awakened Unleash Support": "Greater Unleash Support",
+  // Reverted to regular (no Greater variant exists)
+  "Awakened Added Chaos Damage Support": "Added Chaos Damage Support",
+  "Awakened Added Cold Damage Support": "Added Cold Damage Support",
+  "Awakened Added Fire Damage Support": "Added Fire Damage Support",
+  "Awakened Added Lightning Damage Support": "Added Lightning Damage Support",
+  "Awakened Arrow Nova Support": "Arrow Nova Support",
+  "Awakened Blasphemy Support": "Blasphemy Support",
+  "Awakened Brutality Support": "Brutality Support",
+  "Awakened Burning Damage Support": "Burning Damage Support",
+  "Awakened Cast On Critical Strike Support": "Cast On Critical Strike Support",
+  "Awakened Cast While Channelling Support": "Cast While Channelling Support",
+  "Awakened Cold Penetration Support": "Cold Penetration Support",
+  "Awakened Controlled Destruction Support": "Controlled Destruction Support",
+  "Awakened Deadly Ailments Support": "Deadly Ailments Support",
+  "Awakened Elemental Damage with Attacks Support":
+    "Elemental Damage with Attacks Support",
+  "Awakened Elemental Focus Support": "Elemental Focus Support",
+  "Awakened Fire Penetration Support": "Fire Penetration Support",
+  "Awakened Generosity Support": "Generosity Support",
+  "Awakened Hextouch Support": "Hextouch Support",
+  "Awakened Increased Area of Effect Support":
+    "Increased Area of Effect Support",
+  "Awakened Lightning Penetration Support": "Lightning Penetration Support",
+  "Awakened Melee Physical Damage Support": "Melee Physical Damage Support",
+  "Awakened Melee Splash Support": "Melee Splash Support",
+  "Awakened Minion Damage Support": "Minion Damage Support",
+  "Awakened Swift Affliction Support": "Swift Affliction Support",
+  "Awakened Unbound Ailments Support": "Unbound Ailments Support",
+  "Awakened Vicious Projectiles Support": "Vicious Projectiles Support",
+  "Awakened Void Manipulation Support": "Void Manipulation Support",
+};
+
+function rewriteSupportName(name: string): string {
+  return OBSOLETE_AWAKENED_REPLACEMENTS[name] ?? name;
+}
+
+/**
+ * Returns a new `PobSummary` with obsolete Awakened support names rewritten
+ * to their temp-league-valid counterparts (Greater / regular). Leaves
+ * Enlighten / Empower / Enhance alone — those are still valid.
+ *
+ * Idempotent: passing an already-normalised summary back through is a no-op.
+ */
+function normalizeObsoleteAwakeneds(summary: PobSummary): PobSummary {
+  if (!summary) return summary;
+  const supports = Array.isArray(summary.supports)
+    ? summary.supports.map(rewriteSupportName)
+    : summary.supports;
+  return { ...summary, supports };
+}
+
+/**
+ * DEBUG — force a Greater support to be present in `summary.supports` so the
+ * showcase demo always exercises the Greater-gem tooltip path. Prepended so
+ * it lands in the first few supports the deterministic prose cites, and
+ * de-duped so it doesn't double up when the source PoB already contains it
+ * (either directly or post-`normalizeObsoleteAwakeneds` rewrite).
+ *
+ * Remove this helper (and its call site in `fetchShowcaseSummary`) once
+ * Greater gems show up naturally in the linked build URL.
+ */
+const DEBUG_GREATER_GEM = "Greater Spell Echo Support";
+
+function injectGreaterDebugSupport(summary: PobSummary): PobSummary {
+  if (!summary) return summary;
+  const existing = Array.isArray(summary.supports) ? summary.supports : [];
+  if (existing.includes(DEBUG_GREATER_GEM)) return summary;
+  return { ...summary, supports: [DEBUG_GREATER_GEM, ...existing] };
+}
+
 /**
  * Server actions for the `/preview/showcase` page — the demo that exercises
  * EVERY placeholder + resolver in one scrollable build guide.
@@ -41,6 +135,10 @@ const SYSTEM_PROMPT = [
   "Be confident, concise, technical. No headers, no lists, just flowing prose.",
   "Cite notables and keystones as {{passive:Name}}. Cite canonical uniques and skill gems as {{item:Name}}.",
   "Cite rare items or non-canonical uniques from this specific build as {{pobitem:<id>}} using the id from the summary.",
+  "Support gems MUST include the word \"Support\" in the placeholder — {{item:Energy Leech Support}}, never {{item:Energy Leech}}.",
+  "Vaal and Greater variants keep their prefix: {{item:Vaal Cyclone}} / {{item:Greater Spell Echo Support}}.",
+  "NEVER cite obsolete Awakened support gems. In the current temp league (3.28+) only Awakened Enlighten / Empower / Enhance still exist — every other awakened was replaced by a Greater variant or reverted to the regular support. The summary you receive has already been rewritten to valid names; cite the supports exactly as they appear there.",
+  "Price placeholders already include their unit. {{price:Name|divine}} resolves to \"133 div\" — never append \"div\" after the placeholder.",
   "Cite chase items with a price as {{price:Name|divine}} when you want to mention cost.",
   "Never hardcode numbers (dps, res, hp). Use placeholders when possible. No Markdown. No quotes. No newlines other than spaces.",
 ].join(" ");
@@ -76,7 +174,17 @@ export async function fetchShowcaseSummary(
         error: body?.message ?? body?.error ?? `HTTP ${res.status} ${res.statusText}`,
       };
     }
-    return { ok: true, summary: (await res.json()) as PobSummary };
+    const rawSummary = (await res.json()) as PobSummary;
+    // Normalise obsolete Awakeneds up front so every downstream consumer
+    // (engine prose, OpenRouter-direct fallback, deterministic fallback,
+    // gear placeholders, stats caption) sees temp-league-valid names only.
+    const normalized = normalizeObsoleteAwakeneds(rawSummary);
+    // DEBUG — inject a Greater gem into supports so the showcase always
+    // exercises the Greater-support placeholder → engine lookup → tooltip
+    // path, regardless of whether the source PoB happens to carry one.
+    // Remove this block once Greater gems show up naturally in the linked
+    // build.
+    return { ok: true, summary: injectGreaterDebugSupport(normalized) };
   } catch (err) {
     return { ok: false, error: (err as Error).message };
   }
@@ -366,8 +474,11 @@ function sectionInstruction(section: ShowcaseSection): string {
       return [
         "Focus on the build's main skill setup. Cite the main skill as",
         "{{item:<mainSkill>}}. Cite each support gem from summary.supports as",
-        "{{item:<support name>}} (use the support's full name, including",
-        "'Awakened' and 'Support' words when present).",
+        "{{item:<full support name including the word 'Support'>}} —",
+        "e.g. {{item:Energy Leech Support}}, {{item:Awakened Empower Support}}.",
+        "Use support names EXACTLY as they appear in summary.supports (already",
+        "rewritten to temp-league-valid names). If a support looks like",
+        "'Greater X Support', cite it with the 'Greater' prefix — do not strip it.",
       ].join(" ");
     case "wrapup":
       return [

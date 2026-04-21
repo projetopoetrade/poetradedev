@@ -7,6 +7,7 @@ import {
   SOCKET_COLOR_HSL,
   INFLUENCE_ICONS,
   HEADER_TEXTURES,
+  PASSIVE_RARITIES,
 } from "@/components/poe/poe-colors";
 import { getEffectiveItemIconUrl } from "@/components/poe/poe-icon-utils";
 
@@ -67,6 +68,11 @@ export function ItemTooltip({
   const nameColorHsl =
     RARITY_NAME_COLOR_HSL[item.rarity] ?? RARITY_NAME_COLOR_HSL.Normal;
   const headerTextures = HEADER_TEXTURES[item.rarity];
+  // Passive-tree nodes (notable/keystone/mastery/etc.) render with a dark
+  // slate gradient header — matches the gem tooltip and the in-game passive
+  // tooltip. Name colour stays rarity-driven so Notables read warm-gold and
+  // Ascendancy nodes read muted-purple against the dark backdrop.
+  const isPassive = PASSIVE_RARITIES.has(item.rarity);
   // Currencies use plain off-white descriptive text rather than the
   // implicit/explicit blue used for rare-mod stat lines.
   const isCurrency = item.rarity === "Currency";
@@ -114,7 +120,7 @@ export function ItemTooltip({
   return (
     <div className={`not-prose ${w} ${baseText} leading-snug overflow-hidden rounded shadow-xl bg-black/80 font-fontin`}>
       <div
-        className={`${hdrPad} text-center relative`}
+        className={`${hdrPad} text-center relative ${isPassive ? "border-b border-slate-700/60" : ""}`}
         style={
           headerTextures
             ? {
@@ -123,9 +129,16 @@ export function ItemTooltip({
                   `url("${headerTextures.right}") top right / contain no-repeat, ` +
                   `url("${headerTextures.middle}") top left / contain repeat-x`,
               }
-            : {
-                backgroundImage: `linear-gradient(to bottom, hsl(${nameColorHsl}), #3a2a1b)`,
-              }
+            : isPassive
+              ? {
+                  // Dark slate gradient — matches the gem tooltip so passive
+                  // citations sit visually alongside gem citations in prose.
+                  background:
+                    "linear-gradient(to bottom, rgba(28,30,38,0.95), rgba(10,12,18,0.95))",
+                }
+              : {
+                  backgroundImage: `linear-gradient(to bottom, hsl(${nameColorHsl}), #3a2a1b)`,
+                }
         }
       >
         <p

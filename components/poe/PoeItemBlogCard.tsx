@@ -144,6 +144,18 @@ export function PoeItemBlogCard({ value }: { value: SanityPoeItem }) {
                 fill
                 sizes="32px"
                 className="object-contain"
+                // Bypass Vercel's image optimizer for these hosts. The
+                // passive-icon WebPs live behind Cloudflare bot-protection on
+                // pathoftrade.net, which 502s the optimizer's server-side
+                // fetch. Unoptimized loads go direct from the client (whose
+                // browser passes the Cloudflare challenge) so icons render.
+                // poewiki.net Special:Filepath redirects also don't play well
+                // with the optimizer, so they get the same treatment.
+                unoptimized={
+                  iconUrl.startsWith("https://pathoftrade.net/") ||
+                  iconUrl.startsWith("https://www.pathoftrade.net/") ||
+                  iconUrl.startsWith("https://www.poewiki.net/")
+                }
                 onError={(e) => {
                   e.currentTarget.style.display = "none";
                 }}

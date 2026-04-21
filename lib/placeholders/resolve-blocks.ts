@@ -5,6 +5,7 @@ import { fetchPrices, type PriceEntry } from './fetch-prices';
 import { fetchItemRawMany, type ItemRawData } from './fetch-items';
 import { fetchPobItemRawMany, type PobItemRawData } from './fetch-pob-items';
 import { fetchPassiveRawMany, type PassiveRawData } from './fetch-passive';
+import { fetchCurrencyNames } from './fetch-currency-names';
 
 /**
  * Pre-resolve placeholders in a Portable Text tree.
@@ -50,13 +51,18 @@ export async function resolveBlocks(
     for (const split of splitMarkdownBlock(b)) splitBlocks.push(split);
   }
 
-  // 0.5. Inline currency / scarab / gem mention enrichment: rewrite spans so
-  //      "Divine Orb" → "{{item:Divine Orb}}" before placeholder collection.
-  //      The downstream item-card flow then renders the same hover tooltip
-  //      + icon used by hand-authored {{item:…}} placeholders. Skips matches
-  //      that are already inside a `{{...}}` (negative lookbehind in the
-  //      regex) so author-curated tokens stay untouched.
-  const expandedBlocks = splitBlocks.map((b) => promoteInlineMentions(b));
+  // 0.5. Inline currency / scarab / fragment mention enrichment: rewrite spans
+  //      so "Divine Orb" → "{{item:Divine Orb}}" before placeholder
+  //      collection. The downstream item-card flow then renders the same
+  //      hover tooltip + icon used by hand-authored {{item:…}} placeholders.
+  //      The name list comes from the engine (every StackableCurrency +
+  //      MapFragment valid in temp league), falling back to a compiled-in
+  //      ~30-name list if the engine is unreachable.
+  const currencyNames = await fetchCurrencyNames();
+  const inlineRegex = buildInlineMentionRegex(currencyNames);
+  const expandedBlocks = splitBlocks.map((b) =>
+    promoteInlineMentions(b, inlineRegex),
+  );
 
   // 1. Collect every placeholder that needs a data fetch
   const priceNames = new Set<string>();
@@ -102,63 +108,37 @@ export async function resolveBlocks(
 // `{{item:Divine Orb}}` so the downstream resolver picks them up and
 // produces the same icon + hover tooltip as hand-authored placeholders.
 //
-// Coverage is intentionally a curated whitelist instead of "any title-case
-// phrase" — we want zero false positives in prose. Names match
-// case-insensitively; the resolver looks them up in the engine, which
-// itself is case-insensitive.
+// The name list is loaded dynamically from the engine
+// (`/api/items/currencies`) so it stays in sync with the Postgres catalog —
+// every Currency, scarab, and fragment valid in the active temp league
+// promotes automatically. Names match case-insensitively; the resolver
+// looks them up in the engine, which itself is case-insensitive.
 // ---------------------------------------------------------------------------
 
-const INLINE_ITEM_MENTIONS: string[] = [
-  // Currencies — most-mentioned first
-  'Mirror of Kalandra',
-  'Divine Orb',
-  'Exalted Orb',
-  'Chaos Orb',
-  'Awakened Sextant',
-  'Orb of Annulment',
-  'Orb of Alchemy',
-  'Orb of Fusing',
-  'Orb of Scouring',
-  'Orb of Regret',
-  'Orb of Chance',
-  'Vaal Orb',
-  'Regal Orb',
-  'Blessed Orb',
-  "Cartographer's Chisel",
-  "Gemcutter's Prism",
-  'Eternal Orb',
-  "Jeweller's Orb",
-  'Orb of Transmutation',
-  'Orb of Augmentation',
-  'Chromatic Orb',
-  'Hinekora\u2019s Lock',
-  "Hinekora's Lock",
-  'Mirror Shard',
-  'Exalted Shard',
-  'Ancient Orb',
-  'Harbinger\u2019s Orb',
-  'Veiled Chaos Orb',
-  // Fragments
-  'Sacrifice at Dawn',
-  'Sacrifice at Dusk',
-  'Sacrifice at Midnight',
-  'Sacrifice at Noon',
-  'Mortal Grief',
-  'Mortal Hope',
-  'Mortal Rage',
-  'Mortal Ignorance',
-];
-
-const INLINE_MENTION_REGEX = (() => {
-  // Sort longest-first so "Mirror of Kalandra" wins over partial overlaps.
-  const sorted = Array.from(new Set(INLINE_ITEM_MENTIONS)).sort((a, b) => b.length - a.length);
+/**
+ * Builds the rewrite regex from the currency-name list. Called once per
+ * `resolveBlocks` invocation so the list can be hot-swapped when the
+ * engine ingests new currencies. Sorted longest-first so multi-word names
+ * win over partial overlaps (e.g. "Mirror of Kalandra" before "Mirror
+ * Shard").
+ *
+ * Negative lookbehind blocks matches that already sit inside `{{kind:`
+ * (so `{{item:Divine Orb}}` and `{{price:Divine Orb}}` are left alone),
+ * and the trailing negative lookahead prevents partial matches inside
+ * existing placeholder modifiers.
+ */
+function buildInlineMentionRegex(names: readonly string[]): RegExp | null {
+  if (!names.length) return null;
+  const sorted = Array.from(new Set(names)).sort((a, b) => b.length - a.length);
   const escaped = sorted.map((s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
-  // Negative lookbehind blocks matches that already sit inside `{{kind:`
-  // (so `{{item:Divine Orb}}` and `{{price:Divine Orb}}` are left alone).
-  return new RegExp(`(?<!\\{\\{[a-z]+:)\\b(?:${escaped.join('|')})\\b(?![|}])`, 'gi');
-})();
+  return new RegExp(
+    `(?<!\\{\\{[a-z]+:)\\b(?:${escaped.join('|')})\\b(?![|}])`,
+    'gi',
+  );
+}
 
-function promoteInlineMentions(block: any): any {
+function promoteInlineMentions(block: any, regex: RegExp | null): any {
+  if (!regex) return block;
   if (!block || typeof block !== 'object' || block._type !== 'block') return block;
   if (!Array.isArray(block.children)) return block;
   const newChildren = block.children.map((c: any) => {
@@ -167,12 +147,12 @@ function promoteInlineMentions(block: any): any {
     // Skip spans that already carry marks — they came from Sanity with intent
     // (link, strong, etc.) and we shouldn't rewrite their text.
     if (Array.isArray(c.marks) && c.marks.length > 0) return c;
-    if (!INLINE_MENTION_REGEX.test(c.text)) {
-      INLINE_MENTION_REGEX.lastIndex = 0;
+    if (!regex.test(c.text)) {
+      regex.lastIndex = 0;
       return c;
     }
-    INLINE_MENTION_REGEX.lastIndex = 0;
-    const rewritten = c.text.replace(INLINE_MENTION_REGEX, (m: string) => `{{item:${m}}}`);
+    regex.lastIndex = 0;
+    const rewritten = c.text.replace(regex, (m: string) => `{{item:${m}}}`);
     return { ...c, text: rewritten };
   });
   return { ...block, children: newChildren };

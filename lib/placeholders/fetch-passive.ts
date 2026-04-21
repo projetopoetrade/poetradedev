@@ -56,12 +56,37 @@ export async function fetchPassiveRaw(name: string): Promise<PassiveRawData | nu
     if (!res.ok) return null;
     const data = (await res.json()) as PassiveRawData;
     if (!data?.rawText) return null;
-    return data;
+    return { ...data, iconUrl: rewriteLocalPassiveIcon(data.iconUrl) };
   } catch {
     return null;
   } finally {
     clearTimeout(timer);
   }
+}
+
+/**
+ * Rewrites passive-icon URLs whose host is `pathoftrade.net` to a path
+ * relative to the current origin. The production site hosts WebP icons at
+ * `public/images/passives/` and the engine returns absolute URLs pointing at
+ * that origin — but pathoftrade.net sits behind a Cloudflare bot challenge
+ * that 403s any request without a prior challenge-passed session cookie.
+ * Preview deploys (`preview-xxx.vercel.app`) don't carry that cookie, so
+ * server-to-server image optimisation AND browser `<img>` loads both fail.
+ *
+ * Rewriting to the same-origin path `/images/passives/<file>.webp` makes
+ * the browser load the icon from the deploy that's actually serving the
+ * page (which always ships the WebPs via `public/images/passives/`),
+ * bypassing Cloudflare entirely.
+ *
+ * Non-pathoftrade URLs and non-passive paths are returned unchanged.
+ */
+function rewriteLocalPassiveIcon(raw: string | null): string | null {
+  if (!raw) return raw;
+  const m = raw.match(
+    /^https?:\/\/(?:www\.)?pathoftrade\.net(\/images\/passives\/[^?#]+)$/i,
+  );
+  if (!m) return raw;
+  return m[1];
 }
 
 export async function fetchPassiveRawMany(
