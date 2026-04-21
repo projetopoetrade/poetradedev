@@ -168,6 +168,20 @@ export function GemTooltip({
           </div>
         )}
 
+        {parsed.statusFlags.length > 0 && (
+          <div className="pt-2 space-y-0.5">
+            {parsed.statusFlags.map((flag, i) => (
+              <p
+                key={i}
+                className="font-semibold tracking-wide leading-snug"
+                style={{ color: STATUS_RED }}
+              >
+                {flag}
+              </p>
+            ))}
+          </div>
+        )}
+
         {iconUrl && (
           <>
             <div className="flex items-center justify-center pt-2">
@@ -207,10 +221,14 @@ interface ParsedGem {
   description: string[];
   /** Footer block "Place into an item socket of the right colour..." */
   footerNote: string[];
+  /** Single-word status flags rendered red right before the icon. */
+  statusFlags: string[];
 }
 
 const QUALITY_HEADER = 'Additional Effects From Quality:';
 const SOCKET_FOOTER_PREFIX = 'Place into an item socket';
+const STATUS_FLAGS = new Set(['Corrupted', 'Mirrored', 'Replica', 'Split']);
+const STATUS_RED = '#d92020';
 
 const PROPERTY_KEYS = new Set([
   "level",
@@ -237,6 +255,7 @@ function parseGemRaw(rawText: string): ParsedGem {
     qualityBonus: [],
     description: [],
     footerNote: [],
+    statusFlags: [],
   };
   if (!rawText) return out;
 
@@ -248,6 +267,13 @@ function parseGemRaw(rawText: string): ParsedGem {
       .map((l) => l.trim())
       .filter(Boolean);
     if (!lines.length) continue;
+
+    // Single-word status flags ("Corrupted", "Mirrored", etc) — engine puts
+    // these in their own section at the very end. Render in red.
+    if (lines.every((l) => STATUS_FLAGS.has(l))) {
+      out.statusFlags.push(...lines);
+      continue;
+    }
 
     // Quality bonus block: starts with the engine's exact header line.
     if (lines[0] === QUALITY_HEADER) {

@@ -62,6 +62,15 @@ export default async function GemPreviewPage() {
     })),
   );
 
+  // Stage 1 — same gem, two modes side-by-side: range (default, no level)
+  // vs specific level=20+quality=20. Demonstrates how passing `?level=X`
+  // collapses ranges to resolved single values.
+  const compareName = "Penance Brand";
+  const [rangeData, levelData] = await Promise.all([
+    fetchItemRaw(compareName),
+    fetchItemRaw(compareName, { level: 20, quality: 20 }),
+  ]);
+
   const liveResolved = await resolveBlocks(LIVE_BODY, { locale: "en", league: "Mirage" });
 
   return (
@@ -115,10 +124,55 @@ export default async function GemPreviewPage() {
           </div>
         </section>
 
-        {/* Stage 1 — live blog flow with placeholders + inline prices */}
+        {/* Stage 1 — range vs specific level side-by-side */}
         <section className="space-y-4">
           <h2 className="text-2xl font-semibold border-b border-neutral-800 pb-2">
-            Stage 1 — Live blog flow
+            Stage 1 — Range vs specific level
+          </h2>
+          <p className="text-neutral-400 text-sm">
+            Default request (no <code>?level=</code>) renders properties as{" "}
+            <code>(min-max)</code> ranges, matching the in-game tooltip for an
+            unlevelled gem. Passing <code>?level=20&amp;quality=20</code>{" "}
+            resolves every range to a single value.
+          </p>
+          <div className="flex flex-wrap items-start gap-6 p-6 bg-neutral-900 rounded-lg">
+            {rangeData ? (
+              <div className="space-y-1">
+                <p className="text-xs text-neutral-500 uppercase tracking-wider">
+                  {compareName} — range mode (no level)
+                </p>
+                <GemTooltip
+                  name={rangeData.name}
+                  rawText={rangeData.rawText}
+                  iconUrl={rangeData.iconUrl}
+                  primaryAttribute={rangeData.gemInfo?.primaryAttribute ?? null}
+                  isAwakened={rangeData.gemInfo?.isAwakened ?? false}
+                  isVaal={rangeData.gemInfo?.isVaal ?? false}
+                />
+              </div>
+            ) : null}
+            {levelData ? (
+              <div className="space-y-1">
+                <p className="text-xs text-neutral-500 uppercase tracking-wider">
+                  {compareName} — level 20, +20% quality
+                </p>
+                <GemTooltip
+                  name={levelData.name}
+                  rawText={levelData.rawText}
+                  iconUrl={levelData.iconUrl}
+                  primaryAttribute={levelData.gemInfo?.primaryAttribute ?? null}
+                  isAwakened={levelData.gemInfo?.isAwakened ?? false}
+                  isVaal={levelData.gemInfo?.isVaal ?? false}
+                />
+              </div>
+            ) : null}
+          </div>
+        </section>
+
+        {/* Stage 2 — live blog flow with placeholders + inline prices */}
+        <section className="space-y-4">
+          <h2 className="text-2xl font-semibold border-b border-neutral-800 pb-2">
+            Stage 2 — Live blog flow
           </h2>
           <p className="text-neutral-400 text-sm">
             Real <code>{"{{item:Gem Name}}"}</code> placeholders. Inline prices
@@ -130,10 +184,10 @@ export default async function GemPreviewPage() {
           </article>
         </section>
 
-        {/* Stage 2 — debug */}
+        {/* Stage 3 — debug */}
         <section className="space-y-4">
           <h2 className="text-2xl font-semibold border-b border-neutral-800 pb-2">
-            Stage 2 — Debug
+            Stage 3 — Debug
           </h2>
           <pre className="text-xs bg-black rounded-lg p-4 overflow-auto max-h-96 font-mono">
             {JSON.stringify(liveResolved, null, 2)}
