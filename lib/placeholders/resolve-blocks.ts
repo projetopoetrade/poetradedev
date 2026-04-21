@@ -474,22 +474,27 @@ function resolveItem(ph: Placeholder, state: ResolveState): ResolvedFragment {
   }
 
   const text = data.name || ph.value;
-  // Currencies route to the centered-icon + description tooltip variant.
-  // Live prices stay inline via {{price:…}} placeholders (not duplicated
-  // in the tooltip) — keep the tooltip focused on what the item *is*.
+  // Items whose tooltip is just a one-liner description + icon (currencies,
+  // fragments, scarabs) route to the minimal CurrencyTooltip variant. Items
+  // with rich stat blocks (uniques, rares, gems) keep the rare-item tooltip.
   return {
     type: 'item',
     text,
     rawText: data.rawText,
     iconUrl: data.iconUrl ?? null,
-    isCurrency: isCurrencyClass(data.classId, data.rarity),
+    isCurrency: isMinimalTooltipItem(data.classId, data.rarity),
   };
 }
 
-function isCurrencyClass(classId: string | null, rarity: string | null): boolean {
+/**
+ * Items whose ItemTooltip would just show a header + bare requirements.
+ * Currencies, scarabs, and Sacrifice/Mortal fragments all share the same
+ * "right click to use" shape, so they all route to the same minimal layout.
+ */
+function isMinimalTooltipItem(classId: string | null, rarity: string | null): boolean {
   const c = (classId ?? '').toLowerCase();
   if (c.includes('currency')) return true;
-  // Engine returns rarity="Currency" too — extra safety.
+  if (c === 'mapfragment') return true; // scarabs + Sacrifice/Mortal fragments
   return (rarity ?? '').toLowerCase() === 'currency';
 }
 
