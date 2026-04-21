@@ -356,7 +356,6 @@ export const blockContentComponents: PortableTextComponents = {
             rawText: value.rawText,
             iconUrl: value.iconUrl,
             isCurrency: value.isCurrency ?? false,
-            priceInfo: value.priceInfo ?? null,
           }}
         />
       );

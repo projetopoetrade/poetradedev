@@ -380,7 +380,6 @@ function expandSpan(span: any, state: ResolveState, markDefs: any[]): any[] {
         iconUrl: resolved.iconUrl,
         itemName: resolved.text,
         isCurrency: resolved.isCurrency ?? false,
-        priceInfo: resolved.priceInfo ?? null,
       });
       out.push(makeSpan(resolved.text, [...originalMarks, itemKey], nextKey()));
     }
@@ -412,11 +411,6 @@ type ResolvedFragment =
       rawText: string;
       iconUrl: string | null;
       isCurrency?: boolean;
-      priceInfo?: {
-        chaosValue: number;
-        divineValue: number;
-        listingCount: number | null;
-      } | null;
     };
 
 function resolvePlaceholder(ph: Placeholder, state: ResolveState): ResolvedFragment {
@@ -480,24 +474,15 @@ function resolveItem(ph: Placeholder, state: ResolveState): ResolvedFragment {
   }
 
   const text = data.name || ph.value;
-  // Currencies get a tooltip variant that swaps the rare-item layout for
-  // a centered icon + price block. Price comes from the same state.prices
-  // map populated for {{price:…}} placeholders — for {{item:Divine Orb}} we
-  // pre-add the name to the price fetch list at collect time.
-  const priceEntry = state.prices[text.toLowerCase()];
+  // Currencies route to the centered-icon + description tooltip variant.
+  // Live prices stay inline via {{price:…}} placeholders (not duplicated
+  // in the tooltip) — keep the tooltip focused on what the item *is*.
   return {
     type: 'item',
     text,
     rawText: data.rawText,
     iconUrl: data.iconUrl ?? null,
     isCurrency: isCurrencyClass(data.classId, data.rarity),
-    priceInfo: priceEntry
-      ? {
-          chaosValue: priceEntry.chaos,
-          divineValue: priceEntry.divine,
-          listingCount: priceEntry.listingCount ?? null,
-        }
-      : null,
   };
 }
 

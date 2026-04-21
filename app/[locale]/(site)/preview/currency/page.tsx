@@ -66,7 +66,6 @@ const SEEDED_BODY: PortableTextBlock[] = [
         iconUrl: ICON_DIVINE,
         itemName: "Divine Orb",
         isCurrency: true,
-        priceInfo: { chaosValue: 312, divineValue: 1, listingCount: 39 },
       },
       {
         _key: "mirror",
@@ -75,7 +74,6 @@ const SEEDED_BODY: PortableTextBlock[] = [
         iconUrl: ICON_MIRROR,
         itemName: "Mirror of Kalandra",
         isCurrency: true,
-        priceInfo: { chaosValue: 368721, divineValue: 1182, listingCount: 13 },
       },
     ],
   },
@@ -166,19 +164,11 @@ export default async function CurrencyPreviewPage() {
               name="Divine Orb"
               description={DIVINE_ORB_RAW}
               iconUrl={ICON_DIVINE}
-              priceInfo={{ chaosValue: 312, divineValue: 1, listingCount: 39 }}
             />
             <CurrencyTooltip
               name="Mirror of Kalandra"
               description={MIRROR_RAW}
               iconUrl={ICON_MIRROR}
-              priceInfo={{ chaosValue: 368721, divineValue: 1182, listingCount: 13 }}
-            />
-            <CurrencyTooltip
-              name="Mirror of Kalandra (no price)"
-              description={MIRROR_RAW}
-              iconUrl={ICON_MIRROR}
-              priceInfo={null}
             />
           </div>
         </section>

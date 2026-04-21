@@ -17,12 +17,6 @@ export interface SanityPoeItem {
   iconUrl?: string | null;
   /** True when classId contains "currency" — switches the tooltip layout. */
   isCurrency?: boolean;
-  /** Live price snapshot, when available. Only present for currency items. */
-  priceInfo?: {
-    chaosValue: number;
-    divineValue: number;
-    listingCount: number | null;
-  } | null;
 }
 
 /**
@@ -90,14 +84,14 @@ export function PoeItemBlogCard({ value }: { value: SanityPoeItem }) {
   const colorHsl =
     RARITY_NAME_COLOR_HSL[item.rarity] ?? RARITY_NAME_COLOR_HSL.Normal;
 
-  // Currency tooltip swaps the rare-item layout for a centered icon + price
-  // block. Falls back to the regular ItemTooltip when isCurrency is false.
+  // Currency tooltip swaps the rare-item layout for a centered-icon +
+  // description block. Live prices are surfaced inline via the
+  // {{price:...}} placeholder, not duplicated here.
   const tooltipContent = value.isCurrency ? (
     <CurrencyTooltip
       name={item.name}
       description={value.rawText}
       iconUrl={iconUrl ?? null}
-      priceInfo={value.priceInfo ?? null}
     />
   ) : (
     <ItemTooltip item={item} compact={isMobile} />

@@ -2,40 +2,37 @@ import Image from "next/image";
 import { POE_COLORS } from "@/components/poe/poe-colors";
 
 /**
- * Tooltip variant for items where the rare-item stat layout doesn't apply
- * (currency, fragments, scarabs reduced to "right click to use" prose).
+ * Minimal tooltip variant for currency-class items, mirroring poe.ninja:
  *
- * Layout:
- *   ┌─ Name (header) ──────────┐
- *   │ Description text         │
- *   │      [centered icon]     │
- *   │ price · listings (optional)
- *   └──────────────────────────┘
+ *   ┌─ Name (tan, dark header) ──┐
+ *   │ Effect headline (blue)     │
+ *   │ Use instructions (grey)    │
+ *   │ ─── separator ───          │
+ *   │      [centered icon]       │
+ *   └────────────────────────────┘
  *
- * Inspired by maxroll.gg's currency tooltip — header reads as the item
- * name, body carries the in-game blurb, footer shows live market data.
+ * No price block — live prices belong inline in prose via the
+ * `{{price:Item|chaos}}` / `{{price:Item|divine}}` placeholders.
  */
 export interface CurrencyTooltipProps {
   name: string;
-  /** Raw clipboard rawText. Sections after the header become description. */
+  /** Engine clipboard rawText. Header / Stack Size / Requirements stripped. */
   description: string;
   iconUrl: string | null;
-  priceInfo?: {
-    chaosValue: number;
-    divineValue: number;
-    listingCount: number | null;
-  } | null;
 }
 
 export function CurrencyTooltip({
   name,
   description,
   iconUrl,
-  priceInfo,
 }: CurrencyTooltipProps) {
-  const lines = extractDescriptionLines(description);
-  const showPrice = priceInfo && (priceInfo.chaosValue > 0 || priceInfo.divineValue > 0);
+  const lines = extractDescriptionLines(description, name);
   const nameColor = `hsl(${POE_COLORS.rarity.Currency})`;
+  // Headline = first line of the in-game blurb (the "effect"). Renders
+  // in implicit-mod blue so it pops the same way it does in-game.
+  const headline = lines[0];
+  const detail = lines.slice(1);
+  const headlineColor = `hsl(${POE_COLORS.mod.normal})`;
 
   return (
     <div className="not-prose w-[min(360px,90vw)] overflow-hidden rounded shadow-xl bg-black/85 font-fontin text-[13px] leading-snug">
@@ -43,7 +40,8 @@ export function CurrencyTooltip({
       <div
         className="px-4 py-1.5 text-center border-b border-slate-700/60"
         style={{
-          background: "linear-gradient(to bottom, rgba(60,40,20,0.85), rgba(20,12,6,0.95))",
+          background:
+            "linear-gradient(to bottom, rgba(60,40,20,0.9), rgba(20,12,6,0.95))",
         }}
       >
         <p
@@ -54,54 +52,45 @@ export function CurrencyTooltip({
         </p>
       </div>
 
-      {/* Body — description + centered icon */}
-      <div className="px-4 py-3 flex flex-col items-center gap-3 text-center">
-        {lines.length > 0 && (
+      {/* Body */}
+      <div className="px-4 py-3 text-center space-y-2">
+        {headline && (
+          <p
+            className="leading-snug font-medium"
+            style={{ color: headlineColor }}
+          >
+            {headline}
+          </p>
+        )}
+        {detail.length > 0 && (
           <div className="space-y-1 text-slate-300">
-            {lines.map((line, i) => (
+            {detail.map((line, i) => (
               <p key={i} className="leading-snug">{line}</p>
             ))}
           </div>
         )}
         {iconUrl && (
-          <div className="relative w-[48px] h-[48px] mt-1">
-            <Image
-              src={iconUrl}
-              alt={name}
-              fill
-              sizes="48px"
-              unoptimized
-              className="object-contain"
-            />
-          </div>
+          <>
+            <div className="flex items-center justify-center pt-1">
+              <div className="flex-1 h-px bg-slate-600/50" />
+              <div className="w-1.5 h-1.5 rounded-full bg-slate-500 mx-2" />
+              <div className="flex-1 h-px bg-slate-600/50" />
+            </div>
+            <div className="flex justify-center pt-1">
+              <div className="relative w-[52px] h-[52px]">
+                <Image
+                  src={iconUrl}
+                  alt={name}
+                  fill
+                  sizes="52px"
+                  unoptimized
+                  className="object-contain"
+                />
+              </div>
+            </div>
+          </>
         )}
       </div>
-
-      {/* Footer — live price */}
-      {showPrice && (
-        <div className="px-4 py-2 border-t border-slate-700/60 bg-black/40 flex items-center justify-center gap-3 text-[12px] text-slate-300">
-          {priceInfo!.divineValue >= 1 && (
-            <span>
-              <span className="text-amber-300 font-semibold">
-                {formatDivine(priceInfo!.divineValue)}
-              </span>{" "}
-              div
-            </span>
-          )}
-          <span>
-            <span className="text-amber-300 font-semibold">
-              {formatChaos(priceInfo!.chaosValue)}
-            </span>{" "}
-            chaos
-          </span>
-          {priceInfo!.listingCount != null && priceInfo!.listingCount > 0 && (
-            <span className="text-slate-500">·</span>
-          )}
-          {priceInfo!.listingCount != null && priceInfo!.listingCount > 0 && (
-            <span className="text-slate-400">{priceInfo!.listingCount} listed</span>
-          )}
-        </div>
-      )}
     </div>
   );
 }
@@ -110,15 +99,11 @@ export function CurrencyTooltip({
 // Helpers
 // ---------------------------------------------------------------------------
 
-/**
- * Pulls the human-facing description out of the engine's clipboard rawText.
- * Skips the header (Rarity + name lines), Stack Size markers, and section
- * dividers; keeps the prose lines that explain how the item is used.
- */
-function extractDescriptionLines(rawText: string): string[] {
+function extractDescriptionLines(rawText: string, itemName: string): string[] {
   if (!rawText) return [];
   const sections = rawText.split(/\n-{3,}\n/);
-  const lines: string[] = [];
+  const out: string[] = [];
+  const nameLower = itemName.trim().toLowerCase();
   for (const section of sections) {
     for (const line of section.split("\n")) {
       const t = line.trim();
@@ -126,26 +111,11 @@ function extractDescriptionLines(rawText: string): string[] {
       if (t.startsWith("Rarity:")) continue;
       if (t.startsWith("Stack Size:")) continue;
       if (t.startsWith("Requirements:")) continue;
-      // Skip standalone "Level: 1" rows that come from the requirements block.
       if (/^(Level|Str|Dex|Int):\s*\d+/i.test(t)) continue;
-      // Skip the bare item name — that's already the header.
-      if (lines.length === 0 && /^[A-Z]/.test(t) && !/[.?!]$/.test(t) && t.split(" ").length < 6) {
-        // A short title-cased line at the very top is usually the item name.
-        continue;
-      }
-      lines.push(t);
+      // Drop lines that just repeat the item name (header echo).
+      if (t.toLowerCase() === nameLower) continue;
+      out.push(t);
     }
   }
-  // De-dup adjacent identical lines (rare but safe).
-  return lines.filter((l, i) => l !== lines[i - 1]);
-}
-
-function formatDivine(divine: number): string {
-  if (divine >= 100) return Math.round(divine).toLocaleString();
-  if (divine >= 10) return divine.toFixed(0);
-  return divine.toFixed(1);
-}
-
-function formatChaos(chaos: number): string {
-  return Math.round(chaos).toLocaleString();
+  return out.filter((l, i) => l !== out[i - 1]);
 }
