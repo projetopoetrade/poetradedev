@@ -18,17 +18,38 @@ export interface ItemRawData {
   baseName: string | null;
   rarity: string | null;
   classId: string | null;
+  /** Gem metadata — only present when the engine detects a skill gem. */
+  gemInfo?: {
+    primaryAttribute?: "Strength" | "Dexterity" | "Intelligence" | null;
+    isAwakened?: boolean;
+    isVaal?: boolean;
+    tags?: string[];
+  } | null;
+}
+
+export interface FetchItemOptions {
+  /** Skill gem level override (defaults to 20 on the engine). */
+  level?: number;
+  /** Skill gem quality override (defaults to 0 on the engine). */
+  quality?: number;
 }
 
 const REVALIDATE_SECONDS = 60 * 60; // 1h — item stat blocks barely change
 const REQUEST_TIMEOUT_MS = 3000;
 
-export async function fetchItemRaw(name: string): Promise<ItemRawData | null> {
+export async function fetchItemRaw(
+  name: string,
+  opts?: FetchItemOptions,
+): Promise<ItemRawData | null> {
   const engineBase = getEngineBase();
   if (!engineBase) return null;
 
-  // engineBase already includes the `/items` segment — don't double it here.
-  const url = `${engineBase}/${encodeURIComponent(name)}/raw`;
+  const qs = new URLSearchParams();
+  if (typeof opts?.level === "number") qs.set("level", String(opts.level));
+  if (typeof opts?.quality === "number") qs.set("quality", String(opts.quality));
+  const suffix = qs.toString() ? `?${qs.toString()}` : "";
+  const url = `${engineBase}/${encodeURIComponent(name)}/raw${suffix}`;
+
   const ac = new AbortController();
   const timer = setTimeout(() => ac.abort(), REQUEST_TIMEOUT_MS);
   try {

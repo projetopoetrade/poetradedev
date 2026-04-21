@@ -380,6 +380,10 @@ function expandSpan(span: any, state: ResolveState, markDefs: any[]): any[] {
         iconUrl: resolved.iconUrl,
         itemName: resolved.text,
         isCurrency: resolved.isCurrency ?? false,
+        isGem: resolved.isGem ?? false,
+        primaryAttribute: resolved.primaryAttribute ?? null,
+        isAwakened: resolved.isAwakened ?? false,
+        isVaal: resolved.isVaal ?? false,
       });
       out.push(makeSpan(resolved.text, [...originalMarks, itemKey], nextKey()));
     }
@@ -411,6 +415,10 @@ type ResolvedFragment =
       rawText: string;
       iconUrl: string | null;
       isCurrency?: boolean;
+      isGem?: boolean;
+      primaryAttribute?: 'Strength' | 'Dexterity' | 'Intelligence' | null;
+      isAwakened?: boolean;
+      isVaal?: boolean;
     };
 
 function resolvePlaceholder(ph: Placeholder, state: ResolveState): ResolvedFragment {
@@ -475,15 +483,25 @@ function resolveItem(ph: Placeholder, state: ResolveState): ResolvedFragment {
 
   const text = data.name || ph.value;
   // Items whose tooltip is just a one-liner description + icon (currencies,
-  // fragments, scarabs) route to the minimal CurrencyTooltip variant. Items
-  // with rich stat blocks (uniques, rares, gems) keep the rare-item tooltip.
+  // fragments, scarabs) route to the minimal CurrencyTooltip variant. Skill
+  // gems get a dedicated GemTooltip with header colour by attribute. Items
+  // with rich stat blocks (uniques, rares) keep the rare-item tooltip.
   return {
     type: 'item',
     text,
     rawText: data.rawText,
     iconUrl: data.iconUrl ?? null,
     isCurrency: isMinimalTooltipItem(data.classId, data.rarity),
+    isGem: isGemClass(data.classId),
+    primaryAttribute: data.gemInfo?.primaryAttribute ?? null,
+    isAwakened: data.gemInfo?.isAwakened ?? false,
+    isVaal: data.gemInfo?.isVaal ?? false,
   };
+}
+
+function isGemClass(classId: string | null): boolean {
+  const c = (classId ?? '').toLowerCase();
+  return c === 'active skill gem' || c === 'support skill gem';
 }
 
 /**

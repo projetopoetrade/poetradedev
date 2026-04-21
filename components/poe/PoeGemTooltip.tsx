@@ -1,0 +1,266 @@
+import Image from "next/image";
+
+/**
+ * Tooltip variant for skill gems, mirroring the in-game layout:
+ *
+ *   ┌─ Name (cyan / green / red by attr) ──┐
+ *   │ TAGS, IN, SMALL, CAPS                │
+ *   │ Level: 20                            │
+ *   │ Cost: 41 Mana                        │
+ *   │ Cast Time: 0.80 sec                  │
+ *   │ ...                                  │
+ *   │ Requires Level 70, Int 155            │
+ *   │ Description text in light blue       │
+ *   │ Stat lines in light blue             │
+ *   │ ─── separator ───                    │
+ *   │      [centered gem icon]             │
+ *   └──────────────────────────────────────┘
+ *
+ * Cores baseadas no in-game:
+ *   Strength → red, Dexterity → green, Intelligence → cyan
+ *   Awakened/Vaal/Support → distinct shades
+ */
+export interface GemTooltipProps {
+  name: string;
+  /** Engine clipboard rawText. Parsed into sections by the helper below. */
+  rawText: string;
+  iconUrl: string | null;
+  /** Optional override — when present overrides the inferred attribute color. */
+  primaryAttribute?: "Strength" | "Dexterity" | "Intelligence" | null;
+  /** True for awakened gems → adds the unique gold tint. */
+  isAwakened?: boolean;
+  /** True for vaal gems → green-tinted header. */
+  isVaal?: boolean;
+}
+
+const ATTR_HEADER_COLOR: Record<string, string> = {
+  Strength: "#e87474",
+  Dexterity: "#7ce074",
+  Intelligence: "#7ec3ff",
+};
+
+const DEFAULT_HEADER_COLOR = "#7ec3ff";
+const TAG_COLOR = "#c8a35a";
+const PROP_LABEL_COLOR = "#9c8559";
+const VALUE_COLOR = "#ffffff";
+const STAT_COLOR = "#7ec3ff";
+const REQUIRED_COLOR = "#9c8559";
+
+export function GemTooltip({
+  name,
+  rawText,
+  iconUrl,
+  primaryAttribute,
+  isAwakened,
+  isVaal,
+}: GemTooltipProps) {
+  const parsed = parseGemRaw(rawText);
+  const headerColor = isAwakened
+    ? "#cf996a"
+    : isVaal
+      ? "#7ce074"
+      : (primaryAttribute && ATTR_HEADER_COLOR[primaryAttribute]) ||
+        DEFAULT_HEADER_COLOR;
+
+  return (
+    <div className="not-prose w-[min(420px,92vw)] overflow-hidden rounded shadow-xl bg-black/85 font-fontin text-[13px] leading-snug">
+      {/* Header */}
+      <div
+        className="px-4 py-1.5 text-center border-b border-slate-700/60"
+        style={{
+          background:
+            "linear-gradient(to bottom, rgba(20,30,40,0.9), rgba(8,14,22,0.95))",
+        }}
+      >
+        <p
+          className="font-semibold tracking-wide text-[15px]"
+          style={{ color: headerColor }}
+        >
+          {name}
+        </p>
+      </div>
+
+      <div className="px-4 py-3 text-center space-y-2">
+        {parsed.tags && (
+          <p
+            className="uppercase tracking-wider text-[11px]"
+            style={{ color: TAG_COLOR }}
+          >
+            {parsed.tags}
+          </p>
+        )}
+
+        {parsed.properties.length > 0 && (
+          <div className="space-y-0.5 pt-1">
+            {parsed.properties.map((line, i) => {
+              const m = line.match(/^([^:]+):\s*(.*)$/);
+              if (!m) {
+                return (
+                  <p key={i} style={{ color: VALUE_COLOR }}>
+                    {line}
+                  </p>
+                );
+              }
+              return (
+                <p key={i}>
+                  <span style={{ color: PROP_LABEL_COLOR }}>{m[1]}: </span>
+                  <span style={{ color: VALUE_COLOR }}>{m[2]}</span>
+                </p>
+              );
+            })}
+          </div>
+        )}
+
+        {parsed.requirements && (
+          <p
+            className="pt-1"
+            style={{ color: REQUIRED_COLOR }}
+          >
+            {parsed.requirements}
+          </p>
+        )}
+
+        {parsed.statLines.length > 0 && (
+          <div className="space-y-0.5 pt-2 border-t border-slate-700/40">
+            {parsed.statLines.map((line, i) => (
+              <p key={i} style={{ color: STAT_COLOR }} className="leading-snug">
+                {line}
+              </p>
+            ))}
+          </div>
+        )}
+
+        {parsed.description.length > 0 && (
+          <div className="space-y-1 pt-1 italic text-slate-400">
+            {parsed.description.map((line, i) => (
+              <p key={i} className="leading-snug">{line}</p>
+            ))}
+          </div>
+        )}
+
+        {iconUrl && (
+          <>
+            <div className="flex items-center justify-center pt-2">
+              <div className="flex-1 h-px bg-slate-600/50" />
+              <div className="w-1.5 h-1.5 rounded-full bg-slate-500 mx-2" />
+              <div className="flex-1 h-px bg-slate-600/50" />
+            </div>
+            <div className="flex justify-center pt-1">
+              <div className="relative w-[56px] h-[56px]">
+                <Image
+                  src={iconUrl}
+                  alt={name}
+                  fill
+                  sizes="56px"
+                  unoptimized
+                  className="object-contain"
+                />
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Raw parser — extracts the gem-shaped sections out of the engine rawText
+// ---------------------------------------------------------------------------
+
+interface ParsedGem {
+  tags: string | null;
+  properties: string[];
+  requirements: string | null;
+  statLines: string[];
+  description: string[];
+}
+
+const PROPERTY_KEYS = new Set([
+  "level",
+  "quality",
+  "mana cost",
+  "mana reserved",
+  "life cost",
+  "cast time",
+  "attack time",
+  "critical strike chance",
+  "effectiveness of added damage",
+  "damage multiplier",
+  "radius",
+  "duration",
+  "cooldown time",
+]);
+
+function parseGemRaw(rawText: string): ParsedGem {
+  const out: ParsedGem = {
+    tags: null,
+    properties: [],
+    requirements: null,
+    statLines: [],
+    description: [],
+  };
+  if (!rawText) return out;
+
+  const sections = rawText.split(/\n-{3,}\n/);
+  // sections[0] = header (Rarity + name) — skip
+  for (let i = 1; i < sections.length; i++) {
+    const lines = sections[i]
+      .split("\n")
+      .map((l) => l.trim())
+      .filter(Boolean);
+    if (!lines.length) continue;
+
+    // Tag section: a single line of comma-separated capitalised words,
+    // typically like "Spell, AoE, Fire, Duration".
+    if (
+      lines.length === 1 &&
+      lines[0].includes(",") &&
+      !/[A-Z]\w+:\s/.test(lines[0])
+    ) {
+      out.tags = lines[0];
+      continue;
+    }
+
+    // Requirements block: starts with "Requirements:" header, followed by lines
+    if (lines[0] === "Requirements:") {
+      const reqs: string[] = [];
+      if (lines.length > 1) {
+        for (const l of lines.slice(1)) {
+          const m = l.match(/^(\w+):\s*(.+)$/);
+          if (m) reqs.push(`${m[2]} ${m[1]}`);
+        }
+      }
+      out.requirements =
+        reqs.length > 0 ? `Requires ${reqs.join(", ")}` : "Requirements:";
+      continue;
+    }
+
+    // Property section: every line matches `Label: value` and the label
+    // is one of the known gem properties.
+    const isPropSection =
+      lines.length > 0 &&
+      lines.every((l) => {
+        const m = l.match(/^([^:]+):/);
+        return m && PROPERTY_KEYS.has(m[1].trim().toLowerCase());
+      });
+    if (isPropSection) {
+      out.properties.push(...lines);
+      continue;
+    }
+
+    // Description vs stat lines: simple heuristic — lines without a leading
+    // number tend to be description prose; the rest is in-engine stat text.
+    // The engine ordering is: skill stats first, then description last.
+    const looksLikeStats = lines.some((l) =>
+      /^(Deals|Adds|\d|\+|-|Causes|Has|Increases|Reduces|Activates|Recovers)/i.test(l),
+    );
+    if (looksLikeStats && out.statLines.length === 0) {
+      out.statLines.push(...lines);
+    } else {
+      out.description.push(...lines);
+    }
+  }
+
+  return out;
+}

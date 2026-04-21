@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { SmartTooltip } from "@/components/ui/smart-tooltip";
 import { ItemTooltip } from "@/components/poe/PoeItemTooltip";
 import { CurrencyTooltip } from "@/components/poe/PoeCurrencyTooltip";
+import { GemTooltip } from "@/components/poe/PoeGemTooltip";
 import { RARITY_NAME_COLOR_HSL } from "@/components/poe/poe-colors";
 import { parseRawPoeItem } from "@/lib/poe-item-parser";
 import { getEffectiveItemIconUrl } from "@/components/poe/poe-icon-utils";
@@ -15,8 +16,16 @@ export interface SanityPoeItem {
   _type: "poeItem";
   rawText: string;
   iconUrl?: string | null;
-  /** True when classId contains "currency" — switches the tooltip layout. */
+  /** True when classId contains "currency" or "MapFragment" — minimal tooltip. */
   isCurrency?: boolean;
+  /** True when classId is "Active Skill Gem" / "Support Skill Gem". */
+  isGem?: boolean;
+  /** Primary attribute for gem header colour. */
+  primaryAttribute?: "Strength" | "Dexterity" | "Intelligence" | null;
+  /** Awakened gem flag (gold tint). */
+  isAwakened?: boolean;
+  /** Vaal gem flag (green tint). */
+  isVaal?: boolean;
 }
 
 /**
@@ -84,10 +93,20 @@ export function PoeItemBlogCard({ value }: { value: SanityPoeItem }) {
   const colorHsl =
     RARITY_NAME_COLOR_HSL[item.rarity] ?? RARITY_NAME_COLOR_HSL.Normal;
 
-  // Currency tooltip swaps the rare-item layout for a centered-icon +
-  // description block. Live prices are surfaced inline via the
-  // {{price:...}} placeholder, not duplicated here.
-  const tooltipContent = value.isCurrency ? (
+  // Pick the right tooltip variant for this item class:
+  //   - Gems → in-game gem layout (header by attribute, tags, properties, stats)
+  //   - Currencies / fragments / scarabs → minimal (description + centered icon)
+  //   - Everything else (uniques, rares) → ItemTooltip rare-item layout
+  const tooltipContent = value.isGem ? (
+    <GemTooltip
+      name={item.name}
+      rawText={value.rawText}
+      iconUrl={iconUrl ?? null}
+      primaryAttribute={value.primaryAttribute ?? null}
+      isAwakened={value.isAwakened}
+      isVaal={value.isVaal}
+    />
+  ) : value.isCurrency ? (
     <CurrencyTooltip
       name={item.name}
       description={value.rawText}

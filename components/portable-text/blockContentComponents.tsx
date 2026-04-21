@@ -356,6 +356,10 @@ export const blockContentComponents: PortableTextComponents = {
             rawText: value.rawText,
             iconUrl: value.iconUrl,
             isCurrency: value.isCurrency ?? false,
+            isGem: value.isGem ?? false,
+            primaryAttribute: value.primaryAttribute ?? null,
+            isAwakened: value.isAwakened ?? false,
+            isVaal: value.isVaal ?? false,
           }}
         />
       );
