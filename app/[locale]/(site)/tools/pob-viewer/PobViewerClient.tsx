@@ -7,10 +7,20 @@ import { useRouter, useSearchParams } from "next/navigation";
 import {
   Loader2,
   Sword,
+  Shield,
+  Shirt,
+  HardHat,
+  Footprints,
+  Hand,
+  Gem,
+  CircleDashed,
+  FlaskConical,
+  Diamond,
   ClipboardCopy,
   Check,
   ExternalLink,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -884,10 +894,48 @@ const FLASK_SLOTS = [
 
 // ─── Slot card ────────────────────────────────────────────────────────────────
 
-function EmptySlot({ label }: { label: string }) {
+/**
+ * Silhouette icon per slot type. Mirrors what in-game inventory + popular
+ * build tools show: a helm icon in an empty helm socket, boots in an empty
+ * boots socket, etc. Lucide's outline style stays cohesive with the rest
+ * of the UI. Used both when the slot has no item AND as a fallback when the
+ * item exists but its icon URL failed to resolve (missing Item.iconUrl in
+ * the engine, 404, etc.) so the user always sees SOMETHING useful.
+ */
+const SLOT_PLACEHOLDER_ICON: Record<string, LucideIcon> = {
+  "Helmet": HardHat,
+  "Helm": HardHat,
+  "Body Armour": Shirt,
+  "Chest": Shirt,
+  "Gloves": Hand,
+  "Boots": Footprints,
+  "Belt": CircleDashed,
+  "Amulet": Gem,
+  "Ring 1": CircleDashed,
+  "Ring 2": CircleDashed,
+  "Weapon 1": Sword,
+  "Weapon 2": Shield,
+  "Weapon 1 Swap": Sword,
+  "Weapon 2 Swap": Shield,
+  "Offhand": Shield,
+  "Offhand 2": Shield,
+  "Flask 1": FlaskConical,
+  "Flask 2": FlaskConical,
+  "Flask 3": FlaskConical,
+  "Flask 4": FlaskConical,
+  "Flask 5": FlaskConical,
+};
+
+function slotPlaceholder(slotName: string): LucideIcon {
+  return SLOT_PLACEHOLDER_ICON[slotName] ?? Diamond;
+}
+
+function EmptySlot({ label, slotName }: { label: string; slotName: string }) {
+  const Icon = slotPlaceholder(slotName);
   return (
-    <div className="w-full h-full bg-[#161a20] border border-[#2b313d] rounded flex flex-col items-center justify-center opacity-70 group cursor-not-allowed">
-      <span className="text-[10px] text-slate-600 font-medium opacity-50 text-center max-w-full px-1">
+    <div className="w-full h-full bg-[#161a20] border border-[#2b313d] rounded flex flex-col items-center justify-center opacity-60 group cursor-not-allowed gap-1">
+      <Icon className="h-6 w-6 text-slate-600" strokeWidth={1.5} />
+      <span className="text-[9px] text-slate-600 font-medium opacity-60 text-center max-w-full px-1 uppercase tracking-wider">
         {label}
       </span>
     </div>
@@ -903,12 +951,18 @@ function ItemSlotCard({
   slotName: string;
   isMobile?: boolean;
 }) {
-  if (!item) return <EmptySlot label={SLOT_LABEL[slotName] ?? slotName} />;
+  if (!item) return <EmptySlot label={SLOT_LABEL[slotName] ?? slotName} slotName={slotName} />;
 
   const borderColorHsl =
     RARITY_BORDER_HSL[item.rarity] ?? RARITY_BORDER_HSL.Normal;
   const isCorruptedUnique = item.corrupted && item.rarity === "Unique";
   const effectiveIconUrl = getEffectiveItemIconUrl(item);
+  // When the item exists but its icon URL couldn't be resolved (rare
+  // without a Item.iconUrl backfill, 404 on the CDN, etc.) we fall back to
+  // the same slot-silhouette the empty slot uses. Keeps the grid visually
+  // consistent — every cell has a glyph — while the border rarity colour
+  // signals "there IS an item here, just missing its icon".
+  const FallbackIcon = slotPlaceholder(slotName);
 
   const trigger = (
     <button
@@ -931,13 +985,11 @@ function ItemSlotCard({
           />
         </div>
       ) : (
-        <div className="flex items-center justify-center w-full h-full">
-          <div
-            className="w-4 h-4 rounded-sm"
-            style={{
-              backgroundColor: `hsla(${borderColorHsl}, 0.4)`,
-              transform: "rotate(45deg)",
-            }}
+        <div className="flex items-center justify-center w-full h-full opacity-75">
+          <FallbackIcon
+            className="h-7 w-7"
+            style={{ color: `hsla(${borderColorHsl}, 0.8)` }}
+            strokeWidth={1.5}
           />
         </div>
       )}
@@ -1090,6 +1142,11 @@ function JewelSlotCard({
   const borderHsl = jewel.isCluster
     ? "270, 60%, 55%"
     : (RARITY_BORDER_HSL[jewel.rarity] ?? RARITY_BORDER_HSL.Normal);
+  // If `onError` ends up hiding the `<Image>` (missing file, 404, …) we
+  // swap to a Lucide diamond silhouette coloured by rarity so the slot
+  // never renders as a bare box. Mirrors the ItemSlotCard placeholder
+  // treatment for consistency.
+  const [iconFailed, setIconFailed] = useState(false);
 
   const trigger = (
     <button
@@ -1100,19 +1157,27 @@ function JewelSlotCard({
         boxShadow: "inset 0 0 15px rgba(0,0,0,0.5)",
       }}
     >
-      <div className="flex items-center justify-center p-0.5">
-        <Image
-          src={iconUrl}
-          alt={displayName}
-          width={48}
-          height={48}
-          className="object-contain drop-shadow-[0_0_8px_rgba(0,0,0,0.8)]"
-          unoptimized
-          onError={(e) => {
-            e.currentTarget.style.display = "none";
-          }}
-        />
-      </div>
+      {iconFailed ? (
+        <div className="flex items-center justify-center opacity-75">
+          <Diamond
+            className="h-7 w-7"
+            style={{ color: `hsla(${borderHsl}, 0.8)` }}
+            strokeWidth={1.5}
+          />
+        </div>
+      ) : (
+        <div className="flex items-center justify-center p-0.5">
+          <Image
+            src={iconUrl}
+            alt={displayName}
+            width={48}
+            height={48}
+            className="object-contain drop-shadow-[0_0_8px_rgba(0,0,0,0.8)]"
+            unoptimized
+            onError={() => setIconFailed(true)}
+          />
+        </div>
+      )}
     </button>
   );
 
