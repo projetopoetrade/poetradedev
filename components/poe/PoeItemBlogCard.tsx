@@ -93,6 +93,27 @@ export function PoeItemBlogCard({ value }: { value: SanityPoeItem }) {
   const colorHsl =
     RARITY_NAME_COLOR_HSL[item.rarity] ?? RARITY_NAME_COLOR_HSL.Normal;
 
+  // Gem name in inline prose is coloured by the gem's primary attribute
+  // — same rules the GemTooltip header uses so citations like
+  // `{{item:Vaal Lightning Strike}}` / `{{item:Energy Leech Support}}`
+  // match their tooltip header at a glance. Overrides `colorHsl` only
+  // when the item is a gem; uniques/rares/etc keep the rarity colour.
+  //
+  // Priority: Awakened gold > Vaal green > primaryAttribute > default cyan.
+  const gemNameColor = value.isGem
+    ? (value.isAwakened
+        ? "#cf996a"          // Awakened gold
+        : value.isVaal
+          ? "#7ce074"        // Vaal green
+          : value.primaryAttribute === "Strength"
+            ? "#e87474"      // Str red
+            : value.primaryAttribute === "Dexterity"
+              ? "#7ce074"    // Dex green
+              : value.primaryAttribute === "Intelligence"
+                ? "#7ec3ff"  // Int cyan
+                : "#7ec3ff") // unknown attr → cyan (matches tooltip default)
+    : null;
+
   // Pick the right tooltip variant for this item class:
   //   - Gems → in-game gem layout (header by attribute, tags, properties, stats)
   //   - Currencies / fragments / scarabs → minimal (description + centered icon)
@@ -164,7 +185,7 @@ export function PoeItemBlogCard({ value }: { value: SanityPoeItem }) {
           )}
           <span
             className="font-semibold"
-            style={{ color: `hsl(${colorHsl})` }}
+            style={{ color: gemNameColor ?? `hsl(${colorHsl})` }}
           >
             {item.name}
           </span>
