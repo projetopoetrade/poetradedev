@@ -28,11 +28,9 @@ export function CurrencyTooltip({
 }: CurrencyTooltipProps) {
   const lines = extractDescriptionLines(description, name);
   const nameColor = `hsl(${POE_COLORS.rarity.Currency})`;
-  // Headline = first line of the in-game blurb (the "effect"). Renders
-  // in implicit-mod blue so it pops the same way it does in-game.
-  const headline = lines[0];
-  const detail = lines.slice(1);
-  const headlineColor = `hsl(${POE_COLORS.mod.normal})`;
+  // All description lines render in implicit-mod blue, matching the
+  // in-game tooltip for currencies and scarabs.
+  const lineColor = `hsl(${POE_COLORS.mod.normal})`;
 
   return (
     <div className="not-prose w-[min(360px,90vw)] overflow-hidden rounded shadow-xl bg-black/85 font-fontin text-[13px] leading-snug">
@@ -54,18 +52,12 @@ export function CurrencyTooltip({
 
       {/* Body */}
       <div className="px-4 py-3 text-center space-y-2">
-        {headline && (
-          <p
-            className="leading-snug font-medium"
-            style={{ color: headlineColor }}
-          >
-            {headline}
-          </p>
-        )}
-        {detail.length > 0 && (
-          <div className="space-y-1 text-slate-300">
-            {detail.map((line, i) => (
-              <p key={i} className="leading-snug">{line}</p>
+        {lines.length > 0 && (
+          <div className="space-y-1">
+            {lines.map((line, i) => (
+              <p key={i} className="leading-snug" style={{ color: lineColor }}>
+                {line}
+              </p>
             ))}
           </div>
         )}
