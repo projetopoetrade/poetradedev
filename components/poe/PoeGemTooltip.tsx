@@ -123,7 +123,7 @@ export function GemTooltip({
         {parsed.description.length > 0 && (
           <div className="space-y-1 pt-2 border-t border-slate-700/40">
             {parsed.description.map((line, i) => (
-              <p key={i} style={{ color: STAT_COLOR }} className="leading-snug">
+              <p key={i} style={{ color: headerColor }} className="leading-snug">
                 {line}
               </p>
             ))}
