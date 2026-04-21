@@ -349,11 +349,41 @@ function getGemLocalPath(name: string, isSupport: boolean): string {
   return `/images/gem/skill/${kebab}.webp`;
 }
 
+/**
+ * Known jewel bases we ship as WebP in `/public/images/jewel/`. The regex
+ * catches the base inside longer rare names (e.g. "Surging Cobalt Jewel
+ * of Intelligence" → "Cobalt Jewel") since PoB's parser sometimes hands
+ * us the full affixed name as `name` or `baseName` depending on the
+ * source. Order-preserving iteration makes sure "Cluster Jewel" wins over
+ * "Jewel" for cluster bases.
+ */
+const JEWEL_BASE_PATTERNS: Array<{ re: RegExp; slug: string }> = [
+  { re: /small cluster jewel/i, slug: "small-cluster-jewel" },
+  { re: /medium cluster jewel/i, slug: "medium-cluster-jewel" },
+  { re: /large cluster jewel/i, slug: "large-cluster-jewel" },
+  { re: /ghastly eye jewel/i, slug: "ghastly-eye-jewel" },
+  { re: /hypnotic eye jewel/i, slug: "hypnotic-eye-jewel" },
+  { re: /murderous eye jewel/i, slug: "murderous-eye-jewel" },
+  { re: /searching eye jewel/i, slug: "searching-eye-jewel" },
+  { re: /cobalt jewel/i, slug: "cobalt-jewel" },
+  { re: /crimson jewel/i, slug: "crimson-jewel" },
+  { re: /viridian jewel/i, slug: "viridian-jewel" },
+  { re: /prismatic jewel/i, slug: "prismatic-jewel" },
+];
+
 function getJewelLocalPath(name: string): string {
-  // Check map first
+  // Exact-match map first — unique jewels override the regex fallback.
   if (GEM_JEWEL_IMAGE_MAP[name]) {
     return GEM_JEWEL_IMAGE_MAP[name];
   }
+  // Regex scan catches rare jewels where PoB gave us the full affixed name
+  // (e.g. "Surging Cobalt Jewel of Intelligence") instead of the base type.
+  // We scan across both the name and basename strings the caller passed in.
+  for (const { re, slug } of JEWEL_BASE_PATTERNS) {
+    if (re.test(name)) return `/images/jewel/${slug}.webp`;
+  }
+  // Final fallback: kebab the name directly. Works for bases whose name
+  // IS already the base (e.g. "Cobalt Jewel" → "cobalt-jewel.webp").
   return `/images/jewel/${toKebab(name)}.webp`;
 }
 
@@ -956,12 +986,41 @@ function ItemSlotCard({
   const borderColorHsl =
     RARITY_BORDER_HSL[item.rarity] ?? RARITY_BORDER_HSL.Normal;
   const isCorruptedUnique = item.corrupted && item.rarity === "Unique";
-  const effectiveIconUrl = getEffectiveItemIconUrl(item);
-  // When the item exists but its icon URL couldn't be resolved (rare
-  // without a Item.iconUrl backfill, 404 on the CDN, etc.) we fall back to
-  // the same slot-silhouette the empty slot uses. Keeps the grid visually
-  // consistent — every cell has a glyph — while the border rarity colour
-  // signals "there IS an item here, just missing its icon".
+  const parserIconUrl = getEffectiveItemIconUrl(item);
+
+  // Server-side lookup fallback: rare items never carry an iconUrl from the
+  // PoB export and the engine only populates `Item.iconUrl` for bases that
+  // the poe.ninja snapshot has touched. When the parser gives us nothing,
+  // we hit `/api/poe/item-icon?name=…&baseName=…` (same endpoint
+  // PoeItemBlogCard uses) which asks poe.ninja's BaseType / Unique
+  // catalogues. The result caches in state for the lifetime of the page,
+  // so scrolling doesn't re-hit the API.
+  const [fetchedIconUrl, setFetchedIconUrl] = useState<string | undefined>(undefined);
+  useEffect(() => {
+    if (parserIconUrl || !item) {
+      setFetchedIconUrl(undefined);
+      return;
+    }
+    let cancelled = false;
+    const params = new URLSearchParams({
+      name: item.name,
+      ...(item.baseName ? { baseName: item.baseName } : {}),
+    });
+    fetch(`/api/poe/item-icon?${params.toString()}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (!cancelled && data?.iconUrl) setFetchedIconUrl(data.iconUrl as string);
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [item?.name, item?.baseName, parserIconUrl]);
+
+  const effectiveIconUrl = parserIconUrl ?? fetchedIconUrl;
+  // When the item exists but no icon URL resolved (rare with no ninja
+  // base hit, CDN 404, etc.) we fall back to the same slot-silhouette
+  // the empty slot uses. Keeps the grid visually consistent — every
+  // cell has a glyph — while the border rarity colour signals "there
+  // IS an item here, just missing its icon".
   const FallbackIcon = slotPlaceholder(slotName);
 
   const trigger = (
@@ -1137,8 +1196,15 @@ function JewelSlotCard({
 }) {
   const displayName =
     jewel.name === "New Item" ? (jewel.baseName ?? jewel.name) : jewel.name;
-  const iconUrl =
-    jewel.iconUrl ?? getJewelLocalPath(jewel.baseName ?? jewel.name);
+  // `getJewelLocalPath` reads both jewel.baseName AND jewel.name via
+  // its regex fallback (JEWEL_BASE_PATTERNS) — so even a rare named
+  // "Surging Cobalt Jewel of Intelligence" resolves to the Cobalt Jewel
+  // base WebP. Passing both strings joined with a space gives the regex
+  // a single place to match the base type regardless of whether the
+  // parser put it in `name` or `baseName`.
+  const searchString = `${jewel.name ?? ""} ${jewel.baseName ?? ""}`;
+  const parserIconUrl =
+    jewel.iconUrl ?? getJewelLocalPath(searchString);
   const borderHsl = jewel.isCluster
     ? "270, 60%, 55%"
     : (RARITY_BORDER_HSL[jewel.rarity] ?? RARITY_BORDER_HSL.Normal);
@@ -1147,6 +1213,30 @@ function JewelSlotCard({
   // never renders as a bare box. Mirrors the ItemSlotCard placeholder
   // treatment for consistency.
   const [iconFailed, setIconFailed] = useState(false);
+  // Second-chance fetch: when the local path 404s (e.g. a rare jewel
+  // base we don't ship — Timeless, Megalomaniac, etc.) ask poe.ninja
+  // via the shared item-icon route before giving up on the glyph.
+  const [fetchedIconUrl, setFetchedIconUrl] = useState<string | undefined>(undefined);
+  useEffect(() => {
+    if (!iconFailed) {
+      setFetchedIconUrl(undefined);
+      return;
+    }
+    let cancelled = false;
+    const params = new URLSearchParams({
+      name: jewel.name,
+      ...(jewel.baseName ? { baseName: jewel.baseName } : {}),
+    });
+    fetch(`/api/poe/item-icon?${params.toString()}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (!cancelled && data?.iconUrl) setFetchedIconUrl(data.iconUrl as string);
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [iconFailed, jewel.name, jewel.baseName]);
+
+  const iconUrl = fetchedIconUrl ?? parserIconUrl;
 
   const trigger = (
     <button
@@ -1157,7 +1247,10 @@ function JewelSlotCard({
         boxShadow: "inset 0 0 15px rgba(0,0,0,0.5)",
       }}
     >
-      {iconFailed ? (
+      {iconFailed && !fetchedIconUrl ? (
+        // Local WebP failed AND the poe.ninja fallback also returned
+        // nothing — paint the rarity-tinted silhouette so the slot still
+        // reads as "there's a jewel here, icon unavailable".
         <div className="flex items-center justify-center opacity-75">
           <Diamond
             className="h-7 w-7"
@@ -1168,6 +1261,10 @@ function JewelSlotCard({
       ) : (
         <div className="flex items-center justify-center p-0.5">
           <Image
+            // Key forces a fresh <img> when the URL changes between the
+            // local miss and the ninja-hit so React doesn't reuse the
+            // error state from the first attempt.
+            key={iconUrl}
             src={iconUrl}
             alt={displayName}
             width={48}
