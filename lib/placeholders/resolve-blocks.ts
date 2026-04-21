@@ -4,6 +4,7 @@ import { parsePlaceholders, slugify, type Placeholder } from './parse';
 import { fetchPrices, type PriceEntry } from './fetch-prices';
 import { fetchItemRawMany, type ItemRawData } from './fetch-items';
 import { fetchPobItemRawMany, type PobItemRawData } from './fetch-pob-items';
+import { fetchPassiveRawMany, type PassiveRawData } from './fetch-passive';
 
 /**
  * Pre-resolve placeholders in a Portable Text tree.
@@ -25,6 +26,7 @@ interface ResolveState {
   prices: Record<string, PriceEntry>;
   items: Record<string, ItemRawData>;
   pobItems: Record<string, PobItemRawData>;
+  passives: Map<string, PassiveRawData>;
 }
 
 // ---------------------------------------------------------------------------
@@ -60,6 +62,7 @@ export async function resolveBlocks(
   const priceNames = new Set<string>();
   const itemNames = new Set<string>();
   const pobItemIds = new Set<string>();
+  const passiveNames = new Set<string>();
   for (const block of expandedBlocks) {
     for (const ph of collectFromBlock(block)) {
       if (ph.kind === 'price') priceNames.add(ph.value);
@@ -69,11 +72,12 @@ export async function resolveBlocks(
         priceNames.add(ph.value);
       }
       if (ph.kind === 'pobitem') pobItemIds.add(ph.value);
+      if (ph.kind === 'passive') passiveNames.add(ph.value);
     }
   }
 
   // 2. Batch-fetch in parallel
-  const [prices, items, pobItems] = await Promise.all([
+  const [prices, items, pobItems, passives] = await Promise.all([
     priceNames.size
       ? fetchPrices(Array.from(priceNames), ctx.league || 'Mirage')
       : Promise.resolve({} as Record<string, PriceEntry>),
@@ -83,10 +87,13 @@ export async function resolveBlocks(
     pobItemIds.size
       ? fetchPobItemRawMany(Array.from(pobItemIds))
       : Promise.resolve({} as Record<string, PobItemRawData>),
+    passiveNames.size
+      ? fetchPassiveRawMany(Array.from(passiveNames))
+      : Promise.resolve(new Map<string, PassiveRawData>()),
   ]);
 
   // 3. Walk the tree, transforming spans
-  const state: ResolveState = { ctx, prices, items, pobItems };
+  const state: ResolveState = { ctx, prices, items, pobItems, passives };
   return expandedBlocks.map((b) => transformBlock(promoteMarkdownHeading(b), state));
 }
 
@@ -438,6 +445,8 @@ function resolvePlaceholder(ph: Placeholder, state: ResolveState): ResolvedFragm
       return resolveItem(ph, state);
     case 'pobitem':
       return resolvePobItem(ph, state);
+    case 'passive':
+      return resolvePassive(ph, state);
     case 'patch': {
       // Single-value placeholder e.g. {{patch:3.28}} — emit the value literally
       return { type: 'text', text: ph.value };
@@ -505,6 +514,35 @@ function resolvePobItem(ph: Placeholder, state: ResolveState): ResolvedFragment 
     iconUrl: data.iconUrl ?? null,
     isCurrency: isMinimalTooltipItem(data.classId, data.rarity),
     isGem: isGemClass(data.classId),
+    primaryAttribute: null,
+    isAwakened: false,
+    isVaal: false,
+  };
+}
+
+/**
+ * Resolves `{{passive:<Name>}}` into the same `poeItem` mark used by canonical
+ * items. The engine's `/api/passives/:name/raw` returns a Ctrl+C-shaped block
+ * (`Rarity: <kind>\n<Name>\n--------\n<stats>`) that `parseRawPoeItem` can
+ * consume directly — the stats surface as implicit-blue mod lines, which is
+ * the acceptable MVP look. Kind-specific header tinting (notable orange,
+ * keystone gold, etc.) can come later without changing this resolver.
+ *
+ * On miss (unknown name, engine down) the placeholder falls back to the
+ * plain passive name so readers never see a raw `{{...}}` string.
+ */
+function resolvePassive(ph: Placeholder, state: ResolveState): ResolvedFragment {
+  const data = state.passives.get(ph.value.toLowerCase());
+  if (!data || !data.rawText) {
+    return { type: 'text', text: data?.name ?? ph.value };
+  }
+  return {
+    type: 'item',
+    text: data.name || ph.value,
+    rawText: data.rawText,
+    iconUrl: data.iconUrl ?? null,
+    isCurrency: false,
+    isGem: false,
     primaryAttribute: null,
     isAwakened: false,
     isVaal: false,
