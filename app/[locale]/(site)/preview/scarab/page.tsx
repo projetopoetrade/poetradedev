@@ -1,75 +1,28 @@
 import { BlockContentRenderer } from "@/components/portable-text/blockContentComponents";
 import { CurrencyTooltip } from "@/components/poe/PoeCurrencyTooltip";
+import { fetchItemRaw } from "@/lib/placeholders/fetch-items";
 import { resolveBlocks } from "@/lib/placeholders/resolve-blocks";
 import type { PortableTextBlock } from "sanity";
 
 /**
  * Developer sandbox for scarab render in blog posts.
  *
- * Scarabs share the minimal CurrencyTooltip layout because their stat
- * block is essentially the same shape — a one-liner effect ("A Unique
- * Map will drop from the Final Map Boss") plus an icon. Routed via
- * isMinimalTooltipItem (classId === 'MapFragment').
+ * Scarabs use the same minimal CurrencyTooltip layout as currencies —
+ * detection is via classId === 'MapFragment'. Prices for scarabs are
+ * exposed via the same {{price:...}} placeholder used for currencies,
+ * since poe.ninja's Scarab category provides chaos/divine values.
+ *
+ * All scarabs in this page are real entries verified to be present in
+ * both the engine PG (description + iconUrl) and the ninja Scarab
+ * category (chaos/divine pricing).
  */
 
-const SCARAB_CARTO_RAW = `Rarity: Normal
-Cartography Scarab of Singularity
---------
-Requirements:
-Level: 1
---------
-A Unique Map will drop from the Final Map Boss`;
-
-const SCARAB_BESTIARY_RAW = `Rarity: Normal
-Bestiary Scarab
---------
-Requirements:
-Level: 1
---------
-Areas contain 2 additional Red Beasts`;
-
-const SCARAB_HARBINGER_RAW = `Rarity: Normal
-Harbinger Scarab of Discernment
---------
-Requirements:
-Level: 1
---------
-Harbingers in Area drop double the amount of Currency Shards
-Harbingers in Area drop Currency Shards from their final piece`;
-
-// Real wiki Special:Filepath URL — engine returns this when ninja doesn't
-// track the item (scarabs sit at the boundary; some are tracked, some not).
-const ICON_CARTO =
-  "https://www.poewiki.net/wiki/Special:Filepath/Cartography_Scarab_of_Singularity_inventory_icon.png";
-const ICON_BESTIARY =
-  "https://www.poewiki.net/wiki/Special:Filepath/Bestiary_Scarab_inventory_icon.png";
-const ICON_HARBINGER =
-  "https://www.poewiki.net/wiki/Special:Filepath/Harbinger_Scarab_of_Discernment_inventory_icon.png";
-
-const SEEDED_BODY: PortableTextBlock[] = [
-  {
-    _type: "block",
-    _key: "sb1",
-    style: "h3",
-    children: [{ _type: "span", _key: "ss1", text: "Seeded portable text", marks: [] }],
-    markDefs: [],
-  },
-  {
-    _type: "block",
-    _key: "sb2",
-    style: "normal",
-    children: [
-      { _type: "span", _key: "ss2a", text: "When farming uniques on a specific tier, slot a ", marks: [] },
-      { _type: "span", _key: "ss2b", text: "Cartography Scarab of Singularity", marks: ["carto"] },
-      { _type: "span", _key: "ss2c", text: " to guarantee the boss drop. Stack with a ", marks: [] },
-      { _type: "span", _key: "ss2d", text: "Harbinger Scarab of Discernment", marks: ["harb"] },
-      { _type: "span", _key: "ss2e", text: " on Harbinger maps for currency shard farming.", marks: [] },
-    ],
-    markDefs: [
-      { _key: "carto", _type: "poeItem", rawText: SCARAB_CARTO_RAW, iconUrl: ICON_CARTO, itemName: "Cartography Scarab of Singularity", isCurrency: true },
-      { _key: "harb", _type: "poeItem", rawText: SCARAB_HARBINGER_RAW, iconUrl: ICON_HARBINGER, itemName: "Harbinger Scarab of Discernment", isCurrency: true },
-    ],
-  },
+const SCARAB_NAMES = [
+  "Horned Scarab of Preservation",
+  "Ambush Scarab of Containment",
+  "Cartography Scarab of Risk",
+  "Bestiary Scarab",
+  "Domination Scarab of Terrors",
 ];
 
 const LIVE_BODY: PortableTextBlock[] = [
@@ -77,7 +30,7 @@ const LIVE_BODY: PortableTextBlock[] = [
     _type: "block",
     _key: "ph1",
     style: "h3",
-    children: [{ _type: "span", _key: "phs1", text: "Live engine fetch", marks: [] }],
+    children: [{ _type: "span", _key: "phs1", text: "Scarab placeholders + live prices", marks: [] }],
     markDefs: [],
   },
   {
@@ -89,9 +42,11 @@ const LIVE_BODY: PortableTextBlock[] = [
         _type: "span",
         _key: "phs2",
         text:
-          "Endgame scarab strategy: pair {{item:Cartography Scarab of Singularity}} with " +
-          "{{item:Bestiary Scarab}} for unique drops alongside red beasts. " +
-          "Currency-focused runs swap in {{item:Harbinger Scarab of Discernment}}.",
+          "For boss-rush juicing, slot {{item:Horned Scarab of Preservation}} (currently {{price:Horned Scarab of Preservation|chaos}}) " +
+          "with {{item:Ambush Scarab of Containment}} for additional strongbox loot. " +
+          "Bestiary farmers want {{item:Bestiary Scarab}} ({{price:Bestiary Scarab|chaos}}) to guarantee Einhar spawns. " +
+          "More expensive setups slot {{item:Horned Scarab of Bloodlines}}, while crafting strategies revolve around " +
+          "{{item:Cartography Scarab of Risk}} ({{price:Cartography Scarab of Risk|chaos}}).",
         marks: [],
       },
     ],
@@ -102,6 +57,12 @@ const LIVE_BODY: PortableTextBlock[] = [
 export const dynamic = "force-dynamic";
 
 export default async function ScarabPreviewPage() {
+  // Stage 0: pull each scarab from the engine in parallel so the standalone
+  // tooltip uses the same iconUrl + description the production blog renders.
+  const scarabs = await Promise.all(
+    SCARAB_NAMES.map(async (name) => ({ name, data: await fetchItemRaw(name) })),
+  );
+
   const liveResolved = await resolveBlocks(LIVE_BODY, { locale: "en", league: "Mirage" });
 
   return (
@@ -110,55 +71,76 @@ export default async function ScarabPreviewPage() {
         <header>
           <h1 className="text-4xl font-bold mb-2">Scarab render preview</h1>
           <p className="text-neutral-400">
-            Scarabs route through the same minimal tooltip variant as currencies:
-            description in implicit-blue + centered icon. Detection is via{" "}
-            <code>classId === &quot;MapFragment&quot;</code>.
+            All scarabs on this page are real entries fetched from the engine
+            (icon + description) and priced via poe.ninja&apos;s Scarab
+            category. Same minimal tooltip layout as currencies (
+            <code>classId === &quot;MapFragment&quot;</code>).
           </p>
         </header>
 
+        {/* Stage 0 — standalone tooltips, data from engine */}
         <section className="space-y-4">
           <h2 className="text-2xl font-semibold border-b border-neutral-800 pb-2">
-            Stage 0 — Tooltip standalone
+            Stage 0 — Tooltip standalone (real engine data)
           </h2>
+          <p className="text-neutral-400 text-sm">
+            Each tooltip is rendered with <code>rawText</code> +{" "}
+            <code>iconUrl</code> straight from{" "}
+            <code>GET /api/items/:name/raw</code>. If a tooltip is missing,
+            the engine PG doesn&apos;t have that scarab.
+          </p>
           <div className="flex flex-wrap items-start gap-8 p-6 bg-neutral-900 rounded-lg">
-            <CurrencyTooltip name="Cartography Scarab of Singularity" description={SCARAB_CARTO_RAW} iconUrl={ICON_CARTO} />
-            <CurrencyTooltip name="Bestiary Scarab" description={SCARAB_BESTIARY_RAW} iconUrl={ICON_BESTIARY} />
-            <CurrencyTooltip name="Harbinger Scarab of Discernment" description={SCARAB_HARBINGER_RAW} iconUrl={ICON_HARBINGER} />
+            {scarabs.map(({ name, data }) =>
+              data ? (
+                <CurrencyTooltip
+                  key={name}
+                  name={data.name}
+                  description={data.rawText}
+                  iconUrl={data.iconUrl}
+                />
+              ) : (
+                <div key={name} className="text-neutral-500 text-sm border border-red-900/40 rounded p-4">
+                  <p className="text-red-400">404 — {name}</p>
+                  <p className="text-xs mt-1">Item missing from engine PG</p>
+                </div>
+              ),
+            )}
           </div>
         </section>
 
+        {/* Stage 1 — live blog flow with placeholders + inline prices */}
         <section className="space-y-4">
           <h2 className="text-2xl font-semibold border-b border-neutral-800 pb-2">
-            Stage 1 — Seeded Portable Text
-          </h2>
-          <article className="prose prose-invert prose-lg max-w-none bg-neutral-900 rounded-lg p-8">
-            <BlockContentRenderer value={SEEDED_BODY} />
-          </article>
-        </section>
-
-        <section className="space-y-4">
-          <h2 className="text-2xl font-semibold border-b border-neutral-800 pb-2">
-            Stage 2 — Live engine flow
+            Stage 1 — Live blog flow
           </h2>
           <p className="text-neutral-400 text-sm">
-            Real <code>{"{{item:Scarab Name}}"}</code> placeholders. Items the
-            engine doesn&apos;t have fall back to amber link chips. Some
-            scarabs may not be in the wiki crawler database yet — check{" "}
-            <code>SELECT * FROM items WHERE class_id=&apos;MapFragment&apos;</code>.
+            Real <code>{"{{item:Scarab Name}}"}</code> placeholders mixed with{" "}
+            <code>{"{{price:Scarab Name|chaos}}"}</code> for live pricing.
+            Same flow used for currencies.
           </p>
           <article className="prose prose-invert prose-lg max-w-none bg-neutral-900 rounded-lg p-8">
             <BlockContentRenderer value={liveResolved} />
           </article>
         </section>
 
+        {/* Stage 2 — debug */}
         <section className="space-y-4">
           <h2 className="text-2xl font-semibold border-b border-neutral-800 pb-2">
-            Stage 3 — Debug
+            Stage 2 — Debug
           </h2>
           <pre className="text-xs bg-black rounded-lg p-4 overflow-auto max-h-96 font-mono">
             {JSON.stringify(liveResolved, null, 2)}
           </pre>
         </section>
+
+        <footer className="text-neutral-500 text-xs border-t border-neutral-800 pt-6">
+          <p>
+            <strong>Pricing source:</strong> ninja Scarab category cached in{" "}
+            <code>NinjaSnapshot</code>. <code>{"{{price:...}}"}</code> picks
+            up chaos/divine values automatically — same as Divine Orb,
+            Headhunter, and other tradeable items.
+          </p>
+        </footer>
       </div>
     </main>
   );
