@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/utils/supabase/server'
+import { getEngineApiBase } from '@/lib/placeholders/engine'
 
 export const revalidate = 3600 // 1 hora
+
+const ENGINE_TIMEOUT_MS = 5000
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
 
@@ -180,6 +183,54 @@ async function fetchPoeNinja(
   return items
 }
 
+// ─── Engine fetch (Fase 2) ────────────────────────────────────────────────────
+
+async function fetchFromEngine(
+  game: 'poe1' | 'poe2',
+  league: string,
+  category: string
+): Promise<NormalizedItem[] | null> {
+  const base = getEngineApiBase()
+  if (!base) return null
+
+  const path = game === 'poe2' ? `ninja/poe2/prices/${category}` : `ninja/prices/${category}`
+  const url = `${base}/${path}?league=${encodeURIComponent(league)}`
+
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), ENGINE_TIMEOUT_MS)
+  try {
+    const res = await fetch(url, {
+      next: { revalidate: 1800 },
+      headers: { 'User-Agent': 'PathOfTrade/1.0 (pathoftrade.net)' },
+      signal: controller.signal,
+    })
+    if (!res.ok) return null
+    const data = await res.json()
+    const items = Array.isArray(data?.items) ? data.items : []
+    if (items.length === 0) return null
+    return items.map((it: any) => ({
+      name: it.name,
+      icon: it.icon || '',
+      category,
+      chaosValue: it.chaosValue ?? 0,
+      divineValue: it.divineValue ?? 0,
+      estimatedUSD: 0,
+      sparkline: it.sparkline?.data
+        ? { data: it.sparkline.data, totalChange: it.sparkline.totalChange ?? 0 }
+        : null,
+      listingCount: it.listingCount ?? null,
+      detailsId: it.detailsId || it.name?.toLowerCase().replace(/ /g, '-') || '',
+      weSellThis: false,
+      inStock: false,
+      ourPriceUSD: null,
+    }))
+  } catch {
+    return null
+  } finally {
+    clearTimeout(timer)
+  }
+}
+
 // ─── Handler ──────────────────────────────────────────────────────────────────
 
 export async function GET(request: NextRequest) {
@@ -188,9 +239,32 @@ export async function GET(request: NextRequest) {
   const league = searchParams.get('league') || 'Settlers'
   const category = searchParams.get('category') || 'Currency'
 
+  const useEngine = process.env.USE_ENGINE_PRICES === '1'
+  const t0 = Date.now()
+  let source: 'engine' | 'ninja-direct' = 'ninja-direct'
+
   try {
-    // 1. Buscar dados do poe.ninja
-    const rawItems = await fetchPoeNinja(game, league, category)
+    // 1. Buscar dados — engine primeiro (se flag ON), fallback poe.ninja em qualquer falha
+    let rawItems: NormalizedItem[] = []
+    if (useEngine) {
+      const fromEngine = await fetchFromEngine(game, league, category)
+      if (fromEngine && fromEngine.length > 0) {
+        source = 'engine'
+        rawItems = fromEngine
+      }
+    }
+    if (rawItems.length === 0) {
+      rawItems = await fetchPoeNinja(game, league, category)
+    }
+
+    console.info('[/api/tools/prices]', {
+      source,
+      durationMs: Date.now() - t0,
+      game,
+      league,
+      category,
+      count: rawItems.length,
+    })
 
     // 2. Buscar Divine Orb price e products do Supabase
     const supabase = await createClient()
