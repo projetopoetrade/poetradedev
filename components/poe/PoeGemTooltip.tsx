@@ -68,8 +68,11 @@ export function GemTooltip({
       <div
         className="px-4 py-1.5 text-center border-b border-slate-700/60"
         style={{
+          // Neutral dark gradient — earlier blue tint clashed with the
+          // attribute-coloured name. Plain dark slate lets the header
+          // text stand out cleanly regardless of the gem's primary attr.
           background:
-            "linear-gradient(to bottom, rgba(20,30,40,0.9), rgba(8,14,22,0.95))",
+            "linear-gradient(to bottom, rgba(28,30,38,0.95), rgba(10,12,18,0.95))",
         }}
       >
         <p
