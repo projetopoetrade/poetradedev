@@ -120,9 +120,9 @@ export function GemTooltip({
           </p>
         )}
 
-        {parsed.statLines.length > 0 && (
-          <div className="space-y-0.5 pt-2 border-t border-slate-700/40">
-            {parsed.statLines.map((line, i) => (
+        {parsed.description.length > 0 && (
+          <div className="space-y-1 pt-2 border-t border-slate-700/40">
+            {parsed.description.map((line, i) => (
               <p key={i} style={{ color: STAT_COLOR }} className="leading-snug">
                 {line}
               </p>
@@ -130,10 +130,12 @@ export function GemTooltip({
           </div>
         )}
 
-        {parsed.description.length > 0 && (
-          <div className="space-y-1 pt-1 italic text-slate-400">
-            {parsed.description.map((line, i) => (
-              <p key={i} className="leading-snug">{line}</p>
+        {parsed.statLines.length > 0 && (
+          <div className="space-y-0.5 pt-2 border-t border-slate-700/40">
+            {parsed.statLines.map((line, i) => (
+              <p key={i} style={{ color: STAT_COLOR }} className="leading-snug">
+                {line}
+              </p>
             ))}
           </div>
         )}
