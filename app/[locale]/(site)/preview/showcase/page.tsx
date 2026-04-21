@@ -3,6 +3,7 @@ import type { PortableTextBlock } from "sanity";
 import { BlockContentRenderer } from "@/components/portable-text/blockContentComponents";
 import { getEngineApiBase } from "@/lib/placeholders/engine";
 import { resolveBlocks } from "@/lib/placeholders/resolve-blocks";
+import { OpenInPobButton } from "@/components/poe/OpenInPobButton";
 import { fetchShowcaseSummary, generateProse } from "./actions";
 import type {
   PobSummary,
@@ -193,27 +194,31 @@ export default async function ShowcasePreviewPage() {
 
         {/* 7 — Footer */}
         <footer className="space-y-2 border-t border-neutral-800 pt-6 text-xs text-neutral-500">
-          <div>
-            Source:{" "}
-            {/* Link routes to our in-house PoB viewer (`/tools/pob-viewer`)
-                which decodes via the engine and renders the build inline.
-                The raw pobb.in URL is still surfaced as a secondary link
-                so users can open the original external page if they want
-                to import the build into their own PoB install. */}
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
+            <span>Source:</span>
+            {/* Primary link routes to our in-house PoB viewer
+                (`/tools/pob-viewer`) which decodes via the engine and
+                renders the build inline — no external page jump. */}
             <Link
               href={`/tools/pob-viewer?pob=${encodeURIComponent(SHOWCASE_POB_URL)}`}
               className="text-amber-500 underline underline-offset-2 hover:text-amber-400"
             >
               View build in PoB Viewer
             </Link>
-            {" · "}
+            <span>·</span>
+            {/* Launches the user's local Path of Building desktop install
+                via the `pob://pobbin/<key>` protocol handler. Falls back to
+                copying the pobb.in URL to the clipboard so it can be
+                pasted into PoB manually. */}
+            <OpenInPobButton pobbUrl={SHOWCASE_POB_URL} />
+            <span>·</span>
             <Link
               href={SHOWCASE_POB_URL}
               className="text-neutral-400 underline underline-offset-2 hover:text-neutral-200"
               target="_blank"
               rel="noopener noreferrer"
             >
-              open on pobb.in
+              view on pobb.in
             </Link>
           </div>
           <div>
