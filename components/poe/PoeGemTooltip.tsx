@@ -138,6 +138,34 @@ export function GemTooltip({
           </div>
         )}
 
+        {parsed.qualityBonus.length > 0 && (
+          <div className="pt-2 border-t border-slate-700/40 space-y-1">
+            <p
+              className="font-semibold tracking-wide text-[12px]"
+              style={{ color: PROP_LABEL_COLOR }}
+            >
+              Additional Effects From Quality:
+            </p>
+            {parsed.qualityBonus.map((line, i) => (
+              <p
+                key={i}
+                style={{ color: STAT_COLOR }}
+                className="leading-snug"
+              >
+                {line}
+              </p>
+            ))}
+          </div>
+        )}
+
+        {parsed.footerNote.length > 0 && (
+          <div className="pt-2 italic text-slate-500 text-[12px] space-y-0.5">
+            {parsed.footerNote.map((line, i) => (
+              <p key={i} className="leading-snug">{line}</p>
+            ))}
+          </div>
+        )}
+
         {iconUrl && (
           <>
             <div className="flex items-center justify-center pt-2">
@@ -173,8 +201,14 @@ interface ParsedGem {
   properties: string[];
   requirements: string | null;
   statLines: string[];
+  qualityBonus: string[];
   description: string[];
+  /** Footer block "Place into an item socket of the right colour..." */
+  footerNote: string[];
 }
+
+const QUALITY_HEADER = 'Additional Effects From Quality:';
+const SOCKET_FOOTER_PREFIX = 'Place into an item socket';
 
 const PROPERTY_KEYS = new Set([
   "level",
@@ -198,7 +232,9 @@ function parseGemRaw(rawText: string): ParsedGem {
     properties: [],
     requirements: null,
     statLines: [],
+    qualityBonus: [],
     description: [],
+    footerNote: [],
   };
   if (!rawText) return out;
 
@@ -210,6 +246,18 @@ function parseGemRaw(rawText: string): ParsedGem {
       .map((l) => l.trim())
       .filter(Boolean);
     if (!lines.length) continue;
+
+    // Quality bonus block: starts with the engine's exact header line.
+    if (lines[0] === QUALITY_HEADER) {
+      out.qualityBonus.push(...lines.slice(1));
+      continue;
+    }
+
+    // Standard socket-gem footer: hardcoded by the engine for any gem.
+    if (lines[0].startsWith(SOCKET_FOOTER_PREFIX)) {
+      out.footerNote.push(...lines);
+      continue;
+    }
 
     // Tag section: a single line of comma-separated capitalised words,
     // typically like "Spell, AoE, Fire, Duration".
