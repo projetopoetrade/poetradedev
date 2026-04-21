@@ -64,10 +64,19 @@ export default async function GeneratedPostPreviewPage({
   const engineBase = getEngineApiBase();
   if (!engineBase) return <EngineMissing />;
 
+  // The engine's `/content/posts/:slug` endpoint is auth-gated (x-api-key
+  // on the global ThrottlerGuard). Forward the site's server-side API key
+  // — set via `ENGINE_API_KEY` on the Vercel env, same mechanism the
+  // price/item/passive fetchers use.
+  const headers: Record<string, string> = { "Accept": "application/json" };
+  const engineKey = process.env.ENGINE_API_KEY ?? process.env.API_KEY;
+  if (engineKey) headers["x-api-key"] = engineKey;
+
   // Cache-bust — the whole point of this preview is to see the latest
   // generation output; caching would just hide pipeline changes.
   const res = await fetch(`${engineBase}/content/posts/${encodeURIComponent(slug)}`, {
     cache: "no-store",
+    headers,
   });
   if (!res.ok) return <PostNotFound slug={slug} status={res.status} />;
   const post = (await res.json()) as EnginePost;
