@@ -367,6 +367,23 @@ function expandSpan(span: any, state: ResolveState, markDefs: any[]): any[] {
           nextKey(),
         ),
       );
+    } else if (resolved.type === 'iconLink') {
+      // Currency-style chip — icon inline + linked name, no hover tooltip.
+      const chipKey = `phchip-${span._key ?? 'auto'}-${keyCounter++}`;
+      markDefs.push({
+        _key: chipKey,
+        _type: 'iconLink',
+        href: resolved.href,
+        iconUrl: resolved.iconUrl,
+        name: resolved.text,
+      });
+      out.push(
+        makeSpan(
+          resolved.text,
+          [...originalMarks.filter((m) => m !== 'link'), chipKey],
+          nextKey(),
+        ),
+      );
     } else {
       // Inline item reference — renders via the `poeItem` mark handler,
       // which mounts the PoeItemBlogCard tooltip.
@@ -402,6 +419,7 @@ function makeSpan(text: string, marks: string[], key: string) {
 type ResolvedFragment =
   | { type: 'text'; text: string }
   | { type: 'link'; text: string; href: string }
+  | { type: 'iconLink'; text: string; href: string; iconUrl: string | null }
   | { type: 'item'; text: string; rawText: string; iconUrl: string | null };
 
 function resolvePlaceholder(ph: Placeholder, state: ResolveState): ResolvedFragment {
@@ -463,12 +481,36 @@ function resolveItem(ph: Placeholder, state: ResolveState): ResolvedFragment {
     // the product page (no stat block, but still enriched).
     return resolveLink({ ...ph, modifier: ph.modifier ?? 'product' }, state);
   }
+
+  const text = data.name || ph.value;
+  // Currencies don't carry useful tooltip content (just generic descriptions
+  // like "Right click to use"). Render them as an icon + clickable name
+  // instead of a hover tooltip — that's what readers actually want when a
+  // post mentions Divine Orb in passing.
+  if (isCurrencyClass(data.classId, data.rarity)) {
+    const locale = state.ctx.locale || 'en';
+    const localePrefix = locale && locale !== 'en' ? `/${locale}` : '';
+    return {
+      type: 'iconLink',
+      text,
+      href: `${localePrefix}/products/${slugify(text)}`,
+      iconUrl: data.iconUrl ?? null,
+    };
+  }
+
   return {
     type: 'item',
-    text: data.name || ph.value,
+    text,
     rawText: data.rawText,
     iconUrl: data.iconUrl ?? null,
   };
+}
+
+function isCurrencyClass(classId: string | null, rarity: string | null): boolean {
+  const c = (classId ?? '').toLowerCase();
+  if (c.includes('currency')) return true;
+  // Engine returns rarity="Currency" too — extra safety.
+  return (rarity ?? '').toLowerCase() === 'currency';
 }
 
 function resolveLink(ph: Placeholder, state: ResolveState): ResolvedFragment {

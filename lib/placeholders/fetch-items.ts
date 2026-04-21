@@ -17,6 +17,7 @@ export interface ItemRawData {
   name: string;
   baseName: string | null;
   rarity: string | null;
+  classId: string | null;
 }
 
 const REVALIDATE_SECONDS = 60 * 60; // 1h — item stat blocks barely change
