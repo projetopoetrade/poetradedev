@@ -49,9 +49,26 @@ const nextConfig: NextConfig = {
         hostname: "web.poecdn.com",
       },
       {
+        // Self-hosted passive icons (/images/passives/*.webp). Same-origin in
+        // production, but preview deploys (preview-xxx.vercel.app) load from
+        // the prod origin via absolute URLs returned by the engine.
+        hostname: "pathoftrade.net",
+      },
+      {
+        hostname: "www.pathoftrade.net",
+      },
+      {
         // Wiki Special:Filepath redirects for items poe.ninja doesn't track
         // (Chaos Orb, defunct sextants, niche bases). 302s to the actual CDN.
         hostname: "www.poewiki.net",
+      },
+      {
+        // GGG skilltree-export sprite sheets (assets/frame-N.png,
+        // skills-N.jpg, etc). Kept here for a future re-enable of
+        // canvas-side sprite rendering in /preview/tree — passive
+        // tooltips are served from /images/passives/ (same-origin, no
+        // remotePatterns needed).
+        hostname: "raw.githubusercontent.com",
       },
     ],
   },
