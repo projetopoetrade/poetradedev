@@ -1,31 +1,43 @@
 import { BlockContentRenderer } from "@/components/portable-text/blockContentComponents";
+import { CurrencyTooltip } from "@/components/poe/PoeCurrencyTooltip";
 import { resolveBlocks } from "@/lib/placeholders/resolve-blocks";
 import type { PortableTextBlock } from "sanity";
 
 /**
  * Developer sandbox for currency render in blog posts.
  *
- * Currencies don't get a hover tooltip — their in-game stat block is just
- * "Right click to use", which is noise. The post-render is icon + linked
- * name (markDef `iconLink`) so the reader can recognise the currency
- * visually and click through to the product page.
+ * Currencies use a dedicated tooltip variant (centered icon, optional
+ * price footer) instead of the rare-item layout, since their stat block
+ * is a one-liner like "Right click this item then left click...".
  *
  * Stages:
- *   1 — Seeded Portable Text (icon hardcoded, bypasses engine)
+ *   0 — CurrencyTooltip rendered directly (always visible, no portal/fetch)
+ *   1 — Seeded Portable Text with poeItem markDef (isCurrency=true)
  *   2 — Live flow: explicit {{item:…}} + bare mention promotion
  *   3 — Debug: resolved tree
  */
 
-// Stable poe.ninja CDN URLs — used for the seeded stage so we can validate
-// the icon path independently of the engine's iconUrl population.
 const ICON_DIVINE =
   "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvQ3VycmVuY3lNb2RWYWx1ZXMiLCJ3IjoxLCJoIjoxLCJzY2FsZSI6MX1d/e1a54ff97d/CurrencyModValues.png";
 const ICON_MIRROR =
   "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvQ3VycmVuY3lEdXBsaWNhdGUiLCJ3IjoxLCJoIjoxLCJzY2FsZSI6MX1d/7111e35254/CurrencyDuplicate.png";
 
-// ---------------------------------------------------------------------------
-// Stage 1 — seeded portable text
-// ---------------------------------------------------------------------------
+const DIVINE_ORB_RAW = `Rarity: Currency
+Divine Orb
+--------
+Stack Size: 1/10
+--------
+Right click this item then left click a magic, rare or unique item to reroll the values of the random modifiers on the item.
+Shift click to unstack.`;
+
+const MIRROR_RAW = `Rarity: Currency
+Mirror of Kalandra
+--------
+Stack Size: 1/10
+--------
+Creates a mirrored copy of an item.
+Right click this item then left click a non-Mirrored, non-Corrupted equippable item to apply it.
+Shift click to unstack.`;
 
 const SEEDED_BODY: PortableTextBlock[] = [
   {
@@ -47,15 +59,27 @@ const SEEDED_BODY: PortableTextBlock[] = [
       { _type: "span", _key: "ss2e", text: " sit far above the divine ladder.", marks: [] },
     ],
     markDefs: [
-      { _key: "divine", _type: "iconLink", href: "/products/divine-orb", iconUrl: ICON_DIVINE, name: "Divine Orb" },
-      { _key: "mirror", _type: "iconLink", href: "/products/mirror-of-kalandra", iconUrl: ICON_MIRROR, name: "Mirror of Kalandra" },
+      {
+        _key: "divine",
+        _type: "poeItem",
+        rawText: DIVINE_ORB_RAW,
+        iconUrl: ICON_DIVINE,
+        itemName: "Divine Orb",
+        isCurrency: true,
+        priceInfo: { chaosValue: 312, divineValue: 1, listingCount: 39 },
+      },
+      {
+        _key: "mirror",
+        _type: "poeItem",
+        rawText: MIRROR_RAW,
+        iconUrl: ICON_MIRROR,
+        itemName: "Mirror of Kalandra",
+        isCurrency: true,
+        priceInfo: { chaosValue: 368721, divineValue: 1182, listingCount: 13 },
+      },
     ],
   },
 ];
-
-// ---------------------------------------------------------------------------
-// Stage 2 — live flow (placeholder + bare mention promotion)
-// ---------------------------------------------------------------------------
 
 const LIVE_BODY: PortableTextBlock[] = [
   {
@@ -99,7 +123,7 @@ const LIVE_BODY: PortableTextBlock[] = [
         _key: "ims2",
         text:
           "Even when the LLM forgets to wrap the name, sentences mentioning Divine Orb or " +
-          "Mirror of Kalandra in passing should still pick up an icon and link — the resolver " +
+          "Mirror of Kalandra in passing should still pick up an icon and tooltip — the resolver " +
           "promotes whitelisted names to inline item placeholders before the fetch pass runs. " +
           "Awakened Sextant is another high-value currency that benefits from the inline render.",
         marks: [],
@@ -108,10 +132,6 @@ const LIVE_BODY: PortableTextBlock[] = [
     markDefs: [],
   },
 ];
-
-// ---------------------------------------------------------------------------
-// Page
-// ---------------------------------------------------------------------------
 
 export const dynamic = "force-dynamic";
 
@@ -127,52 +147,78 @@ export default async function CurrencyPreviewPage() {
         <header>
           <h1 className="text-4xl font-bold mb-2">Currency render preview</h1>
           <p className="text-neutral-400">
-            Currencies render as <code>icon + linked name</code> (no hover
-            tooltip — their stat block is just &ldquo;Right click to use&rdquo;).
-            Click takes the reader to the product page.
+            Currencies render with the dedicated <code>CurrencyTooltip</code>{" "}
+            (centered icon, optional price footer). Hover the inline link to
+            open the tooltip.
           </p>
         </header>
 
+        {/* Stage 0 */}
         <section className="space-y-4">
           <h2 className="text-2xl font-semibold border-b border-neutral-800 pb-2">
-            Stage 1 — Seeded Portable Text (icons hardcoded)
+            Stage 0 — <code>CurrencyTooltip</code> always visible
           </h2>
           <p className="text-neutral-400 text-sm">
-            Validates the <code>iconLink</code> mark handler renders inline
-            with surrounding prose. Bypasses the engine — icons come from
-            literal URLs in the markDef.
+            Tooltip rendered directly. Validates the layout in isolation.
+          </p>
+          <div className="flex flex-wrap items-start gap-8 p-6 bg-neutral-900 rounded-lg">
+            <CurrencyTooltip
+              name="Divine Orb"
+              description={DIVINE_ORB_RAW}
+              iconUrl={ICON_DIVINE}
+              priceInfo={{ chaosValue: 312, divineValue: 1, listingCount: 39 }}
+            />
+            <CurrencyTooltip
+              name="Mirror of Kalandra"
+              description={MIRROR_RAW}
+              iconUrl={ICON_MIRROR}
+              priceInfo={{ chaosValue: 368721, divineValue: 1182, listingCount: 13 }}
+            />
+            <CurrencyTooltip
+              name="Mirror of Kalandra (no price)"
+              description={MIRROR_RAW}
+              iconUrl={ICON_MIRROR}
+              priceInfo={null}
+            />
+          </div>
+        </section>
+
+        {/* Stage 1 */}
+        <section className="space-y-4">
+          <h2 className="text-2xl font-semibold border-b border-neutral-800 pb-2">
+            Stage 1 — Seeded Portable Text
+          </h2>
+          <p className="text-neutral-400 text-sm">
+            <code>poeItem</code> markDef with <code>isCurrency=true</code> +
+            hardcoded prices. Validates the inline icon-name + hover tooltip
+            integration without any engine fetch.
           </p>
           <article className="prose prose-invert prose-lg max-w-none bg-neutral-900 rounded-lg p-8">
             <BlockContentRenderer value={SEEDED_BODY} />
           </article>
         </section>
 
+        {/* Stage 2 */}
         <section className="space-y-4">
           <h2 className="text-2xl font-semibold border-b border-neutral-800 pb-2">
             Stage 2 — Live flow (placeholders + bare mentions)
           </h2>
           <p className="text-neutral-400 text-sm">
-            Exercises both paths: explicit <code>{"{{item:Divine Orb}}"}</code>{" "}
-            placeholders and bare &ldquo;Divine Orb&rdquo; mentions in prose.
-            The resolver promotes whitelisted names then routes currency-class
-            items to <code>iconLink</code> instead of the unique tooltip.
-            Icons require <code>Item.iconUrl</code> populated by the engine —
-            confirm the latest enrichment ran.
+            Real engine fetches. Currencies the engine knows about should
+            pick up icon + tooltip with live prices. Items poe.ninja
+            doesn&apos;t track (Chaos Orb, Awakened Sextant) fall through to
+            wiki Special:Filepath for the icon and may have null prices.
           </p>
           <article className="prose prose-invert prose-lg max-w-none bg-neutral-900 rounded-lg p-8">
             <BlockContentRenderer value={liveResolved} />
           </article>
         </section>
 
+        {/* Stage 3 */}
         <section className="space-y-4">
           <h2 className="text-2xl font-semibold border-b border-neutral-800 pb-2">
             Stage 3 — Debug
           </h2>
-          <p className="text-neutral-400 text-sm">
-            Inspect the markDefs the resolver injected. Currency hits show up
-            as <code>iconLink</code>; engine misses fall back to plain{" "}
-            <code>link</code>.
-          </p>
           <pre className="text-xs bg-black rounded-lg p-4 overflow-auto max-h-96 font-mono">
             {JSON.stringify(liveResolved, null, 2)}
           </pre>
@@ -184,13 +230,14 @@ export default async function CurrencyPreviewPage() {
             <code className="text-amber-400">
               {process.env.ENGINE_API_URL ||
                 process.env.ENGINE_PRICES_URL ||
-                "(not set — items fall back to link chips)"}
+                "(not set)"}
             </code>
           </div>
           <div>
             Currency detection uses <code>classId</code> returned by the
-            engine (<code>StackableCurrency</code>, <code>Currency</code>);
-            uniques and rares keep the hover tooltip path.
+            engine. Icons fall through three layers: <code>Item.iconUrl</code>{" "}
+            (ninja-enriched), inline mention, then wiki{" "}
+            <code>Special:Filepath</code> for items not in ninja.
           </div>
         </footer>
       </div>

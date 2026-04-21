@@ -345,33 +345,20 @@ export const blockContentComponents: PortableTextComponents = {
     // Inline PoE item reference — injected by the placeholder resolver for
     // `{{item:Name}}`. Renders the same icon+tooltip combo used by
     // Sanity-authored `poeItem` blocks, but inline inside the paragraph.
+    // Currency placeholders carry isCurrency + priceInfo so the tooltip
+    // can switch to the centered-icon-with-price variant.
     poeItem: ({ value }: any) => {
       if (!value?.rawText) return null;
-      return <PoeItemBlogCard value={{ _type: 'poeItem', rawText: value.rawText, iconUrl: value.iconUrl }} />;
-    },
-    // Currency / fragment chip — icon + linked name, no tooltip. Used for
-    // items whose tooltip would be a generic "Right click to use" stub.
-    iconLink: ({ value, children }: any) => {
-      const href = value?.href || '#';
-      const iconUrl = value?.iconUrl as string | null | undefined;
       return (
-        <Link
-          href={href}
-          className="inline-flex items-center gap-1 align-baseline text-amber-500 hover:text-amber-400 underline underline-offset-2 decoration-amber-500/40"
-          title={value?.name ? `View ${value.name}` : undefined}
-        >
-          {iconUrl && (
-            <Image
-              src={iconUrl}
-              alt=""
-              width={20}
-              height={20}
-              unoptimized
-              className="inline-block w-5 h-5 align-text-bottom"
-            />
-          )}
-          {children}
-        </Link>
+        <PoeItemBlogCard
+          value={{
+            _type: 'poeItem',
+            rawText: value.rawText,
+            iconUrl: value.iconUrl,
+            isCurrency: value.isCurrency ?? false,
+            priceInfo: value.priceInfo ?? null,
+          }}
+        />
       );
     },
   },

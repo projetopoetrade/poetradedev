@@ -367,26 +367,11 @@ function expandSpan(span: any, state: ResolveState, markDefs: any[]): any[] {
           nextKey(),
         ),
       );
-    } else if (resolved.type === 'iconLink') {
-      // Currency-style chip — icon inline + linked name, no hover tooltip.
-      const chipKey = `phchip-${span._key ?? 'auto'}-${keyCounter++}`;
-      markDefs.push({
-        _key: chipKey,
-        _type: 'iconLink',
-        href: resolved.href,
-        iconUrl: resolved.iconUrl,
-        name: resolved.text,
-      });
-      out.push(
-        makeSpan(
-          resolved.text,
-          [...originalMarks.filter((m) => m !== 'link'), chipKey],
-          nextKey(),
-        ),
-      );
     } else {
       // Inline item reference — renders via the `poeItem` mark handler,
-      // which mounts the PoeItemBlogCard tooltip.
+      // which mounts the PoeItemBlogCard tooltip. Currency markers carry
+      // extra metadata so the tooltip can render the centered-icon variant
+      // with a price block.
       const itemKey = `phitem-${span._key ?? 'auto'}-${keyCounter++}`;
       markDefs.push({
         _key: itemKey,
@@ -394,6 +379,8 @@ function expandSpan(span: any, state: ResolveState, markDefs: any[]): any[] {
         rawText: resolved.rawText,
         iconUrl: resolved.iconUrl,
         itemName: resolved.text,
+        isCurrency: resolved.isCurrency ?? false,
+        priceInfo: resolved.priceInfo ?? null,
       });
       out.push(makeSpan(resolved.text, [...originalMarks, itemKey], nextKey()));
     }
@@ -419,8 +406,18 @@ function makeSpan(text: string, marks: string[], key: string) {
 type ResolvedFragment =
   | { type: 'text'; text: string }
   | { type: 'link'; text: string; href: string }
-  | { type: 'iconLink'; text: string; href: string; iconUrl: string | null }
-  | { type: 'item'; text: string; rawText: string; iconUrl: string | null };
+  | {
+      type: 'item';
+      text: string;
+      rawText: string;
+      iconUrl: string | null;
+      isCurrency?: boolean;
+      priceInfo?: {
+        chaosValue: number;
+        divineValue: number;
+        listingCount: number | null;
+      } | null;
+    };
 
 function resolvePlaceholder(ph: Placeholder, state: ResolveState): ResolvedFragment {
   switch (ph.kind) {
@@ -483,26 +480,24 @@ function resolveItem(ph: Placeholder, state: ResolveState): ResolvedFragment {
   }
 
   const text = data.name || ph.value;
-  // Currencies don't carry useful tooltip content (just generic descriptions
-  // like "Right click to use"). Render them as an icon + clickable name
-  // instead of a hover tooltip — that's what readers actually want when a
-  // post mentions Divine Orb in passing.
-  if (isCurrencyClass(data.classId, data.rarity)) {
-    const locale = state.ctx.locale || 'en';
-    const localePrefix = locale && locale !== 'en' ? `/${locale}` : '';
-    return {
-      type: 'iconLink',
-      text,
-      href: `${localePrefix}/products/${slugify(text)}`,
-      iconUrl: data.iconUrl ?? null,
-    };
-  }
-
+  // Currencies get a tooltip variant that swaps the rare-item layout for
+  // a centered icon + price block. Price comes from the same state.prices
+  // map populated for {{price:…}} placeholders — for {{item:Divine Orb}} we
+  // pre-add the name to the price fetch list at collect time.
+  const priceEntry = state.prices[text.toLowerCase()];
   return {
     type: 'item',
     text,
     rawText: data.rawText,
     iconUrl: data.iconUrl ?? null,
+    isCurrency: isCurrencyClass(data.classId, data.rarity),
+    priceInfo: priceEntry
+      ? {
+          chaosValue: priceEntry.chaos,
+          divineValue: priceEntry.divine,
+          listingCount: priceEntry.listingCount ?? null,
+        }
+      : null,
   };
 }
 

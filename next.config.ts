@@ -48,6 +48,11 @@ const nextConfig: NextConfig = {
       {
         hostname: "web.poecdn.com",
       },
+      {
+        // Wiki Special:Filepath redirects for items poe.ninja doesn't track
+        // (Chaos Orb, defunct sextants, niche bases). 302s to the actual CDN.
+        hostname: "www.poewiki.net",
+      },
     ],
   },
 
