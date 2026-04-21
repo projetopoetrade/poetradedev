@@ -41,10 +41,18 @@ export async function resolveBlocks(
   //    Portable Text block per paragraph so the rest of this pipeline (and
   //    the site's `blockContentComponents`) can treat each paragraph
   //    independently — headings, prose, lists.
-  const expandedBlocks: any[] = [];
+  const splitBlocks: any[] = [];
   for (const b of blocks) {
-    for (const split of splitMarkdownBlock(b)) expandedBlocks.push(split);
+    for (const split of splitMarkdownBlock(b)) splitBlocks.push(split);
   }
+
+  // 0.5. Inline currency / scarab / gem mention enrichment: rewrite spans so
+  //      "Divine Orb" → "{{item:Divine Orb}}" before placeholder collection.
+  //      The downstream item-card flow then renders the same hover tooltip
+  //      + icon used by hand-authored {{item:…}} placeholders. Skips matches
+  //      that are already inside a `{{...}}` (negative lookbehind in the
+  //      regex) so author-curated tokens stay untouched.
+  const expandedBlocks = splitBlocks.map((b) => promoteInlineMentions(b));
 
   // 1. Collect every placeholder that needs a data fetch
   const priceNames = new Set<string>();
@@ -73,6 +81,87 @@ export async function resolveBlocks(
   // 3. Walk the tree, transforming spans
   const state: ResolveState = { ctx, prices, items };
   return expandedBlocks.map((b) => transformBlock(promoteMarkdownHeading(b), state));
+}
+
+// ---------------------------------------------------------------------------
+// Inline mention promotion — turns bare "Divine Orb" mentions into
+// `{{item:Divine Orb}}` so the downstream resolver picks them up and
+// produces the same icon + hover tooltip as hand-authored placeholders.
+//
+// Coverage is intentionally a curated whitelist instead of "any title-case
+// phrase" — we want zero false positives in prose. Names match
+// case-insensitively; the resolver looks them up in the engine, which
+// itself is case-insensitive.
+// ---------------------------------------------------------------------------
+
+const INLINE_ITEM_MENTIONS: string[] = [
+  // Currencies — most-mentioned first
+  'Mirror of Kalandra',
+  'Divine Orb',
+  'Exalted Orb',
+  'Chaos Orb',
+  'Awakened Sextant',
+  'Orb of Annulment',
+  'Orb of Alchemy',
+  'Orb of Fusing',
+  'Orb of Scouring',
+  'Orb of Regret',
+  'Orb of Chance',
+  'Vaal Orb',
+  'Regal Orb',
+  'Blessed Orb',
+  "Cartographer's Chisel",
+  "Gemcutter's Prism",
+  'Eternal Orb',
+  "Jeweller's Orb",
+  'Orb of Transmutation',
+  'Orb of Augmentation',
+  'Chromatic Orb',
+  'Hinekora\u2019s Lock',
+  "Hinekora's Lock",
+  'Mirror Shard',
+  'Exalted Shard',
+  'Ancient Orb',
+  'Harbinger\u2019s Orb',
+  'Veiled Chaos Orb',
+  // Fragments
+  'Sacrifice at Dawn',
+  'Sacrifice at Dusk',
+  'Sacrifice at Midnight',
+  'Sacrifice at Noon',
+  'Mortal Grief',
+  'Mortal Hope',
+  'Mortal Rage',
+  'Mortal Ignorance',
+];
+
+const INLINE_MENTION_REGEX = (() => {
+  // Sort longest-first so "Mirror of Kalandra" wins over partial overlaps.
+  const sorted = Array.from(new Set(INLINE_ITEM_MENTIONS)).sort((a, b) => b.length - a.length);
+  const escaped = sorted.map((s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+  // Negative lookbehind blocks matches that already sit inside `{{kind:`
+  // (so `{{item:Divine Orb}}` and `{{price:Divine Orb}}` are left alone).
+  return new RegExp(`(?<!\\{\\{[a-z]+:)\\b(?:${escaped.join('|')})\\b(?![|}])`, 'gi');
+})();
+
+function promoteInlineMentions(block: any): any {
+  if (!block || typeof block !== 'object' || block._type !== 'block') return block;
+  if (!Array.isArray(block.children)) return block;
+  const newChildren = block.children.map((c: any) => {
+    if (!c || typeof c !== 'object' || c._type !== 'span') return c;
+    if (typeof c.text !== 'string' || !c.text) return c;
+    // Skip spans that already carry marks — they came from Sanity with intent
+    // (link, strong, etc.) and we shouldn't rewrite their text.
+    if (Array.isArray(c.marks) && c.marks.length > 0) return c;
+    if (!INLINE_MENTION_REGEX.test(c.text)) {
+      INLINE_MENTION_REGEX.lastIndex = 0;
+      return c;
+    }
+    INLINE_MENTION_REGEX.lastIndex = 0;
+    const rewritten = c.text.replace(INLINE_MENTION_REGEX, (m: string) => `{{item:${m}}}`);
+    return { ...c, text: rewritten };
+  });
+  return { ...block, children: newChildren };
 }
 
 /**
