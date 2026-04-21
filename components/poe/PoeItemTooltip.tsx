@@ -67,6 +67,10 @@ export function ItemTooltip({
   const nameColorHsl =
     RARITY_NAME_COLOR_HSL[item.rarity] ?? RARITY_NAME_COLOR_HSL.Normal;
   const headerTextures = HEADER_TEXTURES[item.rarity];
+  // Currencies use plain off-white descriptive text rather than the
+  // implicit/explicit blue used for rare-mod stat lines.
+  const isCurrency = item.rarity === "Currency";
+  const currencyTextColor = "#c8c8c8";
 
   const influences = item.influences ?? [];
   const isFracturedItem = Boolean(item.fractured);
@@ -352,7 +356,11 @@ export function ItemTooltip({
               <p
                 key={`implicit-${i}`}
                 className={implicitLineClass}
-                style={{ color: `hsl(${MOD_COLOR_HSL[mod.type]})` }}
+                style={{
+                  color: isCurrency
+                    ? currencyTextColor
+                    : `hsl(${MOD_COLOR_HSL[mod.type]})`,
+                }}
               >
                 {mod.text}
               </p>
@@ -379,8 +387,9 @@ export function ItemTooltip({
                     : "leading-tight first-letter:text-[16px]"
                 }
                 style={{
-                  color:
-                    mod.type === "crafted"
+                  color: isCurrency
+                    ? currencyTextColor
+                    : mod.type === "crafted"
                       ? "#ffffff"
                       : `hsl(${MOD_COLOR_HSL[mod.type]})`,
                 }}

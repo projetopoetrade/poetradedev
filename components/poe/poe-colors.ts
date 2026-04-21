@@ -17,6 +17,8 @@ export const POE_COLORS = {
     Magic: "240, 100%, 77%",
     Normal: "0, 0%, 78%",
     Gem: "176, 71%, 37%",
+    // Currency name in-game — soft tan, ≈rgb(170, 158, 130)
+    Currency: "40, 22%, 60%",
   },
   socket: {
     R: "0, 100%, 50%",   // Strength - Red
@@ -48,6 +50,7 @@ export const RARITY_NAME_COLOR_HSL: Record<string, string> = {
   Magic: POE_COLORS.rarity.Magic,
   Normal: POE_COLORS.rarity.Normal,
   Gem: POE_COLORS.rarity.Gem,
+  Currency: POE_COLORS.rarity.Currency,
 };
 
 export const MOD_COLOR_HSL: Record<string, string> = {
