@@ -1457,7 +1457,14 @@ export async function parsePobXml(xmlString: string): Promise<PobBuildData> {
     interface RawSpecData {
       title: string;
       nodes: number[];
-      rawMasteryEffects: number[]; // just effectIds, Lua format {id1,id2,...}
+      /**
+       * PoB serialises mastery selections as Lua-style pairs:
+       * `masteryEffects="{nodeId1,effectId1},{nodeId2,effectId2},..."`.
+       * We keep both so mastery resolution can do a direct lookup on the
+       * node id. A lone-number fallback tolerates hypothetical older/looser
+       * producers — real PoB always emits pairs.
+       */
+      rawMasteryEffects: Array<{ nodeId: number; effectId: number }>;
       rawSockets: Array<{ nodeId: number; itemId: string }>;
     }
 
@@ -1475,16 +1482,34 @@ export async function parsePobXml(xmlString: string): Promise<PobBuildData> {
         spec.getAttribute("title") ||
         (specElements.length === 1 ? "Passive Tree" : `Tree ${i + 1}`);
 
-      // Mastery effects: stored as Lua set attribute {effectId1,effectId2,...}
-      const rawMasteryEffects: number[] = [];
+      // Mastery effects: Lua set attribute `{nodeId,effectId},...`. Match
+      // every `{a,b}` group with a regex — simpler and resilient to spaces
+      // than stripping braces and splitting on commas (which would treat
+      // every nodeId as an effectId, so the name of half the masteries
+      // would fall back to the `"Mastery <nodeId>"` placeholder).
+      const rawMasteryEffects: Array<{ nodeId: number; effectId: number }> = [];
       const masteryEffectsStr = spec.getAttribute("masteryEffects") || "";
       if (masteryEffectsStr && masteryEffectsStr !== "{}") {
-        const inner = masteryEffectsStr.replace(/[{}]/g, "").trim();
-        if (inner) {
-          for (const part of inner.split(",")) {
-            const effectId = parseInt(part.trim(), 10);
-            if (!isNaN(effectId) && effectId > 0)
-              rawMasteryEffects.push(effectId);
+        const pairRegex = /\{\s*(\d+)\s*,\s*(\d+)\s*\}/g;
+        let match: RegExpExecArray | null;
+        while ((match = pairRegex.exec(masteryEffectsStr)) !== null) {
+          const nodeId = parseInt(match[1], 10);
+          const effectId = parseInt(match[2], 10);
+          if (!isNaN(nodeId) && !isNaN(effectId) && effectId > 0) {
+            rawMasteryEffects.push({ nodeId, effectId });
+          }
+        }
+        // Legacy fallback: only trigger when no pair matched — this keeps
+        // old-format fixtures working without double counting real pairs.
+        if (rawMasteryEffects.length === 0) {
+          const inner = masteryEffectsStr.replace(/[{}]/g, "").trim();
+          if (inner) {
+            for (const part of inner.split(",")) {
+              const effectId = parseInt(part.trim(), 10);
+              if (!isNaN(effectId) && effectId > 0) {
+                rawMasteryEffects.push({ nodeId: 0, effectId });
+              }
+            }
           }
         }
       }
@@ -1521,24 +1546,45 @@ export async function parsePobXml(xmlString: string): Promise<PobBuildData> {
             keystones.push({ name: nd.name, iconUrl });
           }
         }
-        for (const effectId of raw.rawMasteryEffects) {
+        for (const { nodeId, effectId } of raw.rawMasteryEffects) {
           let masteryName = `Mastery ${effectId}`;
           let stats: string[] = [];
           let iconUrl: string | undefined;
-          for (const node of Object.values(skilltree)) {
-            if (!node.isMastery || !node.masteryEffects) continue;
-            const effect = node.masteryEffects.find(
+
+          // Fast path: pair carries the mastery node id — direct lookup.
+          const directNode =
+            nodeId > 0 ? skilltree[String(nodeId)] : undefined;
+          if (directNode?.isMastery && directNode.masteryEffects) {
+            const effect = directNode.masteryEffects.find(
               (e) => e.effect === effectId,
             );
             if (effect) {
-              masteryName = node.name;
+              masteryName = directNode.name;
               stats = effect.stats;
-              iconUrl = node.icon
-                ? `https://web.poecdn.com/image/${node.icon}.png`
+              iconUrl = directNode.icon
+                ? `https://web.poecdn.com/image/${directNode.icon}.png`
                 : undefined;
-              break;
             }
           }
+
+          // Fallback scan: legacy format (no nodeId) or node has drifted.
+          if (stats.length === 0 && masteryName === `Mastery ${effectId}`) {
+            for (const node of Object.values(skilltree)) {
+              if (!node.isMastery || !node.masteryEffects) continue;
+              const effect = node.masteryEffects.find(
+                (e) => e.effect === effectId,
+              );
+              if (effect) {
+                masteryName = node.name;
+                stats = effect.stats;
+                iconUrl = node.icon
+                  ? `https://web.poecdn.com/image/${node.icon}.png`
+                  : undefined;
+                break;
+              }
+            }
+          }
+
           masteries.push({ masteryName, iconUrl, stats });
         }
       }

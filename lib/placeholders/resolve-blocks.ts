@@ -3,6 +3,7 @@ import type { PortableTextBlock } from 'sanity';
 import { parsePlaceholders, slugify, type Placeholder } from './parse';
 import { fetchPrices, type PriceEntry } from './fetch-prices';
 import { fetchItemRawMany, type ItemRawData } from './fetch-items';
+import { fetchPobItemRawMany, type PobItemRawData } from './fetch-pob-items';
 
 /**
  * Pre-resolve placeholders in a Portable Text tree.
@@ -23,6 +24,7 @@ interface ResolveState {
   ctx: ResolveContext;
   prices: Record<string, PriceEntry>;
   items: Record<string, ItemRawData>;
+  pobItems: Record<string, PobItemRawData>;
 }
 
 // ---------------------------------------------------------------------------
@@ -57,6 +59,7 @@ export async function resolveBlocks(
   // 1. Collect every placeholder that needs a data fetch
   const priceNames = new Set<string>();
   const itemNames = new Set<string>();
+  const pobItemIds = new Set<string>();
   for (const block of expandedBlocks) {
     for (const ph of collectFromBlock(block)) {
       if (ph.kind === 'price') priceNames.add(ph.value);
@@ -65,21 +68,25 @@ export async function resolveBlocks(
         // Item cards also want the inline price sub-line
         priceNames.add(ph.value);
       }
+      if (ph.kind === 'pobitem') pobItemIds.add(ph.value);
     }
   }
 
   // 2. Batch-fetch in parallel
-  const [prices, items] = await Promise.all([
+  const [prices, items, pobItems] = await Promise.all([
     priceNames.size
       ? fetchPrices(Array.from(priceNames), ctx.league || 'Mirage')
       : Promise.resolve({} as Record<string, PriceEntry>),
     itemNames.size
       ? fetchItemRawMany(Array.from(itemNames))
       : Promise.resolve({} as Record<string, ItemRawData>),
+    pobItemIds.size
+      ? fetchPobItemRawMany(Array.from(pobItemIds))
+      : Promise.resolve({} as Record<string, PobItemRawData>),
   ]);
 
   // 3. Walk the tree, transforming spans
-  const state: ResolveState = { ctx, prices, items };
+  const state: ResolveState = { ctx, prices, items, pobItems };
   return expandedBlocks.map((b) => transformBlock(promoteMarkdownHeading(b), state));
 }
 
@@ -429,6 +436,8 @@ function resolvePlaceholder(ph: Placeholder, state: ResolveState): ResolvedFragm
       return resolveLink(ph, state);
     case 'item':
       return resolveItem(ph, state);
+    case 'pobitem':
+      return resolvePobItem(ph, state);
     case 'patch': {
       // Single-value placeholder e.g. {{patch:3.28}} — emit the value literally
       return { type: 'text', text: ph.value };
@@ -471,6 +480,35 @@ function resolvePrice(ph: Placeholder, state: ResolveState): ResolvedFragment {
       return { type: 'text', text: `${primary}${secondary}` };
     }
   }
+}
+
+/**
+ * Resolves `{{pobitem:<id>}}` into the same `poeItem` mark used by canonical
+ * items — re-using `PoeItemBlogCard` end-to-end. The value is a PobItem id
+ * (cuid), not a name, because snapshots carry exact mod rolls that the
+ * Item table can't reproduce (rare rolls, corrupted implicits, enchants).
+ *
+ * When the engine can't find the id (TTL expired, typo, wrong env), the
+ * placeholder falls back to the literal token-less text so readers never
+ * see a raw `{{...}}` string.
+ */
+function resolvePobItem(ph: Placeholder, state: ResolveState): ResolvedFragment {
+  const data = state.pobItems[ph.value];
+  if (!data || !data.rawText) {
+    return { type: 'text', text: data?.name ?? ph.value };
+  }
+  const text = data.name || ph.value;
+  return {
+    type: 'item',
+    text,
+    rawText: data.rawText,
+    iconUrl: data.iconUrl ?? null,
+    isCurrency: isMinimalTooltipItem(data.classId, data.rarity),
+    isGem: isGemClass(data.classId),
+    primaryAttribute: null,
+    isAwakened: false,
+    isVaal: false,
+  };
 }
 
 function resolveItem(ph: Placeholder, state: ResolveState): ResolvedFragment {
