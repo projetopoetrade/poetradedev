@@ -3,7 +3,14 @@ import { setRequestLocale } from 'next-intl/server'
 import Link from 'next/link'
 import { buildCanonical, buildAbsoluteUrl, buildBreadcrumbSchema } from '@/lib/utils'
 import { CurrencyCta } from '@/components/currency-cta'
+import { fetchTreeLayout } from '@/lib/engine/tree'
+import { getEngineApiBase } from '@/lib/placeholders/engine'
 import PobViewerClient from './PobViewerClient'
+
+const FALLBACK_DATA_JSON_URL =
+  'https://raw.githubusercontent.com/grindinggear/skilltree-export/master/data.json'
+const FALLBACK_ASSET_BASE_URL = 'https://web.poecdn.com/image/'
+const FALLBACK_PATCH = 'master'
 
 export const revalidate = 3600
 
@@ -44,6 +51,8 @@ export default async function PobViewerPage(props: PageProps) {
   setRequestLocale(locale)
   const isPt = locale === 'pt-br'
 
+  const layout = await fetchTreeLayout()
+
   const breadcrumbSchema = buildBreadcrumbSchema([
     { name: 'Home', url: '/' },
     { name: isPt ? 'Ferramentas' : 'Tools', url: '/tools' },
@@ -79,7 +88,14 @@ export default async function PobViewerPage(props: PageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(webAppSchema) }}
       />
       <div className="container mx-auto px-4 py-8 min-h-[calc(100vh-10rem)]">
-        <PobViewerClient locale={locale} />
+        <PobViewerClient
+          locale={locale}
+          engineBase={getEngineApiBase()}
+          treeDataUrl={layout?.treeDataUrl ?? null}
+          dataJsonUrl={layout?.dataJsonUrl ?? FALLBACK_DATA_JSON_URL}
+          assetBaseUrl={layout?.assetBaseUrl ?? FALLBACK_ASSET_BASE_URL}
+          patch={layout?.patch ?? FALLBACK_PATCH}
+        />
         <CurrencyCta locale={locale} />
         
         {/* SEO Text Block (SSR) */}

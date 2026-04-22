@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -49,10 +49,19 @@ import type {
   PobSocketedJewel,
   PobTreeSpec,
 } from "@/lib/pob-parser";
+import { PassiveTreeViewer } from "@/components/tree/PassiveTreeViewer";
+import { PassivePortalTooltip } from "@/components/tree/PassivePortalTooltip";
+import { useTreeData } from "@/components/tree/useTreeData";
+import type { PositionedNode } from "@/components/tree/tree-types";
 import { GEM_JEWEL_IMAGE_MAP } from "./gem-jewel-image-map";
 
 interface Props {
   locale: string;
+  engineBase: string | null;
+  treeDataUrl: string | null;
+  dataJsonUrl: string;
+  assetBaseUrl: string;
+  patch: string;
 }
 
 // ─── PoE.ninja CSS Variables (HSL) ────────────────────────────────────────────
@@ -1292,7 +1301,14 @@ function JewelSlotCard({
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
-export default function PobViewerClient({ locale }: Props) {
+export default function PobViewerClient({
+  locale,
+  engineBase,
+  treeDataUrl,
+  dataJsonUrl,
+  assetBaseUrl,
+  patch,
+}: Props) {
   const isPt = locale === "pt-br";
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -1307,8 +1323,24 @@ export default function PobViewerClient({ locale }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<PobBuildData | null>(null);
   const [activeItemSetIndex, setActiveItemSetIndex] = useState(0);
-  const iframeRef = useRef<HTMLIFrameElement>(null);
   const [activeTreeSpecIndex, setActiveTreeSpecIndex] = useState(0);
+  const [treeHover, setTreeHover] = useState<{
+    node: PositionedNode | null;
+    screenX: number;
+    screenY: number;
+  }>({ node: null, screenX: 0, screenY: 0 });
+
+  const engineUrl = useMemo(() => {
+    if (!engineBase || !treeDataUrl) return undefined;
+    return treeDataUrl.startsWith("http")
+      ? treeDataUrl
+      : `${engineBase}${treeDataUrl}`;
+  }, [engineBase, treeDataUrl]);
+  const treeState = useTreeData({
+    engine: engineUrl,
+    github: dataJsonUrl,
+    patch,
+  });
   const [gemInfoMap, setGemInfoMap] = useState<
     Record<
       string,
@@ -1356,18 +1388,10 @@ export default function PobViewerClient({ locale }: Props) {
       );
       if (matchingSpecIndex !== -1) {
         setActiveTreeSpecIndex(matchingSpecIndex);
-        const specNodes = treeDetails.Specs[matchingSpecIndex]?.nodes ?? [];
-        if (specNodes.length > 0) sendNodesToViewer(specNodes);
       }
     }
   }
 
-  function sendNodesToViewer(nodeIds: number[]) {
-    iframeRef.current?.contentWindow?.postMessage(
-      { type: "loadNodes", nodeIds },
-      "*",
-    );
-  }
   async function handleAnalyze(
     from?: string,
     options?: { updateUrl?: boolean },
@@ -1414,8 +1438,6 @@ export default function PobViewerClient({ locale }: Props) {
         setData(buildData);
         const specIdx = buildData.TreeDetails?.ActiveSpecIndex ?? 0;
         setActiveTreeSpecIndex(specIdx);
-        const specNodes = buildData.TreeDetails?.Specs?.[specIdx]?.nodes ?? [];
-        if (specNodes.length > 0) sendNodesToViewer(specNodes);
         // Atualiza a URL com ?id=<hash> quando disponível
         if ((options?.updateUrl ?? true) && sharedId) {
           const params = new URLSearchParams(searchParams.toString());
@@ -1458,6 +1480,11 @@ export default function PobViewerClient({ locale }: Props) {
   const hasMultipleSpecs = (treeDetails?.Specs?.length ?? 0) > 1;
   const activeViewSpec: PobTreeSpec | undefined =
     treeDetails?.Specs[activeTreeSpecIndex];
+
+  const allocatedIds = useMemo(
+    () => new Set(activeViewSpec?.nodes ?? []),
+    [activeViewSpec],
+  );
 
   // Ao trocar o loadout (ItemSet), mostramos o SkillSet correspondente (por índice) quando disponível.
   const skillSetIndex = Math.min(
@@ -2250,11 +2277,7 @@ export default function PobViewerClient({ locale }: Props) {
                       <Select
                         value={String(activeTreeSpecIndex)}
                         onValueChange={(v) => {
-                          const idx = Number(v);
-                          setActiveTreeSpecIndex(idx);
-                          sendNodesToViewer(
-                            treeDetails.Specs[idx]?.nodes ?? [],
-                          );
+                          setActiveTreeSpecIndex(Number(v));
                         }}
                       >
                         <SelectTrigger className="w-56 h-8 text-sm">
@@ -2271,22 +2294,36 @@ export default function PobViewerClient({ locale }: Props) {
                     </div>
                   )}
 
-                  {/* Grid: iframe 75% | sidebar 25% no desktop; stack no mobile */}
+                  {/* Grid: tree 75% | sidebar 25% no desktop; stack no mobile */}
                   <div className="grid gap-4 grid-cols-1 md:grid-cols-[3fr_1fr]">
-                    <iframe
-                      ref={iframeRef}
-                      src="/tools/viewer.html"
-                      title="Passive Skill Tree"
-                      className="w-full rounded-lg border border-zinc-700"
-                      style={{
-                        height: isMobile ? "320px" : "600px",
-                        background: "#0c0c0c",
-                      }}
-                      onLoad={() => {
-                        const nodes = activeViewSpec?.nodes;
-                        if (nodes?.length) sendNodesToViewer(nodes);
-                      }}
-                    />
+                    {treeState.status === "loading" && (
+                      <div
+                        className="flex w-full items-center justify-center rounded-lg border border-zinc-700 bg-neutral-950 text-sm text-neutral-400"
+                        style={{ height: isMobile ? 320 : 600 }}
+                      >
+                        {isPt ? "Carregando árvore…" : "Loading tree…"}
+                      </div>
+                    )}
+                    {treeState.status === "error" && (
+                      <div
+                        className="flex w-full items-center justify-center rounded-lg border border-red-900 bg-red-950/30 px-4 text-center text-sm text-red-300"
+                        style={{ height: isMobile ? 320 : 600 }}
+                      >
+                        {isPt ? "Falha ao carregar árvore: " : "Failed to load tree: "}
+                        {treeState.error}
+                      </div>
+                    )}
+                    {treeState.status === "ready" && (
+                      <PassiveTreeViewer
+                        doc={treeState.doc}
+                        allocatedIds={allocatedIds}
+                        assetBaseUrl={assetBaseUrl}
+                        height={isMobile ? 320 : 600}
+                        onNodeHover={(node, screenX, screenY) =>
+                          setTreeHover({ node, screenX, screenY })
+                        }
+                      />
+                    )}
 
                     {/* Sidebar: Keystones + Masteries */}
                     <div
@@ -2375,6 +2412,11 @@ export default function PobViewerClient({ locale }: Props) {
           </>
         )}
       </div>
+      <PassivePortalTooltip
+        node={treeHover.node}
+        screenX={treeHover.screenX}
+        screenY={treeHover.screenY}
+      />
     </TooltipProvider>
   );
 }
