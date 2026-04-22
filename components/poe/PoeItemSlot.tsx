@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import type { PobItem, PobSocketedJewel } from "@/lib/pob-parser";
+import type { PobItem, PobSocketedJewel } from "@/lib/pob-types";
 import { RARITY_BORDER_HSL } from "@/components/poe/poe-colors";
 import { getEffectiveItemIconUrl, getJewelLocalPath } from "@/components/poe/poe-icon-utils";
 import { ItemTooltip, JewelTooltip } from "@/components/poe/PoeItemTooltip";

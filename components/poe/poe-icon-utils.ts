@@ -1,4 +1,4 @@
-import type { PobItem } from "@/lib/pob-parser";
+import type { PobItem } from "@/lib/pob-types";
 import { GEM_JEWEL_IMAGE_MAP } from "@/app/[locale]/(site)/tools/pob-viewer/gem-jewel-image-map";
 
 // ─── Flask icon maps ───────────────────────────────────────────────────────────

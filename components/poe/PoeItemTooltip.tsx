@@ -1,5 +1,5 @@
 import Image from "next/image";
-import type { PobItem, PobSocketedJewel } from "@/lib/pob-parser";
+import type { PobItem, PobSocketedJewel } from "@/lib/pob-types";
 import {
   POE_COLORS,
   RARITY_NAME_COLOR_HSL,

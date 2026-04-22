@@ -1,4 +1,4 @@
-import type { PobItem, ParsedMod } from "@/lib/pob-parser";
+import type { PobItem, ParsedMod } from "@/lib/pob-types";
 
 /**
  * Parser para o formato de texto bruto de itens do Path of Exile.

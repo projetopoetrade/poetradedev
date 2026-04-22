@@ -1,28 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
-import crypto from "crypto";
+import { generatePobShortHash } from "@/lib/pob-hash";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const BASE62_CHARS =
-  "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-
-function toBase62(buffer: Buffer): string {
-  let num = BigInt("0x" + buffer.toString("hex"));
-  let result = "";
-  const zero = BigInt(0);
-  const sixtyTwo = BigInt(62);
-  while (num > zero) {
-    result = BASE62_CHARS[Number(num % sixtyTwo)] + result;
-    num = num / sixtyTwo;
-  }
-  return result;
-}
-
-function generateShortHash(pobCode: string): string {
-  const hash = crypto.createHash("sha256").update(pobCode).digest();
-  return toBase62(hash).slice(0, 10);
+interface ShareResponse {
+  id: string;
+  pobbinKey: string | null;
 }
 
 export async function POST(request: NextRequest) {
@@ -43,22 +28,26 @@ export async function POST(request: NextRequest) {
 
     const supabase = await createClient();
     const trimmed = pobCode.trim();
-    const pobHash = generateShortHash(trimmed);
+    const pobHash = generatePobShortHash(trimmed);
 
     const existing = await supabase
       .from("pob_builds")
-      .select("pob_hash")
+      .select("pob_hash, pobbin_key")
       .eq("pob_hash", pobHash)
       .maybeSingle();
 
     if (existing.data?.pob_hash) {
-      return NextResponse.json({ id: existing.data.pob_hash });
+      const payload: ShareResponse = {
+        id: existing.data.pob_hash,
+        pobbinKey: (existing.data.pobbin_key as string | null) ?? null,
+      };
+      return NextResponse.json(payload);
     }
 
     const { data, error } = await supabase
       .from("pob_builds")
       .insert({ pob_code: trimmed, pob_hash: pobHash })
-      .select("pob_hash")
+      .select("pob_hash, pobbin_key")
       .single();
 
     if (error) {
@@ -69,7 +58,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    return NextResponse.json({ id: data.pob_hash });
+    const payload: ShareResponse = {
+      id: data.pob_hash,
+      pobbinKey: (data.pobbin_key as string | null) ?? null,
+    };
+    return NextResponse.json(payload);
   } catch (err: unknown) {
     const message =
       err instanceof Error ? err.message : "Erro ao criar link compartilhável.";
@@ -91,7 +84,7 @@ export async function GET(request: NextRequest) {
 
     const { data, error } = await supabase
       .from("pob_builds")
-      .select("pob_code")
+      .select("pob_code, pobbin_key")
       .eq("pob_hash", id)
       .single();
 
@@ -103,7 +96,10 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    return NextResponse.json({ pobCode: data.pob_code });
+    return NextResponse.json({
+      pobCode: data.pob_code,
+      pobbinKey: (data.pobbin_key as string | null) ?? null,
+    });
   } catch (err: unknown) {
     const message =
       err instanceof Error ? err.message : "Erro ao buscar PoB compartilhado.";

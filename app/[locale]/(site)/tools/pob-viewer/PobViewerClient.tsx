@@ -18,7 +18,6 @@ import {
   Diamond,
   ClipboardCopy,
   Check,
-  ExternalLink,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -48,11 +47,12 @@ import type {
   PobKeystone,
   PobSocketedJewel,
   PobTreeSpec,
-} from "@/lib/pob-parser";
+} from "@/lib/pob-types";
 import { PassiveTreeViewer } from "@/components/tree/PassiveTreeViewer";
 import { PassivePortalTooltip } from "@/components/tree/PassivePortalTooltip";
 import { useTreeData } from "@/components/tree/useTreeData";
 import type { PositionedNode } from "@/components/tree/tree-types";
+import { OpenInPobButton } from "@/components/poe/OpenInPobButton";
 import { GEM_JEWEL_IMAGE_MAP } from "./gem-jewel-image-map";
 
 interface Props {
@@ -1358,8 +1358,7 @@ export default function PobViewerClient({
   const [isMobile, setIsMobile] = useState(false);
   const [sharedBuildId, setSharedBuildId] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
-  const [pobKey, setPobKey] = useState<string | null>(null);
-  const [pobLoading, setPobLoading] = useState(false);
+  const [pobbinKey, setPobbinKey] = useState<string | null>(null);
 
   useEffect(() => {
     const mq = window.matchMedia("(pointer: coarse)");
@@ -1402,7 +1401,7 @@ export default function PobViewerClient({
     setError(null);
     setData(null);
     setSharedBuildId(null);
-    setPobKey(null);
+    setPobbinKey(null);
     try {
       // 1) Criar/obter hash compartilhável no Supabase
       let sharedId: string | null = null;
@@ -1416,6 +1415,7 @@ export default function PobViewerClient({
         if (shareRes.ok && shareJson.id) {
           sharedId = shareJson.id as string;
           setSharedBuildId(shareJson.id as string);
+          setPobbinKey((shareJson.pobbinKey as string | null) ?? null);
         }
       } catch {
         // Se der erro no share, seguimos apenas com o parse normal
@@ -1847,111 +1847,14 @@ export default function PobViewerClient({
                 {/* Open in PoB + Copy Code buttons */}
                 {input.trim() && (
                   <div className="ml-auto flex items-center gap-1.5">
-                    <TooltipProvider delayDuration={300}>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <button
-                            onClick={async () => {
-                              console.log("[OpenInPoB] botão clicado");
-                              if (pobKey) {
-                                const existingUrl = `pob://pobbin/${pobKey}`;
-                                console.log(
-                                  "[OpenInPoB] reutilizando chave existente:",
-                                  pobKey,
-                                );
-                                console.log(
-                                  "[OpenInPoB] abrindo URL:",
-                                  existingUrl,
-                                );
-                                window.location.href = existingUrl;
-                                return;
-                              }
-                              const code = input.trim();
-                              console.log(
-                                "[OpenInPoB] código (primeiros 80 chars):",
-                                code.slice(0, 80),
-                              );
-                              console.log(
-                                "[OpenInPoB] tamanho do código:",
-                                code.length,
-                              );
-                              setPobLoading(true);
-                              try {
-                                console.log(
-                                  "[OpenInPoB] chamando /api/tools/pob-viewer/pobbin...",
-                                );
-                                const res = await fetch(
-                                  "/api/tools/pob-viewer/pobbin",
-                                  {
-                                    method: "POST",
-                                    headers: {
-                                      "Content-Type": "application/json",
-                                    },
-                                    body: JSON.stringify({ code }),
-                                  },
-                                );
-                                console.log(
-                                  "[OpenInPoB] resposta status:",
-                                  res.status,
-                                  res.statusText,
-                                );
-                                const json = (await res.json()) as {
-                                  key?: string;
-                                  error?: string;
-                                };
-                                console.log("[OpenInPoB] resposta json:", json);
-                                if (json.key) {
-                                  console.log(
-                                    "[OpenInPoB] chave recebida:",
-                                    json.key,
-                                  );
-                                  const pobUrl = `pob://pobbin/${json.key}`;
-                                  console.log(
-                                    "[OpenInPoB] abrindo URL:",
-                                    pobUrl,
-                                  );
-                                  setPobKey(json.key);
-                                  window.location.href = pobUrl;
-                                } else {
-                                  console.error(
-                                    "[OpenInPoB] sem chave na resposta:",
-                                    json,
-                                  );
-                                }
-                              } catch (err) {
-                                console.error(
-                                  "[OpenInPoB] erro na requisição:",
-                                  err,
-                                );
-                              } finally {
-                                setPobLoading(false);
-                              }
-                            }}
-                            disabled={pobLoading}
-                            className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-medium rounded-md border border-amber-500/40 bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
-                          >
-                            {pobLoading ? (
-                              <Loader2 className="w-3 h-3 animate-spin" />
-                            ) : (
-                              <ExternalLink className="w-3 h-3" />
-                            )}
-                            {pobLoading
-                              ? isPt
-                                ? "Gerando..."
-                                : "Generating..."
-                              : "Open in PoB"}
-                          </button>
-                        </TooltipTrigger>
-                        <TooltipContent
-                          side="bottom"
-                          className="text-xs max-w-[220px] text-center"
-                        >
-                          {isPt
-                            ? "Abre a build no Path of Building (requer PoB instalado)"
-                            : "Opens the build in Path of Building (requires PoB installed)"}
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
+                    <div className="hidden md:flex">
+                      <OpenInPobButton
+                        pobCode={input.trim()}
+                        cachedKey={pobbinKey}
+                        onKeyResolved={setPobbinKey}
+                        label={isPt ? "Abrir no PoB" : "Open in PoB"}
+                      />
+                    </div>
                     <TooltipProvider delayDuration={300}>
                       <Tooltip>
                         <TooltipTrigger asChild>

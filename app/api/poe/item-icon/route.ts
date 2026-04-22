@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getItemIconMap } from "@/lib/pob-parser";
+import { getItemIconMap } from "@/lib/poe-ninja-icon-map";
 
 // GET /api/poe/item-icon?name=Headhunter&baseName=Leather%20Belt
 // Retorna a URL do ícone vinda do poe.ninja (ou null).
