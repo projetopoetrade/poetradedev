@@ -53,7 +53,19 @@ import { PassivePortalTooltip } from "@/components/tree/PassivePortalTooltip";
 import { useTreeData } from "@/components/tree/useTreeData";
 import type { PositionedNode } from "@/components/tree/tree-types";
 import { OpenInPobButton } from "@/components/poe/OpenInPobButton";
+import { GemTooltip } from "@/components/poe/PoeGemTooltip";
 import { GEM_JEWEL_IMAGE_MAP } from "./gem-jewel-image-map";
+
+interface GemRawEntry {
+  rawText: string;
+  primaryAttribute?: "Strength" | "Dexterity" | "Intelligence" | null;
+  isAwakened?: boolean;
+  isVaal?: boolean;
+}
+
+function makeGemKey(name: string, level: number, quality: number): string {
+  return `${name}@${level}/${quality}`;
+}
 
 interface Props {
   locale: string;
@@ -1350,6 +1362,7 @@ export default function PobViewerClient({
       }
     >
   >({});
+  const [gemRawMap, setGemRawMap] = useState<Record<string, GemRawEntry>>({});
 
   const hasUrlParam = Boolean(
     searchParams.get("id") || searchParams.get("code"),
@@ -1614,6 +1627,38 @@ export default function PobViewerClient({
         setGemInfoMap(json);
       })
       .catch((err) => console.error("[PoB] Erro ao buscar gem info:", err));
+  }, [data]);
+
+  // Engine rawText (in-game tooltip) per (name, level, quality). Resolves
+  // the same { rawText, gemInfo } the blog/preview already uses, so the
+  // tooltip layout matches across the site. Falls back to the lighter
+  // gem_description tooltip when the engine has no record.
+  useEffect(() => {
+    setGemRawMap({});
+    if (!data) return;
+    const allGems = (data.SkillSets ?? []).flatMap((ss) =>
+      (ss.skills ?? []).flatMap((sg) => sg.gems ?? []),
+    );
+    const dedup = new Map<
+      string,
+      { name: string; level: number; quality: number }
+    >();
+    for (const g of allGems) {
+      if (!g.name) continue;
+      const key = makeGemKey(g.name, g.level, g.quality);
+      if (!dedup.has(key)) {
+        dedup.set(key, { name: g.name, level: g.level, quality: g.quality });
+      }
+    }
+    if (dedup.size === 0) return;
+    fetch("/api/tools/poe-gems/raw", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ gems: Array.from(dedup.values()) }),
+    })
+      .then((r) => (r.ok ? r.json() : {}))
+      .then((map: Record<string, GemRawEntry>) => setGemRawMap(map))
+      .catch(() => {});
   }, [data]);
 
   // Auto-carregar PoB se houver ?id= (shared build), ?code= (legacy inline
@@ -2097,37 +2142,63 @@ export default function PobViewerClient({
                                       </Badge>
                                     );
 
-                                    if (!info?.gem_description) return badge;
-
-                                    const gemTooltipContent = (
-                                      <div className="max-w-[240px] space-y-1 text-left p-2.5 bg-popover text-popover-foreground rounded-md border border-border shadow-md">
-                                        <p className="font-semibold text-[12px]">
-                                          {gem.name}
-                                        </p>
-                                        <p className="text-muted-foreground text-[10px] leading-snug">
-                                          {info.gem_description}
-                                        </p>
-                                        <div className="flex gap-2 text-[10px] pt-0.5 border-t border-border/40">
-                                          <span>
-                                            Lv{" "}
-                                            <span className="text-foreground font-medium">
-                                              {gem.level}
-                                            </span>
-                                          </span>
-                                          <span>
-                                            Q{" "}
-                                            <span className="text-sky-400 font-medium">
-                                              +{gem.quality}%
-                                            </span>
-                                          </span>
-                                        </div>
-                                      </div>
+                                    const gemKey = makeGemKey(
+                                      gem.name,
+                                      gem.level,
+                                      gem.quality,
                                     );
+                                    const gemRaw = gemRawMap[gemKey];
+
+                                    let tooltipContent: React.ReactNode = null;
+                                    if (gemRaw?.rawText) {
+                                      tooltipContent = (
+                                        <GemTooltip
+                                          name={gem.name}
+                                          rawText={gemRaw.rawText}
+                                          iconUrl={getGemLocalPath(
+                                            gem.name,
+                                            gem.is_support,
+                                          )}
+                                          primaryAttribute={
+                                            gemRaw.primaryAttribute ?? null
+                                          }
+                                          isAwakened={gemRaw.isAwakened}
+                                          isVaal={gemRaw.isVaal}
+                                        />
+                                      );
+                                    } else if (info?.gem_description) {
+                                      tooltipContent = (
+                                        <div className="max-w-[240px] space-y-1 text-left p-2.5 bg-popover text-popover-foreground rounded-md border border-border shadow-md">
+                                          <p className="font-semibold text-[12px]">
+                                            {gem.name}
+                                          </p>
+                                          <p className="text-muted-foreground text-[10px] leading-snug">
+                                            {info.gem_description}
+                                          </p>
+                                          <div className="flex gap-2 text-[10px] pt-0.5 border-t border-border/40">
+                                            <span>
+                                              Lv{" "}
+                                              <span className="text-foreground font-medium">
+                                                {gem.level}
+                                              </span>
+                                            </span>
+                                            <span>
+                                              Q{" "}
+                                              <span className="text-sky-400 font-medium">
+                                                +{gem.quality}%
+                                              </span>
+                                            </span>
+                                          </div>
+                                        </div>
+                                      );
+                                    }
+
+                                    if (!tooltipContent) return badge;
 
                                     return (
                                       <SmartTooltip
                                         key={j}
-                                        content={gemTooltipContent}
+                                        content={tooltipContent}
                                         side="left"
                                         align="start"
                                         isMobile={isMobile}
