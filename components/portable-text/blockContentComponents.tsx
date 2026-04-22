@@ -17,6 +17,7 @@ interface PoeCtaBlock {
   slug?: string;
   gameVersion?: CtaGameVersion;
   leagueName?: string | null;
+  productIconUrl?: string | null;
   locale?: string;
 }
 
@@ -389,6 +390,7 @@ export const blockContentComponents: PortableTextComponents = {
       const gameVersion: CtaGameVersion = value?.gameVersion ?? "path-of-exile-1";
       const leagueName = value?.leagueName ?? null;
       const productSlug = value?.slug ?? undefined;
+      const productIconUrl = value?.productIconUrl ?? null;
       // PortableText provider doesn't pass post locale into block handlers,
       // so we read it from the document <html lang> attribute the i18n
       // middleware sets at request time. Falls back to "en".
@@ -403,6 +405,7 @@ export const blockContentComponents: PortableTextComponents = {
           leagueName={leagueName}
           variant={variant}
           productSlug={productSlug}
+          productIconUrl={productIconUrl}
         />
       );
     },

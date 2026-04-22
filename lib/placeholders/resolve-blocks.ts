@@ -7,6 +7,7 @@ import { fetchPobItemRawMany, type PobItemRawData } from './fetch-pob-items';
 import { fetchPassiveRawMany, type PassiveRawData } from './fetch-passive';
 import { fetchCurrencyNames } from './fetch-currency-names';
 import { getCurrentTempLeague } from '@/app/actions';
+import { getItemIconMap } from '@/lib/poe-ninja-icon-map';
 import type { CtaGameVersion } from '@/components/currency-cta';
 
 /**
@@ -121,24 +122,41 @@ export async function resolveBlocks(
   });
   const ctxGameVersion: CtaGameVersion = ctx.gameVersion ?? 'path-of-exile-1';
   const leagueByGameVersion = new Map<CtaGameVersion, string | null>();
+  const productIconBySlug = new Map<string, string | null>();
   if (ctaBlocksByIdx.size > 0) {
-    // Walk the CTAs and figure out which gameVersions actually appear so
-    // we only fetch the leagues we need. Most posts use one; mixed posts
-    // (rare but possible — a comparison piece) trigger both.
+    // Walk the CTAs and figure out which gameVersions + product slugs
+    // actually appear so we only fetch what we need. Most posts use one
+    // gameVersion; mixed posts (rare comparison pieces) trigger both.
     const gvs = new Set<CtaGameVersion>();
+    const productSlugs = new Set<string>();
     ctaBlocksByIdx.forEach((ph) => {
-      gvs.add(parseCtaModifier(ph.modifier, ctxGameVersion).gameVersion);
+      const parsed = parseCtaModifier(ph.modifier, ctxGameVersion);
+      gvs.add(parsed.gameVersion);
+      if (ph.value.toLowerCase() === 'product' && parsed.slug) {
+        productSlugs.add(parsed.slug);
+      }
     });
-    const leagues = await Promise.all(
-      Array.from(gvs).map(
-        async (gv) => [gv, await getCurrentTempLeague(gv)] as const,
+    const [leagues, iconMap] = await Promise.all([
+      Promise.all(
+        Array.from(gvs).map(
+          async (gv) => [gv, await getCurrentTempLeague(gv)] as const,
+        ),
       ),
-    );
+      productSlugs.size > 0 ? getItemIconMap() : Promise.resolve(null),
+    ]);
     for (const [gv, name] of leagues) leagueByGameVersion.set(gv, name);
+    if (iconMap) {
+      productSlugs.forEach((slug) => {
+        const lookupName = slug.replace(/-/g, ' ').toLowerCase();
+        productIconBySlug.set(slug, iconMap.get(lookupName) ?? null);
+      });
+    }
   }
   const ctaResolved = expandedBlocks.map((b, i) => {
     const ph = ctaBlocksByIdx.get(i);
-    return ph ? makeCtaBlock(ph, leagueByGameVersion, ctxGameVersion) : b;
+    return ph
+      ? makeCtaBlock(ph, leagueByGameVersion, productIconBySlug, ctxGameVersion)
+      : b;
   });
 
   // 3. Walk the tree, transforming spans (CTA blocks pass through unchanged
@@ -216,6 +234,7 @@ function parseCtaModifier(
 function makeCtaBlock(
   ph: Placeholder,
   leagueByGameVersion: Map<CtaGameVersion, string | null>,
+  productIconBySlug: Map<string, string | null>,
   defaultGameVersion: CtaGameVersion,
 ): any {
   const variant = ph.value.toLowerCase();
@@ -223,13 +242,15 @@ function makeCtaBlock(
   const leagueName = leagueByGameVersion.get(gameVersion) ?? null;
   const key = `cta-${Math.random().toString(36).slice(2, 8)}`;
   if (variant === 'product') {
+    const productSlug = slug ?? 'divine-orb';
     return {
       _type: 'poeCta',
       _key: key,
       variant: 'product',
-      slug: slug ?? 'divine-orb',
+      slug: productSlug,
       gameVersion,
       leagueName,
+      productIconUrl: productIconBySlug.get(productSlug) ?? null,
     };
   }
   return {

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Coins } from "lucide-react";
 import { getProductUrl } from "@/utils/url-helper";
@@ -15,6 +16,8 @@ interface CurrencyCtaProps {
   variant?: CtaVariant;
   /** Required when variant === "product". The product slug (e.g. "divine-orb"). */
   productSlug?: string;
+  /** Resolved product icon URL (poe.ninja). Only used in product variant. */
+  productIconUrl?: string | null;
 }
 
 const POE1_PRODUCTS: Array<{ name: string; slug: string }> = [
@@ -66,6 +69,7 @@ export function CurrencyCta({
   leagueName,
   variant = "currency",
   productSlug,
+  productIconUrl,
 }: CurrencyCtaProps) {
   const isPt = locale === "pt-br";
   const browseAll = browseAllHref(locale, gameVersion);
@@ -73,42 +77,55 @@ export function CurrencyCta({
   if (variant === "product" && productSlug) {
     const productName = deslugify(productSlug);
     const headingPt = leagueName
-      ? `Precisa de ${productName} em ${leagueName}?`
-      : `Precisa de ${productName}?`;
+      ? `${productName} em ${leagueName}`
+      : productName;
     const headingEn = leagueName
-      ? `Need ${productName} in ${leagueName}?`
-      : `Need ${productName}?`;
-    const bodyPt = leagueName
-      ? `Compre ${productName} em ${leagueName} com entrega rápida e preços competitivos no Path of Trade.`
-      : `Compre ${productName} com entrega rápida e preços competitivos no Path of Trade.`;
-    const bodyEn = leagueName
-      ? `Buy ${productName} in ${leagueName} with fast delivery and competitive prices at Path of Trade.`
-      : `Buy ${productName} with fast delivery and competitive prices at Path of Trade.`;
+      ? `${productName} in ${leagueName}`
+      : productName;
+    const bodyPt = "Entrega rápida. Preços competitivos. Estoque verificado.";
+    const bodyEn = "Fast delivery. Competitive prices. Verified stock.";
 
     return (
       <section className="not-prose mt-8 rounded-lg border border-border/50 bg-muted/30 p-5">
-        <div className="flex items-center gap-2 mb-2">
-          <Coins className="h-3.5 w-3.5 text-muted-foreground" />
-          <h2 className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-            {isPt ? headingPt : headingEn}
-          </h2>
-        </div>
-        <p className="text-xs text-muted-foreground/80 mb-3">
-          {isPt ? bodyPt : bodyEn}
-        </p>
-        <div className="flex flex-wrap items-center gap-3">
-          <Link
-            href={getProductUrl(productName, locale, undefined, undefined, gameVersion)}
-            className="inline-flex items-center rounded-full border border-foreground/40 bg-foreground/10 px-4 py-1.5 text-xs font-semibold text-foreground hover:bg-foreground/20 transition-colors"
-          >
-            {isPt ? `Comprar ${productName}` : `Buy ${productName}`}
-          </Link>
-          <Link
-            href={browseAll}
-            className="text-[11px] text-muted-foreground hover:text-foreground underline-offset-4 hover:underline"
-          >
-            {isPt ? "ou ver todos os produtos" : "or browse all products"}
-          </Link>
+        <div className="flex items-center gap-4">
+          {productIconUrl ? (
+            <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-md bg-background/40 p-1">
+              <Image
+                src={productIconUrl}
+                alt={productName}
+                fill
+                sizes="56px"
+                unoptimized
+                className="object-contain"
+              />
+            </div>
+          ) : (
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-md bg-background/40">
+              <Coins className="h-6 w-6 text-muted-foreground/60" />
+            </div>
+          )}
+          <div className="flex-1 min-w-0">
+            <h2 className="text-sm font-semibold text-foreground truncate">
+              {isPt ? headingPt : headingEn}
+            </h2>
+            <p className="text-xs text-muted-foreground/80 mt-0.5">
+              {isPt ? bodyPt : bodyEn}
+            </p>
+          </div>
+          <div className="flex flex-col items-end gap-1 shrink-0">
+            <Link
+              href={getProductUrl(productName, locale, undefined, undefined, gameVersion)}
+              className="inline-flex items-center rounded-full border border-foreground/40 bg-foreground/10 px-4 py-1.5 text-xs font-semibold text-foreground hover:bg-foreground/20 transition-colors"
+            >
+              {isPt ? `Comprar ${productName}` : `Buy ${productName}`}
+            </Link>
+            <Link
+              href={browseAll}
+              className="text-[10px] text-muted-foreground hover:text-foreground underline-offset-4 hover:underline"
+            >
+              {isPt ? "ou ver todos" : "or browse all"}
+            </Link>
+          </div>
         </div>
       </section>
     );
