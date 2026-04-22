@@ -234,6 +234,45 @@ export const getLeagues = async (gameVersion: 'path-of-exile-1' | 'path-of-exile
   return data;
 };
 
+/**
+ * Names treated as permanent (Standard / Hardcore / SSF / Ruthless variants)
+ * — excluded from "current temp league" lookups so CTAs and smart defaults
+ * never point at Standard. New temp leagues never collide here because GGG
+ * names them after the league theme (Settlers, Necropolis, Ancestor, ...).
+ */
+const PERMANENT_LEAGUE_PATTERNS = [
+  /^Standard$/i,
+  /^Hardcore$/i,
+  /\bStandard$/i,
+  /\bHardcore$/i,
+  /^SSF\b/i,
+  /^Ruthless\b/i,
+];
+
+function isPermanentLeague(name: string): boolean {
+  return PERMANENT_LEAGUE_PATTERNS.some((re) => re.test(name));
+}
+
+/**
+ * Returns the current temp league name for the given game version, or null
+ * when the leagues table only has permanent variants (e.g., between leagues).
+ * Backed by `getLeagues` so a fresh active row picked up by the admin
+ * dashboard automatically becomes the new default.
+ */
+export const getCurrentTempLeague = async (
+  gameVersion: 'path-of-exile-1' | 'path-of-exile-2',
+): Promise<string | null> => {
+  try {
+    const leagues = await getLeagues(gameVersion);
+    const temp = (leagues ?? []).find(
+      (l: { name?: string }) => l?.name && !isPermanentLeague(l.name),
+    );
+    return temp?.name ?? null;
+  } catch {
+    return null;
+  }
+};
+
 export const getAllActiveLeagues = async (): Promise<{ name: string; gameVersion: string }[]> => {
   const supabase = createPublicClient();
   const { data, error } = await supabase

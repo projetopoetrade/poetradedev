@@ -2,7 +2,7 @@ import { Metadata } from 'next'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { buildCanonical, buildBreadcrumbSchema } from '@/lib/utils'
 import PriceTrackerClient from '@/components/PriceTracker/PriceTrackerClient'
-import { CurrencyCta } from '@/components/currency-cta'
+import { CurrencyCtaSection } from '@/components/currency-cta-section'
 import { Link } from '@/i18n/navigation'
 import { ArrowLeft } from 'lucide-react'
 
@@ -326,7 +326,7 @@ export default async function PriceTrackerPage(props: {
           </dl>
         </section>
 
-        <CurrencyCta locale={locale} />
+        <CurrencyCtaSection locale={locale} />
       </main>
     </>
   )

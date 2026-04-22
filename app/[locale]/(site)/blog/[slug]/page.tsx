@@ -101,7 +101,13 @@ const SingleBlogPage = async (props: PageProps) => {
   // Resolve `{{price:...}}`, `{{link:...}}` etc in the post body with live data.
   // Runs server-side; cached via Next.js fetch revalidate (5 min) so repeat
   // requests for the same post don't re-hit poe.ninja/engine.
-  const resolvedBody = await resolveBlocks(post.body, { locale });
+  // gameVersion: propagated from the post so {{cta:...}} placeholders default
+  // to the right game without requiring an explicit poe1/poe2 modifier.
+  const resolvedBody = await resolveBlocks(post.body, {
+    locale,
+    gameVersion:
+      post.gameVersion === "path-of-exile-2" ? "path-of-exile-2" : "path-of-exile-1",
+  });
   const postWithResolvedBody = { ...post, body: resolvedBody } as Blog;
 
   const imageUrl = post.mainImage?.asset?.url as string | undefined;

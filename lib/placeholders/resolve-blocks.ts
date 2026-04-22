@@ -6,6 +6,8 @@ import { fetchItemRawMany, type ItemRawData } from './fetch-items';
 import { fetchPobItemRawMany, type PobItemRawData } from './fetch-pob-items';
 import { fetchPassiveRawMany, type PassiveRawData } from './fetch-passive';
 import { fetchCurrencyNames } from './fetch-currency-names';
+import { getCurrentTempLeague } from '@/app/actions';
+import type { CtaGameVersion } from '@/components/currency-cta';
 
 /**
  * Pre-resolve placeholders in a Portable Text tree.
@@ -20,6 +22,13 @@ import { fetchCurrencyNames } from './fetch-currency-names';
 interface ResolveContext {
   locale: string;
   league?: string;
+  /**
+   * Default game version for `{{cta:...}}` placeholders that don't carry an
+   * explicit poe1/poe2 modifier. Falls back to "path-of-exile-1" when the
+   * caller doesn't pass it (most preview pages); blog/[slug] should pass
+   * the post's `gameVersion` so the CTA naturally aligns with the post.
+   */
+  gameVersion?: CtaGameVersion;
 }
 
 interface ResolveState {
@@ -98,9 +107,138 @@ export async function resolveBlocks(
       : Promise.resolve(new Map<string, PassiveRawData>()),
   ]);
 
-  // 3. Walk the tree, transforming spans
+  // 2.5. Block-level CTA promotion. The {{cta:...}} placeholder doesn't fit
+  //      the inline-span model — it renders a full-width banner — so we
+  //      convert any block whose ENTIRE trimmed text is a single cta
+  //      placeholder into a custom `_type: 'poeCta'` block. The renderer
+  //      registers a handler for that block type. Mixed prose containing a
+  //      cta is left alone (the placeholder will fall through to the text
+  //      fallback in resolvePlaceholder, which drops it silently).
+  const ctaBlocksByIdx = new Map<number, Placeholder>();
+  expandedBlocks.forEach((b, i) => {
+    const ph = extractCtaPlaceholder(b);
+    if (ph) ctaBlocksByIdx.set(i, ph);
+  });
+  const ctxGameVersion: CtaGameVersion = ctx.gameVersion ?? 'path-of-exile-1';
+  const leagueByGameVersion = new Map<CtaGameVersion, string | null>();
+  if (ctaBlocksByIdx.size > 0) {
+    // Walk the CTAs and figure out which gameVersions actually appear so
+    // we only fetch the leagues we need. Most posts use one; mixed posts
+    // (rare but possible — a comparison piece) trigger both.
+    const gvs = new Set<CtaGameVersion>();
+    ctaBlocksByIdx.forEach((ph) => {
+      gvs.add(parseCtaModifier(ph.modifier, ctxGameVersion).gameVersion);
+    });
+    const leagues = await Promise.all(
+      Array.from(gvs).map(
+        async (gv) => [gv, await getCurrentTempLeague(gv)] as const,
+      ),
+    );
+    for (const [gv, name] of leagues) leagueByGameVersion.set(gv, name);
+  }
+  const ctaResolved = expandedBlocks.map((b, i) => {
+    const ph = ctaBlocksByIdx.get(i);
+    return ph ? makeCtaBlock(ph, leagueByGameVersion, ctxGameVersion) : b;
+  });
+
+  // 3. Walk the tree, transforming spans (CTA blocks pass through unchanged
+  //    because transformBlock only touches `_type: 'block'`).
   const state: ResolveState = { ctx, prices, items, pobItems, passives };
-  return expandedBlocks.map((b) => transformBlock(promoteMarkdownHeading(b), state));
+  return ctaResolved.map((b) => transformBlock(promoteMarkdownHeading(b), state));
+}
+
+// ---------------------------------------------------------------------------
+// CTA block promotion — converts a paragraph whose only content is a
+// {{cta:variant|modifier?}} placeholder into a custom block the renderer
+// picks up. Inline cta placeholders (mixed with prose) are left alone and
+// fall through to the text fallback path.
+// ---------------------------------------------------------------------------
+
+function extractCtaPlaceholder(block: any): Placeholder | null {
+  if (!block || typeof block !== 'object' || block._type !== 'block') return null;
+  if (!Array.isArray(block.children)) return null;
+  const fullText = block.children
+    .filter((c: any) => c && typeof c === 'object' && typeof c.text === 'string')
+    .map((c: any) => c.text)
+    .join('')
+    .trim();
+  if (!fullText) return null;
+  const placeholders = parsePlaceholders(fullText);
+  if (placeholders.length !== 1) return null;
+  const ph = placeholders[0];
+  if (ph.kind !== 'cta') return null;
+  if (ph.raw.trim() !== fullText) return null;
+  return ph;
+}
+
+/**
+ * Modifier tokens that select a specific game version. Accepted in any
+ * position of a pipe-separated modifier list (e.g. `divine-orb|poe2` or
+ * `poe2|divine-orb`) so the LLM doesn't have to remember an order.
+ */
+const POE1_TOKENS = new Set(['poe1', 'poe-1', 'path-of-exile-1']);
+const POE2_TOKENS = new Set(['poe2', 'poe-2', 'path-of-exile-2']);
+
+/**
+ * Parses a CTA placeholder modifier into `{ slug?, gameVersion }`.
+ * Modifier supports up to two pipe-separated tokens: a game-version alias
+ * (poe1/poe2 + variants) and a product slug. Unknown tokens are taken as
+ * the slug. When no game-version token is present, `defaultGameVersion`
+ * (from ResolveContext) wins.
+ *
+ * Examples (with defaultGameVersion = 'path-of-exile-1'):
+ *   undefined            → { gameVersion: 'path-of-exile-1' }
+ *   "poe2"               → { gameVersion: 'path-of-exile-2' }
+ *   "divine-orb"         → { slug: 'divine-orb', gameVersion: 'path-of-exile-1' }
+ *   "divine-orb|poe2"    → { slug: 'divine-orb', gameVersion: 'path-of-exile-2' }
+ *   "poe2|divine-orb"    → { slug: 'divine-orb', gameVersion: 'path-of-exile-2' }
+ */
+function parseCtaModifier(
+  modifier: string | undefined,
+  defaultGameVersion: CtaGameVersion,
+): { slug?: string; gameVersion: CtaGameVersion } {
+  if (!modifier) return { gameVersion: defaultGameVersion };
+  const parts = modifier
+    .split('|')
+    .map((p) => p.trim())
+    .filter(Boolean);
+  let slug: string | undefined;
+  let gameVersion = defaultGameVersion;
+  for (const part of parts) {
+    const lower = part.toLowerCase();
+    if (POE2_TOKENS.has(lower)) gameVersion = 'path-of-exile-2';
+    else if (POE1_TOKENS.has(lower)) gameVersion = 'path-of-exile-1';
+    else if (slug === undefined) slug = lower;
+  }
+  return { slug, gameVersion };
+}
+
+function makeCtaBlock(
+  ph: Placeholder,
+  leagueByGameVersion: Map<CtaGameVersion, string | null>,
+  defaultGameVersion: CtaGameVersion,
+): any {
+  const variant = ph.value.toLowerCase();
+  const { slug, gameVersion } = parseCtaModifier(ph.modifier, defaultGameVersion);
+  const leagueName = leagueByGameVersion.get(gameVersion) ?? null;
+  const key = `cta-${Math.random().toString(36).slice(2, 8)}`;
+  if (variant === 'product') {
+    return {
+      _type: 'poeCta',
+      _key: key,
+      variant: 'product',
+      slug: slug ?? 'divine-orb',
+      gameVersion,
+      leagueName,
+    };
+  }
+  return {
+    _type: 'poeCta',
+    _key: key,
+    variant: 'currency',
+    gameVersion,
+    leagueName,
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -431,6 +569,12 @@ function resolvePlaceholder(ph: Placeholder, state: ResolveState): ResolvedFragm
       // Single-value placeholder e.g. {{patch:3.28}} — emit the value literally
       return { type: 'text', text: ph.value };
     }
+    case 'cta':
+      // Inline `{{cta:...}}` (mixed inside prose) is intentionally dropped —
+      // the banner is block-level and the standalone-block pre-pass already
+      // converted any solo-paragraph occurrences. Returning empty text keeps
+      // the surrounding prose flowing instead of leaking the literal token.
+      return { type: 'text', text: '' };
     default:
       // Unknown kind — fall back to the human-readable value
       return { type: 'text', text: ph.value };

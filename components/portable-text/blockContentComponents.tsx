@@ -10,6 +10,15 @@ import Link from "next/link";
 import React from "react";
 import { PoeItemBlogCard } from "@/components/poe/PoeItemBlogCard";
 import type { SanityPoeItem } from "@/components/poe/PoeItemBlogCard";
+import { CurrencyCta, type CtaGameVersion, type CtaVariant } from "@/components/currency-cta";
+
+interface PoeCtaBlock {
+  variant?: CtaVariant;
+  slug?: string;
+  gameVersion?: CtaGameVersion;
+  leagueName?: string | null;
+  locale?: string;
+}
 
 const ImageComponent = ({ value, isInline }: { value: any; isInline?: boolean }) => {
   const { width, height } = getImageDimensions(value);
@@ -371,6 +380,32 @@ export const blockContentComponents: PortableTextComponents = {
     poeItem: ({ value }: { value: SanityPoeItem }) => (
       <PoeItemBlogCard value={value} />
     ),
+    // Block-level CTA injected by the placeholder resolver for `{{cta:...}}`
+    // standing alone in a paragraph. Renders the same CurrencyCta the
+    // standalone tools pages use, but with the league snapshot from when
+    // resolveBlocks ran (no client-side fetch needed).
+    poeCta: ({ value }: { value: PoeCtaBlock }) => {
+      const variant: CtaVariant = value?.variant ?? "currency";
+      const gameVersion: CtaGameVersion = value?.gameVersion ?? "path-of-exile-1";
+      const leagueName = value?.leagueName ?? null;
+      const productSlug = value?.slug ?? undefined;
+      // PortableText provider doesn't pass post locale into block handlers,
+      // so we read it from the document <html lang> attribute the i18n
+      // middleware sets at request time. Falls back to "en".
+      const locale =
+        typeof document !== "undefined"
+          ? document.documentElement.lang || "en"
+          : "en";
+      return (
+        <CurrencyCta
+          locale={locale}
+          gameVersion={gameVersion}
+          leagueName={leagueName}
+          variant={variant}
+          productSlug={productSlug}
+        />
+      );
+    },
   },
 };
 

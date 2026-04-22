@@ -1,4 +1,4 @@
-import { getProductsWithParams, getLeagues } from "@/app/actions";
+import { getProductsWithParams, getLeagues, getCurrentTempLeague } from "@/app/actions";
 import { Metadata } from "next";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -171,10 +171,12 @@ export default async function ProductDetailPage(props: {
 
     if (!targetLeague) {
       try {
+        // Smart default: prefer the current temp league (Standard / Hardcore /
+        // SSF / Ruthless variants are skipped). Falls back to first active
+        // league only if no temp league is registered.
+        const tempLeague = await getCurrentTempLeague(targetGameVersion);
         activeLeagues = await getLeagues(targetGameVersion);
-        if (activeLeagues && activeLeagues.length > 0) {
-          targetLeague = activeLeagues[0].name;
-        }
+        targetLeague = tempLeague ?? activeLeagues?.[0]?.name;
       } catch (e) {
         console.warn("Failed to fetch default leagues", e);
       }

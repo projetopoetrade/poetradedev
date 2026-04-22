@@ -2,7 +2,7 @@ import { Metadata } from 'next'
 import { setRequestLocale } from 'next-intl/server'
 import Link from 'next/link'
 import { buildCanonical, buildAbsoluteUrl, buildBreadcrumbSchema } from '@/lib/utils'
-import { CurrencyCta } from '@/components/currency-cta'
+import { CurrencyCtaSection } from '@/components/currency-cta-section'
 import { fetchTreeLayout } from '@/lib/engine/tree'
 import { getEngineApiBase } from '@/lib/placeholders/engine'
 import PobViewerClient from './PobViewerClient'
@@ -96,8 +96,10 @@ export default async function PobViewerPage(props: PageProps) {
           assetBaseUrl={layout?.assetBaseUrl ?? FALLBACK_ASSET_BASE_URL}
           patch={layout?.patch ?? FALLBACK_PATCH}
         />
-        <CurrencyCta locale={locale} />
-        
+        <div className="max-w-4xl mx-auto">
+          <CurrencyCtaSection locale={locale} />
+        </div>
+
         {/* SEO Text Block (SSR) */}
         <div className="mt-20 max-w-4xl mx-auto prose prose-invert prose-slate">
           {isPt ? (

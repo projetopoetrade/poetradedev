@@ -6,7 +6,7 @@ import {
   buildBreadcrumbSchema,
 } from "@/lib/utils";
 import BuildRandomizerClient from "./BuildRandomizerClient";
-import { CurrencyCta } from "@/components/currency-cta";
+import { CurrencyCtaSection } from "@/components/currency-cta-section";
 
 export const revalidate = 3600;
 
@@ -145,7 +145,7 @@ export default async function BuildRandomizerPage(props: PageProps) {
       />
       <BuildRandomizerClient locale={locale} />
       <div className="container mx-auto px-4 pb-8">
-        <CurrencyCta locale={locale} />
+        <CurrencyCtaSection locale={locale} />
       </div>
     </>
   );
