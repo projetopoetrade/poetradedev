@@ -76,6 +76,13 @@ const nextConfig: NextConfig = {
   experimental: {
     useCache: true,
   },
+
+  // Resolved at build time so app/sitemap.ts can stamp a stable lastmod on
+  // static pages — otherwise revalidate=300 would refresh that timestamp
+  // every 5 min and Googlebot would dessensitize to the signal.
+  env: {
+    BUILD_TIME: new Date().toISOString(),
+  },
   /* config options here */
   typescript: {
     ignoreBuildErrors: true,
