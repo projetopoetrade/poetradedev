@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { getOgLocale } from "@/lib/utils";
 
 export async function generateMetadata(props: {
     params: Promise<{ locale: string }>;
@@ -38,6 +39,7 @@ export async function generateMetadata(props: {
             description,
             url: canonicalUrl,
             type: "website",
+            ...getOgLocale(locale),
             siteName: "Path of Trade",
         },
         twitter: {

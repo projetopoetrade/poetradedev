@@ -122,6 +122,8 @@ export const generateMetadata = async (props: {
       description,
       url: canonical,
       type: "website",
+      locale: params.locale === "pt-br" ? "pt_BR" : "en_US",
+      alternateLocale: params.locale === "pt-br" ? ["en_US"] : ["pt_BR"],
       siteName: t("siteName"),
       images: productFn?.imgUrl ? [{ url: productFn.imgUrl }] : undefined,
     },

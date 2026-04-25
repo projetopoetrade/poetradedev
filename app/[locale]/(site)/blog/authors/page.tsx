@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { getAllAuthors, SanityAuthor } from "@/sanity/sanity-utils";
-import { buildCanonical, buildAbsoluteUrl } from "@/lib/utils";
+import { buildCanonical, buildAbsoluteUrl, getOgLocale } from "@/lib/utils";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { Link } from "@/i18n/navigation";
 
@@ -35,11 +35,12 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
     },
     openGraph: {
       title,
-      description: locale === "pt-br" 
+      description: locale === "pt-br"
         ? "Conheça os autores por trás dos artigos do Path of Trade"
         : "Meet the authors behind Path of Trade articles",
       url: canonical,
       type: "website",
+      ...getOgLocale(locale),
       siteName,
     },
   };

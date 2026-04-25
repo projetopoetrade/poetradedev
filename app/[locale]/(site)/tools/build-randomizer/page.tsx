@@ -4,6 +4,7 @@ import {
   buildCanonical,
   buildAbsoluteUrl,
   buildBreadcrumbSchema,
+  getOgLocale,
 } from "@/lib/utils";
 import BuildRandomizerClient from "./BuildRandomizerClient";
 import { CurrencyCtaSection } from "@/components/currency-cta-section";
@@ -45,6 +46,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
       description,
       url: canonical,
       type: "website",
+      ...getOgLocale(locale),
       siteName: "Path of Trade",
     },
     twitter: {

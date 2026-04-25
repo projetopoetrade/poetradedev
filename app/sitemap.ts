@@ -145,7 +145,31 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   for (const post of posts) {
     if (!post.slug) continue;
     const basePath = `/blog/${encodeURIComponent(post.slug)}`;
-    const languages = alternateLanguages(basePath);
+
+    // Build hreflang alternates from Sanity's translation.metadata, not from
+    // a shared-slug assumption. Each language has its own slug
+    // (e.g. EN "mana-issues--how-to-fix" vs PT-BR "problemas-com-mana-…").
+    // Emitting the current slug under every locale used to link to 404s,
+    // causing Google to drop the whole hreflang cluster.
+    const siblings = new Map<string, string>(); // language code → slug
+    if (post.language && post.slug) {
+      siblings.set(post.language, post.slug);
+    }
+    for (const t of post.translations || []) {
+      if (t.language && t.slug) siblings.set(t.language, t.slug);
+    }
+
+    const languages: Record<string, string> = {};
+    for (const locale of LOCALES) {
+      const siblingSlug = siblings.get(locale);
+      if (!siblingSlug) continue;
+      languages[HREFLANG_MAP[locale]] = `${SITE_URL}${localizedPath(
+        locale,
+        `/blog/${encodeURIComponent(siblingSlug)}`,
+      )}`;
+    }
+    const enAlternate = languages[HREFLANG_MAP[DEFAULT_LOCALE]];
+    if (enAlternate) languages["x-default"] = enAlternate;
 
     // If post.language is set, emit only that locale. Otherwise emit only
     // the default locale — avoids advertising a /pt-br/blog/<slug> URL

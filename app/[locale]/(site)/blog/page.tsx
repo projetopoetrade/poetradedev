@@ -51,6 +51,8 @@ export async function generateMetadata(props: MetadataProps): Promise<Metadata> 
       description,
       url: canonicalUrl,
       type: 'website',
+      locale: locale === 'pt-br' ? 'pt_BR' : 'en_US',
+      alternateLocale: locale === 'pt-br' ? ['en_US'] : ['pt_BR'],
       siteName: 'Path of Trade',
     },
     twitter: {

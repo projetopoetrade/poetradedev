@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { getBuildBySlug, getPublishedBuildSlugs, getRelatedBuilds } from "@/app/actions";
 import { getBuildGuideBySlug } from "@/sanity/sanity-utils";
-import { generateKeywords, buildBreadcrumbSchema } from "@/lib/utils";
+import { generateKeywords, buildBreadcrumbSchema, getOgLocale } from "@/lib/utils";
 import BuildHero from "@/components/Builds/BuildHero";
 import BuildGuide from "@/components/Builds/BuildGuide";
 import RelatedBuilds from "@/components/Builds/RelatedBuilds";
@@ -63,6 +63,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description,
       url: canonicalUrl,
       type: 'article',
+      ...getOgLocale(locale),
       siteName: 'Path of Trade',
       ...(build.image_url ? { images: [{ url: build.image_url }] } : {}),
     },

@@ -48,6 +48,16 @@ export function getHreflangAlternates(pathsByLocale: Record<string, string>, def
   return { languages };
 }
 
+// Open Graph locale mapping (BCP 47 with underscore, per Facebook spec).
+// Used by generateMetadata() across locale-aware pages so the rendered
+// <meta property="og:locale"> signals the page language to Facebook,
+// LinkedIn, and Google when they parse OG tags for localization hints.
+export function getOgLocale(locale: string): { locale: string; alternateLocale: string[] } {
+  return locale === 'pt-br'
+    ? { locale: 'pt_BR', alternateLocale: ['en_US'] }
+    : { locale: 'en_US', alternateLocale: ['pt_BR'] };
+}
+
 export function buildCanonical(pathOrUrl: string, locale?: string, defaultLocale: string = 'en') {
   // Force lowercase to avoid canonical mismatches (e.g. /products/Divine-Orb vs /products/divine-orb)
   pathOrUrl = pathOrUrl.toLowerCase();

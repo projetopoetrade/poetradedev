@@ -11,6 +11,11 @@ export type Author = {
   _ref?: number | string,
 };
 
+export type PostTranslation = {
+  language: "en" | "pt-br",
+  slug: string | null,
+};
+
 export type Blog = {
   _id: number,
   title: string,
@@ -30,4 +35,7 @@ export type Blog = {
       current: string,
     }
   },
+  // Populated by postQueryBySlug (sanity-query.ts). Contains both language
+  // siblings via Sanity's @sanity/document-internationalization metadata.
+  translations?: PostTranslation[],
 };

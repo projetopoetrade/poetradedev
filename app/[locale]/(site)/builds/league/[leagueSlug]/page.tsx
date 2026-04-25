@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 import { getBuilds, getPublishedLeagueSlugsFromBuilds } from "@/app/actions";
-import { buildAbsoluteUrl, buildBreadcrumbSchema } from "@/lib/utils";
+import { buildAbsoluteUrl, buildBreadcrumbSchema, getOgLocale } from "@/lib/utils";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import BuildCard from "@/components/Builds/BuildCard";
 import { Link } from "@/i18n/navigation";
@@ -70,6 +70,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description,
       url: canonicalUrl,
       type: "website",
+      ...getOgLocale(locale),
       siteName: "Path of Trade",
     },
     twitter: { card: "summary_large_image", title, description },

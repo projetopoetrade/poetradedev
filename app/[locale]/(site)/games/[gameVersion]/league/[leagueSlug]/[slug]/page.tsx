@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ChevronDown, ArrowLeft } from "lucide-react";
 import { getProductsWithParams, getAllActiveLeagues, getLeagueBySlugFromSupabase } from "@/app/actions";
-import { generateKeywords, buildBreadcrumbSchema } from "@/lib/utils";
+import { generateKeywords, buildBreadcrumbSchema, getOgLocale } from "@/lib/utils";
 import { encodeProductName } from "@/utils/url-helper";
 import CategoryItemCard from "@/components/category-item-card";
 import type { Product } from "@/lib/interface";
@@ -421,6 +421,7 @@ export async function generateMetadata(props: {
       description,
       url: canonicalUrl,
       type: "website",
+      ...getOgLocale(locale),
       siteName: "Path of Trade",
       images: isCategory
         ? [`${SITE_URL}/images/${gv === "path-of-exile-2" ? "path-of-exile2-card.webp" : "path-of-exile-card.webp"}`]

@@ -31,11 +31,20 @@ const supabaseClient =
 const toIso = (value: string | null | undefined): string =>
   value ? new Date(value).toISOString() : new Date().toISOString();
 
+export type SitemapPostTranslation = {
+  language: "en" | "pt-br";
+  slug: string | null;
+};
+
 export type SitemapPost = {
   slug: string;
   language: "en" | "pt-br" | null;
   lastmod: string;
   image: string | null;
+  // Sibling slugs per language — lets app/sitemap.ts emit hreflang alternates
+  // that point to the real translated URL instead of assuming a shared slug.
+  // Null when the post has no translation for that language.
+  translations: SitemapPostTranslation[];
 };
 
 export async function getSitemapPosts(): Promise<SitemapPost[]> {
@@ -44,6 +53,9 @@ export async function getSitemapPosts(): Promise<SitemapPost[]> {
     // Filters:
     //  - !(_id in path("drafts.**"))   → exclude unpublished drafts
     //  - publishedAt <= now()          → exclude scheduled future posts
+    // The `translations` projection hops into Sanity's translation.metadata
+    // document (created by @sanity/document-internationalization) to resolve
+    // sibling slugs across languages. Needed for correct hreflang.
     const query = `*[_type == "post"
       && defined(slug.current)
       && !(_id in path("drafts.**"))
@@ -52,13 +64,18 @@ export async function getSitemapPosts(): Promise<SitemapPost[]> {
       "slug": slug.current,
       "language": language,
       "lastmod": coalesce(publishedAt, _updatedAt),
-      "image": mainImage.asset->url
+      "image": mainImage.asset->url,
+      "translations": *[_type == "translation.metadata" && references(^._id)][0].translations[]{
+        "language": _key,
+        "slug": value->slug.current
+      }
     }`;
     const posts = await sanityClient.fetch<SitemapPost[]>(query);
     return (posts || []).map((p) => ({
       ...p,
       lastmod: toIso(p.lastmod),
       image: p.image ?? null,
+      translations: Array.isArray(p.translations) ? p.translations : [],
     }));
   } catch (error) {
     console.error("[sitemap] sanity posts fetch failed:", error);

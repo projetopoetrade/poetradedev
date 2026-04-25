@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
-import { buildCanonical, buildBreadcrumbSchema } from '@/lib/utils'
+import { buildCanonical, buildBreadcrumbSchema, getOgLocale } from '@/lib/utils'
 import PriceTrackerClient from '@/components/PriceTracker/PriceTrackerClient'
 import { CurrencyCtaSection } from '@/components/currency-cta-section'
 import { Link } from '@/i18n/navigation'
@@ -135,6 +135,7 @@ export async function generateMetadata(props: {
       description,
       url: canonicalUrl,
       type: 'website',
+      ...getOgLocale(locale),
       siteName: 'Path of Trade',
     },
     twitter: {

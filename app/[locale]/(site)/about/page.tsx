@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { buildCanonical, buildBreadcrumbSchema } from "@/lib/utils";
+import { buildCanonical, buildBreadcrumbSchema, getOgLocale } from "@/lib/utils";
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -58,6 +58,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
             description,
             url: canonicalUrl,
             type: "website",
+            ...getOgLocale(locale),
             siteName: "Path of Trade",
         },
         twitter: {

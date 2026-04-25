@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { getProductsWithParams, getLeagues } from "@/app/actions";
-import { generateKeywords, buildBreadcrumbSchema } from "@/lib/utils";
+import { generateKeywords, buildBreadcrumbSchema, getOgLocale } from "@/lib/utils";
 import { encodeProductName } from "@/utils/url-helper";
 import CategoryItemCard from "@/components/category-item-card";
 import BlogItem from "@/components/Blog";
@@ -175,6 +175,7 @@ export async function generateMetadata(props: {
       description,
       url: canonicalUrl,
       type: "website",
+      ...getOgLocale(locale),
       siteName: "Path of Trade",
       images: [`${baseUrl}/images/${isPoe2 ? "path-of-exile2-card.webp" : "path-of-exile-card.webp"}`],
     },

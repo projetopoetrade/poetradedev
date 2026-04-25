@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import { setRequestLocale } from 'next-intl/server'
 import Link from 'next/link'
-import { buildCanonical, buildAbsoluteUrl, buildBreadcrumbSchema } from '@/lib/utils'
+import { buildCanonical, buildAbsoluteUrl, buildBreadcrumbSchema, getOgLocale } from '@/lib/utils'
 import { CurrencyCtaSection } from '@/components/currency-cta-section'
 import { fetchTreeLayout } from '@/lib/engine/tree'
 import { getEngineApiBase } from '@/lib/placeholders/engine'
@@ -41,7 +41,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
         'x-default': buildAbsoluteUrl('/tools/pob-viewer'),
       },
     },
-    openGraph: { title, description, url: canonical, type: 'website', siteName: 'Path of Trade' },
+    openGraph: { title, description, url: canonical, type: 'website', ...getOgLocale(locale), siteName: 'Path of Trade' },
     twitter: { card: 'summary_large_image', title, description },
   }
 }

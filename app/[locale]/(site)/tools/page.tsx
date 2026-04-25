@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 import { setRequestLocale } from 'next-intl/server'
-import { buildCanonical, buildBreadcrumbSchema } from '@/lib/utils'
+import { buildCanonical, buildBreadcrumbSchema, getOgLocale } from '@/lib/utils'
 import { Link } from '@/i18n/navigation'
 import { ArrowLeft, BarChart2, Dices, Sword } from 'lucide-react'
 import {
@@ -37,7 +37,7 @@ export async function generateMetadata(props: {
       canonical: canonicalUrl,
       languages: { en: enUrl, 'pt-BR': ptUrl, 'x-default': enUrl },
     },
-    openGraph: { title, description, url: canonicalUrl, type: 'website', siteName: 'Path of Trade' },
+    openGraph: { title, description, url: canonicalUrl, type: 'website', ...getOgLocale(locale), siteName: 'Path of Trade' },
     twitter: { card: 'summary_large_image', title, description },
   }
 }

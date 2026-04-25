@@ -37,6 +37,8 @@ export async function generateMetadata(
       description: t("home.ogDescription"),
       url: canonical,
       type: "website",
+      locale: locale === "pt-br" ? "pt_BR" : "en_US",
+      alternateLocale: locale === "pt-br" ? ["en_US"] : ["pt_BR"],
       siteName: t("siteName"),
       images: [{ url: `${baseUrl}/images/logo.webp`, width: 512, height: 512, alt: "Path of Trade" }],
     },

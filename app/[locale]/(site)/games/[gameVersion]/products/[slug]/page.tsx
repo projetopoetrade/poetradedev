@@ -9,7 +9,7 @@ import { getProductBySlug } from "@/sanity/sanity-utils";
 import ProductContent from "@/components/product-detail/ProductContent";
 import PriceHistoryChart from "@/components/Product/PriceHistoryChart";
 import { getTranslations } from "next-intl/server";
-import { buildAbsoluteUrl, generateKeywords, buildBreadcrumbSchema } from "@/lib/utils";
+import { buildAbsoluteUrl, generateKeywords, buildBreadcrumbSchema, getOgLocale } from "@/lib/utils";
 import { createAdminClient } from "@/utils/supabase/admin";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 
@@ -96,6 +96,7 @@ export const generateMetadata = async (props: {
       description,
       url: canonicalUrl,
       type: "website",
+      ...getOgLocale(params.locale),
       siteName: t("siteName"),
       images: productFn?.imgUrl ? [{ url: productFn.imgUrl }] : undefined,
     },

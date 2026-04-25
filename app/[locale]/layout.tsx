@@ -88,6 +88,8 @@ export async function generateMetadata(props: {
       description: t("layout.ogDescription"),
       url: canonical,
       type: "website",
+      locale: locale === "pt-br" ? "pt_BR" : "en_US",
+      alternateLocale: locale === "pt-br" ? ["en_US"] : ["pt_BR"],
       siteName: t("siteName"),
       images: [{ url: "/images/logo.webp" }]
     },

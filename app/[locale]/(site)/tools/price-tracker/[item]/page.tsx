@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { ChevronRight, TrendingUp } from 'lucide-react'
 import { createClient } from '@/utils/supabase/server'
 import PriceHistoryChart from '@/components/Product/PriceHistoryChart'
-import { buildBreadcrumbSchema } from '@/lib/utils'
+import { buildBreadcrumbSchema, getOgLocale } from '@/lib/utils'
 
 interface PageProps {
   params: Promise<{
@@ -82,6 +82,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description,
       url: canonicalUrl,
       type: 'website',
+      ...getOgLocale(locale),
       siteName: 'Path of Trade',
     },
     twitter: { card: 'summary_large_image', title, description },

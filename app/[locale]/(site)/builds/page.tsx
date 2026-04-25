@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { Metadata } from "next";
-import { buildAbsoluteUrl, buildBreadcrumbSchema } from "@/lib/utils";
+import { buildAbsoluteUrl, buildBreadcrumbSchema, getOgLocale } from "@/lib/utils";
 import { getBuilds, getDistinctBuildLeagues } from "@/app/actions";
 import BuildsClient from "./BuildsClient";
 
@@ -46,6 +46,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       description,
       url: canonicalUrl,
       type: 'website',
+      ...getOgLocale(locale),
       siteName: 'Path of Trade',
     },
     twitter: {

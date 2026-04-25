@@ -4,7 +4,7 @@ import { LeagueSelectionPage } from "@/components/league-selection";
 import PatchInfo from "@/components/PatchInfo";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { buildCanonical, generateKeywords, buildBreadcrumbSchema } from "@/lib/utils";
+import { buildCanonical, generateKeywords, buildBreadcrumbSchema, getOgLocale } from "@/lib/utils";
 import { Link } from "@/i18n/navigation";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 
@@ -54,6 +54,7 @@ export async function generateMetadata(props: {
       description,
       url: canonicalUrl,
       type: "website",
+      ...getOgLocale(params.locale),
       siteName: t("siteName"),
       images: [
         {

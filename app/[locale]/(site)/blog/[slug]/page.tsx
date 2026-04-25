@@ -33,28 +33,48 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 
   const canonical = buildCanonical(`/${locale}/blog/${slug}`, locale);
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net";
-  const enUrl = `${baseUrl}/blog/${slug}`;
-  const ptUrl = `${baseUrl}/pt-br/blog/${slug}`;
   const siteName = "Path of Trade";
   const titleWithSuffix = `${post.title} | ${siteName}`;
   const imageUrl = post.mainImage?.asset?.url as string | undefined;
+
+  // Resolve real slugs per language from Sanity's translation.metadata.
+  // Each language has its own slug (e.g. "mana-issues--how-to-fix" in EN vs
+  // "problemas-com-mana-como-resolver-faq" in PT-BR). Emitting hreflang with
+  // the current slug for every locale would link to 404s — Google would then
+  // drop the whole hreflang cluster and treat the pt-br version as orphan
+  // duplicate content. Fall back to the current slug only when a translation
+  // for a given language genuinely doesn't exist.
+  const enSibling = post.translations?.find((t) => t.language === "en")?.slug;
+  const ptSibling = post.translations?.find((t) => t.language === "pt-br")?.slug;
+  const currentSlug = post.slug?.current ?? slug;
+  const enSlug = enSibling ?? (locale === "en" ? currentSlug : null);
+  const ptSlug = ptSibling ?? (locale === "pt-br" ? currentSlug : null);
+  const enUrl = enSlug ? `${baseUrl}/blog/${enSlug}` : null;
+  const ptUrl = ptSlug ? `${baseUrl}/pt-br/blog/${ptSlug}` : null;
+
+  const languages: Record<string, string> = {};
+  if (enUrl) languages["en"] = enUrl;
+  if (ptUrl) languages["pt-BR"] = ptUrl;
+  // Only emit x-default when an EN version exists. For posts that only have
+  // a PT-BR translation, omitting x-default is cleaner than pointing it at
+  // the PT-BR URL (would say "this is the language-neutral default" for a
+  // page that is intrinsically Portuguese). Keeps HTML and sitemap aligned.
+  if (enUrl) languages["x-default"] = enUrl;
 
   return {
     title: titleWithSuffix,
     description: post.metadata,
     alternates: {
       canonical,
-      languages: {
-        "en": enUrl,
-        "pt-BR": ptUrl,
-        "x-default": enUrl,
-      },
+      languages,
     },
     openGraph: {
       title: titleWithSuffix,
       description: post.metadata,
       url: canonical,
       type: "article",
+      locale: locale === "pt-br" ? "pt_BR" : "en_US",
+      alternateLocale: locale === "pt-br" ? ["en_US"] : ["pt_BR"],
       publishedTime: post.publishedAt,
       modifiedTime: post._updatedAt || post.publishedAt,
       authors: post.author ? [post.author.name] : undefined,

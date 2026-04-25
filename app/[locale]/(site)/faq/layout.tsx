@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { getOgLocale } from "@/lib/utils";
 
 // ISR: revalidate cache every 5 minutes (must be in server component)
 export const revalidate = 300;
@@ -42,6 +43,7 @@ export async function generateMetadata(props: {
             description,
             url: canonicalUrl,
             type: "website",
+            ...getOgLocale(locale),
             siteName: "Path of Trade",
         },
         twitter: {
