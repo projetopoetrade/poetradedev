@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { groq } from "next-sanity";
 import { sanityFetch } from "@/sanity/sanity-utils";
 
+// DEPRECATED: superseded by /api/content/index?type=post which carries the
+// same data plus a discriminator and supports products. Left in place so
+// older engine deploys still work — remove once VPS is on the new endpoint.
+//
 // Stable contract for the content engine (path-of-trade-content). Each row
 // is one published post in one language — PT-BR and EN are separate
 // documents in Sanity. The engine uses this to suggest internal links in
