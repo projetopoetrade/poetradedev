@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/utils/supabase/server'
 import { getEngineApiBase } from '@/lib/placeholders/engine'
+import { getPoeStaticItemImages } from '@/lib/poe-static-data'
 
 export const revalidate = 3600 // 1 hora
 
@@ -244,7 +245,10 @@ export async function GET(request: NextRequest) {
   let source: 'engine' | 'ninja-direct' = 'ninja-direct'
 
   try {
-    // 1. Buscar dados â€” engine primeiro (se flag ON), fallback poe.ninja em qualquer falha
+    // 0. Carregar mapeamento oficial do CDN do PoE
+    const staticImageMap = await getPoeStaticItemImages()
+
+    // 1. Buscar dados — engine primeiro (se flag ON), fallback poe.ninja em qualquer falha
     let rawItems: NormalizedItem[] = []
     if (useEngine) {
       const fromEngine = await fetchFromEngine(game, league, category)
@@ -333,8 +337,16 @@ export async function GET(request: NextRequest) {
       const displayName = productEntry?.name || item.name
 
       // Normalize icon URL
-      // Prioridade: 1. imgUrl local do Supabase, 2. ícone do ninja, 3. fallback
-      let icon = productEntry?.imgUrl || item.icon || ''
+      // Prioridade: 1. imgUrl local do Supabase, 2. API oficial PoE CDN (static data), 3. ícone do ninja, 4. fallback
+      let icon = productEntry?.imgUrl || ''
+      if (!icon) {
+        const staticIcon = staticImageMap.get(item.name.toLowerCase().trim()) || staticImageMap.get(item.detailsId.toLowerCase().trim())
+        if (staticIcon) {
+          icon = staticIcon
+        } else {
+          icon = item.icon || ''
+        }
+      }
       
       if (icon) {
         if (icon.startsWith('/')) {
