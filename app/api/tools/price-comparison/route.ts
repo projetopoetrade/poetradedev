@@ -110,16 +110,21 @@ export async function GET(request: NextRequest) {
         .single(),
       supabase
         .from('products')
-        .select('name, price, slug, in_stock')
+        .select('name, price, slug, in_stock, imgUrl')
         .eq('gameVersion', game === 'poe1' ? 'path-of-exile-1' : 'path-of-exile-2')
         .eq('is_listed', true),
     ]);
     
     const divinePriceUSD = divineProduct?.price ?? 0.15;
     
-    const productMap = new Map<string, { price: number; slug: string; inStock: boolean }>();
+    const productMap = new Map<string, { price: number; slug: string; inStock: boolean; imgUrl?: string | null }>();
     for (const p of products || []) {
-      productMap.set(p.name.toLowerCase(), { price: p.price, slug: p.slug, inStock: p.in_stock ?? false });
+      productMap.set(p.name.toLowerCase(), { 
+        price: p.price, 
+        slug: p.slug, 
+        inStock: p.in_stock ?? false,
+        imgUrl: p.imgUrl
+      });
     }
     
     const items: PriceItem[] = [];
@@ -143,9 +148,22 @@ export async function GET(request: NextRequest) {
         }
       }
       
+      // Normalize icon URL
+      // Prioridade: 1. imgUrl local do Supabase, 2. ícone do ninja
+      let icon = product?.imgUrl || ninjaInfo.icon || '';
+      if (icon) {
+        if (icon.startsWith('/')) {
+          if (!icon.startsWith('/images/')) {
+            icon = `https://web.poecdn.com${icon}`;
+          }
+        } else if (!icon.startsWith('http') && !icon.startsWith('//')) {
+          icon = `https://web.poecdn.com/${icon}`;
+        }
+      }
+
       items.push({
         name: nameLower.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
-        icon: ninjaInfo.icon,
+        icon,
         ninjaChaos,
         exchangeChaos: ourPriceChaos,
         difference: ourPriceChaos ? ourPriceChaos - ninjaChaos : null,

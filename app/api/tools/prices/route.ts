@@ -58,16 +58,16 @@ async function fetchPoeNinja(
     if (!res.ok) return []
     const data = await res.json()
 
-    const itemMap: Record<string, { name: string; image: string; detailsId: string }> = {}
+    const itemMap: Record<string, { name: string; icon: string; detailsId: string }> = {}
     for (const it of data.items || []) {
-      itemMap[it.id] = { name: it.name, image: it.image || '', detailsId: it.detailsId || it.id }
+      itemMap[it.id] = { name: it.name, icon: it.icon || it.image || '', detailsId: it.detailsId || it.id }
     }
 
     return (data.lines || []).map((line: any) => {
-      const meta = itemMap[line.id] || { name: line.id, image: '', detailsId: line.id }
+      const meta = itemMap[line.id] || { name: line.id, icon: '', detailsId: line.id }
       return {
         name: meta.name,
-        icon: meta.image,
+        icon: meta.icon,
         category,
         chaosValue: line.primaryValue ?? 1,
         divineValue: 0,
@@ -109,7 +109,7 @@ async function fetchPoeNinja(
     const lines: Array<{ id: number; primaryValue: number; volumePrimaryValue?: number }> = data.lines || []
     const itemMap: Record<number, { name: string; icon: string; tradeId: string }> = {}
     for (const it of data.items || []) {
-      itemMap[it.id] = { name: it.name, icon: it.icon || '', tradeId: it.tradeId || '' }
+      itemMap[it.id] = { name: it.name, icon: it.icon || it.image || '', tradeId: it.tradeId || '' }
     }
     for (const line of lines) {
       const meta = itemMap[line.id]
@@ -183,7 +183,7 @@ async function fetchPoeNinja(
   return items
 }
 
-// ─── Engine fetch (Fase 2) ────────────────────────────────────────────────────
+// â”€â”€â”€ Engine fetch (Fase 2) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 async function fetchFromEngine(
   game: 'poe1' | 'poe2',
@@ -231,7 +231,7 @@ async function fetchFromEngine(
   }
 }
 
-// ─── Handler ──────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Handler â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
@@ -244,7 +244,7 @@ export async function GET(request: NextRequest) {
   let source: 'engine' | 'ninja-direct' = 'ninja-direct'
 
   try {
-    // 1. Buscar dados — engine primeiro (se flag ON), fallback poe.ninja em qualquer falha
+    // 1. Buscar dados â€” engine primeiro (se flag ON), fallback poe.ninja em qualquer falha
     let rawItems: NormalizedItem[] = []
     if (useEngine) {
       const fromEngine = await fetchFromEngine(game, league, category)
@@ -277,15 +277,20 @@ export async function GET(request: NextRequest) {
 
     const divineOrbPriceUSD: number = divineProducts?.[0]?.price ?? 0.15
 
-    // Também pegar todos os produtos que vendemos para marcar weSellThis e inStock
+    // TambÃ©m pegar todos os produtos que vendemos para marcar weSellThis e inStock
     const { data: allProducts } = await supabase
       .from('products')
-      .select('name, price, slug, in_stock')
+      .select('name, price, slug, in_stock, imgUrl')
       .eq('gameVersion', game === 'poe1' ? 'path-of-exile-1' : 'path-of-exile-2')
 
-    const productMap = new Map<string, { price: number; slug: string; inStock: boolean }>()
+    const productMap = new Map<string, { price: number; slug: string; inStock: boolean; imgUrl?: string | null }>()
     for (const p of allProducts || []) {
-      productMap.set(p.name.toLowerCase(), { price: p.price, slug: p.slug, inStock: p.in_stock ?? false })
+      productMap.set(p.name.toLowerCase(), { 
+        price: p.price, 
+        slug: p.slug, 
+        inStock: p.in_stock ?? false,
+        imgUrl: p.imgUrl 
+      })
     }
 
     // 3. Para currencyoverview (PoE 1), calcular divineValue
@@ -306,7 +311,7 @@ export async function GET(request: NextRequest) {
         divineValue = item.chaosValue / divineInChaos
       }
 
-      // estimatedUSD = divineValue × preço do Divine Orb em USD
+      // estimatedUSD = divineValue Ã— preÃ§o do Divine Orb em USD
       const estimatedUSD = divineValue > 0 ? divineValue * divineOrbPriceUSD : 0
 
       // weSellThis e inStock
@@ -315,9 +320,26 @@ export async function GET(request: NextRequest) {
       const inStock = productEntry ? productEntry.inStock : false
       const ourPriceUSD = productEntry ? productEntry.price : null
 
+      // Normalize icon URL
+      // Prioridade: 1. imgUrl local do Supabase, 2. ícone do ninja, 3. fallback
+      let icon = productEntry?.imgUrl || item.icon || ''
+      
+      if (icon) {
+        if (icon.startsWith('/')) {
+          // Se for caminho local (começa com /images/), mantemos. 
+          // Caso contrário, é um path da GGG (ex: /gen/image/...) que precisa do prefixo da CDN.
+          if (!icon.startsWith('/images/')) {
+            icon = `https://web.poecdn.com${icon}`
+          }
+        } else if (!icon.startsWith('http') && !icon.startsWith('//')) {
+          // Fallback se for apenas o path sem a barra inicial
+          icon = `https://web.poecdn.com/${icon}`
+        }
+      }
+
       return {
         ...item,
-        icon: item.icon?.startsWith('/') ? `https://web.poecdn.com${item.icon}` : item.icon,
+        icon,
         divineValue,
         estimatedUSD,
         weSellThis,

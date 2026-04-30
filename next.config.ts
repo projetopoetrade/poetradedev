@@ -49,6 +49,9 @@ const nextConfig: NextConfig = {
         hostname: "web.poecdn.com",
       },
       {
+        hostname: "poe.ninja",
+      },
+      {
         // Self-hosted passive icons (/images/passives/*.webp). Same-origin in
         // production, but preview deploys (preview-xxx.vercel.app) load from
         // the prod origin via absolute URLs returned by the engine.
