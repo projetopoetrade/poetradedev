@@ -15,11 +15,16 @@ export async function getPoeStaticItemImages(): Promise<Map<string, string>> {
 
   const map = new Map<string, string>();
 
+  // Add timeout to prevent hanging
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 8000);
+
   try {
     const res = await fetch("https://www.pathofexile.com/api/trade/data/static", {
       headers: {
         "User-Agent": "PathOfTrade/1.0 (pathoftrade.net)",
       },
+      signal: controller.signal,
     });
 
     if (!res.ok) {
@@ -32,23 +37,39 @@ export async function getPoeStaticItemImages(): Promise<Map<string, string>> {
     for (const group of data.result || []) {
       for (const entry of group.entries || []) {
         if (entry.text && entry.image) {
-          // Normalize the name to lowercase for easier matching
-          // We map from the item's official display name to its image URL
-          const normalizedName = entry.text.toLowerCase().trim();
-          map.set(normalizedName, entry.image);
+          // 1. Strict match key (original text)
+          const nameLower = entry.text.toLowerCase().trim();
+          map.set(nameLower, entry.image);
           
-          // Fallback: also map by ID if different, to cover edge cases
+          // 2. Normalized match key (remove spaces/apostrophes)
+          // This bridges the gap with poe.ninja names
+          const normalizedName = nameLower.replace(/['\s]/g, "");
+          if (!map.has(normalizedName)) {
+            map.set(normalizedName, entry.image);
+          }
+          
+          // 3. Fallback: also map by ID if different
           if (entry.id) {
             const normalizedId = entry.id.toLowerCase().trim();
             if (!map.has(normalizedId)) {
               map.set(normalizedId, entry.image);
             }
+            const normalizedIdHard = normalizedId.replace(/['\s]/g, "");
+            if (!map.has(normalizedIdHard)) {
+              map.set(normalizedIdHard, entry.image);
+            }
           }
         }
       }
     }
-  } catch (err) {
-    console.error("[getPoeStaticItemImages] Error fetching PoE static data:", err);
+  } catch (err: any) {
+    if (err.name === 'AbortError') {
+      console.error("[getPoeStaticItemImages] Fetch timed out after 8s");
+    } else {
+      console.error("[getPoeStaticItemImages] Error fetching PoE static data:", err);
+    }
+  } finally {
+    clearTimeout(timeoutId);
   }
 
   if (map.size > 0) {

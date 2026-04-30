@@ -149,6 +149,7 @@ function PriceRow({ item, currencyLabel, convertPrice, formatPrice, game, league
               sizes="32px"
               className="object-contain"
               unoptimized
+              referrerPolicy="no-referrer"
             />
           </div>
         ) : (
@@ -238,7 +239,7 @@ function PriceCard({ item, convertPrice, formatPrice, game, league }: {
     <div className="flex items-center gap-3 p-3 rounded-lg border border-border/40 hover:border-border/60 transition-colors">
       {item.icon ? (
         <div className="relative h-10 w-10 flex-shrink-0">
-          <Image src={item.icon} alt={item.name} fill sizes="40px" className="object-contain" unoptimized />
+          <Image src={item.icon} alt={item.name} fill sizes="40px" className="object-contain" unoptimized referrerPolicy="no-referrer" />
         </div>
       ) : (
         <div className="h-10 w-10 rounded-full bg-muted flex-shrink-0" />

@@ -340,7 +340,16 @@ export async function GET(request: NextRequest) {
       // Prioridade: 1. imgUrl local do Supabase, 2. API oficial PoE CDN (static data), 3. ícone do ninja, 4. fallback
       let icon = productEntry?.imgUrl || ''
       if (!icon) {
-        const staticIcon = staticImageMap.get(item.name.toLowerCase().trim()) || staticImageMap.get(item.detailsId.toLowerCase().trim())
+        const nameLower = item.name.toLowerCase().trim()
+        const nameNormalized = nameLower.replace(/['\s]/g, '')
+        const detailsIdLower = item.detailsId.toLowerCase().trim()
+        const detailsIdNormalized = detailsIdLower.replace(/['\s]/g, '')
+
+        const staticIcon = staticImageMap.get(nameLower) || 
+                           staticImageMap.get(nameNormalized) || 
+                           staticImageMap.get(detailsIdLower) ||
+                           staticImageMap.get(detailsIdNormalized)
+
         if (staticIcon) {
           icon = staticIcon
         } else {
@@ -349,14 +358,16 @@ export async function GET(request: NextRequest) {
       }
       
       if (icon) {
-        if (icon.startsWith('/')) {
+        if (icon.startsWith('http') || icon.startsWith('//')) {
+          // Já é uma URL absoluta ou protocol-relative, não mexemos
+        } else if (icon.startsWith('/')) {
           // Se for caminho local (começa com /images/), mantemos. 
           // Caso contrário, é um path da GGG (ex: /gen/image/...) que precisa do prefixo da CDN.
           if (!icon.startsWith('/images/')) {
             icon = `https://web.poecdn.com${icon}`
           }
-        } else if (!icon.startsWith('http') && !icon.startsWith('//')) {
-          // Fallback se for apenas o path sem a barra inicial
+        } else {
+          // Fallback se for apenas o path sem a barra inicial (ex: gen/image/...)
           icon = `https://web.poecdn.com/${icon}`
         }
       }
