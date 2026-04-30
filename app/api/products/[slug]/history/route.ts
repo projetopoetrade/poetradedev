@@ -11,7 +11,12 @@ export async function GET(
         const { slug } = await params
         const supabase = await createClient()
 
-        const formattedName = decodeURIComponent(slug).replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+        // Name normalization from slug:
+        // 1. decodeURIComponent handles %27 (apostrophe) and others
+        // 2. replace hyphens with spaces
+        // 3. title case (re-capitalizing)
+        const decodedItem = decodeURIComponent(slug).replace(/-/g, ' ')
+        const formattedName = decodedItem.replace(/\b\w/g, l => l.toUpperCase())
 
         // 1. Tentar encontrar o produto usando o slug longo EXATO, ou inferir pelo nome
         let { data: product } = await supabase

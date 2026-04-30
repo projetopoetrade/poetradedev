@@ -151,7 +151,7 @@ async function fetchPoeNinja(
           ? { data: line.receiveSparkLine.data || [], totalChange: line.receiveSparkLine.totalChange ?? 0 }
           : null,
         listingCount: null,
-        detailsId: line.tradeId || line.currencyTypeName.toLowerCase().replace(/ /g, '-'),
+        detailsId: line.tradeId || line.currencyTypeName.toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9'-]/g, ''),
         weSellThis: false,
         inStock: false,
         ourPriceUSD: null,
@@ -174,7 +174,7 @@ async function fetchPoeNinja(
         ? { data: line.sparkline.data || [], totalChange: line.sparkline.totalChange ?? 0 }
         : null,
       listingCount: line.listingCount ?? null,
-      detailsId: line.detailsId || line.name.toLowerCase().replace(/ /g, '-'),
+      detailsId: line.detailsId || line.name.toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9'-]/g, ''),
       weSellThis: false,
       inStock: false,
       ourPriceUSD: null,
@@ -219,7 +219,7 @@ async function fetchFromEngine(
         ? { data: it.sparkline.data, totalChange: it.sparkline.totalChange ?? 0 }
         : null,
       listingCount: it.listingCount ?? null,
-      detailsId: it.detailsId || it.name?.toLowerCase().replace(/ /g, '-') || '',
+      detailsId: it.detailsId || it.name?.toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9'-]/g, '') || '',
       weSellThis: false,
       inStock: false,
       ourPriceUSD: null,
