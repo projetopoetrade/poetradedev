@@ -17,7 +17,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { item, locale } = await params
 
   const decodedItem = decodeURIComponent(item).replace(/-/g, ' ')
-  const itemName = decodedItem.replace(/\b\w/g, l => l.toUpperCase())
+  
+  const supabase = await createClient()
+  const { data: allProducts } = await supabase.from('products').select('slug, name')
+  const normalizedSearch = decodedItem.toLowerCase().replace(/['\s]/g, '')
+  let ourProduct = allProducts?.find(p => p.slug === item)
+  if (!ourProduct) {
+    ourProduct = allProducts?.find(p => p.name.toLowerCase().replace(/['\s]/g, '') === normalizedSearch)
+  }
+  const itemName = ourProduct?.name || decodedItem.replace(/\b\w/g, l => l.toUpperCase()).replace(/'S\b/g, "'s")
 
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.pathoftrade.net'
   const path = `/tools/price-tracker/${item}`
@@ -98,40 +106,47 @@ export default async function TrackerItemPage({ params }: PageProps) {
 
   const supabase = await createClient()
 
-  const { data: ourProduct } = await supabase
+  // Find product ignoring apostrophes
+  const { data: allProducts } = await supabase
     .from('products')
-    .select('slug, price, in_stock')
-    .ilike('name', itemName)
-    .limit(1)
-    .single()
+    .select('slug, price, in_stock, name')
+  
+  const normalizedSearch = decodedItem.toLowerCase().replace(/['\s]/g, '')
+  let ourProduct = allProducts?.find(p => p.slug === item)
+  if (!ourProduct) {
+    ourProduct = allProducts?.find(p => p.name.toLowerCase().replace(/['\s]/g, '') === normalizedSearch)
+  }
+
+  // Use the database name if available, otherwise fallback to formatting the URL slug
+  const finalItemName = ourProduct?.name || decodedItem.replace(/\b\w/g, l => l.toUpperCase()).replace(/'S\b/g, "'s")
 
   const breadcrumbSchema = buildBreadcrumbSchema([
     { name: 'Home', url: '/' },
     { name: 'Price Tracker', url: '/tools/price-tracker' },
-    { name: itemName, url: `/tools/price-tracker/${item}` },
+    { name: finalItemName, url: `/tools/price-tracker/${item}` },
   ])
 
   const faqItems = [
     {
       q: isPt
-        ? `Qual é o preço atual do ${itemName} em Path of Exile?`
-        : `What is the current price of ${itemName} in Path of Exile?`,
+        ? `Qual é o preço atual do ${finalItemName} em Path of Exile?`
+        : `What is the current price of ${finalItemName} in Path of Exile?`,
       a: isPt
-        ? `O preço do ${itemName} varia conforme a progressão da liga e a demanda dos jogadores. Veja o gráfico acima para o valor mais recente em Divine Orbs e USD estimado. Dados atualizados a cada hora.`
-        : `The current price of ${itemName} fluctuates based on league progression and player demand. See the chart above for the latest value in Divine Orbs and estimated USD. Data is refreshed every hour.`,
+        ? `O preço do ${finalItemName} varia conforme a progressão da liga e a demanda dos jogadores. Veja o gráfico acima para o valor mais recente em Divine Orbs e USD estimado. Dados atualizados a cada hora.`
+        : `The current price of ${finalItemName} fluctuates based on league progression and player demand. See the chart above for the latest value in Divine Orbs and estimated USD. Data is refreshed every hour.`,
     },
     {
       q: isPt
-        ? `Onde comprar ${itemName} barato?`
-        : `Where can I buy ${itemName} cheaply?`,
+        ? `Onde comprar ${finalItemName} barato?`
+        : `Where can I buy ${finalItemName} cheaply?`,
       a: isPt
-        ? `Path of Trade oferece ${itemName} com preços competitivos e entrega rápida no jogo. Clique no botão "Comprar" acima para adquirir ao nosso preço atual com troca segura.`
-        : `Path of Trade offers ${itemName} at competitive prices with fast in-game delivery. Click the "Buy" button above to purchase at our current rate with secure trading.`,
+        ? `Path of Trade oferece ${finalItemName} com preços competitivos e entrega rápida no jogo. Clique no botão "Comprar" acima para adquirir ao nosso preço atual com troca segura.`
+        : `Path of Trade offers ${finalItemName} at competitive prices with fast in-game delivery. Click the "Buy" button above to purchase at our current rate with secure trading.`,
     },
     {
       q: isPt
-        ? `Com que frequência o preço do ${itemName} é atualizado?`
-        : `How often is the ${itemName} price data updated?`,
+        ? `Com que frequência o preço do ${finalItemName} é atualizado?`
+        : `How often is the ${finalItemName} price data updated?`,
       a: isPt
         ? `Os dados de preço vêm do poe.ninja, o agregador de preços mais confiável para Path of Exile, e são atualizados a cada hora. Os preços refletem as listagens de troca ativas na liga atual.`
         : `Price data is sourced from poe.ninja and refreshed every hour. Prices reflect active trade listings across the current league.`,
@@ -166,7 +181,7 @@ export default async function TrackerItemPage({ params }: PageProps) {
           <li><ChevronRight className="h-4 w-4" /></li>
           <li><Link href="/tools/price-tracker" className="hover:text-foreground transition-colors">Price Tracker</Link></li>
           <li><ChevronRight className="h-4 w-4" /></li>
-          <li className="text-foreground font-medium" aria-current="page">{itemName}</li>
+          <li className="text-foreground font-medium" aria-current="page">{finalItemName}</li>
         </ol>
       </nav>
 
@@ -174,12 +189,12 @@ export default async function TrackerItemPage({ params }: PageProps) {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
         <div>
           <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-2">
-            {isPt ? `Preço ${itemName} — Tracker ao Vivo` : `${itemName} Price — Live Tracker`}
+            {isPt ? `Preço ${finalItemName} — Tracker ao Vivo` : `${finalItemName} Price — Live Tracker`}
           </h1>
           <p className="text-muted-foreground text-sm md:text-base max-w-2xl">
             {isPt
-              ? `Acompanhe o valor de mercado do ${itemName} em tempo real. Histórico de 30 dias, tendência e onde comprar com entrega rápida.`
-              : `Track the live market value of ${itemName} in Path of Exile. 30-day price history, trend analysis, and where to buy with fast delivery.`}
+              ? `Acompanhe o valor de mercado do ${finalItemName} em tempo real. Histórico de 30 dias, tendência e onde comprar com entrega rápida.`
+              : `Track the live market value of ${finalItemName} in Path of Exile. 30-day price history, trend analysis, and where to buy with fast delivery.`}
           </p>
         </div>
 
@@ -188,7 +203,7 @@ export default async function TrackerItemPage({ params }: PageProps) {
             href={`/products/${ourProduct.slug}`}
             className="inline-flex items-center justify-center rounded-lg bg-green-500 hover:bg-green-600 text-black font-semibold text-sm px-5 py-2.5 transition-colors shrink-0"
           >
-            {isPt ? `Comprar ${itemName} — $${ourProduct.price}` : `Buy ${itemName} — $${ourProduct.price}`}
+            {isPt ? `Comprar ${finalItemName} — $${ourProduct.price}` : `Buy ${finalItemName} — $${ourProduct.price}`}
           </Link>
         )}
       </div>
@@ -202,12 +217,12 @@ export default async function TrackerItemPage({ params }: PageProps) {
       <section className="bg-muted/30 rounded-xl p-6 border border-border/50 text-sm leading-relaxed text-muted-foreground mb-10">
         <h2 className="text-foreground font-semibold text-lg mb-3 flex items-center gap-2">
           <TrendingUp className="h-5 w-5 text-primary" />
-          {isPt ? `Economia do ${itemName}` : `${itemName} Economy`}
+          {isPt ? `Economia do ${finalItemName}` : `${finalItemName} Economy`}
         </h2>
         <p>
           {isPt
-            ? `O valor de mercado do ${itemName} oscila constantemente com base na progressão da liga, demanda dos jogadores e mudanças na meta. Use o gráfico acima para determinar se o momento é bom para comprar ou vender antes de converter seus Chaos ou Divine Orbs. Os dados são consolidados a cada hora diretamente dos índices do poe.ninja nas regiões ativas.`
-            : `The market value of ${itemName} constantly fluctuates based on league progression, player demand, and meta shifts. Use the price chart above to determine whether it is a buyer's or seller's market before converting your Chaos or Divine Orbs. Data is consolidated every hour from poe.ninja indices across active leagues.`}
+            ? `O valor de mercado do ${finalItemName} oscila constantemente com base na progressão da liga, demanda dos jogadores e mudanças na meta. Use o gráfico acima para determinar se o momento é bom para comprar ou vender antes de converter seus Chaos ou Divine Orbs. Os dados são consolidados a cada hora diretamente dos índices do poe.ninja nas regiões ativas.`
+            : `The market value of ${finalItemName} constantly fluctuates based on league progression, player demand, and meta shifts. Use the price chart above to determine whether it is a buyer's or seller's market before converting your Chaos or Divine Orbs. Data is consolidated every hour from poe.ninja indices across active leagues.`}
         </p>
       </section>
 

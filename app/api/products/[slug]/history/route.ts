@@ -11,31 +11,20 @@ export async function GET(
         const { slug } = await params
         const supabase = await createClient()
 
-        // Name normalization from slug:
-        // 1. decodeURIComponent handles %27 (apostrophe) and others
-        // 2. replace hyphens with spaces
-        // 3. title case (re-capitalizing)
+        // Name normalization from slug
         const decodedItem = decodeURIComponent(slug).replace(/-/g, ' ')
-        const formattedName = decodedItem.replace(/\b\w/g, l => l.toUpperCase())
+        const formattedName = decodedItem.replace(/\b\w/g, l => l.toUpperCase()).replace(/'S\b/g, "'s")
 
-        // 1. Tentar encontrar o produto usando o slug longo EXATO, ou inferir pelo nome
-        let { data: product } = await supabase
+        // 1. Tentar encontrar o produto buscando e normalizando os nomes
+        const { data: allProducts } = await supabase
             .from('products')
-            .select('name, gameVersion')
-            .eq('slug', slug)
-            .limit(1)
-            .single()
+            .select('name, gameVersion, slug')
 
+        const normalizedSearch = decodedItem.toLowerCase().replace(/['\s]/g, '')
+        let product = allProducts?.find(p => p.slug === slug)
+        
         if (!product) {
-            // Fallback for tools/price-tracker where slug is actually just the item name formatted
-            const { data: fallbackProduct } = await supabase
-                .from('products')
-                .select('name, gameVersion')
-                .ilike('name', formattedName)
-                .limit(1)
-                .single()
-
-            product = fallbackProduct
+            product = allProducts?.find(p => p.name.toLowerCase().replace(/['\s]/g, '') === normalizedSearch)
         }
 
         const gameVersion = product ? product.gameVersion : 'path-of-exile-1'

@@ -283,14 +283,20 @@ export async function GET(request: NextRequest) {
       .select('name, price, slug, in_stock, imgUrl')
       .eq('gameVersion', game === 'poe1' ? 'path-of-exile-1' : 'path-of-exile-2')
 
-    const productMap = new Map<string, { price: number; slug: string; inStock: boolean; imgUrl?: string | null }>()
+    // Mapeamos os produtos por uma chave normalizada (sem apóstrofos e espaços)
+    const productMap = new Map<string, { name: string; price: number; slug: string; inStock: boolean; imgUrl?: string | null }>()
     for (const p of allProducts || []) {
-      productMap.set(p.name.toLowerCase(), { 
-        price: p.price, 
-        slug: p.slug, 
-        inStock: p.in_stock ?? false,
-        imgUrl: p.imgUrl 
-      })
+      const normalizedName = p.name.toLowerCase().replace(/['\s]/g, '')
+      // Se houver duplicata, preferimos o que tem o nome mais "correto" (com apóstrofo)
+      if (!productMap.has(normalizedName) || p.name.includes("'")) {
+        productMap.set(normalizedName, { 
+          name: p.name,
+          price: p.price, 
+          slug: p.slug, 
+          inStock: p.in_stock ?? false,
+          imgUrl: p.imgUrl 
+        })
+      }
     }
 
     // 3. Para currencyoverview (PoE 1), calcular divineValue
@@ -314,11 +320,17 @@ export async function GET(request: NextRequest) {
       // estimatedUSD = divineValue Ã— preÃ§o do Divine Orb em USD
       const estimatedUSD = divineValue > 0 ? divineValue * divineOrbPriceUSD : 0
 
+      // Normalizar nome vindo do ninja para buscar no mapa
+      const normalizedNinjaName = item.name.toLowerCase().replace(/['\s]/g, '')
+      const productEntry = productMap.get(normalizedNinjaName)
+
       // weSellThis e inStock
-      const productEntry = productMap.get(item.name.toLowerCase())
       const weSellThis = !!productEntry
       const inStock = productEntry ? productEntry.inStock : false
       const ourPriceUSD = productEntry ? productEntry.price : null
+
+      // PRIORIDADE: Usar o nome do banco de dados se disponível, pois ele é o "correto" (com apóstrofos)
+      const displayName = productEntry?.name || item.name
 
       // Normalize icon URL
       // Prioridade: 1. imgUrl local do Supabase, 2. ícone do ninja, 3. fallback
@@ -339,6 +351,7 @@ export async function GET(request: NextRequest) {
 
       return {
         ...item,
+        name: displayName,
         icon,
         divineValue,
         estimatedUSD,
