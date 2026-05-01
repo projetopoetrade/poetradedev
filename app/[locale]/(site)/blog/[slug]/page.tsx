@@ -9,6 +9,7 @@ import { getTranslations } from "next-intl/server";
 import { buildCanonical, generateKeywords, buildBreadcrumbSchema } from "@/lib/utils";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { resolveBlocks } from "@/lib/placeholders/resolve-blocks";
+import { notFound } from "next/navigation";
 
 // ISR: revalidate cache every 5 minutes
 export const revalidate = 300;
@@ -32,34 +33,31 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
   }
 
   const canonical = buildCanonical(`/${locale}/blog/${slug}`, locale);
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net";
   const siteName = "Path of Trade";
   const titleWithSuffix = `${post.title} | ${siteName}`;
   const imageUrl = post.mainImage?.asset?.url as string | undefined;
 
-  // Resolve real slugs per language from Sanity's translation.metadata.
-  // Each language has its own slug (e.g. "mana-issues--how-to-fix" in EN vs
-  // "problemas-com-mana-como-resolver-faq" in PT-BR). Emitting hreflang with
-  // the current slug for every locale would link to 404s — Google would then
-  // drop the whole hreflang cluster and treat the pt-br version as orphan
-  // duplicate content. Fall back to the current slug only when a translation
-  // for a given language genuinely doesn't exist.
-  const enSibling = post.translations?.find((t) => t.language === "en")?.slug;
-  const ptSibling = post.translations?.find((t) => t.language === "pt-br")?.slug;
-  const currentSlug = post.slug?.current ?? slug;
-  const enSlug = enSibling ?? (locale === "en" ? currentSlug : null);
-  const ptSlug = ptSibling ?? (locale === "pt-br" ? currentSlug : null);
-  const enUrl = enSlug ? `${baseUrl}/blog/${enSlug}` : null;
-  const ptUrl = ptSlug ? `${baseUrl}/pt-br/blog/${ptSlug}` : null;
-
+  // HREFLANG LOGIC:
+  // We only emit hreflangs for versions that actually exist in Sanity to avoid 404s.
+  // postQueryBySlug returns a `translations` array with { language, slug }.
   const languages: Record<string, string> = {};
-  if (enUrl) languages["en"] = enUrl;
-  if (ptUrl) languages["pt-BR"] = ptUrl;
-  // Only emit x-default when an EN version exists. For posts that only have
-  // a PT-BR translation, omitting x-default is cleaner than pointing it at
-  // the PT-BR URL (would say "this is the language-neutral default" for a
-  // page that is intrinsically Portuguese). Keeps HTML and sitemap aligned.
-  if (enUrl) languages["x-default"] = enUrl;
+  
+  // 1. Current page language
+  languages[locale === 'pt-br' ? 'pt-BR' : 'en'] = canonical;
+
+  // 2. Siblings from Sanity
+  if (post.translations) {
+    post.translations.forEach((trans) => {
+      // trans.language is Sanity key ('en', 'pt-br')
+      // trans.slug is the slug in that language
+      if (trans.language === 'en') {
+        languages['en'] = buildCanonical(`/blog/${trans.slug}`, 'en');
+        languages['x-default'] = buildCanonical(`/blog/${trans.slug}`, 'en');
+      } else if (trans.language === 'pt-br') {
+        languages['pt-BR'] = buildCanonical(`/pt-br/blog/${trans.slug}`, 'pt-br');
+      }
+    });
+  }
 
   return {
     title: titleWithSuffix,
@@ -112,11 +110,12 @@ const SingleBlogPage = async (props: PageProps) => {
   } = params;
 
   const post = await getPostBySlug(slug, locale);
-  const relatedPosts: Blog[] = await getRelatedPosts(slug, locale);
 
   if (!post) {
-    return <div className="py-5">Post not found</div>;
+    notFound();
   }
+
+  const relatedPosts: Blog[] = await getRelatedPosts(slug, locale);
 
   // Resolve `{{price:...}}`, `{{link:...}}` etc in the post body with live data.
   // Runs server-side; cached via Next.js fetch revalidate (5 min) so repeat

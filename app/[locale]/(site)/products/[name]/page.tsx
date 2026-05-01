@@ -211,14 +211,7 @@ export default async function ProductDetailPage(props: {
     }
 
     if (!productFn) {
-      return (
-        <div className="container mx-auto py-16 px-4">
-          <div className="text-center">
-            <h1 className="text-3xl font-bold mb-4">Product Not Found</h1>
-            <Link href="/products"><Button>Browse All Products</Button></Link>
-          </div>
-        </div>
-      );
+      notFound();
     }
 
     const product = productFn;

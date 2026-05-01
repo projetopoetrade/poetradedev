@@ -45,9 +45,24 @@ export async function generateMetadata(props: {
   // Precisamos saber qual é a "rota base" sem o locale para montar os links alternativos
   const pathWithoutLocale = getPathWithoutLocale(rawPathname, locale);
 
+  // Blog, Products, Games, and League detail pages handle their own hreflangs (alternates).
+  // Naive prefixing in the layout causes duplicates or points to incorrect URLs.
+  const isDynamicRoute = 
+    rawPathname.includes('/blog/') || 
+    rawPathname.includes('/products/') ||
+    rawPathname.includes('/games/') ||
+    rawPathname.includes('/league/');
+
   // Define os prefixos corretos para cada língua
   const enPath = pathWithoutLocale === '/' ? '/' : pathWithoutLocale;
   const ptPath = pathWithoutLocale === '/' ? '/pt-br' : `/pt-br${pathWithoutLocale}`;
+
+  const languages: Record<string, string> = {};
+  if (!isDynamicRoute) {
+    languages['en'] = buildCanonical(enPath, 'en');
+    languages['pt-BR'] = buildCanonical(ptPath, 'pt-br');
+    languages['x-default'] = buildCanonical(enPath, 'en');
+  }
 
   return {
     metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"),
@@ -75,12 +90,8 @@ export async function generateMetadata(props: {
       // Canonical aponta para a página atual
       canonical: canonical,
 
-      // Languages apontam para as versões equivalentes
-      languages: {
-        'en': buildCanonical(enPath, 'en'),
-        'pt-BR': buildCanonical(ptPath, 'pt-br'),
-        'x-default': buildCanonical(enPath, 'en'), // Fallback para inglês
-      },
+      // Languages apontam para as versões equivalentes (apenas se não for rota específica)
+      languages: languages,
     },
 
     openGraph: {
