@@ -32,6 +32,11 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ exists: false });
     }
 
+    const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net").replace(/\/$/, "");
+    const pathBase = data.gameVersion === "path-of-exile-2"
+      ? `/games/path-of-exile-2/products/${data.slug}`
+      : `/products/${data.slug}`;
+
     return NextResponse.json({
       exists: true,
       name: data.name,
@@ -40,6 +45,10 @@ export async function GET(req: NextRequest) {
       in_stock: data.in_stock,
       is_listed: data.is_listed,
       league: data.league,
+      urls: {
+        en: `${SITE_URL}${pathBase}`,
+        pt: `${SITE_URL}/pt-br${pathBase}`,
+      }
     });
   } catch (error) {
     console.error("[api/products/status] Error:", error);
