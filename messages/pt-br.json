@@ -150,7 +150,9 @@
     "refund-policy": "Política de Reembolso",
     "legal": "Legal",
     "price-tracker": "Tracker de Preços",
-    "active-leagues": "Ligas Ativas"
+    "active-leagues": "Ligas Ativas",
+    "trustpilot-review": "Avalie-nos no Trustpilot",
+    "trustpilot-url": "https://br.trustpilot.com/review/pathoftrade.net"
   },
   "faq": {
     "faq-title": "Perguntas Frequentes (FAQ)",
@@ -472,7 +474,9 @@
     "isOnline": "esteja online e disponível em",
     "toReceive": "para receber os itens. Nossa equipe entrará em contato em breve.",
     "needHelp": "Precisa de ajuda? Entre em contato com nosso suporte 24/7!",
-    "loading": "Carregando..."
+    "loading": "Carregando...",
+    "leaveReview": "Gostou da sua compra? Deixe uma avaliação no Trustpilot!",
+    "reviewButton": "Avaliar no Trustpilot"
   },
   "Support": {
     "contactSupport": "Contate o Suporte",

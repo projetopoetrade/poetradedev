@@ -266,7 +266,9 @@
     "refund-policy": "Refund Policy",
     "legal": "Legal",
     "price-tracker": "Price Tracker",
-    "active-leagues": "Active Leagues"
+    "active-leagues": "Active Leagues",
+    "trustpilot-review": "Review us on Trustpilot",
+    "trustpilot-url": "https://www.trustpilot.com/review/pathoftrade.net"
   },
   "GamePage": {
     "news": "News",
@@ -484,7 +486,9 @@
     "isOnline": "is online and available in",
     "toReceive": "to receive the items. Our team will contact you shortly.",
     "needHelp": "Need help? Contact our 24/7 support team!",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "leaveReview": "Happy with your purchase? Leave us a review on Trustpilot!",
+    "reviewButton": "Rate us on Trustpilot"
   },
   "Support": {
     "contactSupport": "Contact Support",

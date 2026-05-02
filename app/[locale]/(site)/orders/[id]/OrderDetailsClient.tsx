@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import {
   Loader2, Clock, XCircle,
   Calendar, ShoppingBag, CreditCard, Shield, User, Map,
-  ArrowLeft, MessageSquare, Receipt, AlertCircle, QrCode
+  ArrowLeft, MessageSquare, Receipt, AlertCircle, QrCode, Star
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -39,6 +39,7 @@ export default function OrderDetailsClient({ order }: { order: Order }) {
   const [loadingPix, setLoadingPix] = useState(false);
   const router = useRouter();
   const t = useTranslations("Orders");
+  const footerT = useTranslations("Footer");
 
   const handleContactSupport = () => {
     if (typeof window !== "undefined" && window.Tawk_API) {
@@ -479,6 +480,30 @@ export default function OrderDetailsClient({ order }: { order: Order }) {
                 <MessageSquare className="h-4 w-4" />
                 {t("contactSupport")}
               </Button>
+
+              {isCompleted && (
+                <Card className="p-4 border-dashed border-gray-300 dark:border-gray-700 bg-transparent">
+                  <div className="flex flex-col items-center text-center gap-3">
+                    <div>
+                      <p className="text-sm font-bold mb-1">
+                        {t("leaveReview", { ns: "Success" }) || "Gostou da sua compra? Avalie-nos!"}
+                      </p>
+                      <div className="flex gap-0.5 justify-center">
+                        {[...Array(5)].map((_, i) => (
+                          <div key={i} className="bg-[#00b67a] p-0.5 rounded-sm">
+                            <Star size={12} fill="white" stroke="white" />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <Button asChild size="sm" className="bg-[#00b67a] hover:bg-[#00a06b] text-white border-none w-full font-bold">
+                      <a href={footerT('trustpilot-url')} target="_blank" rel="noopener noreferrer">
+                        {t("reviewButton", { ns: "Success" }) || "Trustpilot"}
+                      </a>
+                    </Button>
+                  </div>
+                </Card>
+              )}
 
               {isCompleted ? (
                 <Button variant="outline" className="w-full gap-2">

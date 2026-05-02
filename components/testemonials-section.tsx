@@ -17,45 +17,54 @@ interface Testimonial {
   title: string;
   description: string;
   rating: number;
+  source?: "trustpilot" | "local";
 }
 
 export default function TestimonialCarousel() {
   const locale = useLocale();
+  const t = useTranslations('Testemonials');
+  const footerT = useTranslations('Footer');
+
   const testimonialsEn: Testimonial[] = [
     {
       name: "ExileSlayer_92",
       title: "Fastest Orbs in Wraeclast!",
       description:
         "I was skeptical at first, but pathoftrade.net delivered my Divine Orbs in less than 5 minutes after payment. The whole process was incredibly fast and smooth. I'll definitely be back for the next league start!",
-      rating: 5
+      rating: 5,
+      source: "trustpilot"
     },
     {
       name: "MappingManiac",
       title: "Trustworthy and Secure",
       description:
         "Security is my biggest concern when buying currency, and pathoftrade.net handled it perfectly. The transaction felt safe, and the communication for the in-game trade was professional. Highly recommend for a worry-free experience.",
-      rating: 5
+      rating: 5,
+      source: "trustpilot"
     },
     {
       name: "ChaosQueen",
       title: "The Best Prices for Bulking",
       description:
         "I've shopped around, and the prices here are consistently the best, especially when you're buying in bulk. I got a great deal on my Chaos Orbs, which helped me finish my build way sooner than I expected. Great value!",
-      rating: 5
+      rating: 5,
+      source: "trustpilot"
     },
     {
       name: "Hardcore_Hero",
       title: "Incredible Customer Support",
       description:
         "I had a small issue with my order details, and the support team on pathoftrade.net was amazing. They responded to my ticket within minutes and sorted everything out politely and efficiently. A+ service!",
-      rating: 5
+      rating: 5,
+      source: "local"
     },
     {
       name: "JustAnotherTuna",
       title: "Super Simple and Easy to Use",
       description:
         "The website is so easy to navigate. Found the currency I needed for my server, paid, and got instructions for the trade right away. The entire process from start to finish is streamlined for gamers. No hassle at all.",
-      rating: 5
+      rating: 5,
+      source: "local"
     }
   ];
 
@@ -65,58 +74,83 @@ export default function TestimonialCarousel() {
       title: "As orbs mais rápidas de Wraeclast!",
       description:
         "Fiquei desconfiado no começo, mas a pathoftrade.net entregou minhas Orbes Divinas em menos de 5 minutos após o pagamento. Todo o processo foi muito rápido e tranquilo. Com certeza volto no próximo começo de liga!",
-      rating: 5
+      rating: 5,
+      source: "trustpilot"
     },
     {
       name: "MappingManiac",
       title: "Confiável e seguro",
       description:
         "Segurança é minha maior preocupação ao comprar moedas, e a pathoftrade.net fez tudo perfeitamente. A transação foi segura e a comunicação para a troca no jogo foi profissional. Recomendo para uma experiência sem preocupações.",
-      rating: 5
+      rating: 5,
+      source: "trustpilot"
     },
     {
       name: "ChaosQueen",
       title: "Os melhores preços para comprar em quantidade",
       description:
         "Pesquisei bastante e os preços aqui são sempre os melhores, principalmente para compras em grande volume. Consegui um ótimo preço nas minhas Orbes do Caos, o que ajudou a finalizar meu build muito mais cedo. Ótimo custo-benefício!",
-      rating: 5
+      rating: 5,
+      source: "trustpilot"
     },
     {
       name: "Hardcore_Hero",
       title: "Suporte ao cliente incrível",
       description:
         "Tive um pequeno problema com os detalhes do pedido e o suporte da pathoftrade.net foi incrível. Responderam meu ticket em minutos e resolveram tudo com educação e eficiência. Serviço nota 10!",
-      rating: 5
+      rating: 5,
+      source: "local"
     },
     {
       name: "JustAnotherTuna",
       title: "Super simples e fácil de usar",
       description:
         "O site é muito fácil de navegar. Encontrei a moeda que precisava para meu servidor, paguei e recebi as instruções para a troca imediatamente. Do começo ao fim, tudo é pensado para gamers. Zero dor de cabeça.",
-      rating: 5
+      rating: 5,
+      source: "local"
     }
   ];
 
   const testimonials: Testimonial[] = locale === "pt-br" ? testimonialsPt : testimonialsEn;
 
-  const renderStars = (rating: number) => {
+  const renderStars = (rating: number, isTrustpilot: boolean) => {
     return Array.from({ length: 5 }, (_, index) => (
-      <Star
-        key={index}
-        fill={index < rating ? "currentColor" : "none"}
-        className="w-6 h-6 text-yellow-400"
-        strokeWidth={1.5}
-      />
+      <div 
+        key={index} 
+        className={isTrustpilot ? "bg-[#00b67a] p-0.5" : ""}
+      >
+        <Star
+          fill={(index < rating) ? (isTrustpilot ? "white" : "currentColor") : "none"}
+          className={`w-4 h-4 ${isTrustpilot ? "text-white" : "text-yellow-400"}`}
+          strokeWidth={1.5}
+        />
+      </div>
     ));
   };
 
-  const t = useTranslations('Testemonials');
   return (
     <section className="w-full py-16 bg-background mb-16">
       <div className="container mx-auto px-4">
-        <h2 className="text-4xl font-source font-black text-left mb-8 text-white">
-          {t('title')}
-        </h2>
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+          <h2 className="text-4xl font-source font-black text-left text-white">
+            {t('title')}
+          </h2>
+          <a 
+            href={footerT("trustpilot-url")}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+          >
+            <span className="text-sm font-medium">{footerT("trustpilot-review")}</span>
+            <div className="flex gap-0.5">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="bg-[#00b67a] p-0.5 rounded-sm">
+                  <Star size={10} fill="white" stroke="white" />
+                </div>
+              ))}
+            </div>
+          </a>
+        </div>
 
         <Carousel
           opts={{
@@ -134,25 +168,32 @@ export default function TestimonialCarousel() {
                 aria-label={`Testimonial ${index + 1} of ${testimonials.length}`}
               >
                 <div className="p-1 h-full">
-                  <Card className="h-full bg-background hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-2 group">
+                  <Card className="h-full bg-background hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-2 group border-gray-800">
                     <CardContent className="flex flex-col items-start p-6 gap-4 h-full">
-                      <div className="flex items-center gap-2">
-                        <div className="w-12 h-12 rounded-full bg-gradient-to-r from-purple-500 to-pink-500" />
-                        <div>
-                          <h2 className="font-source text-xl font-bold text-white">
-                            {testimonial.name}
-                          </h2>
-                          <div className="flex gap-1">
-                            {renderStars(testimonial.rating)}
+                      <div className="flex items-center justify-between w-full">
+                        <div className="flex items-center gap-2">
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500" />
+                          <div>
+                            <h2 className="font-source text-lg font-bold text-white">
+                              {testimonial.name}
+                            </h2>
+                            <div className="flex gap-1">
+                              {renderStars(testimonial.rating, testimonial.source === "trustpilot")}
+                            </div>
                           </div>
                         </div>
+                        {testimonial.source === "trustpilot" && (
+                          <div className="flex flex-col items-end opacity-50">
+                            <span className="text-[10px] font-bold text-white tracking-tight">Trustpilot</span>
+                          </div>
+                        )}
                       </div>
 
-                      <CardTitle className="text-xl font-bold text-primary-font mb-2">
+                      <CardTitle className="text-lg font-bold text-primary-font mb-1">
                         {testimonial.title}
                       </CardTitle>
 
-                      <p className="text-gray-300 font-normal text-base line-clamp-5">
+                      <p className="text-gray-300 font-normal text-sm line-clamp-5">
                         {testimonial.description}
                       </p>
                     </CardContent>
@@ -165,11 +206,11 @@ export default function TestimonialCarousel() {
           {/* Navigation Controls */}
           <div className="mt-8 flex justify-center gap-4">
             <CarouselPrevious
-              className="static translate-x-0 translate-y-0 bg-gray-800 hover:bg-gray-700 text-white"
+              className="static translate-x-0 translate-y-0 bg-gray-800 hover:bg-gray-700 text-white border-none"
               aria-label="Previous testimonial"
             />
             <CarouselNext
-              className="static translate-x-0 translate-y-0 bg-gray-800 hover:bg-gray-700 text-white"
+              className="static translate-x-0 translate-y-0 bg-gray-800 hover:bg-gray-700 text-white border-none"
               aria-label="Next testimonial"
             />
           </div>

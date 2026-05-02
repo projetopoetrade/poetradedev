@@ -40,6 +40,7 @@ const formatDate = (timestamp: number) => {
 
 function SuccessContent() {
   const t = useTranslations('Success');
+  const footerT = useTranslations('Footer');
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [sessionData, setSessionData] = useState<SessionData | null>(null);
   const searchParams = useSearchParams();
@@ -225,6 +226,27 @@ function SuccessContent() {
           )}
         </>
       )}
+
+      {/* Trustpilot CTA */}
+      <Card className="p-6 border-dashed border-gray-300 dark:border-gray-700 bg-transparent animate-in fade-in duration-500 delay-700">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex flex-col items-center md:items-start text-center md:text-left">
+            <h3 className="text-lg font-bold mb-1">{t('leaveReview')}</h3>
+            <div className="flex gap-1 mb-2">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="bg-[#00b67a] p-1 rounded-sm">
+                  <Star size={16} fill="white" stroke="white" />
+                </div>
+              ))}
+            </div>
+          </div>
+          <Button asChild className="bg-[#00b67a] hover:bg-[#00a06b] text-white border-none px-8 h-12 text-base font-bold shrink-0">
+            <a href={footerT('trustpilot-url')} target="_blank" rel="noopener noreferrer">
+              {t('reviewButton')}
+            </a>
+          </Button>
+        </div>
+      </Card>
 
       <div className="flex gap-3 justify-center animate-in fade-in duration-500 delay-800">
         <Button asChild variant="outline" className="gap-2">

@@ -9,7 +9,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Skeleton } from "./ui/skeleton";
 import { Button } from "./ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Star } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 const ITEMS_PER_PAGE = 5;
 
@@ -20,6 +21,9 @@ export default function OrderHistory() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [dateFilter, setDateFilter] = useState<string>('all');
   const supabase = createClient();
+  const t = useTranslations("Orders");
+  const successT = useTranslations("Success");
+  const footerT = useTranslations("Footer");
 
   useEffect(() => {
     async function fetchOrders() {
@@ -175,6 +179,16 @@ export default function OrderHistory() {
                   {formatPrice(order.total_amount, order.currency)}
                 </span>
               </div>
+              {order.status === 'completed' && (
+                <div className="pt-2">
+                  <Button asChild size="sm" variant="outline" className="w-full gap-2 border-[#00b67a] text-[#00b67a] hover:bg-[#00b67a]/10 font-bold">
+                    <a href={footerT('trustpilot-url')} target="_blank" rel="noopener noreferrer">
+                      <Star size={14} fill="#00b67a" stroke="#00b67a" />
+                      {successT('reviewButton')}
+                    </a>
+                  </Button>
+                </div>
+              )}
               {order.payment_intent && (
                 <div className="flex justify-between text-sm">
                   <span>Payment ID:</span>

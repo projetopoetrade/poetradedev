@@ -4,6 +4,7 @@ import { JSX, SVGProps } from "react";
 import { ThemeSwitcher } from "./theme-switcher";
 import { getTranslations } from "next-intl/server";
 import { getAllActiveLeagues } from "@/app/actions";
+import { TrustpilotBadge } from "./trustpilot-badge";
 
 interface FooterProps {
   locale?: string;
@@ -28,6 +29,7 @@ export default async function Footer({ locale = 'en' }: FooterProps) {
                 className="object-contain"
               />
             </Link>
+            <TrustpilotBadge />
             {/* Social links will be added when profiles are created */}
           </div>
 

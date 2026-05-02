@@ -10,7 +10,8 @@ import {
   User,
   CreditCard,
   Loader2,
-  AlertCircle
+  AlertCircle,
+  Star
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
@@ -76,6 +77,7 @@ export function OrderSuccessModal({
   pixQrCodeId,
 }: OrderSuccessModalProps) {
   const t = useTranslations('Success');
+  const footerT = useTranslations('Footer');
   const { clearCart } = useCart();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -250,6 +252,25 @@ export function OrderSuccessModal({
                   <span>{t('step3Description')}</span>
                 </li>
               </ol>
+            </div>
+
+            {/* Trustpilot CTA */}
+            <div className="p-4 border-dashed border-gray-300 dark:border-gray-700 rounded-lg flex flex-col items-center gap-3">
+              <div className="text-center">
+                <p className="text-sm font-bold mb-1">{t('leaveReview')}</p>
+                <div className="flex gap-0.5 justify-center">
+                  {[...Array(5)].map((_, i) => (
+                    <div key={i} className="bg-[#00b67a] p-0.5 rounded-sm">
+                      <Star size={12} fill="white" stroke="white" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <Button asChild size="sm" className="bg-[#00b67a] hover:bg-[#00a06b] text-white border-none w-full">
+                <a href={footerT('trustpilot-url')} target="_blank" rel="noopener noreferrer">
+                  {t('reviewButton')}
+                </a>
+              </Button>
             </div>
 
              {/* Botões */}
