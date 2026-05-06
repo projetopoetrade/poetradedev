@@ -22,23 +22,38 @@ interface PoeCtaBlock {
 }
 
 const ImageComponent = ({ value, isInline }: { value: any; isInline?: boolean }) => {
+  // getImageDimensions parses asset._ref (e.g. "image-foo-1920x1080-jpg")
+  // so no GROQ join is needed to hydrate asset.metadata.dimensions.
   const { width, height } = getImageDimensions(value);
+  const src = urlBuilder(config).image(value).fit("max").auto("format").url() as string;
+
+  // Layout strategy (mirrors the hub's preview ImageComponent):
+  //  - width:100% + height:auto so small uploads still fill the article column
+  //    instead of rendering at native pixels (a 575×365 inside a 1024px column
+  //    used to look lost on the side).
+  //  - max-height:80vh + object-fit:contain caps portrait sources so they
+  //    don't dominate the viewport — letterboxed in a centered box.
+  //  - Negative horizontal margins on xl+ break out of the article's
+  //    max-w-5xl (1024px) cap. Effective image widths:
+  //      xl  (1280-1535)  → 1216px
+  //      2xl (1536-1919)  → 1408px
+  //      ≥1920 (ultrawide) → 1600px
+  //    Always keeps ≥32px of safety margin to the viewport edge.
   return (
-    <div className="my-10 overflow-hidden rounded-[15px]">
+    <div className="my-10 flex justify-center overflow-hidden rounded-[15px] xl:-mx-24 2xl:-mx-48 min-[1920px]:-mx-72">
       <Image
-        src={
-          urlBuilder(config)
-            .image(value)
-            .fit("max")
-            .auto("format")
-            .url() as string
-        }
+        src={src}
         width={width}
         height={height}
         alt={value.alt || "blog image"}
         loading="lazy"
+        sizes="(max-width: 1024px) 100vw, (max-width: 1280px) 1024px, (max-width: 1536px) 1216px, (max-width: 1920px) 1408px, 1600px"
         style={{
           display: isInline ? "inline-block" : "block",
+          width: "100%",
+          height: "auto",
+          maxHeight: "80vh",
+          objectFit: "contain",
           aspectRatio: width / height,
         }}
       />
