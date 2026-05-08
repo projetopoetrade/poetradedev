@@ -179,7 +179,7 @@ const SingleBlogPage = async (props: PageProps) => {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
 
-      <article className="max-w-5xl mx-auto px-4 py-12">
+      <article className="max-w-6xl mx-auto px-4 py-12">
         <Breadcrumb
           items={[
             { label: locale === 'pt-br' ? 'Blog' : 'Blog', href: '/blog' },

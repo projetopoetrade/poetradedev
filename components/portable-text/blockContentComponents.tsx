@@ -244,6 +244,15 @@ function renderMarkdownTable(text: string) {
   );
 }
 
+// Threshold for forcing last-line justify. Below ~200 chars the paragraph is
+// likely 1-2 lines, where stretching the final line would create huge gaps
+// (CSS has no equivalent of Word's "don't justify last line if <X% wide").
+const LONG_PARAGRAPH_CHARS = 200;
+const justifyClass = (textLength: number) =>
+  textLength > LONG_PARAGRAPH_CHARS
+    ? "leading-relax mb-4 text-justify [text-align-last:justify] hyphens-auto [text-wrap:pretty]"
+    : "leading-relax mb-4 text-justify hyphens-auto [text-wrap:pretty]";
+
 function processNormalBlock(children: React.ReactNode) {
   const { first: firstText, full: fullText } = getTextParts(children);
 
@@ -297,10 +306,11 @@ function processNormalBlock(children: React.ReactNode) {
       const childArray = React.Children.toArray(children);
       const remainingChildren = childArray.slice(1).filter(c => !(typeof c === "string" && !c.trim()));
       if (remainingChildren.length > 0) {
+        const { full: remainingText } = getTextParts(remainingChildren);
         return (
           <>
             <Tag className={headingClasses[level]}>{content}</Tag>
-            <p className="leading-relax mb-4">{processChildren(remainingChildren)}</p>
+            <p className={justifyClass(remainingText?.length ?? 0)}>{processChildren(remainingChildren)}</p>
           </>
         );
       }
@@ -338,7 +348,7 @@ function processNormalBlock(children: React.ReactNode) {
     }
   }
 
-  return <p className="leading-relax mb-4">{processChildren(children)}</p>;
+  return <p className={justifyClass(fullText?.length ?? 0)}>{processChildren(children)}</p>;
 }
 
 export const blockContentComponents: PortableTextComponents = {

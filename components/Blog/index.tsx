@@ -17,7 +17,7 @@ const BlogItem = ({ blog, locale }: BlogItemProps) => {
     >
       <article className="flex gap-4 items-start">
         {blog.mainImage && (
-          <div className="relative min-w-32 min-h-36  md:min-w-56 md:min-h-40 flex-shrink-0 rounded-md overflow-hidden">
+          <div className="relative w-40 h-20 md:w-80 md:h-40 flex-shrink-0 rounded-md overflow-hidden bg-black/40">
             <Image
               src={imageBuilder(blog.mainImage)
                 .width(800)
@@ -26,8 +26,8 @@ const BlogItem = ({ blog, locale }: BlogItemProps) => {
                 .url()}
               alt={blog.title}
               fill
-              className="object-cover transition-transform duration-300 group-hover:scale-105 m-0 mt-2 md:m-0  "
-              sizes="(max-width: 768px) 100vw, 800px"
+              className="object-contain transition-transform duration-300 group-hover:scale-105 m-0 mt-2 md:m-0  "
+              sizes="(max-width: 768px) 160px, 320px"
               loading="lazy"
               priority={false}
             />
