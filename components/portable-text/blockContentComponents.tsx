@@ -244,14 +244,12 @@ function renderMarkdownTable(text: string) {
   );
 }
 
-// Threshold for forcing last-line justify. Below ~200 chars the paragraph is
-// likely 1-2 lines, where stretching the final line would create huge gaps
-// (CSS has no equivalent of Word's "don't justify last line if <X% wide").
-const LONG_PARAGRAPH_CHARS = 200;
-const justifyClass = (textLength: number) =>
-  textLength > LONG_PARAGRAPH_CHARS
-    ? "leading-relax mb-4 text-justify [text-align-last:justify] hyphens-auto [text-wrap:pretty]"
-    : "leading-relax mb-4 text-justify hyphens-auto [text-wrap:pretty]";
+// Justified text without forcing the last line. With `text-align-last:justify`,
+// the final line of long paragraphs (and lines broken by `<br/>`) was being
+// stretched across the full width, producing huge word gaps when the line
+// had only a few words.
+const justifyClass = (_textLength: number) =>
+  "leading-relaxed mb-4 text-justify hyphens-auto [text-wrap:pretty]";
 
 function processNormalBlock(children: React.ReactNode) {
   const { first: firstText, full: fullText } = getTextParts(children);
