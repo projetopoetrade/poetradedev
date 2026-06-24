@@ -162,10 +162,12 @@ const SingleBlogPage = async (props: PageProps) => {
     articleSection: post.gameVersion === "path-of-exile-1" ? "Path of Exile 1" : post.gameVersion === "path-of-exile-2" ? "Path of Exile 2" : "Gaming"
   };
 
+  // default locale (en) tem URL sem prefixo (localePrefix: 'as-needed')
+  const localePrefix = locale === 'en' ? '' : `/${locale}`;
   const breadcrumbSchema = buildBreadcrumbSchema([
     { name: 'Home', url: '/' },
-    { name: 'Blog', url: `/${locale}/blog` },
-    { name: post.title, url: `/${locale}/blog/${slug}` },
+    { name: 'Blog', url: `${localePrefix}/blog` },
+    { name: post.title, url: `${localePrefix}/blog/${slug}` },
   ]);
 
   return (
@@ -187,7 +189,7 @@ const SingleBlogPage = async (props: PageProps) => {
           ]}
         />
         <Link
-          href={`/${locale}/blog`}
+          href={`${localePrefix}/blog`}
           className="inline-flex items-center px-4 py-2 rounded-lg text-gray-600 dark:text-gray-200 hover:text-gray-200 dark:hover:text-white mb-8 transition-all duration-200  group"
         >
           <svg
