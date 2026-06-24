@@ -958,7 +958,7 @@ export default async function LeagueSlugPage(props: {
                   <span className="text-sm text-muted-foreground">{outOfStockLabel}</span>
                 )}
                 <Link
-                  href={`/products/${encodeProductName(product.name)}?gameVersion=${gv}&league=${encodeURIComponent(league.name)}`}
+                  href={`/games/${gameVersion}/products/${encodeProductName(product.name)}`}
                   className="text-sm font-semibold bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors"
                 >
                   {buyLabel}

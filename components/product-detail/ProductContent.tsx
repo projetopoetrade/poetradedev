@@ -61,7 +61,9 @@ const components = {
     table: Table,
   },
   block: {
-    h1: ({ children }: any) => <h1 className="text-3xl font-bold mb-4">{children}</h1>,
+    // h1 do conteúdo vira h2: o <h1> da página já é o nome do produto
+    // (ProductDetail). Evita múltiplos <h1> na mesma página.
+    h1: ({ children }: any) => <h2 className="text-2xl font-bold mb-4">{children}</h2>,
     h2: ({ children }: any) => <h2 className="text-2xl font-semibold mb-3">{children}</h2>,
     h3: ({ children }: any) => <h3 className="text-xl font-semibold mb-2">{children}</h3>,
     normal: ({ children }: any) => <p className="mb-4 text-gray-300 leading-relaxed">{children}</p>,

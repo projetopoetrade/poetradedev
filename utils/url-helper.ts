@@ -53,16 +53,12 @@ export const getProductUrl = (
 
   // Create base URL with encoded product name (slug)
   const slug = encodeProductName(productName);
-  let baseUrl = `${localePath}/products/${slug}`;
 
-  // SEO STRATEGY:
-  // PoE 1 -> Clean URL (e.g. /products/divine-orb)
-  // PoE 2 -> Clean URL with gameVersion in path (e.g. /games/path-of-exile-2/products/divine-orb)
-  if (gameVersion === 'path-of-exile-2') {
-    return `${localePath}/games/path-of-exile-2/products/${slug}`;
-  }
-
-  return baseUrl;
+  // URL canônica do produto: /games/<jogo>/products/<slug> (sem liga; resolve
+  // para a liga atual via smart-default). Aponta os links internos direto para
+  // a canônica — sem o redirect /products/<slug> que duplicava títulos.
+  const gv = gameVersion === 'path-of-exile-2' ? 'path-of-exile-2' : 'path-of-exile-1';
+  return `${localePath}/games/${gv}/products/${slug}`;
 };
 
 /**
