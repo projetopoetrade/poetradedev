@@ -1,6 +1,7 @@
 'use client';
 
-import { Link, usePathname } from '@/i18n/navigation';
+import Link from 'next/link';
+import { usePathname } from '@/i18n/navigation';
 import { useParams, useSearchParams } from 'next/navigation';
 import { Globe } from 'lucide-react';
 
@@ -11,17 +12,28 @@ const LOCALES = [
 
 /**
  * Locale switcher rendered as real, always-present <a> links (not a JS
- * dropdown). This keeps the EN <-> pt-br bridge crawlable on every page, so
- * search engines can discover and flow PageRank into the pt-br tree instead
- * of leaving it orphaned. The link for the active locale is rendered as plain
- * text; the other locale(s) point at the current path in that locale.
+ * dropdown), so the EN <-> pt-br bridge stays crawlable on every page and
+ * PageRank flows into the pt-br tree.
+ *
+ * The href is built manually (default locale `en` => no prefix, `pt-br` =>
+ * `/pt-br` prefix) instead of using next-intl's `locale` prop, which with
+ * `localePrefix: 'as-needed'` wrongly emits `/en/...` for the default locale
+ * and creates duplicate (redirecting) URLs.
  */
 export default function LocaleSwitcher() {
-  const pathname = usePathname();
+  const pathname = usePathname(); // already stripped of the locale prefix
   const searchParams = useSearchParams();
   const params = useParams();
   const currentLocale = (params?.locale as string) || 'en';
-  const query = Object.fromEntries(searchParams.entries());
+
+  const qs = searchParams.toString();
+  const suffix = qs ? `?${qs}` : '';
+
+  const hrefFor = (code: string) => {
+    if (code === 'en') return `${pathname || '/'}${suffix}`;
+    const path = pathname === '/' ? '' : pathname;
+    return `/pt-br${path}${suffix}`;
+  };
 
   return (
     <div className="flex items-center gap-1 text-xs" aria-label="Language">
@@ -35,8 +47,7 @@ export default function LocaleSwitcher() {
             </span>
           ) : (
             <Link
-              href={{ pathname, query }}
-              locale={l.code}
+              href={hrefFor(l.code)}
               hrefLang={l.hrefLang}
               aria-label={l.switchLabel}
               className="text-muted-foreground hover:text-foreground transition-colors"
