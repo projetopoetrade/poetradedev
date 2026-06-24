@@ -1,5 +1,5 @@
 import { Blog } from "@/types/blog";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import Image from "next/image";
 import React from "react";
 import { imageBuilder } from "@/sanity/sanity-utils";
@@ -15,13 +15,13 @@ const RelatedPosts = ({ posts, locale }: RelatedPostsProps) => {
   return (
     <section className="mt-16 pt-8 border-t border-gray-200 dark:border-gray-800">
       <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">
-        Related Posts
+        {locale === "pt-br" ? "Posts Relacionados" : "Related Posts"}
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {posts.map((post) => (
           <Link
             key={post._id}
-            href={`/${locale}/blog/${post.slug.current}`}
+            href={`/blog/${post.slug.current}`}
             className="group block no-underline"
           >
             <article className="rounded-lg overflow-hidden bg-black/40 backdrop-blur-sm border border-gray-800/50 hover:border-gray-500/50 transition-all duration-300">

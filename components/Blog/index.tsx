@@ -1,5 +1,5 @@
 import { Blog } from "@/types/blog";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import React from "react";
 import Image from "next/image";
 import { imageBuilder } from "@/sanity/sanity-utils";
@@ -14,7 +14,7 @@ interface BlogItemProps {
 const BlogItem = ({ blog, locale, priority = false }: BlogItemProps) => {
   return (
     <Link
-      href={`/${locale}/blog/${blog.slug.current}`}
+      href={`/blog/${blog.slug.current}`}
       className="block p-4 bg-black/40 backdrop-blur-sm rounded-lg border border-gray-800/50 hover:border-gray-500/50 transition-all duration-300 my-6 group no-underline" 
     >
       <article className="flex gap-4 items-start">
