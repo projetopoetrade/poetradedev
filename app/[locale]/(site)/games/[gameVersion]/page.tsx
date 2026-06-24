@@ -7,17 +7,40 @@ import { getTranslations } from "next-intl/server";
 import { buildCanonical, generateKeywords, buildBreadcrumbSchema, getOgLocale } from "@/lib/utils";
 import { Link } from "@/i18n/navigation";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
+import { notFound, redirect } from "next/navigation";
 
 // ISR: revalidate cache every 5 minutes
 export const revalidate = 300;
 
+const GAME_VERSIONS = ["path-of-exile-1", "path-of-exile-2"] as const;
+type GameVersion = (typeof GAME_VERSIONS)[number];
+const DEFAULT_GAME_VERSION: GameVersion = "path-of-exile-1";
+
+// Resolve route gameVersion: "Current" (client-side filter placeholder) redirects
+// to the real default version; anything that isn't a valid version 404s.
+function resolveGameVersion(gameVersion: string, locale: string): GameVersion {
+  if (GAME_VERSIONS.includes(gameVersion as GameVersion)) {
+    return gameVersion as GameVersion;
+  }
+  if (gameVersion === "Current") {
+    const localePrefix = locale === "en" ? "" : `/${locale}`;
+    redirect(`${localePrefix}/games/${DEFAULT_GAME_VERSION}`);
+  }
+  notFound();
+}
+
 
 // Generate metadata based on game version
 export async function generateMetadata(props: {
-  params: Promise<{ gameVersion: "path-of-exile-1" | "path-of-exile-2"; locale: string }>;
+  params: Promise<{ gameVersion: string; locale: string }>;
 }): Promise<Metadata> {
   const params = await props.params;
-  const isPoe2 = params.gameVersion === "path-of-exile-2";
+  // Normalize the route param so metadata never emits canonical/og URLs for
+  // invalid values like "Current" (the page itself redirects/404s).
+  const gameVersion: GameVersion = GAME_VERSIONS.includes(params.gameVersion as GameVersion)
+    ? (params.gameVersion as GameVersion)
+    : DEFAULT_GAME_VERSION;
+  const isPoe2 = gameVersion === "path-of-exile-2";
   const t = await getTranslations({ locale: params.locale, namespace: "SEO" });
 
   const title = isPoe2 ? t("gameVersion.poe2Title") : t("gameVersion.poe1Title");
@@ -25,7 +48,7 @@ export async function generateMetadata(props: {
 
   // 1. Construção das URLs
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net";
-  const pathWithoutLocale = `/games/${params.gameVersion}`;
+  const pathWithoutLocale = `/games/${gameVersion}`;
 
   const enUrl = `${baseUrl}${pathWithoutLocale}`;
   const ptUrl = `${baseUrl}/pt-br${pathWithoutLocale}`;
@@ -73,7 +96,7 @@ export async function generateMetadata(props: {
     },
     keywords: generateKeywords({
       locale: params.locale,
-      gameVersion: params.gameVersion,
+      gameVersion,
       customKeywords: ['buy currency', 'trading', 'items', 'guides']
     })
   };
@@ -81,12 +104,14 @@ export async function generateMetadata(props: {
 export default async function Page({
   params,
 }: {
-  params: {
-    gameVersion: "path-of-exile-1" | "path-of-exile-2";
+  params: Promise<{
+    gameVersion: string;
     locale: string;
-  };
+  }>;
 }) {
-  const { gameVersion, locale } = await params;
+  const { gameVersion: rawGameVersion, locale } = await params;
+  // Validate route param: redirect "Current" placeholder, 404 invalid values.
+  const gameVersion = resolveGameVersion(rawGameVersion, locale);
   const t = await getTranslations({ locale, namespace: "Products" });
 
   const isPoe2 = gameVersion === "path-of-exile-2";

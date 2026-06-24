@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { JSX, SVGProps } from "react";
 import { ThemeSwitcher } from "./theme-switcher";
 import { getTranslations } from "next-intl/server";
@@ -101,7 +101,7 @@ export default async function Footer({ locale = 'en' }: FooterProps) {
                 </Link>
               ))
             ) : (
-              <span className="text-gray-500 text-sm">No active leagues</span>
+              <span className="text-gray-400 text-sm">No active leagues</span>
             )}
           </div>
 

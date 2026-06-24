@@ -76,6 +76,7 @@ export default function BuildFilters({ leagues }: BuildFiltersProps) {
       {/* Search */}
       <Input
         placeholder="Search builds..."
+        aria-label="Search builds by name"
         defaultValue={search}
         onChange={(e) => {
           const val = e.target.value;
@@ -96,7 +97,7 @@ export default function BuildFilters({ leagues }: BuildFiltersProps) {
       {/* Row 1: Game Version, League, Class, Ascendancy */}
       <div className="flex flex-wrap gap-2">
         <Select value={gameVersion} onValueChange={(v) => updateParam("gameVersion", v === "all" ? "" : v)}>
-          <SelectTrigger className="w-auto min-w-[150px] h-9 bg-black/40 border-gray-700/50 text-sm text-gray-300">
+          <SelectTrigger aria-label="Filter builds by game version" className="w-auto min-w-[150px] h-9 bg-black/40 border-gray-700/50 text-sm text-gray-300">
             <SelectValue placeholder="Game Version" />
           </SelectTrigger>
           <SelectContent>
@@ -108,7 +109,7 @@ export default function BuildFilters({ leagues }: BuildFiltersProps) {
 
         {leagues.length > 0 && (
           <Select value={league} onValueChange={(v) => updateParam("league", v === "all" ? "" : v)}>
-            <SelectTrigger className="w-auto min-w-[140px] h-9 bg-black/40 border-gray-700/50 text-sm text-gray-300">
+            <SelectTrigger aria-label="Filter builds by league" className="w-auto min-w-[140px] h-9 bg-black/40 border-gray-700/50 text-sm text-gray-300">
               <SelectValue placeholder="League" />
             </SelectTrigger>
             <SelectContent>
@@ -121,7 +122,7 @@ export default function BuildFilters({ leagues }: BuildFiltersProps) {
         )}
 
         <Select value={poeClass} onValueChange={(v) => updateParam("class", v === "all" ? "" : v)}>
-          <SelectTrigger className="w-auto min-w-[130px] h-9 bg-black/40 border-gray-700/50 text-sm text-gray-300">
+          <SelectTrigger aria-label="Filter builds by class" className="w-auto min-w-[130px] h-9 bg-black/40 border-gray-700/50 text-sm text-gray-300">
             <SelectValue placeholder="Class" />
           </SelectTrigger>
           <SelectContent>
@@ -134,7 +135,7 @@ export default function BuildFilters({ leagues }: BuildFiltersProps) {
 
         {ascendancies.length > 0 && (
           <Select value={ascendancy} onValueChange={(v) => updateParam("ascendancy", v === "all" ? "" : v)}>
-            <SelectTrigger className="w-auto min-w-[140px] h-9 bg-black/40 border-gray-700/50 text-sm text-gray-300">
+            <SelectTrigger aria-label="Filter builds by ascendancy" className="w-auto min-w-[140px] h-9 bg-black/40 border-gray-700/50 text-sm text-gray-300">
               <SelectValue placeholder="Ascendancy" />
             </SelectTrigger>
             <SelectContent>

@@ -1,5 +1,5 @@
 import { Blog } from "@/types/blog";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import React from "react";
 import Image from "next/image";
 import { imageBuilder } from "@/sanity/sanity-utils";
@@ -7,12 +7,14 @@ import { imageBuilder } from "@/sanity/sanity-utils";
 interface BlogItemProps {
   blog: Blog;
   locale: string;
+  /** Set on the first (above-the-fold) post so its image is the LCP and not lazy-loaded. */
+  priority?: boolean;
 }
 
-const BlogItem = ({ blog, locale }: BlogItemProps) => {
+const BlogItem = ({ blog, locale, priority = false }: BlogItemProps) => {
   return (
     <Link
-      href={`/${locale}/blog/${blog.slug.current}`}
+      href={`/blog/${blog.slug.current}`}
       className="block p-4 bg-black/40 backdrop-blur-sm rounded-lg border border-gray-800/50 hover:border-gray-500/50 transition-all duration-300 my-6 group no-underline" 
     >
       <article className="flex gap-4 items-start">
@@ -28,8 +30,7 @@ const BlogItem = ({ blog, locale }: BlogItemProps) => {
               fill
               className="object-contain transition-transform duration-300 group-hover:scale-105 m-0 mt-2 md:m-0  "
               sizes="(max-width: 768px) 160px, 320px"
-              loading="lazy"
-              priority={false}
+              priority={priority}
             />
           </div>
         )}

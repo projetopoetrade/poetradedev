@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import AscendancyImage from "./AscendancyImage";
 import type { Build } from "@/lib/interface";
 import { BUILD_TAGS } from "@/lib/builds-data";
+import { generatePobShortHash } from "@/lib/pob-hash";
 import Link from "next/link";
 
 interface BuildHeroProps {
@@ -34,9 +35,15 @@ export default function BuildHero({ build }: BuildHeroProps) {
     (acc, t) => ({ ...acc, [t.value]: t.label }),
     {} as Record<string, string>,
   );
-  const pobUrl = build.pob_hash
-    ? `/tools/pob-viewer?id=${build.pob_hash}&from=build&buildSlug=${encodeURIComponent(build.slug)}`
-    : `/tools/pob-viewer?code=${encodeURIComponent(build.pob_code)}&from=build&buildSlug=${encodeURIComponent(build.slug)}`;
+  // Sempre usa o link curto por hash. Nunca passa o código PoB inteiro na URL
+  // (estourava o limite de URI → HTTP 414). O hash é determinístico e o código
+  // está garantido em `pob_builds` (backfill + create/update admin).
+  const pobHash =
+    build.pob_hash ||
+    (build.pob_code ? generatePobShortHash(build.pob_code.trim()) : null);
+  const pobUrl = pobHash
+    ? `/tools/pob-viewer?id=${pobHash}&from=build&buildSlug=${encodeURIComponent(build.slug)}`
+    : `/tools/pob-viewer?from=build&buildSlug=${encodeURIComponent(build.slug)}`;
 
   return (
     <div className="relative overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50/80 dark:bg-black/30">
