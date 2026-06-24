@@ -205,9 +205,9 @@ export function LeagueSelectionPage({ gameVersion }: LeagueSelectionProps) {
   return (
     <div className="flex flex-col items-center justify-start bg-background  px-4 ">
       <div className="max-w-7xl w-full flex flex-col items-center">
-        <h1 className="text-5xl md:text-6xl text-center font-black font-source-sans bg-gradient-to-r from-[#DEDCFF] to-[#6f58ff] bg-clip-text text-transparent tracking-wider">
+        <p className="text-5xl md:text-6xl text-center font-black font-source-sans bg-gradient-to-r from-[#DEDCFF] to-[#6f58ff] bg-clip-text text-transparent tracking-wider">
           {t("title")}
-        </h1>
+        </p>
         <p className="text-sm text-center text-muted-foreground/80 mb-12 max-w-2xl tracking-wide">
           {t("description")}
         </p>
