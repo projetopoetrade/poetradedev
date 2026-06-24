@@ -8,7 +8,6 @@ import { getTranslations } from "next-intl/server";
 import { generateKeywords } from "@/lib/utils"; // Removi buildCanonical pois vamos montar manualmente aqui
 import { Link } from "@/i18n/navigation";
 import { ArrowLeft } from "lucide-react";
-import { FilterModalWrapper } from "@/components/filter-modal-wrapper";
 
 // ISR: revalidate every 5 minutes for faster bot crawling
 export const revalidate = 300;
@@ -188,7 +187,6 @@ export default async function ProductsPage(
     return (
       <main className="container mx-auto py-8">
         <SearchParamsStorage searchParams={searchParams} />
-        <FilterModalWrapper searchParams={searchParams} />
 
         <script
           type="application/ld+json"
