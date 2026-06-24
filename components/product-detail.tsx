@@ -185,10 +185,12 @@ export default function ProductDetail({
             </Button>
           </div>
 
-          {/* Price display */}
-          <div className="flex items-baseline justify-center mb-6">
-            <span className="text-3xl font-bold text-primary">{formatPrice(totalPrice)}</span>
-          </div>
+          {/* Price display — escondido quando sem estoque ou sem preço definido */}
+          {isInStock && product.price > 0 && (
+            <div className="flex items-baseline justify-center mb-6">
+              <span className="text-3xl font-bold text-primary">{formatPrice(totalPrice)}</span>
+            </div>
+          )}
 
           {error && (
             <div className="text-red-500 text-sm mb-4 text-center">

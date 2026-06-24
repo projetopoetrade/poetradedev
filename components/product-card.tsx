@@ -176,10 +176,12 @@ export default function ProductCard({ product }: ProductCardProps) {
             </Button>
           </div>
 
-          {/* Price and buttons */}
-          <span className="text-xl font-bold text-primary inline-flex mb-3">
-            {formatPrice(totalPrice)}
-          </span>
+          {/* Price — escondido quando sem estoque ou sem preço definido */}
+          {isInStock && product.price > 0 && (
+            <span className="text-xl font-bold text-primary inline-flex mb-3">
+              {formatPrice(totalPrice)}
+            </span>
+          )}
 
           {error && (
             <div className="text-red-500 text-sm mb-2 text-center">

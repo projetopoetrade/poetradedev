@@ -40,9 +40,13 @@ export default function CategoryItemCard({ product, locale, buyLabel, outOfStock
             {product.name}
           </h3>
           <div className="flex items-center justify-between gap-1 mt-auto">
-            <span className="text-sm font-bold text-primary">
-              ${product.price.toFixed(2)}
-            </span>
+            {isInStock && product.price > 0 ? (
+              <span className="text-sm font-bold text-primary">
+                ${product.price.toFixed(2)}
+              </span>
+            ) : (
+              <span className="text-xs text-muted-foreground">{outOfStockLabel}</span>
+            )}
             <span className="text-xs font-semibold text-primary bg-primary/10 group-hover:bg-primary group-hover:text-primary-foreground px-2.5 py-1 rounded-lg transition-colors">
               {buyLabel}
             </span>
