@@ -86,6 +86,7 @@ export async function getSitemapPosts(): Promise<SitemapPost[]> {
 export type SitemapProduct = {
   name: string;
   slug: string | null;
+  urlSlug: string | null;
   gameVersion: string;
   league: string | null;
   difficulty: string | null;
@@ -98,11 +99,13 @@ export async function getSitemapProducts(): Promise<SitemapProduct[]> {
   try {
     const { data, error } = await supabaseClient
       .from("products")
-      .select('name, slug, gameVersion, league, difficulty, updated_at, "imgUrl"');
+      .select('name, slug, url_slug, gameVersion, league, difficulty, updated_at, "imgUrl"')
+      .eq("is_listed", true);
     if (error) throw error;
     return (data || []).map((p) => ({
       name: p.name,
       slug: p.slug ?? null,
+      urlSlug: p.url_slug ?? null,
       gameVersion: p.gameVersion,
       league: p.league ?? null,
       difficulty: p.difficulty ?? null,

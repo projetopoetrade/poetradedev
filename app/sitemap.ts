@@ -126,13 +126,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     getSitemapLeagueBuilds(),
   ]);
 
+  // URL canônica de produto: /games/<jogo>/products/<url_slug> (sem liga).
+  // Cada produto tem 2 linhas (Standard/Mirage) com o mesmo url_slug — emite 1x.
+  const seenProductUrls = new Set<string>();
   for (const product of products) {
-    if (!product.name) continue;
-    const slug = product.slug ?? encodeProductSlug(product.name);
-    const basePath =
-      product.gameVersion === "path-of-exile-2"
-        ? `/games/path-of-exile-2/products/${slug}`
-        : `/products/${slug}`;
+    const urlSlug = product.urlSlug ?? encodeProductSlug(product.name);
+    if (!product.name || !urlSlug) continue;
+    const key = `${product.gameVersion}/${urlSlug}`;
+    if (seenProductUrls.has(key)) continue;
+    seenProductUrls.add(key);
+    const basePath = `/games/${product.gameVersion}/products/${urlSlug}`;
     entries.push(
       ...expandLocales(basePath, {
         lastModified: new Date(product.lastmod),

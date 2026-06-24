@@ -1,9 +1,8 @@
-import { getProductsWithParams, getLeagues } from "@/app/actions";
+import { getProductsWithParams, getLeagues, getCurrentTempLeague } from "@/app/actions";
 import { Metadata } from "next";
+import { notFound } from "next/navigation";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { parseProductSlug } from "@/utils/url-helper";
 import ProductDetail from "@/components/product-detail";
 import { getProductBySlug } from "@/sanity/sanity-utils";
 import ProductContent from "@/components/product-detail/ProductContent";
@@ -22,19 +21,35 @@ export async function generateStaticParams() {
   try {
     const supabase = createAdminClient();
 
+    // url_slug é o identificador canônico da URL (curto, sem liga). Cada produto
+    // existe em 2 linhas (Standard/Mirage) com o MESMO url_slug, então
+    // deduplicamos por (gameVersion, url_slug) para 1 entrada por jogo+slug.
     const { data } = await supabase
       .from('products')
-      .select('slug, locale')
+      .select('url_slug, "gameVersion"')
       .eq('is_listed', true)
-      .eq('gameVersion', 'path-of-exile-2');
+      .in('gameVersion', ['path-of-exile-1', 'path-of-exile-2']);
 
     const locales = ['en', 'pt-br'];
 
+    // Deduplica por (gameVersion, url_slug); pula linhas com url_slug nulo.
+    const seen = new Set<string>();
+    const uniques: { gameVersion: string; slug: string }[] = [];
+    for (const p of data || []) {
+      const urlSlug = (p as { url_slug?: string | null }).url_slug;
+      const gameVersion = (p as { gameVersion?: string }).gameVersion;
+      if (!urlSlug || !gameVersion) continue;
+      const key = `${gameVersion}::${urlSlug}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      uniques.push({ gameVersion, slug: urlSlug });
+    }
+
     return locales.flatMap(locale =>
-      (data || []).map(p => ({
+      uniques.map(u => ({
         locale,
-        gameVersion: 'path-of-exile-2',
-        slug: p.slug,
+        gameVersion: u.gameVersion,
+        slug: u.slug,
       }))
     );
   } catch (error) {
@@ -48,31 +63,37 @@ export const generateMetadata = async (props: {
 }): Promise<Metadata> => {
   const params = await props.params;
 
-  const decodedName = parseProductSlug(params.slug);
   const t = await getTranslations({ locale: params.locale, namespace: "SEO" });
 
   const gameVersionLabel = params.gameVersion === 'path-of-exile-2' ? 'PoE 2' : 'PoE 1';
 
-  // Fetch product for SEO and image
+  // Resolve o produto pelo url_slug (identificador canônico da URL). Qualquer
+  // liga serve para o metadata, por isso não filtramos por liga aqui.
   const products = await getProductsWithParams({
-    search: decodedName,
+    urlSlug: params.slug,
     gameVersion: params.gameVersion as "path-of-exile-1" | "path-of-exile-2",
   });
   const productFn = products?.[0];
 
+  if (!productFn) {
+    return { title: "Not Found" };
+  }
+
+  // Usa o NOME REAL do produto (não o slug decodificado) no título/descrição.
+  const productName = productFn.name;
+
   let sanitySeoTitle: string | null = null;
   let sanityMetaDescription: string | null = null;
 
-  if (productFn) {
-    const productSanity = await getProductBySlug(productFn.slug) as any;
-    const localeKey = params.locale === 'pt-BR' || params.locale === 'pt-br' ? 'pt_br' : 'en';
+  // Sanity é chaveado pelo slug ORIGINAL (productFn.slug), nunca pelo url_slug.
+  const productSanity = await getProductBySlug(productFn.slug) as any;
+  const localeKey = params.locale === 'pt-BR' || params.locale === 'pt-br' ? 'pt_br' : 'en';
 
-    if (productSanity?.seoTitle) sanitySeoTitle = productSanity.seoTitle[localeKey];
-    if (productSanity?.metaDescription) sanityMetaDescription = productSanity.metaDescription[localeKey];
-  }
+  if (productSanity?.seoTitle) sanitySeoTitle = productSanity.seoTitle[localeKey];
+  if (productSanity?.metaDescription) sanityMetaDescription = productSanity.metaDescription[localeKey];
 
-  const title = sanitySeoTitle || t("productDetail.title", { productName: decodedName, gameVersionLabel });
-  const description = sanityMetaDescription || t("productDetail.description", { productName: decodedName, gameVersionLabel });
+  const title = sanitySeoTitle || t("productDetail.title", { productName, gameVersionLabel });
+  const description = sanityMetaDescription || t("productDetail.description", { productName, gameVersionLabel });
 
   // Canonical and hreflang
   const basePath = `/games/${params.gameVersion}/products/${params.slug}`;
@@ -108,7 +129,7 @@ export const generateMetadata = async (props: {
     keywords: generateKeywords({
       locale: params.locale,
       gameVersion: params.gameVersion as "path-of-exile-1" | "path-of-exile-2",
-      productName: decodedName,
+      productName: productName,
       customKeywords: ['buy', 'cheap', 'fast delivery', 'secure trading'],
     }),
   };
@@ -125,21 +146,22 @@ export default async function ProductDetailPage(props: {
   const params = await props.params;
 
   try {
-    const decodedName = parseProductSlug(params.slug);
     const targetGameVersion = params.gameVersion as "path-of-exile-1" | "path-of-exile-2";
 
     // ------------------------------------------------------------------
     // SMART LEAGUE DEFAULT LOGIC
     // ------------------------------------------------------------------
+    // 1. Usa o param `league` se existir.
+    // 2. Senão, prefere a liga temp atual (getCurrentTempLeague).
+    // 3. Último fallback: primeira liga ativa registrada.
     let targetLeague = searchParams.league;
     let activeLeagues: any[] = [];
 
     if (!targetLeague) {
       try {
+        const tempLeague = await getCurrentTempLeague(targetGameVersion);
         activeLeagues = await getLeagues(targetGameVersion);
-        if (activeLeagues && activeLeagues.length > 0) {
-          targetLeague = activeLeagues[0].name;
-        }
+        targetLeague = tempLeague ?? activeLeagues?.[0]?.name;
       } catch (e) {
         console.warn("Failed to fetch default leagues", e);
       }
@@ -147,39 +169,28 @@ export default async function ProductDetailPage(props: {
       activeLeagues = await getLeagues(targetGameVersion);
     }
 
-    // Fetch product with smart defaults
-    const products = await getProductsWithParams({
-      search: decodedName,
-      league: targetLeague,
-      difficulty: searchParams.difficulty,
-      gameVersion: targetGameVersion,
-    });
-
-    let productFn = products?.[0];
-
-    if (!productFn && targetLeague) {
-      console.log("Smart default product not found, retrying without league filter...");
-      const fallbackProducts = await getProductsWithParams({
-        search: decodedName,
+    // Resolve o produto pelo url_slug (identificador canônico curto, sem liga).
+    // O mesmo url_slug existe em várias ligas; desambigua pela liga smart-default,
+    // caindo para qualquer liga se a smart-default não tiver o produto.
+    let productFn =
+      (await getProductsWithParams({
+        urlSlug: params.slug,
+        league: targetLeague,
+        difficulty: searchParams.difficulty,
         gameVersion: targetGameVersion,
-      });
-      productFn = fallbackProducts?.[0];
-    }
+      }))?.[0] ??
+      (await getProductsWithParams({
+        urlSlug: params.slug,
+        gameVersion: targetGameVersion,
+      }))?.[0];
 
     if (!productFn) {
-      return (
-        <div className="container mx-auto py-16 px-4">
-          <div className="text-center">
-            <h1 className="text-3xl font-bold mb-4">Product Not Found</h1>
-            <Link href={`/games/${params.gameVersion}/currency`}>
-              <Button>Browse All Products</Button>
-            </Link>
-          </div>
-        </div>
-      );
+      notFound();
     }
 
     const product = productFn;
+    // Sanity e histórico de preço usam o slug ORIGINAL (product.slug), que embute
+    // a liga e é a chave compartilhada — NUNCA o url_slug.
     const productSanity = await getProductBySlug(product.slug);
 
     // Dropdown options
@@ -387,7 +398,7 @@ export default async function ProductDetailPage(props: {
               gameVersionOptions={gameVersionOptions}
               leagueOptions={leagueOptions}
               difficultyOptions={difficultyOptions}
-              productName={decodedName}
+              productName={product.name}
               seoTitle={seoTitle}
             />
           </div>
@@ -426,6 +437,17 @@ export default async function ProductDetailPage(props: {
       </div>
     );
   } catch (error) {
+    // Re-lança os erros de controle de fluxo do Next (notFound/redirect). Sem
+    // isto, o notFound() cairia neste catch e devolveria 200 com erro em vez de
+    // um 404 real (ruim para SEO/crawl). Next sinaliza via erro com digest
+    // "NEXT_..." (em v15 o not-found usa "NEXT_HTTP_ERROR_FALLBACK;404").
+    if (
+      error &&
+      typeof (error as { digest?: unknown }).digest === "string" &&
+      (error as { digest: string }).digest.startsWith("NEXT_")
+    ) {
+      throw error;
+    }
     return (
       <div className="text-red-500 p-4">
         Error loading product: {(error as Error).message}

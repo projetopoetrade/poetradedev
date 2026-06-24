@@ -1,6 +1,6 @@
 import { getProductsWithParams, getLeagues, getCurrentTempLeague } from "@/app/actions";
 import { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -225,6 +225,16 @@ export default async function ProductDetailPage(props: {
 
     if (!productFn) {
       notFound();
+    }
+
+    // URL canônica do produto = /games/<jogo>/products/<url_slug> (sem liga,
+    // resolve para a liga atual). Redireciona as URLs legadas /products/<slug>
+    // para a base canônica (301), consolidando o histórico de SEO.
+    if (productFn.url_slug) {
+      const localePrefix = params.locale === "en" ? "" : `/${params.locale}`;
+      permanentRedirect(
+        `${localePrefix}/games/${productFn.gameVersion}/products/${productFn.url_slug}`,
+      );
     }
 
     const product = productFn;
