@@ -311,11 +311,12 @@ export const getProductsWithParams = async (
     difficulty?: string;
     category?: string;
     search?: string;
+    slug?: string;
     isListed?: boolean;
     orderByPrice?: 'asc' | 'desc';
   }
 ): Promise<Product[]> => {
-  const { gameVersion, league, difficulty, category, search, isListed, orderByPrice } = params;
+  const { gameVersion, league, difficulty, category, search, slug, isListed, orderByPrice } = params;
   const supabase = createPublicClient();
 
   let query = supabase.from('products').select('*');
@@ -325,6 +326,8 @@ export const getProductsWithParams = async (
   if (league) query = query.eq('league', league);
   if (difficulty) query = query.eq('difficulty', difficulty);
   if (category) query = query.ilike('category', category);
+  // slug é o identificador canônico (URL/sitemap); busca exata tem prioridade
+  if (slug) query = query.eq('slug', slug);
   if (search && typeof search === 'string') query = query.ilike('name', `%${search.replace(/\s+/g, '%')}%`);
   if (orderByPrice) query = query.order('price', { ascending: orderByPrice === 'asc' });
 
