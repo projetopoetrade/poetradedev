@@ -118,6 +118,7 @@ interface AscendancyImageProps {
   sizes?: string;
   gameVersion?: string;
   variant?: ImageVariant;
+  priority?: boolean;
 }
 
 function getAscendancyUrl(
@@ -158,6 +159,7 @@ export default function AscendancyImage({
   sizes,
   gameVersion,
   variant = "full",
+  priority,
 }: AscendancyImageProps) {
   const cdnUrl = getAscendancyUrl(ascendancy, gameVersion, variant);
   const [src, setSrc] = useState<string>(imageUrl || cdnUrl || "");
@@ -199,6 +201,7 @@ export default function AscendancyImage({
         fill
         className={className}
         sizes={sizes}
+        priority={priority}
         onError={handleError}
         unoptimized={isExternalCdn}
       />
@@ -213,6 +216,7 @@ export default function AscendancyImage({
       height={variant === "icon" ? 64 : (height ?? 300)}
       className={className}
       sizes={sizes}
+      priority={priority}
       onError={handleError}
       unoptimized={isExternalCdn}
     />

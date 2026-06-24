@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { createAdminClient, isAdmin } from "@/utils/supabase/admin";
+import { generatePobShortHash } from "@/lib/pob-hash";
 
 // PATCH — editar build existente
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -23,6 +24,32 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     const { id: _id, created_at, ...updateData } = body;
 
     const adminSupabase = createAdminClient();
+
+    // Se o pob_code mudou, regenera o pob_hash e garante o registro em pob_builds
+    // (mesmo contrato do POST) para que o link curto /tools/pob-viewer?id=<hash>
+    // sempre resolva e nunca caia no fallback ?code= (que estoura a URL → 414).
+    if (typeof updateData.pob_code === "string" && updateData.pob_code.trim()) {
+      const trimmedPobCode = updateData.pob_code.trim();
+      const pobHash = generatePobShortHash(trimmedPobCode);
+      updateData.pob_code = trimmedPobCode;
+      updateData.pob_hash = pobHash;
+
+      const { data: existingPob } = await adminSupabase
+        .from('pob_builds')
+        .select('pob_hash')
+        .eq('pob_hash', pobHash)
+        .maybeSingle();
+
+      if (!existingPob?.pob_hash) {
+        const insertPobRes = await adminSupabase
+          .from('pob_builds')
+          .insert({ pob_code: trimmedPobCode, pob_hash: pobHash });
+        if (insertPobRes.error) {
+          console.error('[admin/builds PATCH] Failed to insert into pob_builds:', insertPobRes.error);
+        }
+      }
+    }
+
     const { data, error } = await adminSupabase
       .from('builds')
       .update(updateData)

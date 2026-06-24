@@ -186,7 +186,7 @@ export default async function ProductsPage(
     };
 
     return (
-      <div className="container mx-auto py-8">
+      <main className="container mx-auto py-8">
         <SearchParamsStorage searchParams={searchParams} />
         <FilterModalWrapper searchParams={searchParams} />
 
@@ -199,15 +199,15 @@ export default async function ProductsPage(
           {/* Header da Liga */}
           <div className="bg-indigo-700 rounded-t-lg py-2 px-4 md:mt-10 md:px-8 shadow-lg flex items-center justify-between max-w-[520px]">
             <Link
-              href={`/games/${gameVersion}`}
+              href={`/games/${gameVersion === "Current" ? "path-of-exile-1" : gameVersion}`}
               className="flex items-center text-white hover:text-indigo-200 transition-colors group"
               aria-label={t("backToLeagues")}
             >
               <ArrowLeft className="h-6 w-6 group-hover:-translate-x-1 transition-transform" />
             </Link>
-            <h2 className="text-md md:text-2xl text-center text-white font-bold antialiased capitalize tracking-wider flex-1">
+            <h1 className="text-md md:text-2xl text-center text-white font-bold antialiased capitalize tracking-wider flex-1">
               {league} - {difficulty}
-            </h2>
+            </h1>
             <div className="w-6" />
           </div>
 
@@ -223,7 +223,74 @@ export default async function ProductsPage(
 
         <PatchInfo gameVersion={gameVersion} />
         <CurrencyInfo gameVersion={gameVersion} />
-      </div>
+
+        {(() => {
+          const isPt = locale === "pt-br";
+          return (
+            <section className="mt-12 border-t border-border pt-8">
+              <div className="text-muted-foreground text-sm md:text-base leading-relaxed max-w-3xl space-y-4">
+                {isPt ? (
+                  <>
+                    <h2 className="text-xl md:text-2xl font-semibold text-foreground">
+                      Comprando currency de Path of Exile com segurança
+                    </h2>
+                    <p>
+                      Currency em Path of Exile não é apenas dinheiro: orbs como Divine,
+                      Exalted e Chaos são a base de todo crafting, troca e progressão no
+                      endgame. Conseguir esses recursos farmando pode levar muitas horas, e
+                      é por isso que muitos jogadores preferem comprar a quantidade exata que
+                      precisam para montar a build dos sonhos sem interromper o ritmo da liga.
+                    </p>
+                    <p>
+                      Trabalhamos com entrega in-game feita por pessoas reais: depois do
+                      pagamento, combinamos um encontro no jogo e transferimos os itens
+                      diretamente para o seu personagem em poucos minutos, respeitando as
+                      regras de troca da Grinding Gear Games. Aceitamos os principais métodos
+                      de pagamento, incluindo cartão, carteiras digitais e PIX para clientes
+                      do Brasil, o que torna a confirmação praticamente instantânea.
+                    </p>
+                    <p>
+                      Nossos preços acompanham o mercado em tempo real e são revisados ao
+                      longo de cada liga, para que você sempre pague um valor justo seja no
+                      início, quando a economia ainda está se formando, seja no endgame. Use
+                      os filtros acima para escolher a versão do jogo, a liga e a dificuldade,
+                      e fale com a gente caso tenha qualquer dúvida antes de finalizar.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <h2 className="text-xl md:text-2xl font-semibold text-foreground">
+                      Trading Path of Exile currency the safe way
+                    </h2>
+                    <p>
+                      Currency in Path of Exile is far more than money: orbs like Divine,
+                      Exalted and Chaos underpin every bit of crafting, trading and endgame
+                      progression. Farming those resources can take many hours, which is why
+                      a lot of players prefer to pick up exactly the amount they need to
+                      finish a build instead of grinding against the clock of a fresh league.
+                    </p>
+                    <p>
+                      Every order is delivered in-game by real people. Once your payment
+                      clears we arrange a quick meeting inside the game and hand the items
+                      straight to your character within minutes, always following Grinding
+                      Gear Games&apos; trading rules. We support the major payment methods,
+                      including cards and digital wallets, plus PIX for customers in Brazil,
+                      so confirmation is usually close to instant.
+                    </p>
+                    <p>
+                      Our prices track the live market and are reviewed throughout each
+                      league, so you get a fair rate whether you shop during the opening days
+                      while the economy settles or deep into the endgame. Use the filters
+                      above to pick your game version, league and difficulty, and reach out
+                      any time if you have a question before checking out.
+                    </p>
+                  </>
+                )}
+              </div>
+            </section>
+          );
+        })()}
+      </main>
     );
   } catch (error) {
     return (

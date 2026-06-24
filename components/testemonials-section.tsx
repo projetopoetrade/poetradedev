@@ -207,11 +207,11 @@ export default function TestimonialCarousel() {
           <div className="mt-8 flex justify-center gap-4">
             <CarouselPrevious
               className="static translate-x-0 translate-y-0 bg-gray-800 hover:bg-gray-700 text-white border-none"
-              aria-label="Previous testimonial"
+              aria-label="Previous testimonial slide"
             />
             <CarouselNext
               className="static translate-x-0 translate-y-0 bg-gray-800 hover:bg-gray-700 text-white border-none"
-              aria-label="Next testimonial"
+              aria-label="Next testimonial slide"
             />
           </div>
         </Carousel>

@@ -153,15 +153,17 @@ export default function ProductsClient({ products, initialFilters }: ProductsCli
                 <Input
                   type="text"
                   placeholder="Search products..."
+                  aria-label="Search products"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pr-10"
                 />
-                <Button 
-                  type="submit" 
-                  size="icon" 
-                  variant="ghost" 
+                <Button
+                  type="submit"
+                  size="icon"
+                  variant="ghost"
                   className="absolute right-0 top-0 h-full"
+                  aria-label="Search products"
                 >
                   <Search className="h-4 w-4" />
                 </Button>

@@ -126,11 +126,11 @@ export default function ProductDetail({
 
   return (
       <div className="p-6 md:p-8 flex flex-col">
-        {/* h1 invisível com o SEO title completo */}
-        {seoTitle && <h1 className="sr-only">{seoTitle}</h1>}
-
+        {/* h1 do produto; mantém o SEO title completo como rótulo acessível */}
         <div className="flex items-start gap-3 mb-4">
-          <h2 className="text-3xl font-bold">{product.name}</h2>
+          <h1 className="text-3xl font-bold" title={seoTitle || product.name}>
+            {product.name}
+          </h1>
           {!isInStock && (
             <span className="shrink-0 mt-1.5 inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold bg-red-600/20 text-red-400 border border-red-500/30">
               Out of Stock

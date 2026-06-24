@@ -41,17 +41,19 @@ export function ProductSearch() {
       <form onSubmit={handleSearch} className="flex w-full space-x-2">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-          <Input 
-            type="search" 
-            placeholder="Search products..." 
+          <Input
+            type="search"
+            placeholder="Search products..."
+            aria-label="Search products"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             className="pl-9"
           />
           {query && (
-            <button 
-              type="button" 
+            <button
+              type="button"
               onClick={() => setQuery('')}
+              aria-label="Clear search"
               className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
             >
               <X className="h-4 w-4" />
@@ -74,7 +76,7 @@ export function ProductSearch() {
           <div>
             <label className="text-sm font-medium mb-1 block">Category</label>
             <Select value={category} onValueChange={setCategory}>
-              <SelectTrigger>
+              <SelectTrigger aria-label="Filter by category">
                 <SelectValue placeholder="All Categories" />
               </SelectTrigger>
               <SelectContent>

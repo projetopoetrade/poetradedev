@@ -78,8 +78,13 @@ export default function BuildsClient({ builds, total, page, locale, leagues }: B
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {builds.map((build) => (
-            <BuildCard key={build.id} build={build} locale={locale} />
+          {builds.map((build, i) => (
+            <BuildCard
+              key={build.id}
+              build={build}
+              locale={locale}
+              priority={page === 1 && i < 4}
+            />
           ))}
         </div>
       )}

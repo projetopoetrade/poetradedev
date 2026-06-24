@@ -1,27 +1,34 @@
 import { Metadata } from "next";
-import { getOgLocale } from "@/lib/utils";
+import { buildCanonical, getOgLocale } from "@/lib/utils";
 
-export async function generateMetadata(props: {
+type Props = {
     params: Promise<{ locale: string }>;
-}): Promise<Metadata> {
+    children: React.ReactNode;
+};
+
+export async function generateMetadata(
+    props: Omit<Props, "children">,
+): Promise<Metadata> {
     const { locale } = await props.params;
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net";
+    const baseUrl =
+        process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net";
 
     const titles: Record<string, string> = {
-        en: "Contact Us — Path of Trade Support",
-        "pt-br": "Fale Conosco — Suporte Path of Trade",
+        en: "Privacy Policy & Cookies — Path of Trade",
+        "pt-br": "Política de Privacidade e Cookies — Path of Trade",
     };
     const descriptions: Record<string, string> = {
-        en: "Get in touch with Path of Trade. Reach our support team via Discord or email for help with orders, payments, or any questions about buying PoE currency.",
-        "pt-br": "Entre em contato com o Path of Trade. Fale com nosso suporte via Discord ou e-mail para dúvidas sobre pedidos, pagamentos ou compra de moedas PoE.",
+        en: "How Path of Trade collects, uses and protects your data, including cookies and your rights. We follow strict data-protection and privacy practices.",
+        "pt-br":
+            "Como a Path of Trade coleta, usa e protege seus dados, incluindo cookies e seus direitos, em conformidade com a LGPD (Lei 13.709/2018).",
     };
 
     const title = titles[locale] ?? titles.en;
     const description = descriptions[locale] ?? descriptions.en;
 
-    const enUrl = `${baseUrl}/contact`;
-    const ptUrl = `${baseUrl}/pt-br/contact`;
-    const canonicalUrl = locale === "en" ? enUrl : ptUrl;
+    const enUrl = `${baseUrl}/privacy`;
+    const ptUrl = `${baseUrl}/pt-br/privacy`;
+    const canonicalUrl = buildCanonical(`/privacy`, locale);
 
     return {
         title,
@@ -52,6 +59,10 @@ export async function generateMetadata(props: {
     };
 }
 
-export default function ContactLayout({ children }: { children: React.ReactNode }) {
-    return <>{children}</>;
+export default function PrivacyLayout({
+    children,
+}: {
+    children: React.ReactNode;
+}) {
+    return children;
 }

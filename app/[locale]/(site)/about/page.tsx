@@ -60,11 +60,13 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
             type: "website",
             ...getOgLocale(locale),
             siteName: "Path of Trade",
+            images: [{ url: "/images/logo.webp" }],
         },
         twitter: {
             card: "summary_large_image",
             title,
             description,
+            images: ["/images/logo.webp"],
         },
     };
 }

@@ -48,7 +48,7 @@ function deslugify(slug: string): string {
 function browseAllHref(locale: string, gameVersion: CtaGameVersion) {
   const localePath = locale === "en" ? "" : `/${locale}`;
   return gameVersion === "path-of-exile-2"
-    ? `${localePath}/games/path-of-exile-2/products`
+    ? `${localePath}/games/path-of-exile-2/currency`
     : `${localePath}/products`;
 }
 

@@ -54,11 +54,13 @@ export async function generateMetadata(props: MetadataProps): Promise<Metadata> 
       locale: locale === 'pt-br' ? 'pt_BR' : 'en_US',
       alternateLocale: locale === 'pt-br' ? ['en_US'] : ['pt_BR'],
       siteName: 'Path of Trade',
+      images: [{ url: "/images/logo.webp" }],
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
+      images: ["/images/logo.webp"],
     },
   };
 }
@@ -169,11 +171,12 @@ export default async function BlogPage(props: PageProps) {
           {posts?.length > 0 ? (
             <>
               <div className="space-y-6">
-                {posts.map((post: Blog) => (
+                {posts.map((post: Blog, i: number) => (
                   <BlogItem
                     key={`${post._id}-${post.slug.current}`}
                     blog={post}
                     locale={locale}
+                    priority={currentPage === 1 && i === 0}
                   />
                 ))}
               </div>

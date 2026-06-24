@@ -84,7 +84,7 @@ export default function ProductSearchForm() {
             League
           </label>
           <Select value={league} onValueChange={setLeague}>
-            <SelectTrigger id="league">
+            <SelectTrigger id="league" aria-label="Filter by league">
               <SelectValue placeholder="Select league" />
             </SelectTrigger>
             <SelectContent>
@@ -103,7 +103,7 @@ export default function ProductSearchForm() {
             Difficulty
           </label>
           <Select value={difficulty} onValueChange={setDifficulty}>
-            <SelectTrigger id="difficulty">
+            <SelectTrigger id="difficulty" aria-label="Filter by difficulty">
               <SelectValue placeholder="Select difficulty" />
             </SelectTrigger>
             <SelectContent>

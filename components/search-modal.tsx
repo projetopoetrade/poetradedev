@@ -151,11 +151,13 @@ export function SearchModal({ open, onOpenChange }: Props) {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search products, blog, leagues…"
+            aria-label="Search products, blog, leagues"
             className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground/60"
           />
           {query && (
             <button
               onClick={() => setQuery('')}
+              aria-label="Clear search"
               className="text-muted-foreground hover:text-foreground transition-colors"
             >
               <X className="h-4 w-4" />

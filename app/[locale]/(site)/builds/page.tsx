@@ -48,11 +48,13 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       type: 'website',
       ...getOgLocale(locale),
       siteName: 'Path of Trade',
+      images: [{ url: "/images/logo.webp" }],
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
+      images: ["/images/logo.webp"],
     },
   };
 }
@@ -159,15 +161,78 @@ export default async function BuildsPage({ params, searchParams }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
-      <Suspense>
-        <BuildsClient
-          builds={builds}
-          total={total}
-          page={page}
-          locale={locale}
-          leagues={leagues}
-        />
-      </Suspense>
+      <main>
+        <Suspense>
+          <BuildsClient
+            builds={builds}
+            total={total}
+            page={page}
+            locale={locale}
+            leagues={leagues}
+          />
+        </Suspense>
+
+        <section className="container mx-auto px-4 mt-12 border-t border-border pt-8">
+          <div className="text-muted-foreground text-sm md:text-base leading-relaxed max-w-3xl space-y-4">
+            {locale === "pt-br" ? (
+              <>
+                <h2 className="text-xl md:text-2xl font-semibold text-foreground">
+                  Como escolher uma build em Path of Exile
+                </h2>
+                <p>
+                  Uma build é o conjunto de decisões que define como o seu personagem
+                  joga: a classe e ascendência escolhidas, a habilidade principal, as gemas
+                  de suporte, a árvore passiva e os itens que sustentam tudo isso. Pequenas
+                  mudanças nessas peças transformam completamente a experiência, e é por isso
+                  que vale a pena partir de um guia bem testado antes de improvisar.
+                </p>
+                <p>
+                  Para quem está começando uma liga nova, uma <em>league starter</em> que
+                  funciona com pouco investimento costuma ser a escolha mais segura, pois
+                  permite farmar currency e evoluir até builds de endgame mais caras. Já quem
+                  tem recursos e experiência pode mirar direto em arquétipos de alto custo,
+                  focados em matar chefes ou limpar mapas com velocidade. Pensar no seu
+                  orçamento e no objetivo é o primeiro passo para não desperdiçar tempo.
+                </p>
+                <p>
+                  Catalogamos cada build com tags de classe, ascendência e estilo de jogo,
+                  e você pode abrir qualquer uma no nosso PoB Viewer para inspecionar a árvore
+                  passiva, as gemas e o equipamento direto no navegador. Seguir um guia testado
+                  reduz tentativa e erro e ajuda iniciantes e veteranos a aproveitarem melhor
+                  cada liga.
+                </p>
+              </>
+            ) : (
+              <>
+                <h2 className="text-xl md:text-2xl font-semibold text-foreground">
+                  How to choose a Path of Exile build
+                </h2>
+                <p>
+                  A build is the full set of choices that defines how your character plays:
+                  the class and ascendancy you pick, your main skill, the support gems, the
+                  passive tree and the items that hold it all together. Small changes to those
+                  pieces can completely reshape the experience, which is exactly why starting
+                  from a well-tested guide beats improvising from scratch.
+                </p>
+                <p>
+                  If you are kicking off a fresh league, a <em>league starter</em> that works
+                  on a small budget is usually the safest pick, since it lets you farm currency
+                  and grow toward pricier endgame setups. Players with resources and experience,
+                  on the other hand, can aim straight for high-investment archetypes built around
+                  bossing or fast map clearing. Weighing your budget against your goal is the
+                  first step to spending your time wisely.
+                </p>
+                <p>
+                  We catalogue every build with class, ascendancy and play-style tags, and you
+                  can open any of them in our PoB Viewer to inspect the passive tree, gem links
+                  and gear right in the browser. Following a proven guide cuts down on trial and
+                  error and helps newcomers and veterans alike get more out of each league.
+                </p>
+              </>
+            )}
+          </div>
+        </section>
+      </main>
     </>
   );
 }

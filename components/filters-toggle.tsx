@@ -139,7 +139,7 @@ export default function ProductFilters({
               value={currentGameVersion}
               onValueChange={(value) => handleFilterChange("gameVersion", value)}
             >
-              <SelectTrigger>
+              <SelectTrigger aria-label={t("selectGameVersion")}>
                 <SelectValue placeholder={t("selectGameVersion")} />
               </SelectTrigger>
               <SelectContent>
@@ -160,7 +160,7 @@ export default function ProductFilters({
               value={currentLeague}
               onValueChange={(value) => handleFilterChange("league", value)}
             >
-              <SelectTrigger>
+              <SelectTrigger aria-label={t("selectLeague")}>
                 <SelectValue placeholder={t("selectLeague")} />
               </SelectTrigger>
               <SelectContent>
@@ -182,7 +182,7 @@ export default function ProductFilters({
               value={currentDifficulty}
               onValueChange={(value) => handleFilterChange("difficulty", value)}
             >
-              <SelectTrigger>
+              <SelectTrigger aria-label={t("selectDifficulty")}>
                 <SelectValue placeholder={t("selectDifficulty")} />
               </SelectTrigger>
               <SelectContent>

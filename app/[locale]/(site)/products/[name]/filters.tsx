@@ -139,7 +139,7 @@ export default function Filters({
             onValueChange={handleGameVersionChange}
             disabled={isLoading}
           >
-            <SelectTrigger id="gameVersion">
+            <SelectTrigger id="gameVersion" aria-label="Filter by game version">
               <SelectValue placeholder="Select game version" />
             </SelectTrigger>
             <SelectContent>
@@ -161,7 +161,7 @@ export default function Filters({
             onValueChange={handleLeagueChange}
             disabled={isLoading}
           >
-            <SelectTrigger id="league">
+            <SelectTrigger id="league" aria-label="Filter by league">
               <SelectValue placeholder="Select league" />
             </SelectTrigger>
             <SelectContent>
@@ -183,7 +183,7 @@ export default function Filters({
             onValueChange={handleDifficultyChange}
             disabled={isLoading}
           >
-            <SelectTrigger id="difficulty">
+            <SelectTrigger id="difficulty" aria-label="Filter by difficulty">
               <SelectValue placeholder="Select difficulty" />
             </SelectTrigger>
             <SelectContent>

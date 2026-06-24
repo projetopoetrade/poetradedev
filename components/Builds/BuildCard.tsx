@@ -7,6 +7,8 @@ import { BUILD_TAGS } from "@/lib/builds-data";
 interface BuildCardProps {
   build: Build;
   locale: string;
+  /** Set on the first few above-the-fold cards so the LCP image is not lazy-loaded. */
+  priority?: boolean;
 }
 
 const TAG_COLORS: Record<string, string> = {
@@ -30,7 +32,7 @@ const BUDGET_LABELS: Record<string, string> = {
   expensive: "$$$",
 };
 
-export default function BuildCard({ build, locale }: BuildCardProps) {
+export default function BuildCard({ build, locale, priority }: BuildCardProps) {
   const href =
     locale === "en"
       ? `/builds/${build.slug}`
@@ -55,6 +57,7 @@ export default function BuildCard({ build, locale }: BuildCardProps) {
           fill
           className="object-cover object-center transition-transform duration-300 group-hover:scale-105"
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          priority={priority}
         />
         {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />

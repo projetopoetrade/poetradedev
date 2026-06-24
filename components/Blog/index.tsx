@@ -7,9 +7,11 @@ import { imageBuilder } from "@/sanity/sanity-utils";
 interface BlogItemProps {
   blog: Blog;
   locale: string;
+  /** Set on the first (above-the-fold) post so its image is the LCP and not lazy-loaded. */
+  priority?: boolean;
 }
 
-const BlogItem = ({ blog, locale }: BlogItemProps) => {
+const BlogItem = ({ blog, locale, priority = false }: BlogItemProps) => {
   return (
     <Link
       href={`/${locale}/blog/${blog.slug.current}`}
@@ -28,8 +30,7 @@ const BlogItem = ({ blog, locale }: BlogItemProps) => {
               fill
               className="object-contain transition-transform duration-300 group-hover:scale-105 m-0 mt-2 md:m-0  "
               sizes="(max-width: 768px) 160px, 320px"
-              loading="lazy"
-              priority={false}
+              priority={priority}
             />
           </div>
         )}

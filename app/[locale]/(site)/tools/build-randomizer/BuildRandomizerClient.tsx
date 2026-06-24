@@ -277,6 +277,7 @@ export default function BuildRandomizerClient({
                 <div className="flex items-center space-x-2 bg-amber-500/10 p-2.5 rounded border border-amber-500/20">
                   <Checkbox
                     id="league-starter-only"
+                    aria-label="Only show builds that are league starters"
                     checked={onlyLeagueStarters}
                     onCheckedChange={(checked) =>
                       setOnlyLeagueStarters(checked === true)
