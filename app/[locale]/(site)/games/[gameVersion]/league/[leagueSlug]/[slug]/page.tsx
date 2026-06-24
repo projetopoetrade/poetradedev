@@ -950,9 +950,13 @@ export default async function LeagueSlugPage(props: {
                 {league.name} — {gameShort}
               </p>
               <div className="flex items-center justify-between">
-                <span className="text-2xl font-bold text-primary">
-                  ${product.price.toFixed(2)}
-                </span>
+                {product.in_stock !== false && product.price > 0 ? (
+                  <span className="text-2xl font-bold text-primary">
+                    ${product.price.toFixed(2)}
+                  </span>
+                ) : (
+                  <span className="text-sm text-muted-foreground">{outOfStockLabel}</span>
+                )}
                 <Link
                   href={`/products/${encodeProductName(product.name)}?gameVersion=${gv}&league=${encodeURIComponent(league.name)}`}
                   className="text-sm font-semibold bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors"

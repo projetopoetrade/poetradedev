@@ -3,7 +3,8 @@ export interface Product {
   name: string,
   category: string,
   description: string,
-  slug: string,
+  slug: string, // slug com liga; chave compartilhada com Sanity/histórico de preço
+  url_slug?: string, // slug canônico curto (sem liga), usado na URL/sitemap
   body?: any, // Portable Text content from Sanity
   alt?: string,
   price: number,

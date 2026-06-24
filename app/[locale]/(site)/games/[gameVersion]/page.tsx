@@ -134,6 +134,9 @@ export default async function Page({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
       <main className="container mx-auto min-h-screen space-y-16 py-8">
+        {/* h1 server-rendered (LeagueSelectionPage é client e seu título fica
+            atrás do loading; este garante o h1 no HTML inicial para SEO) */}
+        <h1 className="sr-only">{`Buy ${gameTitle} Currency, Items & Services`}</h1>
         <Breadcrumb
           items={[
             { label: gameTitle },

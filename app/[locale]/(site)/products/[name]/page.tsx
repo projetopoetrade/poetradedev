@@ -1,5 +1,6 @@
 import { getProductsWithParams, getLeagues, getCurrentTempLeague } from "@/app/actions";
 import { Metadata } from "next";
+import { notFound, permanentRedirect } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -62,8 +63,7 @@ export const generateMetadata = async (props: {
   const params = await props.params;
   const searchParams = await props.searchParams;
 
-  // Nome legível para o título
-  const productName = await parseProductSlug(params.name);
+  // Nome legível (fallback) — o nome real do produto é resolvido via slug abaixo
   const decodedName = await parseProductSlug(params.name);
   const t = await getTranslations({ locale: params.locale, namespace: "SEO" });
 
@@ -76,12 +76,16 @@ export const generateMetadata = async (props: {
     ? 'PoE 2'
     : 'PoE 1';
 
-  // Buscar SEO no Sanity (caso o script de inteligência já tenha populado)
+  // Resolve o produto por slug (canônico); cai para nome (compat). Usa o nome
+  // real do produto no título/canonical quando encontrado.
   const products = await getProductsWithParams({
-    search: decodedName,
+    slug: params.name,
     gameVersion: targetGameVersion,
   });
-  const productFn = products?.[0];
+  const productFn =
+    products?.[0] ??
+    (await getProductsWithParams({ search: decodedName, gameVersion: targetGameVersion }))?.[0];
+  const productName = productFn?.name ?? decodedName;
   let sanitySeoTitle = null;
   let sanityMetaDescription = null;
 
@@ -188,30 +192,49 @@ export default async function ProductDetailPage(props: {
       activeLeagues = await getLeagues(targetGameVersion);
     }
 
-    // Use the decoded name to find the specific product with SMART defaults
-    const products = await getProductsWithParams({
-      search: decodedName,
-      league: targetLeague, // NOW using the smart default
-      difficulty: searchParams.difficulty, // Default to undefined (any) -> ProductDetail handles selection
-      gameVersion: targetGameVersion,
-    });
+    // O slug do produto é o identificador canônico (URL/sitemap). Busca por slug
+    // primeiro, desambiguando pela liga smart-default (o mesmo slug existe em
+    // várias ligas). Cai para a busca por nome (compat com slugs curtos/legados).
+    let productFn =
+      (await getProductsWithParams({
+        slug: params.name,
+        league: targetLeague,
+        difficulty: searchParams.difficulty,
+        gameVersion: targetGameVersion,
+      }))?.[0] ??
+      (await getProductsWithParams({
+        slug: params.name,
+        gameVersion: targetGameVersion,
+      }))?.[0];
 
-    // If no product is found, try looser search (remove league filter check)
-    // This handles cases where "Standard" might be the only option or Smart Default failed
-    let productFn = products?.[0];
-
-    if (!productFn && targetLeague) {
-      // Retry without league filter to find ANY version of this product
-      console.log("Smart default product not found, retrying without league filter...");
-      const fallbackProducts = await getProductsWithParams({
+    // Fallback legado: usa o nome decodificado do slug
+    if (!productFn) {
+      const byName = await getProductsWithParams({
         search: decodedName,
+        league: targetLeague,
+        difficulty: searchParams.difficulty,
         gameVersion: targetGameVersion,
       });
-      productFn = fallbackProducts?.[0];
+      productFn =
+        byName?.[0] ??
+        (await getProductsWithParams({
+          search: decodedName,
+          gameVersion: targetGameVersion,
+        }))?.[0];
     }
 
     if (!productFn) {
       notFound();
+    }
+
+    // URL canônica do produto = /games/<jogo>/products/<url_slug> (sem liga,
+    // resolve para a liga atual). Redireciona as URLs legadas /products/<slug>
+    // para a base canônica (301), consolidando o histórico de SEO.
+    if (productFn.url_slug) {
+      const localePrefix = params.locale === "en" ? "" : `/${params.locale}`;
+      permanentRedirect(
+        `${localePrefix}/games/${productFn.gameVersion}/products/${productFn.url_slug}`,
+      );
     }
 
     const product = productFn;
@@ -462,6 +485,18 @@ return (
       </div>
     );
   } catch (error) {
+    // Re-lança os erros de controle de fluxo do Next (notFound/redirect) — sem
+    // isto, o notFound() cairia neste fallback e devolveria 200 com erro em vez
+    // de um 404 real (ruim para SEO/crawl).
+    // Next sinaliza notFound()/redirect() via erro com digest "NEXT_..."
+    // (em v15 o not-found usa "NEXT_HTTP_ERROR_FALLBACK;404").
+    if (
+      error &&
+      typeof (error as { digest?: unknown }).digest === "string" &&
+      (error as { digest: string }).digest.startsWith("NEXT_")
+    ) {
+      throw error;
+    }
     return (
       <div className="text-red-500 p-4">
         Error loading product: {(error as Error).message}

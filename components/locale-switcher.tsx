@@ -29,10 +29,18 @@ export default function LocaleSwitcher() {
   const qs = searchParams.toString();
   const suffix = qs ? `?${qs}` : '';
 
+  // Blog posts use translated slugs (different per locale), so reusing the
+  // same path across locales would 404. For those, point at the /blog listing
+  // (which links the correct localized posts); hreflang still maps the exact
+  // translation for search engines.
+  const isLocalizedDetail = /^\/blog\/[^/]+/.test(pathname);
+
   const hrefFor = (code: string) => {
-    if (code === 'en') return `${pathname || '/'}${suffix}`;
-    const path = pathname === '/' ? '' : pathname;
-    return `/pt-br${path}${suffix}`;
+    const target = isLocalizedDetail ? '/blog' : pathname;
+    const query = isLocalizedDetail ? '' : suffix;
+    if (code === 'en') return `${target || '/'}${query}`;
+    const path = target === '/' ? '' : target;
+    return `/pt-br${path}${query}`;
   };
 
   return (

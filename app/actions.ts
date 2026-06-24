@@ -311,11 +311,13 @@ export const getProductsWithParams = async (
     difficulty?: string;
     category?: string;
     search?: string;
+    slug?: string;
+    urlSlug?: string;
     isListed?: boolean;
     orderByPrice?: 'asc' | 'desc';
   }
 ): Promise<Product[]> => {
-  const { gameVersion, league, difficulty, category, search, isListed, orderByPrice } = params;
+  const { gameVersion, league, difficulty, category, search, slug, urlSlug, isListed, orderByPrice } = params;
   const supabase = createPublicClient();
 
   let query = supabase.from('products').select('*');
@@ -325,6 +327,10 @@ export const getProductsWithParams = async (
   if (league) query = query.eq('league', league);
   if (difficulty) query = query.eq('difficulty', difficulty);
   if (category) query = query.ilike('category', category);
+  // url_slug é o slug canônico curto (sem liga) usado na URL/sitemap
+  if (urlSlug) query = query.eq('url_slug', urlSlug);
+  // slug embute a liga; chave compartilhada com Sanity/histórico de preço
+  if (slug) query = query.eq('slug', slug);
   if (search && typeof search === 'string') query = query.ilike('name', `%${search.replace(/\s+/g, '%')}%`);
   if (orderByPrice) query = query.order('price', { ascending: orderByPrice === 'asc' });
 
