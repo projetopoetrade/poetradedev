@@ -1,0 +1,52 @@
+<!--
+  Supabase email template — "Magic Link" (used by signInWithOtp / OTP code flow).
+  Paste into: Authentication → Email Templates → "Magic Link".
+  Variable {{ .Token }} renders the 6-digit code the extension asks for.
+  Email HTML must use inline styles + tables for client compatibility.
+-->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#0a0a0a;margin:0;padding:32px 0;font-family:Arial,Helvetica,sans-serif;">
+  <tr>
+    <td align="center">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;background-color:#0f0f0f;border:1px solid rgba(198,161,93,0.3);border-radius:12px;overflow:hidden;">
+        <!-- Header -->
+        <tr>
+          <td style="padding:24px 32px;background-color:#1a1a1a;border-bottom:1px solid rgba(198,161,93,0.2);">
+            <span style="color:#c6a15d;font-size:20px;font-weight:bold;letter-spacing:0.5px;">Path of Trade</span>
+          </td>
+        </tr>
+
+        <!-- Body -->
+        <tr>
+          <td style="padding:32px;">
+            <h1 style="margin:0 0 8px;color:#ffffff;font-size:22px;font-weight:bold;">Your sign-in code</h1>
+            <p style="margin:0 0 24px;color:#b3b3b3;font-size:14px;line-height:1.6;">
+              Use the code below to sign in to the <strong style="color:#e6e6e6;">PoE Trade Helper</strong> extension.
+            </p>
+
+            <!-- Code -->
+            <div style="background-color:#000000;border:1px solid #2a2a2a;border-radius:8px;padding:20px;text-align:center;margin-bottom:24px;">
+              <span style="color:#c6a15d;font-size:34px;font-weight:bold;letter-spacing:10px;font-family:'Courier New',monospace;">{{ .Token }}</span>
+            </div>
+
+            <p style="margin:0 0 4px;color:#808080;font-size:13px;line-height:1.6;">
+              This code expires in a few minutes.
+            </p>
+            <p style="margin:0;color:#808080;font-size:13px;line-height:1.6;">
+              If you didn't request this, you can safely ignore this email.
+            </p>
+          </td>
+        </tr>
+
+        <!-- Footer -->
+        <tr>
+          <td style="padding:16px 32px;background-color:#0a0a0a;border-top:1px solid rgba(198,161,93,0.1);">
+            <p style="margin:0;color:#5c5c5c;font-size:11px;">
+              Path of Trade — Buy PoE currency safely and fast. ·
+              <a href="https://www.pathoftrade.net" style="color:#c6a15d;text-decoration:none;">pathoftrade.net</a>
+            </p>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
