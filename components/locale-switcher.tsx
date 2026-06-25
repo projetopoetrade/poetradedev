@@ -57,7 +57,7 @@ export default function LocaleSwitcher() {
             <Link
               href={hrefFor(l.code)}
               hrefLang={l.hrefLang}
-              aria-label={l.switchLabel}
+              aria-label={`${l.label} — ${l.switchLabel}`}
               className="text-muted-foreground hover:text-foreground transition-colors"
             >
               {l.label}

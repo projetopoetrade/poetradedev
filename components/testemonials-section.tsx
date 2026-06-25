@@ -205,13 +205,13 @@ export default function TestimonialCarousel() {
 
           {/* Navigation Controls */}
           <div className="mt-8 flex justify-center gap-4">
+            {/* aria-label removido: o componente já tem sr-only "Previous/Next
+                slide"; um aria-label custom criava mismatch com o texto visível */}
             <CarouselPrevious
               className="static translate-x-0 translate-y-0 bg-gray-800 hover:bg-gray-700 text-white border-none"
-              aria-label="Previous testimonial slide"
             />
             <CarouselNext
               className="static translate-x-0 translate-y-0 bg-gray-800 hover:bg-gray-700 text-white border-none"
-              aria-label="Next testimonial slide"
             />
           </div>
         </Carousel>

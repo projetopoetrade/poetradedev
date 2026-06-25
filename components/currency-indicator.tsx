@@ -65,10 +65,11 @@ export function CurrencyIndicator({ variant = 'icon' }: CurrencyIndicatorProps) 
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         {variant === 'icon' ? (
-          <Button 
-            variant="ghost" 
-            size="sm" 
+          <Button
+            variant="ghost"
+            size="sm"
             className="w-8 h-8 rounded-full p-0 text-foreground/80 hover:bg-accent hover:text-accent-foreground"
+            aria-label="Select currency"
           >
             {isLoading ? (
               <Loader2 className="h-4 w-4 animate-spin" />

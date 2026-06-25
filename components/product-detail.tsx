@@ -162,6 +162,7 @@ export default function ProductDetail({
               className="flex-none h-10"
               onClick={decrement}
               disabled={isQuantityLoading || count === 0}
+              aria-label="Decrease quantity"
             >
               <Minus />
             </Button>
@@ -180,6 +181,7 @@ export default function ProductDetail({
               className="flex-none h-10"
               onClick={increment}
               disabled={isQuantityLoading}
+              aria-label="Increase quantity"
             >
               <Plus />
             </Button>

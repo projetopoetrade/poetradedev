@@ -487,7 +487,7 @@ export default function PriceTrackerClient({ labels }: {
         </div>
 
         {/* Refresh */}
-        <Button variant="outline" size="icon" onClick={fetchData} disabled={loading} title="Refresh prices">
+        <Button variant="outline" size="icon" onClick={fetchData} disabled={loading} title="Refresh prices" aria-label="Refresh prices">
           <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
         </Button>
       </div>

@@ -182,6 +182,7 @@ const SingleBlogPage = async (props: PageProps) => {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
 
+      <main>
       <article className="max-w-6xl mx-auto px-4 py-12">
         <Breadcrumb
           items={[
@@ -238,6 +239,7 @@ const SingleBlogPage = async (props: PageProps) => {
           <RelatedPosts posts={relatedPosts} locale={locale} />
         )}
       </article>
+      </main>
     </>
   );
 };

@@ -281,6 +281,7 @@ export function PixQRCodeModal({
                 onClick={handleCopy}
                 disabled={isExpired || !pixData.copyPaste}
                 className="shrink-0 h-8 w-8"
+                aria-label="Copy Pix code"
               >
                 {copied ? (
                   <Check className="h-3.5 w-3.5 text-green-600" />
