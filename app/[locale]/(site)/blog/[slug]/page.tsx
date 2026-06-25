@@ -137,12 +137,13 @@ const SingleBlogPage = async (props: PageProps) => {
     "@type": "BlogPosting",
     headline: post.title,
     description: post.metadata,
-    image: imageUrl || undefined,
+    // image e author.name são obrigatórios no BlogPosting — sempre com fallback
+    image: [imageUrl || `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"}/images/logo.webp`],
     datePublished: post.publishedAt,
     dateModified: post.publishedAt,
     author: {
       "@type": "Person",
-      name: post.author?.name,
+      name: post.author?.name || "Path of Trade",
       ...(post.author?.image && { image: post.author.image })
     },
     publisher: {
@@ -150,7 +151,7 @@ const SingleBlogPage = async (props: PageProps) => {
       name: "Path of Trade",
       logo: {
         "@type": "ImageObject",
-        url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"}/logo.webp`
+        url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"}/images/logo.webp`
       }
     },
     mainEntityOfPage: {

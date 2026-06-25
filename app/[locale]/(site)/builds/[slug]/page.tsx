@@ -104,14 +104,19 @@ export default async function BuildPage({ params }: Props) {
     headline: build.title,
     description: build.description ?? build.seo_description ?? '',
     url: buildUrl,
-    image: build.image_url ? [build.image_url] : undefined,
+    // image/author/publisher.logo são obrigatórios no schema Article — sempre
+    // fornecer um fallback para o JSON-LD validar.
+    image: [build.image_url || `${baseUrl}/images/logo.webp`],
     datePublished: build.created_at,
     dateModified: build.updated_at,
-    author: build.author ? { '@type': 'Person', name: build.author } : undefined,
+    author: build.author
+      ? { '@type': 'Person', name: build.author }
+      : { '@type': 'Organization', name: 'Path of Trade', url: baseUrl },
     publisher: {
       '@type': 'Organization',
       name: 'Path of Trade',
       url: baseUrl,
+      logo: { '@type': 'ImageObject', url: `${baseUrl}/images/logo.webp` },
     },
     inLanguage: locale === 'pt-br' ? 'pt-BR' : 'en-US',
     ...(build.tags?.length ? { keywords: build.tags.join(', ') } : {}),

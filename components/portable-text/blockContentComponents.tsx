@@ -352,7 +352,9 @@ function processNormalBlock(children: React.ReactNode) {
 export const blockContentComponents: PortableTextComponents = {
   block: {
     normal: ({ children }: any) => processNormalBlock(children),
-    h1: ({ children }: any) => <h1 className="text-3xl font-bold mt-10 mb-4 text-white">{processChildren(children)}</h1>,
+    // h1 do conteúdo vira h2: o <h1> da página já é o título do post/build.
+    // Evita múltiplos <h1> (o título da página é o único h1).
+    h1: ({ children }: any) => <h2 className="text-3xl font-bold mt-10 mb-4 text-white">{processChildren(children)}</h2>,
     h2: ({ children }: any) => <h2 className="text-2xl font-bold mt-8 mb-3 text-white">{processChildren(children)}</h2>,
     h3: ({ children }: any) => <h3 className="text-xl font-semibold mt-6 mb-2 text-white">{processChildren(children)}</h3>,
     h4: ({ children }: any) => <h4 className="text-lg font-semibold mt-4 mb-2 text-white">{processChildren(children)}</h4>,
