@@ -54,3 +54,14 @@ next-env.d.ts
 /test-tree-url/
 /test_webhook.py
 /skills-lock.json
+/ninja.json
+/read_ninja.js
+/test-pobbin.mjs
+/ts_error.txt
+/scratch/
+/.playwright-mcp/
+/squirrel.toml
+
+# artefatos de auditoria (squirrel) e screenshots de debug
+/*.csv
+/rf-*.png
