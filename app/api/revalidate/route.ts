@@ -3,10 +3,9 @@ import { type NextRequest, NextResponse } from "next/server";
 import { parseBody } from "next-sanity/webhook";
 
 // Sanity types whose publish/unpublish events should bust the sitemap cache.
-// Posts are the only Sanity-driven entries in app/sitemap.ts today; products
-// in the sitemap come from Supabase, so a Sanity product publish does not
-// invalidate the sitemap from this handler.
-const SITEMAP_TYPES = new Set(["post"]);
+// Products in the sitemap come from Supabase, so a Sanity product publish does
+// not invalidate the sitemap from this handler.
+const SITEMAP_TYPES = new Set(["post", "leagueLanding"]);
 
 const bustSitemapIfNeeded = (type: string) => {
   if (SITEMAP_TYPES.has(type)) revalidatePath("/sitemap.xml");

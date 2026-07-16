@@ -52,6 +52,12 @@ const nextConfig: NextConfig = {
         hostname: "poe.ninja",
       },
       {
+        // YouTube thumbnails for league trailers (i.ytimg.com/vi/<id>/...).
+        // ytimg is the CDN img.youtube.com redirects to; pointing at it directly
+        // skips a hop per thumbnail.
+        hostname: "i.ytimg.com",
+      },
+      {
         // Self-hosted passive icons (/images/passives/*.webp). Same-origin in
         // production, but preview deploys (preview-xxx.vercel.app) load from
         // the prod origin via absolute URLs returned by the engine.

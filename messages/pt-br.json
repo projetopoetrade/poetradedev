@@ -726,5 +726,86 @@
     "mainSkill": "Skill Principal",
     "difficulty": "Dificuldade",
     "budget": "Budget"
+  },
+  "LeagueLanding": {
+    "hero": {
+      "startsIn": "A liga começa em",
+      "tbaTitle": "Data a ser anunciada",
+      "tbaSub": "O horário exato do início sai na live de anúncio.",
+      "watchTrailer": "Ver trailers",
+      "buyCurrency": "Comprar moedas da {league}",
+      "official": "Anúncio oficial",
+      "scroll": "Ir para os trailers"
+    },
+    "countdown": {
+      "days": "Dias",
+      "hours": "Horas",
+      "minutes": "Minutos",
+      "seconds": "Segundos",
+      "live": "A liga começou",
+      "liveSub": "Os servidores estão no ar. Boa sorte, exilado.",
+      "localTime": "Começa",
+      "srCountdown": "Tempo restante para o início da liga"
+    },
+    "calendar": {
+      "add": "Adicionar ao calendário",
+      "added": "Evento salvo"
+    },
+    "trailers": {
+      "heading": "Trailers",
+      "subheading": "Todos os anúncios em um lugar só.",
+      "play": "Assistir",
+      "kinds": {
+        "teaser": "Teaser",
+        "trailer": "Trailer",
+        "gameplay": "Gameplay",
+        "mechanic": "Detalhes",
+        "vod": "Live de anúncio"
+      }
+    },
+    "mechanics": {
+      "heading": "Mecânicas da liga",
+      "subheading": "Tudo o que é novo na {league}.",
+      "pendingTitle": "Revelado na GGG Live",
+      "pendingBody": "Tudo em detalhe — mecânicas da liga, novas skills, mudanças de endgame e patch notes — é mostrado pela primeira vez na live de anúncio. Esta página é atualizada conforme as informações saem.",
+      "pendingWatch": "Assistir ao anúncio",
+      "pendingTrailers": "Ver os teasers"
+    },
+    "timeline": {
+      "heading": "Caminho até o lançamento",
+      "subheading": "As datas que importam até o dia 1.",
+      "reveal": {
+        "title": "Live de anúncio",
+        "description": "A liga é revelada ao vivo, com o primeiro trailer e a explicação completa das mecânicas."
+      },
+      "patchNotes": {
+        "title": "Patch notes",
+        "description": "Todas as mudanças de balanceamento e a lista completa das novidades."
+      },
+      "start": {
+        "title": "Início da liga",
+        "description": "Os servidores sobem e a corrida começa. Todo mundo parte do zero."
+      }
+    },
+    "faq": {
+      "heading": "Perguntas frequentes",
+      "subheading": "As respostas rápidas sobre a {league}."
+    },
+    "breadcrumb": {
+      "leagues": "Ligas"
+    },
+    "index": {
+      "heading": "Ligas",
+      "subheading": "Todas as ligas de Path of Exile que cobrimos — contagem regressiva, trailers e mecânicas em um lugar só.",
+      "empty": "Nenhuma liga publicada ainda. Volte em breve.",
+      "seoTitle": "Ligas de Path of Exile — Datas de Início, Trailers e Mecânicas | Path of Trade",
+      "seoDescription": "Contagem regressiva e detalhes completos de cada liga de Path of Exile. Datas de início, trailers, mecânicas e tudo para você estar pronto no dia 1."
+    },
+    "card": {
+      "live": "No ar",
+      "upcoming": "Em breve",
+      "tba": "Data a definir",
+      "view": "Ver liga"
+    }
   }
 }

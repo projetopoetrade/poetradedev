@@ -95,3 +95,71 @@ export const allAuthorsQuery = groq`*[_type == "author" && defined(slug.current)
 export const buildGuideBySlugQuery = groq`*[_type == "buildGuide" && slug.current == $slug][0]{
   body
 }`;
+
+// ─── League landing ───────────────────────────────────────────────────────────
+// Both locales are pulled in a single projection (localeString/localeText are
+// inline objects, not translated documents) and collapsed per-request by
+// resolveLocale() in lib/league-landing.ts. `isPublished` gates the fetch, so an
+// unpublished draft 404s rather than leaking an unannounced league name.
+
+const leagueLandingData = `{
+  _id,
+  _updatedAt,
+  name,
+  "slug": slug.current,
+  gameVersion,
+  version,
+  tagline,
+  intro,
+  supabaseLeagueName,
+  startsAt,
+  revealAt,
+  patchNotesAt,
+  accentColor,
+  keyArt{ alt, asset->{ _id, url, metadata{ lqip, dimensions } } },
+  logo{ asset->{ _id, url } },
+  trailers[]{
+    title,
+    youtubeId,
+    kind,
+    thumbnail{ asset->{ _id, url } }
+  },
+  mechanics[]{
+    title,
+    summary,
+    bullets,
+    image{ asset->{ _id, url, metadata{ lqip, dimensions } } }
+  },
+  highlights[]{ label, value },
+  officialUrl,
+  patchNotesUrl,
+  faq[]{ question, answer },
+  seoTitle,
+  seoDescription,
+  ogImage{ asset->{ _id, url } }
+}`;
+
+export const leagueLandingBySlugQuery = groq`*[_type == "leagueLanding" && slug.current == $slug && isPublished == true][0] ${leagueLandingData}`;
+
+// Powers generateStaticParams + the sitemap. Kept to a thin projection so the
+// build does not download key art for every league just to list its URL.
+export const leagueLandingSlugsQuery = groq`*[_type == "leagueLanding" && isPublished == true && defined(slug.current)]{
+  "slug": slug.current,
+  gameVersion,
+  startsAt,
+  _updatedAt
+}`;
+
+// The /leagues index. Everything the card needs and nothing else — no trailers,
+// mechanics or FAQ, which are the heavy arrays on this document.
+export const leagueLandingIndexQuery = groq`*[_type == "leagueLanding" && isPublished == true && defined(slug.current)] | order(coalesce(startsAt, "9999") desc) {
+  _id,
+  name,
+  "slug": slug.current,
+  gameVersion,
+  version,
+  tagline,
+  startsAt,
+  accentColor,
+  keyArt{ alt, asset->{ _id, url, metadata{ lqip } } }
+}`;

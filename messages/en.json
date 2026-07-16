@@ -738,5 +738,86 @@
     "mainSkill": "Main Skill",
     "difficulty": "Difficulty",
     "budget": "Budget"
+  },
+  "LeagueLanding": {
+    "hero": {
+      "startsIn": "League starts in",
+      "tbaTitle": "Date to be announced",
+      "tbaSub": "The exact start time is revealed on the announcement stream.",
+      "watchTrailer": "Watch trailers",
+      "buyCurrency": "Buy {league} currency",
+      "official": "Official announcement",
+      "scroll": "Scroll to trailers"
+    },
+    "countdown": {
+      "days": "Days",
+      "hours": "Hours",
+      "minutes": "Minutes",
+      "seconds": "Seconds",
+      "live": "League is live",
+      "liveSub": "Servers are up. Good luck, exile.",
+      "localTime": "Starts",
+      "srCountdown": "Time remaining until the league starts"
+    },
+    "calendar": {
+      "add": "Add to calendar",
+      "added": "Event saved"
+    },
+    "trailers": {
+      "heading": "Trailers",
+      "subheading": "Every reveal in one place.",
+      "play": "Play",
+      "kinds": {
+        "teaser": "Teaser",
+        "trailer": "Trailer",
+        "gameplay": "Gameplay",
+        "mechanic": "Deep dive",
+        "vod": "Reveal stream"
+      }
+    },
+    "mechanics": {
+      "heading": "League mechanics",
+      "subheading": "Everything new in {league}.",
+      "pendingTitle": "Revealed at GGG Live",
+      "pendingBody": "The full breakdown — league mechanics, new skills, endgame changes and patch notes — is shown for the first time on the reveal stream. This page is updated as the details land.",
+      "pendingWatch": "Watch the reveal",
+      "pendingTrailers": "See the teasers"
+    },
+    "timeline": {
+      "heading": "Road to launch",
+      "subheading": "The key dates on the way to day one.",
+      "reveal": {
+        "title": "Reveal stream",
+        "description": "The league is announced live, with the first trailer and the full mechanic breakdown."
+      },
+      "patchNotes": {
+        "title": "Patch notes",
+        "description": "Full balance changes and the complete list of what is new."
+      },
+      "start": {
+        "title": "League starts",
+        "description": "Servers go live and the race begins. Everyone starts from zero."
+      }
+    },
+    "faq": {
+      "heading": "Frequently asked questions",
+      "subheading": "The quick answers about {league}."
+    },
+    "breadcrumb": {
+      "leagues": "Leagues"
+    },
+    "index": {
+      "heading": "Leagues",
+      "subheading": "Every Path of Exile league we cover — countdowns, trailers and mechanics, all in one place.",
+      "empty": "No leagues published yet. Check back soon.",
+      "seoTitle": "Path of Exile Leagues — Start Dates, Trailers & Mechanics | Path of Trade",
+      "seoDescription": "Countdowns and full breakdowns for every Path of Exile league. Start dates, trailers, mechanics and what you need to be ready on day one."
+    },
+    "card": {
+      "live": "Live",
+      "upcoming": "Upcoming",
+      "tba": "Date TBA",
+      "view": "View league"
+    }
   }
 }

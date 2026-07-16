@@ -6,6 +6,7 @@ import {
   getSitemapPosts,
   getSitemapProducts,
 } from "@/lib/sitemap-data";
+import { getLeagueLandingSlugs } from "@/lib/league-landing";
 
 // Refresh every 5 minutes. Sanity webhook hits /api/revalidate which calls
 // revalidatePath('/sitemap.xml') for posts → fresh sitemap on next request.
@@ -55,6 +56,7 @@ const buildStaticPages = (): StaticPage[] => {
     { path: "/", changeFrequency: "daily", lastModified: BUILD_LASTMOD },
     { path: "/products", changeFrequency: "daily", lastModified: BUILD_LASTMOD },
     { path: "/builds", changeFrequency: "weekly", lastModified: BUILD_LASTMOD },
+    { path: "/leagues", changeFrequency: "weekly", lastModified: BUILD_LASTMOD },
     { path: "/blog", changeFrequency: "weekly", lastModified: BUILD_LASTMOD },
     { path: "/tools/price-tracker", changeFrequency: "daily", lastModified: BUILD_LASTMOD },
     { path: "/games/path-of-exile-1", changeFrequency: "weekly", lastModified: BUILD_LASTMOD },
@@ -118,13 +120,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     );
   }
 
-  const [posts, products, leagueSlugPages, builds, leagueBuilds] = await Promise.all([
-    getSitemapPosts(),
-    getSitemapProducts(),
-    getSitemapLeagueSlugPages(),
-    getSitemapBuilds(),
-    getSitemapLeagueBuilds(),
-  ]);
+  const [posts, products, leagueSlugPages, builds, leagueBuilds, leagueLandings] =
+    await Promise.all([
+      getSitemapPosts(),
+      getSitemapProducts(),
+      getSitemapLeagueSlugPages(),
+      getSitemapBuilds(),
+      getSitemapLeagueBuilds(),
+      getLeagueLandingSlugs(),
+    ]);
 
   // URL canônica de produto: /games/<jogo>/products/<url_slug> (sem liga).
   // Cada produto tem 2 linhas (Standard/Mirage) com o mesmo url_slug — emite 1x.
@@ -215,6 +219,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       ...expandLocales(`/builds/league/${slug}`, {
         lastModified: new Date(lastmod),
         changeFrequency: "weekly",
+      })
+    );
+  }
+
+  // League landings. `daily` while a league has not started — the page is under
+  // active edit through reveal week and the countdown is its whole point — then
+  // `weekly` once it is running and the content has settled.
+  for (const landing of leagueLandings) {
+    const started = landing.startsAt
+      ? new Date(landing.startsAt).getTime() <= Date.now()
+      : false;
+    entries.push(
+      ...expandLocales(`/leagues/${landing.slug}`, {
+        lastModified: new Date(landing._updatedAt),
+        changeFrequency: started ? "weekly" : "daily",
       })
     );
   }
