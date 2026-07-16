@@ -6,7 +6,6 @@ import { buildBreadcrumbSchema, getOgLocale, generateKeywords } from "@/lib/util
 import LeagueHero, { type HeroLabels } from "@/components/LeagueLanding/LeagueHero";
 import TrailerGallery from "@/components/LeagueLanding/TrailerGallery";
 import MechanicsSection from "@/components/LeagueLanding/MechanicsSection";
-import Timeline, { type Milestone } from "@/components/LeagueLanding/Timeline";
 import FaqAccordion from "@/components/LeagueLanding/FaqAccordion";
 import type { LeagueLanding, TrailerKind } from "@/types/league-landing";
 
@@ -270,27 +269,6 @@ export default async function LeagueLandingPage(props: {
     vod: t("trailers.kinds.vod"),
   };
 
-  const milestones: Milestone[] = [
-    league.revealAt && {
-      key: "reveal" as const,
-      iso: league.revealAt,
-      title: t("timeline.reveal.title"),
-      description: t("timeline.reveal.description"),
-    },
-    league.patchNotesAt && {
-      key: "patchNotes" as const,
-      iso: league.patchNotesAt,
-      title: t("timeline.patchNotes.title"),
-      description: t("timeline.patchNotes.description"),
-    },
-    league.startsAt && {
-      key: "start" as const,
-      iso: league.startsAt,
-      title: t("timeline.start.title"),
-      description: t("timeline.start.description"),
-    },
-  ].filter(Boolean) as Milestone[];
-
   const description =
     league.seoDescription || league.tagline || league.intro || league.name;
 
@@ -317,9 +295,9 @@ export default async function LeagueLandingPage(props: {
   ]);
 
   return (
-    // No bg-black override: the site's own near-black `background` already
-    // covers this, and forcing pure black here made the page a shade darker
-    // than every other route.
+    // The site is dark-only (forcedTheme="dark" in the root layout), so the
+    // body is always near-black and this page's hardcoded dark ink is safe
+    // without a per-route override.
     <main className="relative w-full">
       {[breadcrumbSchema, articleSchema, videoSchema, faqSchema]
         .filter(Boolean)
@@ -344,10 +322,29 @@ export default async function LeagueLandingPage(props: {
           earlier mix of pt-16 and py-20 stacked into ~80px of dead space that
           read as a missing section. */}
       {league.intro && (
-        <section className="mx-auto w-full max-w-6xl px-4 pt-12 sm:px-6">
-          <p className="max-w-3xl whitespace-pre-line text-base leading-relaxed text-muted-foreground sm:text-lg">
-            {league.intro}
-          </p>
+        <section className="mx-auto w-full max-w-7xl px-4 pt-14 sm:px-6">
+          <div
+            className={
+              league.tagline
+                ? "grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:gap-16"
+                : ""
+            }
+          >
+            <p className="max-w-2xl whitespace-pre-line text-base leading-relaxed text-muted-foreground sm:text-lg">
+              {league.intro}
+            </p>
+            {/* The tagline becomes a display pull-quote here — the same words the
+                hero carries as small body text, restated in Fontin so the
+                right half of the band reads as composed, not empty. */}
+            {league.tagline && (
+              <p
+                className="font-fontin border-l-2 pl-6 text-2xl leading-snug text-foreground/85 sm:text-3xl"
+                style={{ borderColor: league.accentColor! }}
+              >
+                {league.tagline}
+              </p>
+            )}
+          </div>
         </section>
       )}
 
@@ -375,16 +372,6 @@ export default async function LeagueLandingPage(props: {
           pendingBody: t("mechanics.pendingBody"),
           pendingWatch: t("mechanics.pendingWatch"),
           pendingTrailers: t("mechanics.pendingTrailers"),
-        }}
-      />
-
-      <Timeline
-        milestones={milestones}
-        accentColor={league.accentColor!}
-        locale={locale}
-        labels={{
-          heading: t("timeline.heading"),
-          subheading: t("timeline.subheading"),
         }}
       />
 

@@ -771,22 +771,6 @@
       "pendingWatch": "Assistir ao anúncio",
       "pendingTrailers": "Ver os teasers"
     },
-    "timeline": {
-      "heading": "Caminho até o lançamento",
-      "subheading": "As datas que importam até o dia 1.",
-      "reveal": {
-        "title": "Live de anúncio",
-        "description": "A liga é revelada ao vivo, com o primeiro trailer e a explicação completa das mecânicas."
-      },
-      "patchNotes": {
-        "title": "Patch notes",
-        "description": "Todas as mudanças de balanceamento e a lista completa das novidades."
-      },
-      "start": {
-        "title": "Início da liga",
-        "description": "Os servidores sobem e a corrida começa. Todo mundo parte do zero."
-      }
-    },
     "faq": {
       "heading": "Perguntas frequentes",
       "subheading": "As respostas rápidas sobre a {league}."

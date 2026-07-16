@@ -41,38 +41,41 @@ interface CountdownProps {
   onStatusChange?: (status: LeagueStatus) => void;
 }
 
-/** One unit, in the site's card vocabulary: 1px border, 0.5rem radius. */
-function Unit({
+/**
+ * One time segment, rendered monumentally rather than in a boxed widget.
+ *
+ * This is the page's signature: a countdown to a real, public launch instant is
+ * *information* ("when can I play?"), so the honest move is to make the time the
+ * hero — huge Fontin numerals that echo the wordmark, not a stock four-box
+ * timer. `live` tints the fastest-moving unit (seconds) so the row reads as
+ * ticking. tabular-nums keeps the columns from twitching as digits change.
+ */
+function Segment({
   value,
   label,
   accent,
+  live = false,
 }: {
   value: number;
   label: string;
   accent: string;
+  live?: boolean;
 }) {
   return (
     <div className="flex flex-col items-center">
-      <div
-        className="flex h-16 w-[68px] items-center justify-center rounded-lg border bg-card sm:h-20 sm:w-24"
-        style={{
-          borderColor: `${accent}33`,
-          boxShadow: `0 16px 44px -34px ${accent}`,
-        }}
-      >
-        <span
-          // Fontin on the numerals only — the one PoE nod, and it rhymes with
-          // the Path of Trade wordmark rather than fighting it. tabular-nums
-          // stops the box twitching as digits change width.
-          className="text-3xl tabular-nums sm:text-4xl"
-          style={{ fontFamily: FONTIN, color: SITE.fg, fontWeight: 600 }}
-          suppressHydrationWarning
-        >
-          {String(value).padStart(2, "0")}
-        </span>
-      </div>
       <span
-        className="mt-2 text-[10px] uppercase tracking-[0.14em]"
+        className="text-[clamp(2.9rem,7vw,5.75rem)] font-semibold leading-[0.9] tabular-nums"
+        style={{
+          fontFamily: FONTIN,
+          color: live ? accent : SITE.fg,
+          textShadow: `0 0 40px ${accent}${live ? "55" : "22"}, 0 2px 12px rgba(0,0,0,0.7)`,
+        }}
+        suppressHydrationWarning
+      >
+        {String(value).padStart(2, "0")}
+      </span>
+      <span
+        className="mt-2 text-[10px] uppercase tracking-[0.18em] sm:text-[11px]"
         style={{ color: SITE.muted }}
       >
         {label}
@@ -146,30 +149,33 @@ export function Countdown({
   if (Number.isNaN(target)) return null;
 
   if (status === "live") {
+    // The flip at launch is the page's payoff, so the live state is monumental
+    // too — not a shrink back into a pill.
     return (
-      <div className="flex flex-col items-start gap-2">
-        <span
-          className="inline-flex items-center gap-2.5 rounded-lg border px-4 py-2"
-          style={{ borderColor: `${accentColor}59`, backgroundColor: `${accentColor}14` }}
-        >
-          <span className="relative flex h-2 w-2">
+      <div className="flex flex-col items-start gap-3">
+        <span className="inline-flex items-center gap-3">
+          <span className="relative flex h-3 w-3">
             <span
               className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-75"
               style={{ backgroundColor: accentColor }}
             />
             <span
-              className="relative inline-flex h-2 w-2 rounded-full"
+              className="relative inline-flex h-3 w-3 rounded-full"
               style={{ backgroundColor: accentColor }}
             />
           </span>
           <span
-            className="text-lg font-bold uppercase tracking-[0.12em]"
-            style={{ color: accentColor }}
+            className="text-[clamp(1.75rem,4vw,3rem)] font-semibold uppercase leading-none tracking-[0.06em]"
+            style={{
+              fontFamily: FONTIN,
+              color: accentColor,
+              textShadow: `0 0 45px ${accentColor}55`,
+            }}
           >
             {labels.live}
           </span>
         </span>
-        <span className="text-sm" style={{ color: SITE.muted }}>
+        <span className="text-sm sm:text-base" style={{ color: SITE.muted }}>
           {labels.liveSub}
         </span>
       </div>
@@ -180,11 +186,11 @@ export function Countdown({
     { value: remaining.days, label: labels.days },
     { value: remaining.hours, label: labels.hours },
     { value: remaining.minutes, label: labels.minutes },
-    { value: remaining.seconds, label: labels.seconds },
+    { value: remaining.seconds, label: labels.seconds, live: true },
   ];
 
   return (
-    <div className="flex flex-col items-start gap-3">
+    <div className="flex w-full flex-col items-start gap-4">
       {/* Ticking numerals are noise to a screen reader; one calm sentence says
           the same thing. Composed from the unit labels rather than an
           interpolated message — next-intl parses {braces} as ICU arguments and
@@ -193,13 +199,29 @@ export function Countdown({
         {`${labels.srCountdown}: ${remaining.days} ${labels.days}, ${remaining.hours} ${labels.hours}, ${remaining.minutes} ${labels.minutes}`}
       </p>
 
-      <div className="flex items-start gap-2.5 sm:gap-3" aria-hidden="true">
-        {units.map((u) => (
-          <Unit key={u.label} value={u.value} label={u.label} accent={accentColor} />
+      {/* Four columns spread across the panel width — the numerals *are* the
+          composition here, so they fill the space rather than huddling left.
+          Faint accent dividers between columns give the clock its segmentation. */}
+      <div className="grid w-full grid-cols-4" aria-hidden="true">
+        {units.map((u, i) => (
+          <div
+            key={u.label}
+            className={`flex justify-center px-1 ${i > 0 ? "border-l" : ""}`}
+            style={i > 0 ? { borderColor: `${accentColor}1f` } : undefined}
+          >
+            <Segment value={u.value} label={u.label} accent={accentColor} live={u.live} />
+          </div>
         ))}
       </div>
 
-      <p className="h-5 text-xs" style={{ color: SITE.muted }} suppressHydrationWarning>
+      {/* Baseline hairline grounds the numerals as a single structural block. */}
+      <div
+        className="h-px w-full"
+        style={{ background: `linear-gradient(90deg, ${accentColor}59, ${accentColor}0d)` }}
+        aria-hidden="true"
+      />
+
+      <p className="h-5 text-xs sm:text-sm" style={{ color: SITE.muted }} suppressHydrationWarning>
         {localTime ? `${labels.localTime} ${localTime}` : ""}
       </p>
     </div>

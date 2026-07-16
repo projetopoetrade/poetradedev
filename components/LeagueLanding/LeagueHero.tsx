@@ -1,12 +1,12 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useState, type ReactNode } from "react";
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { ExternalLink, ShoppingCart, Play } from "lucide-react";
 import Countdown from "./Countdown";
 import AddToCalendar from "./AddToCalendar";
-import { PoeBackdrop, PoeBadge, PoeHeading, PoeArtFade, SITE } from "./poe-ui";
+import { PoeBackdrop, PoeBadge, PoeHeading, PoeArtFade, SITE, FONTIN } from "./poe-ui";
 import type { LeagueLanding, LeagueStatus } from "@/types/league-landing";
 
 export interface HeroLabels {
@@ -36,6 +36,12 @@ interface LeagueHeroProps {
   pageUrl: string;
   storeUrl: string | null;
   labels: HeroLabels;
+  /**
+   * Post-launch only. When the league is live and this is provided, it takes the
+   * countdown's slot (and widens it) — the economy panel, instead of a "live"
+   * badge. A generic slot so the hub can put anything here.
+   */
+  liveAside?: ReactNode;
 }
 
 /**
@@ -59,6 +65,7 @@ export function LeagueHero({
   pageUrl,
   storeUrl,
   labels,
+  liveAside,
 }: LeagueHeroProps) {
   const accent = league.accentColor ?? "#3fd19a";
   const keyArtUrl = league.keyArt?.asset?.url;
@@ -72,6 +79,52 @@ export function LeagueHero({
 
   const gameLabel =
     league.gameVersion === "path-of-exile-2" ? "Path of Exile 2" : "Path of Exile";
+
+  const showAside = status === "live" && !!liveAside;
+
+  // The hero's right column.
+  //  - upcoming → eyebrow + monumental countdown
+  //  - no date  → the TBA state
+  //  - live + aside → whatever the hub passed (e.g. an economy panel)
+  //  - live + no aside → null: the countdown has nothing to say once launched,
+  //    so the hero collapses to a single identity column instead of showing a
+  //    "live" badge.
+  const rightContent = showAside ? (
+    liveAside
+  ) : status === "live" ? null : league.startsAt ? (
+    <div className="w-full">
+      {status === "upcoming" && (
+        <div className="mb-5 flex items-center gap-2.5">
+          <span className="h-px w-7" style={{ backgroundColor: accent }} aria-hidden="true" />
+          <p className="text-[11px] uppercase tracking-[0.2em]" style={{ color: SITE.muted }}>
+            {labels.startsIn}
+          </p>
+        </div>
+      )}
+      <Countdown
+        startsAt={league.startsAt}
+        accentColor={accent}
+        locale={locale}
+        labels={labels.countdown}
+        onStatusChange={handleStatusChange}
+      />
+    </div>
+  ) : (
+    <div className="flex flex-col gap-2.5">
+      <p
+        className="text-[clamp(1.6rem,3.2vw,2.5rem)] font-semibold leading-tight"
+        style={{ fontFamily: FONTIN, color: accent }}
+      >
+        {labels.tbaTitle}
+      </p>
+      <p className="max-w-md text-sm sm:text-base" style={{ color: SITE.muted }}>
+        {labels.tbaSub}
+      </p>
+    </div>
+  );
+
+  // No right column (live with nothing passed) → the hero is a single column.
+  const twoColumn = !keyArtUrl && rightContent != null;
 
   return (
     <header className="relative w-full overflow-hidden border-b" style={{ borderColor: SITE.border }}>
@@ -92,78 +145,84 @@ export function LeagueHero({
         </div>
       )}
 
-      <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
-        <div className={keyArtUrl ? "lg:max-w-[52%]" : "max-w-3xl"}>
-          <div className="mb-5 flex flex-wrap items-center gap-2">
-            <PoeBadge tone="neutral">{gameLabel}</PoeBadge>
-            {league.version && <PoeBadge accent={accent}>{league.version}</PoeBadge>}
-          </div>
-
-          {logoUrl ? (
-            <>
-              {/* The logo is the visual title, but the h1 must still carry the
-                  name as text for search engines and screen readers. */}
-              <h1 className="sr-only">{league.name}</h1>
-              <div className="relative h-20 w-[min(90vw,460px)] sm:h-28">
-                <Image
-                  src={logoUrl}
-                  alt={league.name}
-                  fill
-                  priority
-                  sizes="(max-width: 640px) 90vw, 460px"
-                  className="object-contain object-left"
-                />
-              </div>
-            </>
-          ) : (
-            <PoeHeading
-              as="h1"
-              variant="fontin"
-              accent={accent}
-              className="text-balance text-4xl leading-[1.05] sm:text-6xl lg:text-7xl"
-            >
-              {league.name}
-            </PoeHeading>
-          )}
-
-          {league.tagline && (
-            <p className="mt-4 max-w-xl text-balance text-base sm:text-lg" style={{ color: SITE.muted }}>
-              {league.tagline}
-            </p>
-          )}
-
-          <div className="mt-10">
-            {league.startsAt ? (
-              <>
-                {status === "upcoming" && (
-                  <p
-                    className="mb-4 text-[11px] uppercase tracking-[0.18em]"
-                    style={{ color: SITE.muted }}
+      <div className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:py-28">
+        <div className={keyArtUrl ? "lg:max-w-[52%]" : ""}>
+          {/* Identity and time sit side by side when there is no key art, so the
+              countdown fills the right half instead of leaving it empty. CTAs
+              live in a full-width row below the grid — which also gives mobile
+              the right stacking order (name → time → actions). */}
+          <div
+            className={
+              !twoColumn
+                ? ""
+                : showAside
+                  ? "grid grid-cols-1 items-center gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-14"
+                  : "grid grid-cols-1 items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16"
+            }
+          >
+            <div className="lg-rise min-w-0">
+              {logoUrl ? (
+                <>
+                  {/* The official GGG league logo (Path of Exile + league name)
+                      replaces the type lockup. The h1 still carries the name as
+                      text for search engines and screen readers. */}
+                  <h1 className="sr-only">{league.name}</h1>
+                  <div className="relative h-24 w-[min(92vw,520px)] sm:h-32">
+                    <Image
+                      src={logoUrl}
+                      alt={league.name}
+                      fill
+                      priority
+                      sizes="(max-width: 640px) 92vw, 520px"
+                      className="object-contain object-left"
+                    />
+                  </div>
+                </>
+              ) : (
+                <>
+                  {/* Type lockup that mirrors the shape of the GGG league logo —
+                      the game name set small over the league name — so leagues
+                      without an uploaded logo still read like one. */}
+                  <div className="mb-3 flex flex-wrap items-center gap-2.5">
+                    <span
+                      className="text-xs font-medium uppercase tracking-[0.28em]"
+                      style={{ color: SITE.muted }}
+                    >
+                      {gameLabel}
+                    </span>
+                    {league.version && <PoeBadge accent={accent}>{league.version}</PoeBadge>}
+                  </div>
+                  <PoeHeading
+                    as="h1"
+                    variant="fontin"
+                    accent={accent}
+                    className="text-balance text-5xl leading-[1.03] sm:text-6xl lg:text-7xl"
                   >
-                    {labels.startsIn}
-                  </p>
-                )}
-                <Countdown
-                  startsAt={league.startsAt}
-                  accentColor={accent}
-                  locale={locale}
-                  labels={labels.countdown}
-                  onStatusChange={handleStatusChange}
-                />
-              </>
-            ) : (
-              <div className="flex flex-col gap-1.5">
-                <p className="text-2xl font-bold" style={{ color: accent }}>
-                  {labels.tbaTitle}
+                    {league.name}
+                  </PoeHeading>
+                </>
+              )}
+
+              {league.tagline && (
+                <p className="mt-5 max-w-xl text-balance text-base sm:text-lg" style={{ color: SITE.muted }}>
+                  {league.tagline}
                 </p>
-                <p className="text-sm" style={{ color: SITE.muted }}>
-                  {labels.tbaSub}
-                </p>
+              )}
+
+              {/* With key art, the time cluster continues the left column. */}
+              {keyArtUrl && rightContent && <div className="mt-10">{rightContent}</div>}
+            </div>
+
+            {/* No key art: the countdown becomes the right column (nothing once
+                live unless the hub passes an aside). */}
+            {twoColumn && (
+              <div className="lg-rise min-w-0" style={{ animationDelay: "120ms" }}>
+                {rightContent}
               </div>
             )}
           </div>
 
-          <div className="mt-9 flex flex-wrap items-center gap-3">
+          <div className="lg-rise mt-11 flex flex-wrap items-center gap-3" style={{ animationDelay: "220ms" }}>
             {storeUrl && (
               <Link
                 href={storeUrl}

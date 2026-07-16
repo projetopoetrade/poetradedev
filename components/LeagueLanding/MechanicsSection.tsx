@@ -65,7 +65,7 @@ export function MechanicsSection({
   if (pending && !revealAt) return null;
 
   return (
-    <section id="mechanics" className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6">
+    <section id="mechanics" className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 lg:py-20">
       <div className="mb-8">
         <PoeHeading as="h2" className="text-2xl sm:text-3xl">
           {labels.heading}
@@ -76,47 +76,56 @@ export function MechanicsSection({
       </div>
 
       {pending && revealAt && (
+        // Full width, split into copy + a bordered action rail on the right so
+        // the waiting state fills the section instead of stranding half of it.
         <div
-          className="max-w-3xl rounded-lg border bg-card p-6 sm:p-8"
+          className="w-full overflow-hidden rounded-lg border bg-card"
           style={{ borderColor: `${accentColor}33` }}
         >
-          <div className="flex items-center gap-2.5">
-            <Radio className="h-4 w-4" style={{ color: accentColor }} aria-hidden="true" />
-            <h3 className="text-base font-semibold" style={{ color: SITE.fg }}>
-              {labels.pendingTitle}
-            </h3>
-          </div>
+          <div className="grid gap-8 p-6 sm:p-9 lg:grid-cols-[1.5fr_1fr] lg:items-center lg:gap-12">
+            <div>
+              <div className="flex items-center gap-2.5">
+                <Radio className="h-4 w-4" style={{ color: accentColor }} aria-hidden="true" />
+                <h3 className="text-base font-semibold" style={{ color: SITE.fg }}>
+                  {labels.pendingTitle}
+                </h3>
+              </div>
 
-          <LocalDateTime
-            iso={revealAt}
-            locale={locale}
-            dateStyle="full"
-            timeStyle="short"
-            className="mt-3 block text-sm font-medium"
-          />
+              <LocalDateTime
+                iso={revealAt}
+                locale={locale}
+                dateStyle="full"
+                timeStyle="short"
+                className="mt-3 block text-lg font-medium"
+              />
 
-          <p className="mt-3 max-w-xl text-sm leading-relaxed" style={{ color: SITE.muted }}>
-            {labels.pendingBody}
-          </p>
+              <p className="mt-3 max-w-xl text-sm leading-relaxed" style={{ color: SITE.muted }}>
+                {labels.pendingBody}
+              </p>
+            </div>
 
-          <div className="mt-5 flex flex-wrap items-center gap-3">
-            <a
-              href="https://www.twitch.tv/pathofexile"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-black transition-opacity hover:opacity-90"
-              style={{ backgroundColor: accentColor }}
+            <div
+              className="flex flex-col gap-3 lg:border-l lg:pl-12"
+              style={{ borderColor: SITE.border }}
             >
-              {labels.pendingWatch}
-              <ExternalLink className="h-3.5 w-3.5" />
-            </a>
-            <a
-              href="#trailers"
-              className="inline-flex items-center gap-2 rounded-lg border bg-card px-4 py-2 text-sm font-medium transition-colors hover:bg-white/5"
-              style={{ borderColor: SITE.border, color: SITE.fg }}
-            >
-              {labels.pendingTrailers}
-            </a>
+              <a
+                href="https://www.twitch.tv/pathofexile"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold text-black transition-opacity hover:opacity-90"
+                style={{ backgroundColor: accentColor }}
+              >
+                {labels.pendingWatch}
+                <ExternalLink className="h-3.5 w-3.5" />
+              </a>
+              <a
+                href="#trailers"
+                className="inline-flex items-center justify-center gap-2 rounded-lg border bg-card px-4 py-2.5 text-sm font-medium transition-colors hover:bg-white/5"
+                style={{ borderColor: SITE.border, color: SITE.fg }}
+              >
+                {labels.pendingTrailers}
+              </a>
+            </div>
           </div>
         </div>
       )}

@@ -1,7 +1,8 @@
 # Páginas de Liga — Landing → Hub
 
-> Criado em: 16/07/2026
-> Feature commitada na `main` (sem push): `1f9ba4d` (+ bugfixes `97a91a0`, `6b1db62`)
+> Criado em: 16/07/2026 · revisão de design (dark-first/art-forward) + scaffold do
+> hub pós-lançamento: 16/07/2026
+> Feature base commitada na `main`: `1f9ba4d` (+ bugfixes `97a91a0`, `6b1db62`)
 > Pesquisa que embasou as decisões: [`LEAGUE_RESEARCH.md`](./LEAGUE_RESEARCH.md)
 
 ---
@@ -12,11 +13,10 @@ Uma URL por liga (`/leagues/[slug]`) que **muda de função ao longo do tempo** 
 acumular autoridade de SEO em vez de morrer no dia do lançamento:
 
 - **Antes do lançamento** — landing de contagem regressiva: hero, countdown,
-  trailers, mecânicas, timeline, FAQ. Ranqueia para "quando começa a liga X",
-  "X release date".
-- **Depois do lançamento** — vira hub: produtos da liga, price tracker, builds,
-  links. Ranqueia para "X builds", "X currency". _(hub ainda não construído — ver
-  Pendências.)_
+  trailers, mecânicas, FAQ. Ranqueia para "quando começa a liga X", "X release date".
+- **Depois do lançamento** — vira hub: price tracker (+ altas/baixas), produtos da
+  liga, builds. Ranqueia para "X builds", "X currency". _(hub montado como **preview
+  com dados mock** — falta ligar dados reais; ver §Hub e Pendências.)_
 
 Mais o índice `/leagues` (lista todas as ligas publicadas).
 
@@ -40,7 +40,9 @@ GGG define. Não é page-builder — não há campo de layout no schema.
 | Dados/lógica | `lib/league-landing.ts` | Fetch, `resolveLocale()`, `getLeagueStatus()` |
 | Página | `app/[locale]/(site)/leagues/[slug]/page.tsx` | Landing/hub + metadata + JSON-LD |
 | Índice | `app/[locale]/(site)/leagues/page.tsx` | Lista de ligas |
-| Componentes | `components/LeagueLanding/*` | Hero, Countdown, TrailerGallery, MechanicsSection, Timeline, FaqAccordion, LeagueCard, AddToCalendar, LocalDateTime, `poe-ui.tsx` |
+| Componentes | `components/LeagueLanding/*` | Hero (lockup/logo/keyArt), Countdown, TrailerGallery, MechanicsSection, FaqAccordion, LeagueCard, AddToCalendar, LocalDateTime, `poe-ui.tsx` |
+| Componentes (hub) | `components/LeagueLanding/*` | PriceTracker (+ board de altas/baixas), ProductsSection, BuildsSection, `economy-charts.tsx` (AreaChart/Sparkline/MoverBoard — SVG puro) |
+| Preview do hub | `app/[locale]/(site)/league-hub-preview/page.tsx` | Rota isolada (**noindex**) que força o estado live e renderiza o hub com dados mock (`lib/league-hub-mock.ts`). Mantém a página real estática. |
 
 ### Status derivado, não armazenado
 
@@ -57,13 +59,31 @@ Fetch com tag `"leagueLanding"`. O webhook `/api/revalidate` (já existente) cha
 `revalidate = 60` na página é a rede de segurança caso o webhook falhe. Ou seja:
 editar no Studio reflete no site sem redeploy.
 
-### Design
+### Design — dark-first, art-forward (revisado jul/2026)
 
-Vocabulário do **próprio site** (não da GGG): alinhado à esquerda como `/builds`,
-card com borda `#262626` e raio `0.5rem`, Source Sans nos títulos, corpo muted.
-Cor por liga via `accentColor`. Única concessão PoE: **Fontin SmallCaps no nome da
-liga**, ecoando o wordmark do header. (Tentativa de clonar o visual da GGG — madeira,
-runas, tudo dourado — foi descartada por destoar do resto do site.)
+O rumo mudou nesta revisão: saiu a "contenção que imita o resto do site", entrou um
+hero **art-forward no espírito das microsites da GGG**, mas ainda dentro do sistema
+near-black + tipográfico do site (sem madeira/runas). Cor por liga via `accentColor`;
+Fontin no nome/numerais; Source Sans nos headings; Roboto no corpo.
+
+- **Dark-only.** O site inteiro é forçado no escuro — `forcedTheme="dark"` no
+  `app/[locale]/layout.tsx`. O chrome global (header transparente, footer em
+  `black/40`) é dark-first e virava **cinza** no tema claro; **não há tema claro**.
+- **Hero de largura total** (`max-w-7xl`, grid de 2 colunas) — nada de coluna estreita
+  à esquerda com metade direita vazia. As seções também ocupam o body: trailers em
+  grid `auto-fit`, card de mecânicas em 2 colunas, FAQ com heading à esquerda +
+  accordion à direita.
+- **Countdown monumental.** Antes do lançamento, o tempo é o herói: numerais grandes
+  em Fontin na coluna direita (fazendo as vezes de arte), com brasa ambiente puxada do
+  `accentColor` (`PoeBackdrop`). No lançamento o hero vira **coluna única** (não mostra
+  badge "live").
+- **Título = lockup estilo logo da GGG.** "PATH OF EXILE" pequeno sobre o nome da liga
+  em Fontin. Se o campo **`logo`** (logo oficial da GGG) existe, a imagem substitui o
+  lockup; se **`keyArt`** (imagem do press kit) existe, ocupa os 58% da direita
+  dissolvendo no conteúdo (`PoeArtFade`).
+- **Motion** (brasa que respira + fade-in de entrada) é **puro CSS** e respeita
+  `prefers-reduced-motion` — nada de framer/whileInView (que shippa `opacity:0` no SSR).
+- **`Timeline` ("Road to launch") foi removida** — componente + strings `timeline.*`.
 
 ---
 
@@ -110,6 +130,31 @@ português renderiza igual (fallback para EN) em vez de ficar com buracos.
 
 ---
 
+## Hub pós-lançamento (preview + mock)
+
+O layout do hub já existe, montado como **preview** para revisão de design antes de
+ligar dados reais. Rota isolada e **noindex**: `/league-hub-preview` (opcional
+`?slug=`). Ela busca a liga real, força o estado live (start no passado, `keyArt`
+mock com imagem real da Allflame, mecânicas mock) e renderiza o hub com
+`lib/league-hub-mock.ts`. **A página real `/leagues/[slug]` continua estática** — o
+preview é separado de propósito (ler `searchParams` deixaria a rota real dinâmica).
+
+Seções do hub (ordem no live): **Hero** (lockup/logo + `keyArt`, sem countdown) →
+**Live economy** (`PriceTracker`: tiles de preço + board de altas/baixas com
+sparkline) → **Buy currency** (`ProductsSection`) → **Meta builds** (`BuildsSection`)
+→ mecânicas, trailers, FAQ (compartilhados com a landing).
+
+Gráficos: `economy-charts.tsx` (SVG puro, sem lib — AreaChart/Sparkline/MoverBoard),
+seguindo a skill de dataviz (série única = hue único; altas/baixas com ícone+rótulo,
+nunca cor sozinha).
+
+⚠️ **Tudo é mock e os rótulos das seções do hub estão em inglês (sem i18n).** Os
+formatos em `league-hub-mock.ts` espelham o que as fontes reais retornam, pra troca
+ser direta. Antes de ir ao ar: mover as seções para o branch `status === "live"` da
+página real, ligar os dados e traduzir os rótulos.
+
+---
+
 ## Pendências
 
 ### Bloqueado por conteúdo (amanhã, com a live/press kit)
@@ -117,18 +162,21 @@ português renderiza igual (fallback para EN) em vez de ficar com buracos.
 - [ ] Preencher **mecânicas** após a GGG Live (16/07 17:00 BRT).
 - [ ] Revisar **patch notes** (`patchNotesAt` / `patchNotesUrl`) quando saírem.
 
-### Hub (pós-lançamento)
+### Hub (pós-lançamento) — UI pronta (mock), falta ligar dados
+UI e layout já feitos (ver §Hub). O que falta é **dado real** + mover para o branch
+`status === "live"` da página real + **i18n dos rótulos** (hoje em inglês).
+- [ ] **Price tracker / altas-baixas**: `fetchPrices(names, ninjaName)` server-side.
+      ⚠️ id do poe.ninja é o **nome curto** (`Allflame`, não o nome completo); nome
+      errado retorna **200 com lista vazia**, não erro. Resolver via
+      `leagues.poe_ninja_name`. ⚠️ código atual chama endpoints **antigos** do
+      poe.ninja (mortos) — ver `LEAGUE_RESEARCH.md` §poe.ninja pros novos.
 - [ ] **Produtos da liga**: `getProductsWithParams({ league: supabaseLeagueName, isListed:true })`.
       ⚠️ essa função **lança exceção** em erro — envolver em `try/catch` ou uma
-      falha do Supabase derruba a landing no dia do lançamento.
-- [ ] **Price tracker** compacto: `fetchPrices(names, ninjaName)` server-side.
-      ⚠️ id do poe.ninja é o **nome curto** (`Allflame`, não o nome completo);
-      nome errado retorna **200 com lista vazia**, não erro. Resolver via
-      `leagues.poe_ninja_name`. Ver `LEAGUE_RESEARCH.md` §poe.ninja.
-- [ ] **Builds**: usar tabela `builds` (editorial). ⚠️ `getBuilds` usa client com
-      cookies → tornaria a página dinâmica e mataria o ISR; precisa de variante
-      admin-client. **Top builds do poe.ninja está VETADO** (API interna, proibida
-      a terceiros) — só conteúdo curado.
+      falha do Supabase derruba a página no dia do lançamento.
+- [ ] **Builds**: tabela `builds` (editorial). ⚠️ `getBuilds` usa client com cookies
+      → tornaria a página dinâmica e mataria o ISR; precisa de variante admin-client.
+      **Top builds do poe.ninja está VETADO** (API interna, proibida a terceiros).
+- [ ] **Hero mobile art-forward**: `keyArt` hoje é **só desktop** (escondida no mobile).
 
 ### Precisa de mudança de schema
 - [ ] **Posts da liga**: o schema `post` do Sanity só tem `gameVersion`, sem campo de

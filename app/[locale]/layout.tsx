@@ -234,10 +234,15 @@ export default async function RootLayout(
     >
 
       <body className="bg-background text-foreground" suppressHydrationWarning>
+        {/* Dark-only site. The chrome is built dark-first — the header is
+            transparent and the footer sits on black/40 — so a light theme turns
+            both grey over a white body. `forcedTheme` pins dark and ignores the
+            OS preference and any stored choice, so every route renders the way
+            it was designed. */}
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
-          enableSystem
+          forcedTheme="dark"
           disableTransitionOnChange
         >
           <NextIntlClientProvider locale={locale} messages={messages}>

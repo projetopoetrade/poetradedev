@@ -783,22 +783,6 @@
       "pendingWatch": "Watch the reveal",
       "pendingTrailers": "See the teasers"
     },
-    "timeline": {
-      "heading": "Road to launch",
-      "subheading": "The key dates on the way to day one.",
-      "reveal": {
-        "title": "Reveal stream",
-        "description": "The league is announced live, with the first trailer and the full mechanic breakdown."
-      },
-      "patchNotes": {
-        "title": "Patch notes",
-        "description": "Full balance changes and the complete list of what is new."
-      },
-      "start": {
-        "title": "League starts",
-        "description": "Servers go live and the race begins. Everyone starts from zero."
-      }
-    },
     "faq": {
       "heading": "Frequently asked questions",
       "subheading": "The quick answers about {league}."

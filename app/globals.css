@@ -103,6 +103,29 @@
     letter-spacing: 0.01em;
   }
 
+  /* ─── League landing: ambient ember + entrance ─────────────────────────
+     Motion lives here, not in framer whileInView — that shipped opacity:0
+     into the SSR HTML (invisible to crawlers and no-JS). These are pure CSS:
+     the final state is opacity:1, so text is always in the DOM, and
+     prefers-reduced-motion pins everything visible with no movement. */
+  @keyframes lg-ember-breathe {
+    0%, 100% { opacity: 0.4;  transform: scale(1); }
+    50%      { opacity: 0.85; transform: scale(1.07); }
+  }
+  @keyframes lg-rise {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .lg-rise  { animation: lg-rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  .lg-ember { animation: lg-ember-breathe 7s ease-in-out infinite; }
+  @media (prefers-reduced-motion: reduce) {
+    .lg-rise, .lg-ember {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+
   @layer components {
     .blog-container {
       @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;

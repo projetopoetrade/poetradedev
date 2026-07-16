@@ -42,14 +42,56 @@ export const SITE = {
 export const FONTIN =
   'var(--font-fontin, "Fontin SmallCaps"), "Fontin SmallCaps", "Source Sans 3", Georgia, serif';
 
-/** Low-key accent wash. The site is flat near-black; this only lifts the hero. */
+/**
+ * Fine film grain, inlined as SVG so it costs no request. Near-black hero
+ * gradients band into visible steps on real panels; a hair of noise breaks the
+ * ramp up. Kept faint enough to read as texture, never as static.
+ */
+const GRAIN =
+  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")";
+
+/**
+ * Ambient ember backdrop for the hero.
+ *
+ * The old version was a single 10% radial that read as almost nothing against
+ * flat near-black, which is what left the no-key-art hero looking empty rather
+ * than composed. This is the *designed* no-art state: an ember anchored bottom-
+ * right (where the monumental countdown sits) that stands in for key art, a
+ * cooler top wash, film grain to kill banding, and a vignette to frame it.
+ *
+ * Everything is driven by `accent`, so any league re-skins for free — no PoE
+ * chrome, just the site's near-black with the league's colour as heat. The one
+ * moving part is a slow breathing glow (`.lg-ember`), disabled under
+ * prefers-reduced-motion.
+ */
 export function PoeBackdrop({ accent }: { accent: string }) {
   return (
-    <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
+    <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+      {/* Cool top wash + ember from the countdown corner */}
       <div
         className="absolute inset-0"
         style={{
-          background: `radial-gradient(90% 60% at 50% 0%, ${accent}1a, transparent 60%)`,
+          background: [
+            `radial-gradient(70% 55% at 82% 78%, ${accent}2e, transparent 62%)`,
+            `radial-gradient(100% 70% at 50% -10%, ${accent}14, transparent 60%)`,
+          ].join(", "),
+        }}
+      />
+      {/* Breathing ember core — the single moving element */}
+      <div
+        className="lg-ember absolute right-[6%] top-[38%] h-[42vh] w-[42vh] rounded-full blur-[90px]"
+        style={{ background: `radial-gradient(circle, ${accent}40, transparent 68%)` }}
+      />
+      {/* Grain over the ramps */}
+      <div
+        className="absolute inset-0 opacity-[0.05] mix-blend-soft-light"
+        style={{ backgroundImage: GRAIN, backgroundSize: "160px 160px" }}
+      />
+      {/* Vignette to seat the composition on the page background */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background: `radial-gradient(130% 120% at 50% 30%, transparent 58%, ${SITE.bg} 100%)`,
         }}
       />
     </div>

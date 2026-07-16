@@ -79,7 +79,7 @@ export function TrailerGallery({ trailers, accentColor, labels }: TrailerGallery
   );
 
   return (
-    <section id="trailers" className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6">
+    <section id="trailers" className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 lg:py-20">
       <div className="mb-8">
         <PoeHeading as="h2" className="text-2xl sm:text-3xl">
           {labels.heading}
@@ -90,12 +90,12 @@ export function TrailerGallery({ trailers, accentColor, labels }: TrailerGallery
       </div>
 
       {/* Uniform grid, every card equal — same shape as /builds.
-          A "featured spans 2/3, rest stack in a column" layout was tried and
-          reverted: with two trailers it left the hero card *smaller* than the
-          secondary one and a dead gap between them, and it would break again at
-          every new trailer count. Reveal week will add several, so predictable
-          beats clever. */}
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          auto-fit rather than a fixed column count: two trailers stretch to
+          fill the row instead of leaving a dead third column, and reveal week's
+          extra videos wrap into a second row without a layout change. A
+          "featured spans 2/3, rest stack" layout was tried and reverted — with
+          two trailers it left the hero card smaller than the secondary one. */}
+      <div className="grid gap-5 [grid-template-columns:repeat(auto-fit,minmax(320px,1fr))]">
         {trailers.map((t, i) => (
           <Card key={t.youtubeId} trailer={t} featured={i === 0} index={i} />
         ))}
