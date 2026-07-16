@@ -221,7 +221,15 @@ export default async function RootLayout(
   return (
     <html
       lang={locale}
-      className={`${roboto.variable} ${sourceSans.variable}`}
+      // `fontin.variable` was only on the admin/studio branch above, so
+      // `--font-fontin` was never registered on the public site and the
+      // `.font-fontin` utility silently resolved to nothing — taking the whole
+      // font-family declaration with it (an unresolved var() with no inline
+      // fallback invalidates the property, so it inherits Roboto rather than
+      // falling through to the next family in the list). That left the PoB
+      // viewer tooltips, the one thing the font was self-hosted for, rendering
+      // in Roboto.
+      className={`${roboto.variable} ${sourceSans.variable} ${fontin.variable}`}
       suppressHydrationWarning
     >
 
