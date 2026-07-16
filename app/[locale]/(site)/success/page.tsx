@@ -4,7 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
-import { CheckCircle2, Package, Receipt, ShoppingBag, Calendar, ArrowRight, AlertCircle } from "lucide-react";
+import { CheckCircle2, Package, Receipt, ShoppingBag, Calendar, ArrowRight, AlertCircle, Star } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCart } from "@/lib/contexts/cart-context";
 
