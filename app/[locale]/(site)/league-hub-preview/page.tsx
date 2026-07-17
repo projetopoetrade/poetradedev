@@ -17,7 +17,6 @@ import {
   MOCK_GAINERS,
   MOCK_LOSERS,
 } from "@/lib/league-hub-mock";
-import type { TrailerKind } from "@/types/league-landing";
 
 /**
  * Throwaway preview of the *post-launch* league hub, with mock data.
@@ -92,14 +91,6 @@ export default async function LeagueHubPreviewPage(props: {
     scroll: t("hero.scroll"),
   };
 
-  const trailerKinds: Record<TrailerKind, string> = {
-    teaser: t("trailers.kinds.teaser"),
-    trailer: t("trailers.kinds.trailer"),
-    gameplay: t("trailers.kinds.gameplay"),
-    mechanic: t("trailers.kinds.mechanic"),
-    vod: t("trailers.kinds.vod"),
-  };
-
   return (
     <main className="relative w-full">
       {/* Unmistakable preview marker — this route is never the real page. */}
@@ -150,6 +141,9 @@ export default async function LeagueHubPreviewPage(props: {
           pendingBody: t("mechanics.pendingBody"),
           pendingWatch: t("mechanics.pendingWatch"),
           pendingTrailers: t("mechanics.pendingTrailers"),
+          categoryLeague: t("mechanics.categoryLeague"),
+          categoryEndgame: t("mechanics.categoryEndgame"),
+          categoryBalance: t("mechanics.categoryBalance"),
         }}
       />
 
@@ -157,10 +151,12 @@ export default async function LeagueHubPreviewPage(props: {
         trailers={view.trailers}
         accentColor={accent}
         labels={{
-          heading: t("trailers.heading"),
-          subheading: t("trailers.subheading"),
+          kicker: t("trailers.kicker"),
+          heading: t.rich("trailers.heading", {
+            league: view.name,
+            accent: (chunks) => <span style={{ color: accent }}>{chunks}</span>,
+          }),
           play: t("trailers.play"),
-          kinds: trailerKinds,
         }}
       />
 

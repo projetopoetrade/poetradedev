@@ -148,7 +148,12 @@ export function PoeHeading({
   className = "",
 }: {
   children: ReactNode;
-  as?: "h1" | "h2" | "h3";
+  /**
+   * `span` is for when the heading is purely visual — the hero renders the
+   * league name as art next to its own sr-only h1, and a second h1 there would
+   * just be a duplicate for screen readers.
+   */
+  as?: "h1" | "h2" | "h3" | "span";
   accent?: string;
   variant?: "site" | "fontin" | "accent";
   align?: "left" | "center";

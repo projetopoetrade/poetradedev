@@ -732,7 +732,7 @@
       "startsIn": "A liga começa em",
       "tbaTitle": "Data a ser anunciada",
       "tbaSub": "O horário exato do início sai na live de anúncio.",
-      "watchTrailer": "Ver trailers",
+      "watchTrailer": "Ver trailer",
       "buyCurrency": "Comprar moedas da {league}",
       "official": "Anúncio oficial",
       "scroll": "Ir para os trailers"
@@ -752,16 +752,9 @@
       "added": "Evento salvo"
     },
     "trailers": {
-      "heading": "Trailers",
-      "subheading": "Todos os anúncios em um lugar só.",
-      "play": "Assistir",
-      "kinds": {
-        "teaser": "Teaser",
-        "trailer": "Trailer",
-        "gameplay": "Gameplay",
-        "mechanic": "Detalhes",
-        "vod": "Live de anúncio"
-      }
+      "kicker": "Trailer Oficial",
+      "heading": "Veja <accent>{league}</accent> em movimento",
+      "play": "Assistir ao trailer"
     },
     "mechanics": {
       "heading": "Mecânicas da liga",
@@ -769,7 +762,10 @@
       "pendingTitle": "Revelado na GGG Live",
       "pendingBody": "Tudo em detalhe — mecânicas da liga, novas skills, mudanças de endgame e patch notes — é mostrado pela primeira vez na live de anúncio. Esta página é atualizada conforme as informações saem.",
       "pendingWatch": "Assistir ao anúncio",
-      "pendingTrailers": "Ver os teasers"
+      "pendingTrailers": "Ver os teasers",
+      "categoryLeague": "Mecânica da Liga",
+      "categoryEndgame": "Endgame e Conteúdo Novo",
+      "categoryBalance": "Balanço e Qualidade de Vida"
     },
     "faq": {
       "heading": "Perguntas frequentes",

@@ -39,11 +39,25 @@ export interface RawTrailer {
   thumbnail?: SanityImageRef;
 }
 
+export type MechanicCategory = "league" | "endgame" | "balance";
+
+export interface SanityFileRef {
+  asset?: {
+    _id: string;
+    url: string;
+  };
+}
+
+export type ImagePosition = "left" | "center" | "right";
+
 export interface RawMechanic {
   title?: LocaleField;
   summary?: LocaleField;
+  category?: MechanicCategory;
   bullets?: LocaleField[];
   image?: SanityImageRef;
+  video?: SanityFileRef;
+  imagePosition?: ImagePosition;
 }
 
 export interface RawHighlight {
@@ -95,8 +109,11 @@ export interface Trailer {
 export interface Mechanic {
   title: string;
   summary: string;
+  category: MechanicCategory;
   bullets: string[];
   image?: SanityImageRef;
+  videoUrl?: string;
+  imagePosition?: ImagePosition;
 }
 
 export interface Highlight {

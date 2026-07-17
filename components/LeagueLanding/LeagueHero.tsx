@@ -127,168 +127,263 @@ export function LeagueHero({
   const twoColumn = !keyArtUrl && rightContent != null;
 
   return (
-    <header className="relative w-full overflow-hidden border-b" style={{ borderColor: SITE.border }}>
-      <PoeBackdrop accent={accent} />
-
-      {keyArtUrl && (
-        <div className="absolute inset-y-0 right-0 -z-10 hidden w-[58%] lg:block">
-          <Image
-            src={keyArtUrl}
-            alt={league.keyArt?.alt ?? ""}
-            fill
-            priority
-            sizes="58vw"
-            className="object-cover"
-            {...(lqip ? { placeholder: "blur" as const, blurDataURL: lqip } : {})}
-          />
-          <PoeArtFade side="left" />
-        </div>
+    <header className="relative w-full overflow-hidden border-b lg:min-h-[85vh]" style={{ borderColor: SITE.border }}>
+      {keyArtUrl ? (
+        <>
+          {/* Desktop: full-width art eliminates the seam between site bg and
+              image bg. A strong left gradient keeps the text area readable. */}
+          <div className="absolute inset-0 -z-10 hidden lg:block">
+            <Image
+              src={keyArtUrl}
+              alt={league.keyArt?.alt ?? ""}
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover object-[85%_20%]"
+              {...(lqip ? { placeholder: "blur" as const, blurDataURL: lqip } : {})}
+            />
+            <PoeArtFade side="left" />
+          </div>
+          {/* Mobile: art sits above the identity lockup, fading into near-black */}
+          <div className="relative aspect-[16/9] w-full overflow-hidden lg:hidden">
+            <Image
+              src={keyArtUrl}
+              alt=""
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover object-top"
+              {...(lqip ? { placeholder: "blur" as const, blurDataURL: lqip } : {})}
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/40 to-transparent" />
+          </div>
+        </>
+      ) : (
+        <PoeBackdrop accent={accent} />
       )}
 
-      <div className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:py-28">
-        <div className={keyArtUrl ? "lg:max-w-[52%]" : ""}>
-          {/* Identity and time sit side by side when there is no key art, so the
-              countdown fills the right half instead of leaving it empty. CTAs
-              live in a full-width row below the grid — which also gives mobile
-              the right stacking order (name → time → actions). */}
+      {keyArtUrl ? (
+        /* ── Cinematic hero: logo top-left, countdown bottom-center ── */
+        <div className="relative flex min-h-[inherit] flex-col justify-between px-4 py-12 sm:px-6 sm:py-16 lg:py-20">
+          {/* Gradient at the bottom so the countdown is readable */}
           <div
-            className={
-              !twoColumn
-                ? ""
-                : showAside
-                  ? "grid grid-cols-1 items-center gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-14"
-                  : "grid grid-cols-1 items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16"
-            }
-          >
-            <div className="lg-rise min-w-0">
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 bottom-0 z-0 h-1/2"
+            style={{
+              background: `linear-gradient(to top, ${SITE.bg} 0%, rgba(10,10,10,0.7) 50%, transparent 100%)`,
+            }}
+          />
+
+          <h1 className="sr-only">{league.name}</h1>
+
+          {/* Logo — centered within the left info column */}
+          <div className="lg-rise relative z-10 mx-auto w-full max-w-7xl">
+            <div className="flex justify-center lg:max-w-[420px]">
               {logoUrl ? (
-                <>
-                  {/* The official GGG league logo (Path of Exile + league name)
-                      replaces the type lockup. The h1 still carries the name as
-                      text for search engines and screen readers. */}
-                  <h1 className="sr-only">{league.name}</h1>
-                  <div className="relative h-24 w-[min(92vw,520px)] sm:h-32">
-                    <Image
-                      src={logoUrl}
-                      alt={league.name}
-                      fill
-                      priority
-                      sizes="(max-width: 640px) 92vw, 520px"
-                      className="object-contain object-left"
-                    />
-                  </div>
-                </>
+                <div className="relative h-36 w-[min(90vw,380px)] sm:h-44 lg:h-52 lg:w-[380px]">
+                  <Image
+                    src={logoUrl}
+                    alt={league.name}
+                    fill
+                    priority
+                    sizes="(max-width: 640px) 90vw, 380px"
+                    className="object-contain"
+                  />
+                </div>
               ) : (
-                <>
-                  {/* Type lockup that mirrors the shape of the GGG league logo —
-                      the game name set small over the league name — so leagues
-                      without an uploaded logo still read like one. */}
-                  <div className="mb-3 flex flex-wrap items-center gap-2.5">
-                    <span
-                      className="text-xs font-medium uppercase tracking-[0.28em]"
-                      style={{ color: SITE.muted }}
+                <PoeHeading
+                  as="span"
+                  variant="fontin"
+                  accent={accent}
+                  className="text-center text-4xl sm:text-5xl lg:text-6xl"
+                >
+                  {league.name}
+                </PoeHeading>
+              )}
+            </div>
+          </div>
+
+          {/* Countdown + CTAs — left column below the logo */}
+          <div className="lg-rise relative z-10 mx-auto mt-auto w-full max-w-7xl pt-8" style={{ animationDelay: "120ms" }}>
+            {rightContent && <div className="lg:max-w-[420px]">{rightContent}</div>}
+
+            <div className="mt-6 flex flex-wrap items-center gap-3">
+              {storeUrl && (
+                <Link
+                  href={storeUrl}
+                  className="inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold text-black transition-opacity hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+                  style={{ backgroundColor: accent, ["--tw-ring-color" as string]: accent }}
+                >
+                  <ShoppingCart className="h-4 w-4" />
+                  {labels.buyCurrency}
+                </Link>
+              )}
+              {league.trailers.length > 0 && (
+                <a
+                  href="#trailers"
+                  className="inline-flex items-center gap-2 rounded-lg border bg-card/60 px-5 py-2.5 text-sm font-medium backdrop-blur-sm transition-colors hover:bg-white/10"
+                  style={{ borderColor: `${SITE.border}80`, color: SITE.fg }}
+                >
+                  <Play className="h-3.5 w-3.5" />
+                  {labels.watchTrailer}
+                </a>
+              )}
+              {league.startsAt && status === "upcoming" && (
+                <AddToCalendar
+                  startsAt={league.startsAt}
+                  title={`${league.name} — ${gameLabel}`}
+                  description={league.tagline ?? league.name}
+                  url={pageUrl}
+                  accentColor={accent}
+                  labels={labels.calendar}
+                />
+              )}
+              {league.officialUrl && (
+                <a
+                  href={league.officialUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-2 py-2.5 text-sm transition-colors hover:text-white"
+                  style={{ color: SITE.muted }}
+                >
+                  {labels.official}
+                  <ExternalLink className="h-3.5 w-3.5" />
+                </a>
+              )}
+            </div>
+          </div>
+        </div>
+      ) : (
+        /* ── Standard hero: left-aligned content, no key art ── */
+        <div className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:py-28">
+          <div>
+            <div
+              className={
+                !twoColumn
+                  ? ""
+                  : showAside
+                    ? "grid grid-cols-1 items-center gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-14"
+                    : "grid grid-cols-1 items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16"
+              }
+            >
+              <div className="lg-rise min-w-0">
+                {logoUrl ? (
+                  <>
+                    <h1 className="sr-only">{league.name}</h1>
+                    <div className="relative h-24 w-[min(92vw,520px)] sm:h-32">
+                      <Image
+                        src={logoUrl}
+                        alt={league.name}
+                        fill
+                        priority
+                        sizes="(max-width: 640px) 92vw, 520px"
+                        className="object-contain object-left"
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="mb-3 flex flex-wrap items-center gap-2.5">
+                      <span
+                        className="text-xs font-medium uppercase tracking-[0.28em]"
+                        style={{ color: SITE.muted }}
+                      >
+                        {gameLabel}
+                      </span>
+                      {league.version && <PoeBadge accent={accent}>{league.version}</PoeBadge>}
+                    </div>
+                    <PoeHeading
+                      as="h1"
+                      variant="fontin"
+                      accent={accent}
+                      className="text-balance text-5xl leading-[1.03] sm:text-6xl lg:text-7xl"
                     >
-                      {gameLabel}
-                    </span>
-                    {league.version && <PoeBadge accent={accent}>{league.version}</PoeBadge>}
-                  </div>
-                  <PoeHeading
-                    as="h1"
-                    variant="fontin"
-                    accent={accent}
-                    className="text-balance text-5xl leading-[1.03] sm:text-6xl lg:text-7xl"
-                  >
-                    {league.name}
-                  </PoeHeading>
-                </>
-              )}
+                      {league.name}
+                    </PoeHeading>
+                  </>
+                )}
 
-              {league.tagline && (
-                <p className="mt-5 max-w-xl text-balance text-base sm:text-lg" style={{ color: SITE.muted }}>
-                  {league.tagline}
-                </p>
-              )}
+                {league.tagline && (
+                  <p className="mt-5 max-w-xl text-balance text-base sm:text-lg" style={{ color: SITE.muted }}>
+                    {league.tagline}
+                  </p>
+                )}
 
-              {/* With key art, the time cluster continues the left column. */}
-              {keyArtUrl && rightContent && <div className="mt-10">{rightContent}</div>}
+                {rightContent && <div className="mt-10">{rightContent}</div>}
+              </div>
+
+              {twoColumn && (
+                <div className="lg-rise min-w-0" style={{ animationDelay: "120ms" }}>
+                  {rightContent}
+                </div>
+              )}
             </div>
 
-            {/* No key art: the countdown becomes the right column (nothing once
-                live unless the hub passes an aside). */}
-            {twoColumn && (
-              <div className="lg-rise min-w-0" style={{ animationDelay: "120ms" }}>
-                {rightContent}
-              </div>
+            <div className="lg-rise mt-11 flex flex-wrap items-center gap-3" style={{ animationDelay: "220ms" }}>
+              {storeUrl && (
+                <Link
+                  href={storeUrl}
+                  className="inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold text-black transition-opacity hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+                  style={{ backgroundColor: accent, ["--tw-ring-color" as string]: accent }}
+                >
+                  <ShoppingCart className="h-4 w-4" />
+                  {labels.buyCurrency}
+                </Link>
+              )}
+              {league.trailers.length > 0 && (
+                <a
+                  href="#trailers"
+                  className="inline-flex items-center gap-2 rounded-lg border bg-card px-5 py-2.5 text-sm font-medium transition-colors hover:bg-white/5"
+                  style={{ borderColor: SITE.border, color: SITE.fg }}
+                >
+                  <Play className="h-3.5 w-3.5" />
+                  {labels.watchTrailer}
+                </a>
+              )}
+              {league.startsAt && status === "upcoming" && (
+                <AddToCalendar
+                  startsAt={league.startsAt}
+                  title={`${league.name} — ${gameLabel}`}
+                  description={league.tagline ?? league.name}
+                  url={pageUrl}
+                  accentColor={accent}
+                  labels={labels.calendar}
+                />
+              )}
+              {league.officialUrl && (
+                <a
+                  href={league.officialUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-2 py-2.5 text-sm transition-colors hover:text-white"
+                  style={{ color: SITE.muted }}
+                >
+                  {labels.official}
+                  <ExternalLink className="h-3.5 w-3.5" />
+                </a>
+              )}
+            </div>
+
+            {league.highlights.length > 0 && (
+              <dl
+                className="mt-12 flex flex-wrap gap-x-10 gap-y-5 border-t pt-7"
+                style={{ borderColor: SITE.border }}
+              >
+                {league.highlights.map((h) => (
+                  <div key={h.label}>
+                    <dd className="text-2xl font-bold tabular-nums" style={{ color: accent }}>
+                      {h.value}
+                    </dd>
+                    <dt className="mt-0.5 text-[11px] uppercase tracking-[0.12em]" style={{ color: SITE.muted }}>
+                      {h.label}
+                    </dt>
+                  </div>
+                ))}
+              </dl>
             )}
           </div>
-
-          <div className="lg-rise mt-11 flex flex-wrap items-center gap-3" style={{ animationDelay: "220ms" }}>
-            {storeUrl && (
-              <Link
-                href={storeUrl}
-                className="inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold text-black transition-opacity hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
-                style={{ backgroundColor: accent, ["--tw-ring-color" as string]: accent }}
-              >
-                <ShoppingCart className="h-4 w-4" />
-                {labels.buyCurrency}
-              </Link>
-            )}
-
-            {league.trailers.length > 0 && (
-              <a
-                href="#trailers"
-                className="inline-flex items-center gap-2 rounded-lg border bg-card px-5 py-2.5 text-sm font-medium transition-colors hover:bg-white/5"
-                style={{ borderColor: SITE.border, color: SITE.fg }}
-              >
-                <Play className="h-3.5 w-3.5" />
-                {labels.watchTrailer}
-              </a>
-            )}
-
-            {league.startsAt && status === "upcoming" && (
-              <AddToCalendar
-                startsAt={league.startsAt}
-                title={`${league.name} — ${gameLabel}`}
-                description={league.tagline ?? league.name}
-                url={pageUrl}
-                accentColor={accent}
-                labels={labels.calendar}
-              />
-            )}
-
-            {league.officialUrl && (
-              <a
-                href={league.officialUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-2 py-2.5 text-sm transition-colors hover:text-white"
-                style={{ color: SITE.muted }}
-              >
-                {labels.official}
-                <ExternalLink className="h-3.5 w-3.5" />
-              </a>
-            )}
-          </div>
-
-          {league.highlights.length > 0 && (
-            <dl
-              className="mt-12 flex flex-wrap gap-x-10 gap-y-5 border-t pt-7"
-              style={{ borderColor: SITE.border }}
-            >
-              {league.highlights.map((h) => (
-                <div key={h.label}>
-                  <dd className="text-2xl font-bold tabular-nums" style={{ color: accent }}>
-                    {h.value}
-                  </dd>
-                  <dt className="mt-0.5 text-[11px] uppercase tracking-[0.12em]" style={{ color: SITE.muted }}>
-                    {h.label}
-                  </dt>
-                </div>
-              ))}
-            </dl>
-          )}
         </div>
-      </div>
+      )}
     </header>
   );
 }

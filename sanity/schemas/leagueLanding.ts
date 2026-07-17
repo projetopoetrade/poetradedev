@@ -249,10 +249,47 @@ const leagueLanding = {
               validation: (Rule: any) => Rule.required(),
             },
             {
+              name: "category",
+              title: "Category",
+              type: "string",
+              description:
+                "Controls visual weight: league = full art cards, endgame = medium grid, balance = compact text.",
+              options: {
+                list: [
+                  { title: "League Mechanic", value: "league" },
+                  { title: "Endgame & New Content", value: "endgame" },
+                  { title: "Balance & QoL", value: "balance" },
+                ],
+                layout: "radio",
+              },
+            },
+            {
               name: "image",
               title: "Image",
               type: "image",
               options: { hotspot: true },
+            },
+            {
+              name: "video",
+              title: "Video (webm)",
+              type: "file",
+              options: { accept: "video/webm,video/mp4" },
+              description:
+                "Optional looping video shown instead of the static image. Autoplay, muted, no controls.",
+            },
+            {
+              name: "imagePosition",
+              title: "Image focus",
+              type: "string",
+              description:
+                "Which side of the image has the relevant content. Overrides the automatic left/right based on card alternation.",
+              options: {
+                list: [
+                  { title: "Left", value: "left" },
+                  { title: "Center", value: "center" },
+                  { title: "Right", value: "right" },
+                ],
+              },
             },
             {
               name: "bullets",

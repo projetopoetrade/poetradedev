@@ -744,7 +744,7 @@
       "startsIn": "League starts in",
       "tbaTitle": "Date to be announced",
       "tbaSub": "The exact start time is revealed on the announcement stream.",
-      "watchTrailer": "Watch trailers",
+      "watchTrailer": "Watch trailer",
       "buyCurrency": "Buy {league} currency",
       "official": "Official announcement",
       "scroll": "Scroll to trailers"
@@ -764,16 +764,9 @@
       "added": "Event saved"
     },
     "trailers": {
-      "heading": "Trailers",
-      "subheading": "Every reveal in one place.",
-      "play": "Play",
-      "kinds": {
-        "teaser": "Teaser",
-        "trailer": "Trailer",
-        "gameplay": "Gameplay",
-        "mechanic": "Deep dive",
-        "vod": "Reveal stream"
-      }
+      "kicker": "Official Trailer",
+      "heading": "See <accent>{league}</accent> in motion",
+      "play": "Play trailer"
     },
     "mechanics": {
       "heading": "League mechanics",
@@ -781,7 +774,10 @@
       "pendingTitle": "Revealed at GGG Live",
       "pendingBody": "The full breakdown — league mechanics, new skills, endgame changes and patch notes — is shown for the first time on the reveal stream. This page is updated as the details land.",
       "pendingWatch": "Watch the reveal",
-      "pendingTrailers": "See the teasers"
+      "pendingTrailers": "See the teasers",
+      "categoryLeague": "League Mechanic",
+      "categoryEndgame": "Endgame & New Content",
+      "categoryBalance": "Balance & Quality of Life"
     },
     "faq": {
       "heading": "Frequently asked questions",

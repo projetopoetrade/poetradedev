@@ -58,14 +58,27 @@ export function getLeagueStatus(
 }
 
 /**
- * YouTube's own thumbnail for a video.
+ * YouTube's guaranteed-to-exist thumbnail: 480x360, 4:3.
  *
  * `hqdefault` rather than `maxresdefault`: maxres 404s on videos that were never
  * uploaded at 1080p+, and a teaser posted minutes ago during a live stream is
- * exactly the case where that bites. hq always exists.
+ * exactly the case where that bites. hq always exists. Use it as the fallback
+ * behind youtubeThumbnailMax() rather than as a first choice — at 480px wide,
+ * and 4:3 so the 16:9 frame has to crop it, it visibly softens on a large player.
  */
 export function youtubeThumbnail(youtubeId: string): string {
   return `https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg`;
+}
+
+/**
+ * The 1280x720 thumbnail, in WebP, matching the 16:9 player exactly.
+ *
+ * Only exists for videos uploaded at 720p+ — every real trailer, but not
+ * necessarily a phone-shot teaser. Callers must handle the 404 by falling back
+ * to youtubeThumbnail(); this returns a URL, not a promise that it resolves.
+ */
+export function youtubeThumbnailMax(youtubeId: string): string {
+  return `https://i.ytimg.com/vi_webp/${youtubeId}/maxresdefault.webp`;
 }
 
 export function youtubeWatchUrl(youtubeId: string): string {
@@ -101,10 +114,13 @@ function resolveMechanics(raw: RawLeagueLanding, locale: string): Mechanic[] {
     .map((m) => ({
       title: resolveLocale(m.title, locale) ?? "",
       summary: resolveLocale(m.summary, locale) ?? "",
+      category: m.category ?? "league",
       bullets: (m.bullets ?? [])
         .map((b) => resolveLocale(b, locale))
         .filter((b): b is string => Boolean(b)),
       image: m.image,
+      videoUrl: m.video?.asset?.url,
+      imagePosition: m.imagePosition,
     }))
     .filter((m) => m.title && m.summary);
 }

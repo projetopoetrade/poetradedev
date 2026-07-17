@@ -127,8 +127,11 @@ const leagueLandingData = `{
   mechanics[]{
     title,
     summary,
+    category,
     bullets,
-    image{ asset->{ _id, url, metadata{ lqip, dimensions } } }
+    image{ asset->{ _id, url, metadata{ lqip, dimensions } } },
+    video{ asset->{ _id, url } },
+    imagePosition
   },
   highlights[]{ label, value },
   officialUrl,

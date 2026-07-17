@@ -1,127 +1,159 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import Image from "next/image";
 import { Play } from "lucide-react";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { youtubeEmbedUrl, youtubeThumbnail } from "@/lib/league-landing";
-import { PoeBadge, PoeHeading, SITE } from "./poe-ui";
-import type { Trailer, TrailerKind } from "@/types/league-landing";
+import {
+  youtubeEmbedUrl,
+  youtubeThumbnail,
+  youtubeThumbnailMax,
+} from "@/lib/league-landing";
+import { PoeHeading, SITE } from "./poe-ui";
+import type { Trailer } from "@/types/league-landing";
 
 interface TrailerGalleryProps {
   trailers: Trailer[];
   accentColor: string;
   labels: {
-    heading: string;
-    subheading: string;
+    kicker: string;
+    heading: ReactNode;
     play: string;
-    kinds: Record<TrailerKind, string>;
   };
 }
 
-export function TrailerGallery({ trailers, accentColor, labels }: TrailerGalleryProps) {
-  const [active, setActive] = useState<Trailer | null>(null);
-
-  if (trailers.length === 0) return null;
-
-  const Card = ({
-    trailer,
-    featured: isFeatured,
-    index,
-  }: {
-    trailer: Trailer;
-    featured?: boolean;
-    index: number;
-  }) => (
-    // No scroll-reveal here. framer-motion's whileInView renders the initial
-    // state into the SSR HTML, so every card shipped as opacity:0 and only
-    // appeared once JS ran and the user scrolled — invisible to crawlers, to
-    // no-JS clients, and to any full-page capture. The rest of the site does
-    // not animate on scroll either.
-    <button
-      type="button"
-      onClick={() => setActive(trailer)}
-      aria-label={`${labels.play}: ${trailer.title}`}
-      className="group block overflow-hidden rounded-lg border bg-card text-left transition-colors hover:border-white/25 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
-      style={{ borderColor: SITE.border, ["--tw-ring-color" as string]: accentColor }}
-    >
-      <div className="relative aspect-video w-full overflow-hidden">
-        <Image
-          src={trailer.thumbnailUrl ?? youtubeThumbnail(trailer.youtubeId)}
-          alt=""
-          fill
-          priority={isFeatured}
-          sizes={isFeatured ? "(max-width: 1024px) 100vw, 768px" : "(max-width: 768px) 100vw, 384px"}
-          // hqdefault is 480x360 (4:3); object-cover crops the letterbox bars
-          // rather than showing black bands.
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-        <span className="absolute inset-0 flex items-center justify-center">
-          <span
-            className="flex h-12 w-12 items-center justify-center rounded-full border backdrop-blur-sm transition-transform duration-300 group-hover:scale-110"
-            style={{
-              borderColor: `${accentColor}66`,
-              backgroundColor: `${accentColor}1f`,
-            }}
-          >
-            <Play className="h-4 w-4 translate-x-[1px] fill-current" style={{ color: accentColor }} />
-          </span>
-        </span>
-      </div>
-      <div className="flex flex-col items-start gap-2 p-4">
-        <PoeBadge accent={accentColor}>{labels.kinds[trailer.kind]}</PoeBadge>
-        <h3 className="line-clamp-2 text-sm font-semibold" style={{ color: SITE.fg }}>
-          {trailer.title}
-        </h3>
-      </div>
-    </button>
+/**
+ * The poster frame, at the best resolution the video actually has.
+ *
+ * Starts on the 1280x720 WebP and drops to the 480x360 JPEG only if that 404s —
+ * which is the case for videos never uploaded at 720p+. Going straight to
+ * hqdefault instead would cost every real trailer a visibly soft poster; going
+ * straight to maxres would break the odd low-res teaser. So: try, then fall back.
+ */
+function Poster({
+  trailer,
+  priority,
+}: {
+  trailer: Trailer;
+  priority?: boolean;
+}) {
+  const [src, setSrc] = useState(
+    trailer.thumbnailUrl ?? youtubeThumbnailMax(trailer.youtubeId),
   );
 
   return (
-    <section id="trailers" className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 lg:py-20">
-      <div className="mb-8">
-        <PoeHeading as="h2" className="text-2xl sm:text-3xl">
+    <Image
+      src={src}
+      alt=""
+      fill
+      priority={priority}
+      sizes="(max-width: 896px) 100vw, 896px"
+      className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+      onError={() => setSrc(youtubeThumbnail(trailer.youtubeId))}
+    />
+  );
+}
+
+export function TrailerGallery({ trailers, accentColor, labels }: TrailerGalleryProps) {
+  // Which trailer is currently swapped from poster to player. The iframe mounts
+  // in place of the poster rather than in a dialog, so playback happens on the
+  // page — but still only after a click, which keeps YouTube's ~1MB script and
+  // its cookies off the initial load.
+  const [playing, setPlaying] = useState<string | null>(null);
+
+  if (trailers.length === 0) return null;
+
+  const [featured, ...rest] = trailers;
+
+  const Player = ({ trailer, priority }: { trailer: Trailer; priority?: boolean }) =>
+    playing === trailer.youtubeId ? (
+      <iframe
+        src={youtubeEmbedUrl(trailer.youtubeId, { autoplay: true })}
+        title={trailer.title}
+        className="absolute inset-0 h-full w-full"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowFullScreen
+      />
+    ) : (
+      <button
+        type="button"
+        onClick={() => setPlaying(trailer.youtubeId)}
+        aria-label={`${labels.play}: ${trailer.title}`}
+        className="group absolute inset-0 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-inset"
+        style={{ ["--tw-ring-color" as string]: accentColor }}
+      >
+        <Poster trailer={trailer} priority={priority} />
+        <span className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+        <span className="absolute inset-0 flex items-center justify-center">
+          <span
+            className="flex h-16 w-16 items-center justify-center rounded-full border backdrop-blur-sm transition-all duration-300 group-hover:scale-110"
+            style={{
+              borderColor: `${accentColor}80`,
+              backgroundColor: `${accentColor}26`,
+              boxShadow: `0 0 30px -6px ${accentColor}`,
+            }}
+          >
+            <Play className="h-6 w-6 translate-x-[2px] fill-current" style={{ color: accentColor }} />
+          </span>
+        </span>
+      </button>
+    );
+
+  return (
+    <section id="trailers" className="py-16 lg:py-20">
+      {/* Kicker rule — same divider language as the mechanics categories */}
+      <div className="mx-auto flex w-full max-w-7xl items-center gap-3 px-4 sm:px-6">
+        <span
+          className="h-px max-w-[2rem] flex-1"
+          style={{ backgroundColor: `${accentColor}40` }}
+          aria-hidden="true"
+        />
+        <span
+          className="text-xs font-semibold uppercase tracking-[0.18em]"
+          style={{ color: `${accentColor}cc` }}
+        >
+          {labels.kicker}
+        </span>
+        <span
+          className="h-px flex-1"
+          style={{ backgroundColor: `${accentColor}18` }}
+          aria-hidden="true"
+        />
+      </div>
+
+      <div className="mx-auto mt-6 max-w-3xl px-4 sm:px-6">
+        <PoeHeading as="h2" align="center" className="text-3xl sm:text-4xl lg:text-5xl">
           {labels.heading}
         </PoeHeading>
-        <p className="mt-2 text-sm" style={{ color: SITE.muted }}>
-          {labels.subheading}
-        </p>
       </div>
 
-      {/* Uniform grid, every card equal — same shape as /builds.
-          auto-fit rather than a fixed column count: two trailers stretch to
-          fill the row instead of leaving a dead third column, and reveal week's
-          extra videos wrap into a second row without a layout change. A
-          "featured spans 2/3, rest stack" layout was tried and reverted — with
-          two trailers it left the hero card smaller than the secondary one. */}
-      <div className="grid gap-5 [grid-template-columns:repeat(auto-fit,minmax(320px,1fr))]">
-        {trailers.map((t, i) => (
-          <Card key={t.youtubeId} trailer={t} featured={i === 0} index={i} />
-        ))}
+      {/* Deliberately narrower than the panels above: at max-w-4xl the 1080p
+          source renders near 1:1 instead of being upscaled across a 1440px+
+          viewport, which is what made it look soft. */}
+      <div className="mx-auto mt-9 w-full max-w-4xl px-4 sm:px-6">
+        <div
+          className="relative aspect-video w-full overflow-hidden rounded-lg border"
+          style={{
+            borderColor: `${accentColor}33`,
+            boxShadow: `0 0 80px -20px ${accentColor}59`,
+          }}
+        >
+          <Player trailer={featured} priority />
+        </div>
       </div>
 
-      {/* The player lives here and nowhere else. Mounting it only on open keeps
-          YouTube's ~1MB script and its cookies off the initial load — which is
-          the difference between surviving a launch-day spike and not. */}
-      <Dialog open={active !== null} onOpenChange={(open) => !open && setActive(null)}>
-        <DialogContent className="max-w-5xl border-0 bg-black p-0">
-          {active && (
-            <>
-              <DialogTitle className="sr-only">{active.title}</DialogTitle>
-              <div className="aspect-video w-full overflow-hidden rounded-lg">
-                <iframe
-                  src={youtubeEmbedUrl(active.youtubeId, { autoplay: true })}
-                  title={active.title}
-                  className="h-full w-full"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowFullScreen
-                />
-              </div>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
+      {rest.length > 0 && (
+        <div className="mx-auto mt-5 grid w-full max-w-4xl gap-4 px-4 sm:grid-cols-2 sm:px-6">
+          {rest.map((t) => (
+            <div
+              key={t.youtubeId}
+              className="relative aspect-video w-full overflow-hidden rounded-lg border"
+              style={{ borderColor: SITE.border }}
+            >
+              <Player trailer={t} />
+            </div>
+          ))}
+        </div>
+      )}
     </section>
   );
 }

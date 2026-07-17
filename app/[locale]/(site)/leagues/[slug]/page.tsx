@@ -7,7 +7,7 @@ import LeagueHero, { type HeroLabels } from "@/components/LeagueLanding/LeagueHe
 import TrailerGallery from "@/components/LeagueLanding/TrailerGallery";
 import MechanicsSection from "@/components/LeagueLanding/MechanicsSection";
 import FaqAccordion from "@/components/LeagueLanding/FaqAccordion";
-import type { LeagueLanding, TrailerKind } from "@/types/league-landing";
+import type { LeagueLanding } from "@/types/league-landing";
 
 // Short on purpose. The Sanity webhook (revalidateTag "leagueLanding") is the
 // primary path and is near-instant, but during a reveal stream the cost of a
@@ -261,14 +261,6 @@ export default async function LeagueLandingPage(props: {
     scroll: t("hero.scroll"),
   };
 
-  const trailerKinds: Record<TrailerKind, string> = {
-    teaser: t("trailers.kinds.teaser"),
-    trailer: t("trailers.kinds.trailer"),
-    gameplay: t("trailers.kinds.gameplay"),
-    mechanic: t("trailers.kinds.mechanic"),
-    vod: t("trailers.kinds.vod"),
-  };
-
   const description =
     league.seoDescription || league.tagline || league.intro || league.name;
 
@@ -352,10 +344,14 @@ export default async function LeagueLandingPage(props: {
         trailers={league.trailers}
         accentColor={league.accentColor!}
         labels={{
-          heading: t("trailers.heading"),
-          subheading: t("trailers.subheading"),
+          kicker: t("trailers.kicker"),
+          heading: t.rich("trailers.heading", {
+            league: league.name,
+            accent: (chunks) => (
+              <span style={{ color: league.accentColor! }}>{chunks}</span>
+            ),
+          }),
           play: t("trailers.play"),
-          kinds: trailerKinds,
         }}
       />
 
@@ -372,6 +368,9 @@ export default async function LeagueLandingPage(props: {
           pendingBody: t("mechanics.pendingBody"),
           pendingWatch: t("mechanics.pendingWatch"),
           pendingTrailers: t("mechanics.pendingTrailers"),
+          categoryLeague: t("mechanics.categoryLeague"),
+          categoryEndgame: t("mechanics.categoryEndgame"),
+          categoryBalance: t("mechanics.categoryBalance"),
         }}
       />
 
