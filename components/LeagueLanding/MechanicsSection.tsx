@@ -164,8 +164,10 @@ function LeagueCard({
             {mechanic.title}
           </PoeHeading>
           <p
-            className="mt-3 whitespace-pre-line text-sm leading-relaxed sm:text-base lg:mt-4"
-            style={{ color: SITE.muted }}
+            className="mt-3 whitespace-pre-line text-justify text-sm leading-relaxed sm:text-base lg:mt-4"
+            // Justify keeps both edges flush so the ragged edge never pokes into
+            // the art. The last line still follows the column's base side.
+            style={{ color: SITE.muted, textAlignLast: textRight ? "right" : "left" }}
           >
             {mechanic.summary}
           </p>
