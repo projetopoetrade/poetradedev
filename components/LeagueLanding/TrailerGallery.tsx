@@ -29,13 +29,7 @@ interface TrailerGalleryProps {
  * hqdefault instead would cost every real trailer a visibly soft poster; going
  * straight to maxres would break the odd low-res teaser. So: try, then fall back.
  */
-function Poster({
-  trailer,
-  priority,
-}: {
-  trailer: Trailer;
-  priority?: boolean;
-}) {
+function Poster({ trailer }: { trailer: Trailer }) {
   const [src, setSrc] = useState(
     trailer.thumbnailUrl ?? youtubeThumbnailMax(trailer.youtubeId),
   );
@@ -45,7 +39,6 @@ function Poster({
       src={src}
       alt=""
       fill
-      priority={priority}
       sizes="(max-width: 896px) 100vw, 896px"
       className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
       onError={() => setSrc(youtubeThumbnail(trailer.youtubeId))}
@@ -64,7 +57,7 @@ export function TrailerGallery({ trailers, accentColor, labels }: TrailerGallery
 
   const [featured, ...rest] = trailers;
 
-  const Player = ({ trailer, priority }: { trailer: Trailer; priority?: boolean }) =>
+  const Player = ({ trailer }: { trailer: Trailer }) =>
     playing === trailer.youtubeId ? (
       <iframe
         src={youtubeEmbedUrl(trailer.youtubeId, { autoplay: true })}
@@ -81,7 +74,7 @@ export function TrailerGallery({ trailers, accentColor, labels }: TrailerGallery
         className="group absolute inset-0 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-inset"
         style={{ ["--tw-ring-color" as string]: accentColor }}
       >
-        <Poster trailer={trailer} priority={priority} />
+        <Poster trailer={trailer} />
         <span className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
         <span className="absolute inset-0 flex items-center justify-center">
           <span
@@ -137,7 +130,9 @@ export function TrailerGallery({ trailers, accentColor, labels }: TrailerGallery
             boxShadow: `0 0 80px -20px ${accentColor}59`,
           }}
         >
-          <Player trailer={featured} priority />
+          {/* No `priority`: this sits well below the fold, and preloading it
+              only takes bandwidth from the hero art during the first paint. */}
+          <Player trailer={featured} />
         </div>
       </div>
 

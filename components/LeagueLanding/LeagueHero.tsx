@@ -7,6 +7,7 @@ import { ExternalLink, ShoppingCart, Play } from "lucide-react";
 import Countdown from "./Countdown";
 import AddToCalendar from "./AddToCalendar";
 import { PoeBackdrop, PoeBadge, PoeHeading, PoeArtFade, SITE, FONTIN } from "./poe-ui";
+import { sanityImageUrl } from "@/lib/league-landing";
 import type { LeagueLanding, LeagueStatus } from "@/types/league-landing";
 
 export interface HeroLabels {
@@ -68,9 +69,15 @@ export function LeagueHero({
   liveAside,
 }: LeagueHeroProps) {
   const accent = league.accentColor ?? "#3fd19a";
-  const keyArtUrl = league.keyArt?.asset?.url;
+  // Cap the source before next/image sees it — the raw press-kit assets are
+  // multi-megabyte PNGs and the optimiser has to fetch the whole thing on a
+  // cache miss. 2560 covers the full-bleed art on the widest common desktop;
+  // 760 covers the logo at its 380px slot on a 2x display.
+  const rawKeyArt = league.keyArt?.asset?.url;
+  const keyArtUrl = rawKeyArt ? sanityImageUrl(rawKeyArt, { w: 2560 }) : undefined;
   const lqip = league.keyArt?.asset?.metadata?.lqip;
-  const logoUrl = league.logo?.asset?.url;
+  const rawLogo = league.logo?.asset?.url;
+  const logoUrl = rawLogo ? sanityImageUrl(rawLogo, { w: 760, q: 85 }) : undefined;
 
   // Seeded from the server's derivation, then owned by the countdown once it
   // ticks — this is what flips the hero at the stroke of launch with no deploy.

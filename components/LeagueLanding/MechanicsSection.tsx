@@ -3,6 +3,7 @@
 import { Check, Radio, ExternalLink } from "lucide-react";
 import LocalDateTime from "./LocalDateTime";
 import { PoeArtFade, PoeHeading, SITE } from "./poe-ui";
+import { sanityImageUrl } from "@/lib/league-landing";
 import type { Mechanic, MechanicCategory } from "@/types/league-landing";
 
 interface MechanicsSectionProps {
@@ -59,7 +60,7 @@ function LeagueCard({
   // The still is a CSS background, so next/image never sees it and the asset is
   // served at whatever size it was uploaded — ask the CDN to resize instead.
   const imageUrl = mechanic.image?.asset?.url
-    ? `${mechanic.image.asset.url}?w=1600&q=80&auto=format`
+    ? sanityImageUrl(mechanic.image.asset.url, { w: 1600 })
     : undefined;
   const hasMedia = !!(imageUrl || mechanic.videoUrl);
   // Panels alternate by default; `imagePosition` pins the media to one side for

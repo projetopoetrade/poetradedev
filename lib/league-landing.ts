@@ -58,6 +58,27 @@ export function getLeagueStatus(
 }
 
 /**
+ * A Sanity image URL with the CDN asked to do the resizing first.
+ *
+ * Sanity serves the asset exactly as uploaded unless told otherwise, and press
+ * kit art is uploaded at full print size — the Allflame key art is a 12.7MB
+ * 5689x3200 PNG. Handing that URL straight to next/image means the optimiser
+ * downloads all 12.7MB (~4.3s) before it can resize, and the first visitor after
+ * every cache miss waits for it. Capping the source at `w` first drops that to
+ * ~99KB. next/image still generates its own srcset from this, so per-breakpoint
+ * sizing is unaffected — `w` only needs to cover the largest rendered size.
+ *
+ * Also applies to plain <img>/CSS backgrounds, where next/image is not involved
+ * and the raw asset would otherwise reach the browser untouched.
+ */
+export function sanityImageUrl(
+  url: string,
+  { w, q = 80 }: { w: number; q?: number },
+): string {
+  return `${url}?w=${w}&q=${q}&auto=format`;
+}
+
+/**
  * YouTube's guaranteed-to-exist thumbnail: 480x360, 4:3.
  *
  * `hqdefault` rather than `maxresdefault`: maxres 404s on videos that were never
