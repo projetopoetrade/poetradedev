@@ -102,91 +102,151 @@ function LeagueCard({
   }
 
   return (
-    <article
-      className="relative aspect-[1440/582] max-h-[582px] w-full overflow-hidden"
-      style={{ backgroundColor: "#0a0a0a" }}
-    >
-      {/* Media — two layers, mirroring the official panels:
-          the still fills the panel height at its own width, anchored away from
-          the text; the video (narrower than the panel) sits on top on the same
-          side, so the still covers the strip the video does not reach. */}
+    <article>
+      {/* ── Mobile / tablet: media stacked above the copy ──
+          The cinematic panel is a 2.47:1 sliver — on a phone it collapses to
+          ~150px tall and the copy spills over the art. Below lg, stack instead:
+          a 16:9 media crop on top, then the text in a plain padded card. */}
       <div
-        className={`absolute inset-0 flex ${textRight ? "justify-start" : "justify-end"}`}
-        style={
-          imageUrl
-            ? {
-                backgroundImage: `url(${imageUrl})`,
-                backgroundSize: "auto 100%",
-                backgroundPosition: textRight ? "5% 0%" : "95% 0%",
-                backgroundRepeat: "no-repeat",
-              }
-            : undefined
-        }
+        className="mx-4 overflow-hidden rounded-lg border bg-card sm:mx-6 lg:hidden"
+        style={{ borderColor: SITE.border }}
       >
-        {mechanic.videoUrl && (
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="h-full w-auto max-w-none object-contain"
-          >
-            <source src={mechanic.videoUrl} type="video/webm" />
-          </video>
-        )}
-      </div>
-
-      {/* Scrim — full-width so its opaque stop tracks the text column */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-10"
-        style={{ backgroundImage: textRight ? GRADIENT_RIGHT : GRADIENT_LEFT }}
-      />
-
-      {/* Content wrapper — flex, row-reverse for text-right */}
-      <div
-        className={`relative z-20 flex h-full ${
-          textRight ? "flex-row-reverse" : "flex-row"
-        }`}
-      >
-        {/* Content area */}
         <div
-          className={`flex h-full w-full flex-col justify-center sm:w-[52%] lg:w-[46%] xl:w-[44%] ${
-            textRight
-              ? "px-5 text-right sm:pl-0 sm:pr-10 lg:pr-16"
-              : "px-5 text-left sm:pl-10 sm:pr-0 lg:pl-16"
-          }`}
+          className="relative aspect-video w-full overflow-hidden"
+          style={
+            imageUrl
+              ? {
+                  backgroundImage: `url(${imageUrl})`,
+                  backgroundSize: "cover",
+                  // Show the content side of the wide panel (opposite the text).
+                  backgroundPosition: textRight ? "5% 50%" : "95% 50%",
+                  backgroundRepeat: "no-repeat",
+                }
+              : undefined
+          }
         >
-          <PoeHeading
-            as="h3"
-            className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl"
-          >
+          {mechanic.videoUrl && (
+            <video
+              autoPlay
+              muted
+              loop
+              playsInline
+              className="h-full w-full object-cover"
+            >
+              <source src={mechanic.videoUrl} type="video/webm" />
+            </video>
+          )}
+          <div
+            aria-hidden="true"
+            className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#0a0a0a] to-transparent"
+          />
+        </div>
+        <div className="p-6 sm:p-8">
+          <PoeHeading as="h3" className="text-xl sm:text-2xl">
             {mechanic.title}
           </PoeHeading>
           <p
-            className="mt-3 whitespace-pre-line text-justify text-sm leading-relaxed sm:text-base lg:mt-4"
-            // Justify keeps both edges flush so the ragged edge never pokes into
-            // the art. The last line still follows the column's base side.
-            style={{ color: SITE.muted, textAlignLast: textRight ? "right" : "left" }}
+            className="mt-3 whitespace-pre-line text-sm leading-relaxed sm:text-base"
+            style={{ color: SITE.muted }}
           >
             {mechanic.summary}
           </p>
           {mechanic.bullets.length > 0 && (
-            <ul className={`mt-4 flex flex-col gap-2 lg:mt-5 ${textRight ? "items-end" : ""}`}>
+            <ul className="mt-5 flex flex-col gap-2.5">
               {mechanic.bullets.map((bullet, bi) => (
-                <li
-                  key={bi}
-                  className={`flex items-start gap-2 text-sm sm:text-base ${
-                    textRight ? "flex-row-reverse text-right" : ""
-                  }`}
-                  style={{ color: SITE.muted }}
-                >
+                <li key={bi} className="flex items-start gap-2.5 text-sm sm:text-base" style={{ color: SITE.muted }}>
                   <Check className="mt-0.5 h-4 w-4 shrink-0" style={{ color: accentColor }} aria-hidden="true" />
                   {bullet}
                 </li>
               ))}
             </ul>
           )}
+        </div>
+      </div>
+
+      {/* ── Desktop: cinematic wide panel ──
+          Two media layers mirroring the official panels: the still fills the
+          panel height at its own width, anchored away from the text; the video
+          (narrower than the panel) sits on top on the same side, so the still
+          covers the strip the video does not reach. */}
+      <div
+        className="relative hidden aspect-[1440/582] max-h-[582px] w-full overflow-hidden lg:block"
+        style={{ backgroundColor: "#0a0a0a" }}
+      >
+        <div
+          className={`absolute inset-0 flex ${textRight ? "justify-start" : "justify-end"}`}
+          style={
+            imageUrl
+              ? {
+                  backgroundImage: `url(${imageUrl})`,
+                  backgroundSize: "auto 100%",
+                  backgroundPosition: textRight ? "5% 0%" : "95% 0%",
+                  backgroundRepeat: "no-repeat",
+                }
+              : undefined
+          }
+        >
+          {mechanic.videoUrl && (
+            <video
+              autoPlay
+              muted
+              loop
+              playsInline
+              className="h-full w-auto max-w-none object-contain"
+            >
+              <source src={mechanic.videoUrl} type="video/webm" />
+            </video>
+          )}
+        </div>
+
+        {/* Scrim — full-width so its opaque stop tracks the text column */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 z-10"
+          style={{ backgroundImage: textRight ? GRADIENT_RIGHT : GRADIENT_LEFT }}
+        />
+
+        {/* Content wrapper — flex, row-reverse for text-right */}
+        <div
+          className={`relative z-20 flex h-full ${
+            textRight ? "flex-row-reverse" : "flex-row"
+          }`}
+        >
+          <div
+            className={`flex h-full w-full flex-col justify-center lg:w-[46%] xl:w-[44%] ${
+              textRight
+                ? "pr-10 text-right lg:pr-16"
+                : "pl-10 text-left lg:pl-16"
+            }`}
+          >
+            <PoeHeading as="h3" className="text-3xl xl:text-4xl">
+              {mechanic.title}
+            </PoeHeading>
+            <p
+              className="mt-4 whitespace-pre-line text-justify text-base leading-relaxed lg:text-lg"
+              // Justify keeps both edges flush so the ragged edge never pokes
+              // into the art. The last line still follows the column's base side.
+              style={{ color: SITE.muted, textAlignLast: textRight ? "right" : "left" }}
+            >
+              {mechanic.summary}
+            </p>
+            {mechanic.bullets.length > 0 && (
+              <ul className={`mt-5 flex flex-col gap-2 ${textRight ? "items-end" : ""}`}>
+                {mechanic.bullets.map((bullet, bi) => (
+                  <li
+                    key={bi}
+                    className={`flex items-start gap-2 text-base ${
+                      textRight ? "flex-row-reverse text-right" : ""
+                    }`}
+                    style={{ color: SITE.muted }}
+                  >
+                    <Check className="mt-0.5 h-4 w-4 shrink-0" style={{ color: accentColor }} aria-hidden="true" />
+                    {bullet}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </div>
       </div>
     </article>
