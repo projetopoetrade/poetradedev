@@ -165,10 +165,12 @@ function LeagueCard({
       </div>
 
       {/* ── Desktop: cinematic wide panel ──
-          Two media layers mirroring the official panels: the still fills the
-          panel height at its own width, anchored away from the text; the video
-          (narrower than the panel) sits on top on the same side, so the still
-          covers the strip the video does not reach. */}
+          The still fills the panel height at its own width, anchored away from
+          the text. When the mechanic also has a video, the still is NOT used as
+          the backdrop: its framing differs from the video's, so the two show
+          the same scene misaligned and scene elements ghost at the seam. The
+          video then stands alone on its side and the dark article background
+          fills the rest, which sits under the opaque part of the scrim anyway. */}
       <div
         className="relative hidden aspect-[1440/582] max-h-[582px] w-full overflow-hidden lg:block"
         style={{ backgroundColor: "#0a0a0a" }}
@@ -176,7 +178,7 @@ function LeagueCard({
         <div
           className={`absolute inset-0 flex ${textRight ? "justify-start" : "justify-end"}`}
           style={
-            imageUrl
+            imageUrl && !mechanic.videoUrl
               ? {
                   backgroundImage: `url(${imageUrl})`,
                   backgroundSize: "auto 100%",
