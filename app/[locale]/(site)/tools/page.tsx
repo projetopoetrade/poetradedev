@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 import { setRequestLocale } from 'next-intl/server'
-import { buildCanonical, buildBreadcrumbSchema, getOgLocale } from '@/lib/utils'
+import { buildCanonical, buildAbsoluteUrl, buildBreadcrumbSchema, getOgLocale } from '@/lib/utils'
 import { Link } from '@/i18n/navigation'
 import { ArrowLeft, BarChart2, Dices, Sword } from 'lucide-react'
 import {
@@ -16,12 +16,11 @@ export async function generateMetadata(props: {
   params: Promise<{ locale: string }>
 }): Promise<Metadata> {
   const { locale } = await props.params
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.pathoftrade.net'
-  const path = '/tools'
-  const enUrl = `${baseUrl}${path}`
-  const ptUrl = `${baseUrl}/pt-br${path}`
-  const canonicalUrl = locale === 'en' ? enUrl : ptUrl
   const isPt = locale === 'pt-br'
+
+  const canonicalUrl = buildCanonical('/tools', locale)
+  const enUrl = buildAbsoluteUrl('/tools')
+  const ptUrl = buildAbsoluteUrl('/pt-br/tools')
 
   const title = isPt
     ? 'Ferramentas PoE — Price Tracker e Build Randomizer | Path of Trade'

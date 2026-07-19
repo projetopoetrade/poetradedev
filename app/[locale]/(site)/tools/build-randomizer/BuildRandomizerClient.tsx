@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useTransition, useEffect } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { Dices, RefreshCw, Play } from "lucide-react";
 import { getRandomBuilds } from "@/app/actions";
 import BuildCard from "@/components/Builds/BuildCard";
@@ -32,6 +33,7 @@ export default function BuildRandomizerClient({
   locale,
 }: BuildRandomizerClientProps) {
   const isPt = locale === "pt-br";
+  const t = useTranslations("BuildsList");
 
   // Filters State
   const [gameVersion, setGameVersion] = useState("path-of-exile-1");
@@ -150,14 +152,14 @@ export default function BuildRandomizerClient({
         {/* Filters Sidebar */}
         <div className="lg:col-span-1 border border-gray-800 bg-gray-900/40 p-6 rounded-xl space-y-6">
           <h2 className="text-xl font-semibold text-white mb-4 border-b border-gray-800 pb-2">
-            Filters
+            {t("randomizer.filtersHeading")}
           </h2>
 
           <div className="space-y-4">
             {/* Game Version */}
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-gray-300">
-                Game Version
+                {t("filters.gameVersion")}
               </label>
               <Select
                 disabled={isControlsDisabled}
@@ -165,7 +167,7 @@ export default function BuildRandomizerClient({
                 onValueChange={setGameVersion}
               >
                 <SelectTrigger className="w-full bg-black/40 border-gray-700/50">
-                  <SelectValue placeholder="Game Version" />
+                  <SelectValue placeholder={t("filters.gameVersion")} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="path-of-exile-1">
@@ -180,17 +182,17 @@ export default function BuildRandomizerClient({
 
             {/* Class */}
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-gray-300">Class</label>
+              <label className="text-sm font-medium text-gray-300">{t("filters.class")}</label>
               <Select
                 disabled={isControlsDisabled}
                 value={poeClass}
                 onValueChange={setPoeClass}
               >
                 <SelectTrigger className="w-full bg-black/40 border-gray-700/50">
-                  <SelectValue placeholder="Class" />
+                  <SelectValue placeholder={t("filters.class")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Any Class</SelectItem>
+                  <SelectItem value="all">{t("filters.allClasses")}</SelectItem>
                   {classes.map((c) => (
                     <SelectItem key={c.name} value={c.name}>
                       {c.name}
@@ -203,19 +205,19 @@ export default function BuildRandomizerClient({
             {/* Ascendancy */}
             {ascendancies.length > 0 && (
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-gray-300">
-                  Ascendancy
-                </label>
-                <Select
-                  disabled={isControlsDisabled}
-                  value={ascendancy}
-                  onValueChange={setAscendancy}
-                >
-                  <SelectTrigger className="w-full bg-black/40 border-gray-700/50">
-                    <SelectValue placeholder="Ascendancy" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Any Ascendancy</SelectItem>
+                  <label className="text-sm font-medium text-gray-300">
+                    {t("filters.ascendancy")}
+                  </label>
+                  <Select
+                    disabled={isControlsDisabled}
+                    value={ascendancy}
+                    onValueChange={setAscendancy}
+                  >
+                    <SelectTrigger className="w-full bg-black/40 border-gray-700/50">
+                      <SelectValue placeholder={t("filters.ascendancy")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">{t("filters.allAscendancies")}</SelectItem>
                     {ascendancies.map((a) => (
                       <SelectItem key={a} value={a}>
                         {a}
@@ -229,7 +231,7 @@ export default function BuildRandomizerClient({
             {/* Difficulty */}
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-gray-300">
-                Difficulty
+                {t("filters.difficulty")}
               </label>
               <Select
                 disabled={isControlsDisabled}
@@ -237,13 +239,13 @@ export default function BuildRandomizerClient({
                 onValueChange={setDifficulty}
               >
                 <SelectTrigger className="w-full bg-black/40 border-gray-700/50">
-                  <SelectValue placeholder="Difficulty" />
+                  <SelectValue placeholder={t("filters.difficulty")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Any Difficulty</SelectItem>
-                  <SelectItem value="easy">Easy</SelectItem>
-                  <SelectItem value="medium">Medium</SelectItem>
-                  <SelectItem value="hard">Hard</SelectItem>
+                  <SelectItem value="all">{t("filters.anyDifficulty")}</SelectItem>
+                  <SelectItem value="easy">{t("filters.easy")}</SelectItem>
+                  <SelectItem value="medium">{t("filters.medium")}</SelectItem>
+                  <SelectItem value="hard">{t("filters.hard")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -251,7 +253,7 @@ export default function BuildRandomizerClient({
             {/* Budget */}
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-gray-300">
-                Budget
+                {t("filters.budget")}
               </label>
               <Select
                 disabled={isControlsDisabled}
@@ -259,20 +261,20 @@ export default function BuildRandomizerClient({
                 onValueChange={setBudget}
               >
                 <SelectTrigger className="w-full bg-black/40 border-gray-700/50">
-                  <SelectValue placeholder="Budget" />
+                  <SelectValue placeholder={t("filters.budget")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Any Budget</SelectItem>
-                  <SelectItem value="cheap">Cheap</SelectItem>
-                  <SelectItem value="medium">Medium</SelectItem>
-                  <SelectItem value="expensive">Expensive</SelectItem>
+                  <SelectItem value="all">{t("filters.anyBudget")}</SelectItem>
+                  <SelectItem value="cheap">{t("filters.cheap")}</SelectItem>
+                  <SelectItem value="medium">{t("filters.medium")}</SelectItem>
+                  <SelectItem value="expensive">{t("filters.expensive")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             {/* Tags */}
             <div className="space-y-2 pt-2 border-t border-gray-800">
-              <label className="text-sm font-medium text-gray-300">Tags</label>
+              <label className="text-sm font-medium text-gray-300">{t("filters.tags")}</label>
               <div className="flex flex-col gap-3">
                 <div className="flex items-center space-x-2 bg-amber-500/10 p-2.5 rounded border border-amber-500/20">
                   <Checkbox
@@ -289,7 +291,7 @@ export default function BuildRandomizerClient({
                     htmlFor="league-starter-only"
                     className="text-sm font-medium text-amber-400 cursor-pointer"
                   >
-                    Must be a League Starter
+                    {t("filters.leagueStarterOnly")}
                   </label>
                 </div>
 
@@ -369,7 +371,7 @@ export default function BuildRandomizerClient({
               </div>
               <div className="w-full bg-amber-500/10 border-x border-b border-amber-500/50 p-4 rounded-b-xl flex justify-center mt-[-4px] z-10">
                 <Link
-                  href={`/${locale}/builds/${selectedBuild.slug}`}
+                  href={`/builds/${selectedBuild.slug}`}
                   className="w-full flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 text-black font-semibold py-2.5 px-4 rounded transition-colors"
                 >
                   <Play className="w-4 h-4 fill-current" />
@@ -393,19 +395,15 @@ export default function BuildRandomizerClient({
               {status === "animating" && (
                 <span className="flex items-center gap-2">
                   <RefreshCw className="w-6 h-6 animate-spin" />
-                  Rolling...
+                  {t("randomizer.rolling")}
                 </span>
               )}
               {status !== "animating" && (
                 <span className="flex items-center gap-3">
                   <Dices className="w-6 h-6 group-hover:rotate-12 transition-transform" />
                   {status === "finished"
-                    ? isPt
-                      ? "Sortear Novamente"
-                      : "Roll Again"
-                    : isPt
-                      ? "Sortear Build"
-                      : "Roll Build"}
+                    ? t("randomizer.rollAgain")
+                    : t("randomizer.rollBuild")}
                 </span>
               )}
             </button>

@@ -96,6 +96,19 @@ export const buildGuideBySlugQuery = groq`*[_type == "buildGuide" && slug.curren
   body
 }`;
 
+// ─── Build Overview (montável) ─────────────────────────────────────────────
+// Cada bloco é um objeto no array `blocks`. Projetamos só os campos que
+// cada renderer precisa — nunca o documento inteiro, pra o cache do Sanity
+// não invalidar com mudanças em campos não-relevantes.
+export const buildOverviewBySlugQuery = groq`*[_type == "buildOverview" && slug.current == $slug] | order(_createdAt desc)[0]{
+  _id,
+  sections[] {
+    _key,
+    heading,
+    body,
+  }
+}`;
+
 // ─── League landing ───────────────────────────────────────────────────────────
 // Both locales are pulled in a single projection (localeString/localeText are
 // inline objects, not translated documents) and collapsed per-request by

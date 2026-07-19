@@ -4,7 +4,7 @@ const SITE_URL = (
   process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"
 ).replace(/\/$/, "");
 
-const DISALLOW = ["/admin", "/api", "/_next", "/cart", "/auth", "/tools/price-comparison"];
+const DISALLOW = ["/admin", "/api", "/_next", "/cart", "/auth"];
 
 export default function robots(): MetadataRoute.Robots {
   return {

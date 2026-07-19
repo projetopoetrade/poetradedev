@@ -1,5 +1,6 @@
 "use client";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import BuildCard from "@/components/Builds/BuildCard";
 import BuildFilters from "@/components/Builds/BuildFilters";
 import type { Build } from "@/lib/interface";
@@ -18,6 +19,7 @@ export default function BuildsClient({ builds, total, page, locale, leagues }: B
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const t = useTranslations("BuildsList");
   const totalPages = Math.ceil(total / LIMIT);
 
   function goToPage(p: number) {
@@ -26,26 +28,25 @@ export default function BuildsClient({ builds, total, page, locale, leagues }: B
     router.push(`${pathname}?${params.toString()}`);
   }
 
+  const from = (page - 1) * LIMIT + 1;
+  const to = Math.min(page * LIMIT, total);
+
   return (
     <div className="min-h-screen py-12 px-4 max-w-7xl mx-auto">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">PoE Builds</h1>
-        <p className="text-gray-400 text-sm">
-          Browse curated builds for Path of Exile. Open any build directly in our PoB Viewer.
-        </p>
+        <h1 className="text-3xl font-bold text-white mb-2">{t("heroTitle")}</h1>
+        <p className="text-gray-400 text-sm">{t("heroSubtitle")}</p>
       </div>
 
       {/* Build Randomizer CTA */}
       <div className="mb-8 p-6 rounded-xl border border-amber-500/20 bg-amber-500/5 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div>
           <h2 className="text-xl font-semibold text-amber-400 mb-1">
-            {locale === "pt-br" ? "Indeciso sobre o que jogar?" : "Undecided on what to play?"}
+            {t("randomizerCtaTitle")}
           </h2>
           <p className="text-sm text-amber-200/70">
-            {locale === "pt-br"
-              ? "Use o nosso Build Randomizer para sortear um league starter baseado nos filtros que você gosta."
-              : "Use our Build Randomizer to roll a league starter based on the filters you like."}
+            {t("randomizerCtaBody")}
           </p>
         </div>
         <button
@@ -55,7 +56,7 @@ export default function BuildsClient({ builds, total, page, locale, leagues }: B
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
           </svg>
-          {locale === "pt-br" ? "Abrir Build Randomizer" : "Open Build Randomizer"}
+          {t("randomizerCtaButton")}
         </button>
       </div>
 
@@ -67,14 +68,14 @@ export default function BuildsClient({ builds, total, page, locale, leagues }: B
       {/* Results count */}
       {total > 0 && (
         <p className="text-xs text-gray-500 mb-4">
-          Showing {(page - 1) * LIMIT + 1}–{Math.min(page * LIMIT, total)} of {total} builds
+          {t("resultsCount", { from, to, total })}
         </p>
       )}
 
       {/* Grid */}
       {builds.length === 0 ? (
         <div className="text-center py-20 text-gray-500">
-          No builds found. Try adjusting the filters.
+          {t("emptyState")}
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -97,7 +98,7 @@ export default function BuildsClient({ builds, total, page, locale, leagues }: B
             disabled={page <= 1}
             className="px-3 py-1.5 text-sm rounded border border-gray-700/50 text-gray-400 hover:text-white hover:border-gray-500 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
           >
-            Previous
+            {t("previous")}
           </button>
           {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
             <button
@@ -116,7 +117,7 @@ export default function BuildsClient({ builds, total, page, locale, leagues }: B
             disabled={page >= totalPages}
             className="px-3 py-1.5 text-sm rounded border border-gray-700/50 text-gray-400 hover:text-white hover:border-gray-500 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
           >
-            Next
+            {t("next")}
           </button>
         </div>
       )}

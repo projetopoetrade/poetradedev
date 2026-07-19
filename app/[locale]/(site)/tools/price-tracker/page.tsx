@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
-import { getTranslations, setRequestLocale } from 'next-intl/server'
-import { buildCanonical, buildBreadcrumbSchema, getOgLocale } from '@/lib/utils'
+import { setRequestLocale } from 'next-intl/server'
+import { buildCanonical, buildAbsoluteUrl, buildBreadcrumbSchema, getOgLocale } from '@/lib/utils'
 import PriceTrackerClient from '@/components/PriceTracker/PriceTrackerClient'
 import { CurrencyCtaSection } from '@/components/currency-cta-section'
 import { Link } from '@/i18n/navigation'
@@ -12,14 +12,11 @@ export async function generateMetadata(props: {
   params: Promise<{ locale: string }>
 }): Promise<Metadata> {
   const { locale } = await props.params
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.pathoftrade.net'
-  const path = '/tools/price-tracker'
-
-  const enUrl = `${baseUrl}${path}`
-  const ptUrl = `${baseUrl}/pt-br${path}`
-  const canonicalUrl = locale === 'en' ? enUrl : ptUrl
-
   const isPt = locale === 'pt-br'
+
+  const canonicalUrl = buildCanonical('/tools/price-tracker', locale)
+  const enUrl = buildAbsoluteUrl('/tools/price-tracker')
+  const ptUrl = buildAbsoluteUrl('/pt-br/tools/price-tracker')
 
   const title = isPt
     ? 'Tracker de Preços PoE — Currency e Items Únicos em Tempo Real | Path of Trade'
@@ -27,97 +24,6 @@ export async function generateMetadata(props: {
   const description = isPt
     ? 'Veja preços em tempo real de currency, items únicos, gemas e mais em Path of Exile 1 e 2. Preços em BRL, USD e outras moedas. Atualizado a cada hora.'
     : 'Check real-time prices for currency, unique items, gems, and more in Path of Exile 1 & 2. Prices shown in USD, BRL, and other currencies. Updated every hour.'
-
-  const faqSchema = isPt ? {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: [
-      {
-        '@type': 'Question',
-        name: 'Com que frequência os preços são atualizados?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'Os preços são buscados do poe.ninja e atualizados a cada hora. Os dados refletem o snapshot mais recente do mercado de Path of Exile.',
-        },
-      },
-      {
-        '@type': 'Question',
-        name: 'De onde vêm os preços?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'Todos os preços são obtidos do poe.ninja, o agregador de preços em tempo real mais confiável de Path of Exile. Normalizamos e exibimos esses dados com conversões em USD, BRL e outras moedas.',
-        },
-      },
-      {
-        '@type': 'Question',
-        name: 'Como o preço em BRL/USD é calculado?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'Convertemos os preços do poe.ninja usando o valor do Divine Orb da nossa loja. A fórmula é: valor em Divine Orb do item × nosso preço do Divine Orb em USD.',
-        },
-      },
-      {
-        '@type': 'Question',
-        name: 'Posso comprar itens diretamente nessa página?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'Sim! Itens que o Path of Trade vende exibem um botão "Comprar" que leva diretamente à nossa página de produto com preços competitivos.',
-        },
-      },
-    ],
-  } : {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: [
-      {
-        '@type': 'Question',
-        name: 'How often are prices updated?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'Prices are fetched from poe.ninja and cached for 1 hour. The data reflects the most recent market snapshot from poe.ninja.',
-        },
-      },
-      {
-        '@type': 'Question',
-        name: 'Where do prices come from?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'All price data is sourced from poe.ninja, the most trusted real-time price aggregator for Path of Exile. We normalize and display this data with USD/BRL/EUR conversions.',
-        },
-      },
-      {
-        '@type': 'Question',
-        name: 'How is the USD/BRL price calculated?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'We convert poe.ninja prices using the Divine Orb value from our own store. The formula is: item\'s Divine Orb value × our Divine Orb price in USD. Displayed currency is based on your selected preference.',
-        },
-      },
-      {
-        '@type': 'Question',
-        name: 'Can I buy items directly from this page?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'Yes! Items that Path of Trade sells will show a "Buy" button next to them, taking you directly to our product page where you can purchase at competitive prices.',
-        },
-      },
-    ],
-  }
-
-  const webAppSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'WebApplication',
-    name: 'PoE Price Tracker',
-    url: enUrl,
-    description,
-    applicationCategory: 'GameApplication',
-    operatingSystem: 'Any',
-    offers: {
-      '@type': 'Offer',
-      price: '0',
-      priceCurrency: 'USD',
-    },
-  }
 
   return {
     title,

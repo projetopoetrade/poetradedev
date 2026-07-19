@@ -17,9 +17,10 @@ interface Props {
   node: PositionedNode | null;
   screenX: number;
   screenY: number;
+  selectedMasteries?: Map<string, string[]>;
 }
 
-export function PassivePortalTooltip({ node, screenX, screenY }: Props) {
+export function PassivePortalTooltip({ node, screenX, screenY, selectedMasteries }: Props) {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
   if (!mounted || !node) return null;
@@ -38,6 +39,17 @@ export function PassivePortalTooltip({ node, screenX, screenY }: Props) {
   };
 
   const masteryEffects = node.raw.masteryEffects ?? [];
+  const selectedStats = selectedMasteries?.get(node.name);
+
+  // When this mastery is allocated, show only the stats that match the selection
+  const displayEffects =
+    selectedStats && selectedStats.length > 0
+      ? masteryEffects.filter(
+          (eff: any) =>
+            eff.stats.length === selectedStats.length &&
+            eff.stats.every((s: string, i: number) => s === selectedStats[i]),
+        )
+      : masteryEffects;
 
   return createPortal(
     <div
@@ -59,9 +71,9 @@ export function PassivePortalTooltip({ node, screenX, screenY }: Props) {
           ))}
         </ul>
       )}
-      {masteryEffects.length > 0 && (
+      {displayEffects.length > 0 && (
         <div className="mb-2 space-y-1.5 border-t border-neutral-800 pt-2">
-          {masteryEffects.map((eff: any, i: number) => (
+          {displayEffects.map((eff: any, i: number) => (
             <div key={i} className="text-xs">
               {(eff.stats ?? []).map((s: string, j: number) => (
                 <div key={j} className="text-amber-300">

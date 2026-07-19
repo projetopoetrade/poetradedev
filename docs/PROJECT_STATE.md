@@ -169,7 +169,6 @@ Todas as tabelas têm RLS ativado. Padrão:
 | `/api/tools/pob-viewer` | POST | Processa build PoB |
 | `/api/tools/pob-viewer/share` | POST | Compartilha build (hash curto) |
 | `/api/tools/leagues` | GET | Lista ligas ativas |
-| `/api/tools/price-comparison` | GET | Compara preços entre lojas |
 
 ### Admin
 

@@ -1,10 +1,10 @@
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 import { ChevronRight, TrendingUp } from 'lucide-react'
 import { createClient } from '@/utils/supabase/server'
 import PriceHistoryChart from '@/components/Product/PriceHistoryChart'
-import { buildBreadcrumbSchema, getOgLocale } from '@/lib/utils'
+import { buildCanonical, buildAbsoluteUrl, buildBreadcrumbSchema, getOgLocale } from '@/lib/utils'
 
 interface PageProps {
   params: Promise<{
@@ -19,19 +19,17 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const decodedItem = decodeURIComponent(item).replace(/-/g, ' ')
   
   const supabase = await createClient()
-  const { data: allProducts } = await supabase.from('products').select('slug, name')
-  const normalizedSearch = decodedItem.toLowerCase().replace(/['\s]/g, '')
-  let ourProduct = allProducts?.find(p => p.slug === item)
+  const { data: bySlug } = await supabase.from('products').select('slug, name').eq('slug', item).limit(1)
+  let ourProduct = bySlug?.[0] || null
   if (!ourProduct) {
-    ourProduct = allProducts?.find(p => p.name.toLowerCase().replace(/['\s]/g, '') === normalizedSearch)
+    const { data: byName } = await supabase.from('products').select('slug, name').ilike('name', `%${decodedItem}%`).limit(1)
+    ourProduct = byName?.[0] || null
   }
   const itemName = ourProduct?.name || decodedItem.replace(/\b\w/g, l => l.toUpperCase()).replace(/'S\b/g, "'s")
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.pathoftrade.net'
-  const path = `/tools/price-tracker/${item}`
-  const enUrl = `${baseUrl}${path}`
-  const ptUrl = `${baseUrl}/pt-br${path}`
-  const canonicalUrl = locale === 'en' ? enUrl : ptUrl
+  const canonicalUrl = buildCanonical(`/tools/price-tracker/${item}`, locale)
+  const enUrl = buildAbsoluteUrl(`/tools/price-tracker/${item}`)
+  const ptUrl = buildAbsoluteUrl(`/pt-br/tools/price-tracker/${item}`)
 
   const isPt = locale === 'pt-br'
 
@@ -106,15 +104,21 @@ export default async function TrackerItemPage({ params }: PageProps) {
 
   const supabase = await createClient()
 
-  // Find product ignoring apostrophes
-  const { data: allProducts } = await supabase
+  // Find product by slug first, then fallback to ilike on name
+  const { data: bySlug } = await supabase
     .from('products')
     .select('slug, price, in_stock, name')
-  
-  const normalizedSearch = decodedItem.toLowerCase().replace(/['\s]/g, '')
-  let ourProduct = allProducts?.find(p => p.slug === item)
+    .eq('slug', item)
+    .limit(1)
+  let ourProduct = bySlug?.[0] || null
+
   if (!ourProduct) {
-    ourProduct = allProducts?.find(p => p.name.toLowerCase().replace(/['\s]/g, '') === normalizedSearch)
+    const { data: byName } = await supabase
+      .from('products')
+      .select('slug, price, in_stock, name')
+      .ilike('name', `%${decodedItem}%`)
+      .limit(1)
+    ourProduct = byName?.[0] || null
   }
 
   // Use the database name if available, otherwise fallback to formatting the URL slug

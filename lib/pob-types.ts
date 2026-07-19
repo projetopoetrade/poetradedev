@@ -116,3 +116,91 @@ export interface PobBuildData {
   Skills: PobSkillGroup[];
   TreeDetails: PobTreeDetails;
 }
+
+// ─── PobSummary ──────────────────────────────────────────────────────────────
+//
+// Trimmed projection of PobBuildData used by the engine's `/pob/summary`
+// endpoint (~400 tokens vs ~2-5k of the full decode). Sourced from the
+// engine's `PobSummary` in
+// `poetrade-content/packages/api/src/modules/knowledge/pob/types.ts` — keep
+// the two shapes in lockstep when fields change.
+
+export interface PobSummaryStats {
+  totalDps?: string;
+  ehp?: string;
+  life?: string;
+  energyShield?: string;
+  /** Formatted `${fire}/${cold}/${lightning}/${chaos}` — `%` signs stripped. */
+  resists?: string;
+  movementSpeed?: string;
+}
+
+export interface PobSummaryTree {
+  nodesTotal: number;
+  keystones: string[];
+  /** Resolved via PassiveSkill WHERE id IN nodes AND isNotable=true. */
+  notablesAllocated: string[];
+  masteries: Array<{ name: string; choice: string }>;
+  /** Unique jewels + cluster jewels; rares/magic rolls dropped. */
+  jewels: string[];
+}
+
+export interface PobSummaryGearEntry {
+  slot: string;
+  name: string;
+  isUnique: boolean;
+  canonical: boolean;
+  id?: string;
+  explicits?: string[];
+  implicits?: string[];
+  enchant?: string;
+  influences?: string[];
+  itemLevel?: number;
+  corrupted?: true;
+  mirrored?: true;
+  fractured?: true;
+  split?: true;
+}
+
+export interface PobSummaryFlaskEntry {
+  slot: string;
+  baseType: string;
+  isUnique: boolean;
+  name?: string;
+  suffix?: string;
+}
+
+export interface PobAlternateLoadout {
+  id: string;
+  title: string;
+  gear?: PobSummaryGearEntry[];
+  tree?: PobSummaryTree;
+  mainSkill?: string | null;
+  supports?: string[];
+  auras?: string[];
+  heralds?: string[];
+  curses?: string[];
+  banners?: string[];
+  triggers?: string[];
+  movement?: string[];
+}
+
+export interface PobSummary {
+  class: string;
+  ascendancy: string;
+  level: number;
+  notes?: string;
+  stats: PobSummaryStats;
+  mainSkill: string | null;
+  supports: string[];
+  auras?: string[];
+  heralds?: string[];
+  curses?: string[];
+  banners?: string[];
+  triggers?: string[];
+  movement?: string[];
+  tree: PobSummaryTree;
+  alternateLoadouts?: PobAlternateLoadout[];
+  gear: PobSummaryGearEntry[];
+  flasks?: PobSummaryFlaskEntry[];
+}

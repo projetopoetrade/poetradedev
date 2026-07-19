@@ -30,7 +30,7 @@ export default defineConfig({
         {id: 'en', title: 'English'},
         {id: 'pt-br', title: 'Portuguese'},
       ],
-      schemaTypes: ['post', 'author', 'category'],
+      schemaTypes: ['post', 'author', 'category', 'buildOverview'],
     }),
   ],
 })

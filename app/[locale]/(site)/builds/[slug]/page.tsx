@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { getBuildBySlug, getPublishedBuildSlugs, getRelatedBuilds } from "@/app/actions";
-import { getBuildGuideBySlug } from "@/sanity/sanity-utils";
+import { getBuildGuideBySlug, getBuildOverviewBySlug } from "@/sanity/sanity-utils";
 import { generateKeywords, buildBreadcrumbSchema, getOgLocale } from "@/lib/utils";
 import BuildHero from "@/components/Builds/BuildHero";
 import BuildGuide from "@/components/Builds/BuildGuide";
@@ -83,10 +83,12 @@ export default async function BuildPage({ params }: Props) {
     notFound();
   }
 
-  const [sanityGuide, relatedBuilds] = await Promise.all([
-    !build.guide_content?.trim() ? getBuildGuideBySlug(build.slug) : null,
-    getRelatedBuilds(build.slug, 3, { ascendancy: build.ascendancy }),
-  ]);
+const [sanityGuide, relatedBuilds, buildOverview] =
+    await Promise.all([
+      !build.guide_content?.trim() ? getBuildGuideBySlug(build.slug) : null,
+      getRelatedBuilds(build.slug, 3, { ascendancy: build.ascendancy }),
+      getBuildOverviewBySlug(build.slug),
+    ]);
 
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.pathoftrade.net';
   const buildsUrl = locale === 'en' ? `${baseUrl}/builds` : `${baseUrl}/pt-br/builds`;
@@ -139,6 +141,27 @@ export default async function BuildPage({ params }: Props) {
 
         {/* Hero */}
         <BuildHero build={build} />
+
+        {/* Sanity-authored sections */}
+        {buildOverview && buildOverview.sections.length > 0 && (
+          <div className="mt-8 space-y-8">
+            {buildOverview.sections.map((section) => (
+              <section key={section._key}>
+                {section.heading && (
+                  <h2 className="text-xl font-semibold text-white mb-3 flex items-center gap-2">
+                    <span className="inline-block w-1 h-5 bg-amber-500 rounded" />
+                    {section.heading}
+                  </h2>
+                )}
+                {section.body && (
+                  <div className="prose prose-lg dark:prose-invert max-w-none prose-headings:text-gray-900 dark:prose-headings:text-white prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-a:text-amber-600 dark:prose-a:text-amber-400 prose-strong:text-gray-900 dark:prose-strong:text-white prose-code:text-amber-700 dark:prose-code:text-amber-300 prose-li:text-gray-700 dark:prose-li:text-gray-300">
+                    <BlockContentRenderer value={section.body} />
+                  </div>
+                )}
+              </section>
+            ))}
+          </div>
+        )}
 
         {/* Video embed */}
         {build.video_url && (

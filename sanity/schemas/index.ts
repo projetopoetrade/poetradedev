@@ -7,6 +7,7 @@ import table from "./table";
 import product from "./product";
 import poeItem from "./poe-item";
 import buildGuide from "./buildGuide";
+import buildOverview, { contentSection } from "./buildOverview";
 import leagueLanding from "./leagueLanding";
 import localeString from "./localeString";
 import localeText from "./localeText";
@@ -21,6 +22,8 @@ const schemas = [
   product,
   poeItem,
   buildGuide,
+  contentSection,
+  buildOverview,
   leagueLanding,
   localeString,
   localeText,

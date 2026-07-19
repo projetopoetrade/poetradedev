@@ -184,7 +184,7 @@ async function fetchPoeNinja(
   return items
 }
 
-// â”€â”€â”€ Engine fetch (Fase 2) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// --- Engine fetch (Fase 2) ----------------------------------------------------
 
 async function fetchFromEngine(
   game: 'poe1' | 'poe2',
@@ -232,7 +232,7 @@ async function fetchFromEngine(
   }
 }
 
-// â”€â”€â”€ Handler â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// --- Handler -----------------------------------------------------------------
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
@@ -281,7 +281,7 @@ export async function GET(request: NextRequest) {
 
     const divineOrbPriceUSD: number = divineProducts?.[0]?.price ?? 0.15
 
-    // TambÃ©m pegar todos os produtos que vendemos para marcar weSellThis e inStock
+    // Também pegar todos os produtos que vendemos para marcar weSellThis e inStock
     const { data: allProducts } = await supabase
       .from('products')
       .select('name, price, slug, in_stock, imgUrl')
@@ -321,7 +321,7 @@ export async function GET(request: NextRequest) {
         divineValue = item.chaosValue / divineInChaos
       }
 
-      // estimatedUSD = divineValue Ã— preÃ§o do Divine Orb em USD
+      // estimatedUSD = divineValue x preco do Divine Orb em USD
       const estimatedUSD = divineValue > 0 ? divineValue * divineOrbPriceUSD : 0
 
       // Normalizar nome vindo do ninja para buscar no mapa

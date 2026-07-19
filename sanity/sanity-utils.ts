@@ -1,7 +1,7 @@
 import ImageUrlBuilder from "@sanity/image-url";
 import { createClient, type QueryParams } from "next-sanity";
 import clientConfig from "./config/client-config";
-import { postQuery, postQueryBySlug, productQuery, postQueryByCategory, postQueryByCategoryAndGameVersion, postQueryByAuthor, allAuthorsQuery, buildGuideBySlugQuery } from "./sanity-query";
+import { postQuery, postQueryBySlug, productQuery, postQueryByCategory, postQueryByCategoryAndGameVersion, postQueryByAuthor, allAuthorsQuery, buildGuideBySlugQuery, buildOverviewBySlugQuery } from "./sanity-query";
 import { Blog } from "@/types/blog";
 import { SanityImageSource } from "@sanity/image-url/lib/types/types";
 import type { Product } from "@/lib/interface";
@@ -138,6 +138,41 @@ export const getBuildGuideBySlug = async (slug: string): Promise<BuildGuideSanit
     tags: ["buildGuide"],
   });
   return data && Array.isArray(data.body) && data.body.length > 0 ? data : null;
+};
+
+// ─── Build Overview (montável) ────────────────────────────────────────────
+//
+// Tipos espelham a projeção GROQ em `buildOverviewBySlugQuery` — só os
+// campos que importam para os renderers. Adicione campos ao GROQ ao adicionar
+// novos blocos. Não sincroniza com `sanity/schemas/buildOverview.ts` porque
+// o Sanity usa objetos inline sem tipo nomeado fora do array.
+
+export interface BuildOverviewSection {
+  _key: string;
+  heading?: string;
+  body: unknown; // Portable Text array
+}
+
+export interface BuildOverviewSanity {
+  sections: BuildOverviewSection[];
+}
+
+export const getBuildOverviewBySlug = async (
+  slug: string,
+): Promise<BuildOverviewSanity | null> => {
+  const data = await sanityFetch<BuildOverviewSanity | null>({
+    query: buildOverviewBySlugQuery,
+    qParams: { slug },
+    tags: ["buildOverview"],
+  });
+  if (
+    !data ||
+    !Array.isArray(data.sections) ||
+    data.sections.length === 0
+  ) {
+    return null;
+  }
+  return data;
 };
 
 export const getPostsByCategoryAndGameVersion = async (categorySlug: string, gameVersion: string, language: string) => {

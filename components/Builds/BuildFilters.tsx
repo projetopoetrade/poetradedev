@@ -1,6 +1,7 @@
 "use client";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useTransition } from "react";
+import { useTranslations } from "next-intl";
 import {
   Select,
   SelectContent,
@@ -21,6 +22,7 @@ export default function BuildFilters({ leagues }: BuildFiltersProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
+  const t = useTranslations("BuildsList");
 
   const gameVersion = searchParams.get("gameVersion") ?? "";
   const league = searchParams.get("league") ?? "";
@@ -75,8 +77,8 @@ export default function BuildFilters({ leagues }: BuildFiltersProps) {
     <div className={`space-y-3 transition-opacity ${isPending ? "opacity-60 pointer-events-none" : ""}`}>
       {/* Search */}
       <Input
-        placeholder="Search builds..."
-        aria-label="Search builds by name"
+        placeholder={t("filters.searchPlaceholder")}
+        aria-label={t("filters.searchPlaceholder")}
         defaultValue={search}
         onChange={(e) => {
           const val = e.target.value;
@@ -98,10 +100,10 @@ export default function BuildFilters({ leagues }: BuildFiltersProps) {
       <div className="flex flex-wrap gap-2">
         <Select value={gameVersion} onValueChange={(v) => updateParam("gameVersion", v === "all" ? "" : v)}>
           <SelectTrigger aria-label="Filter builds by game version" className="w-auto min-w-[150px] h-9 bg-black/40 border-gray-700/50 text-sm text-gray-300">
-            <SelectValue placeholder="Game Version" />
+            <SelectValue placeholder={t("filters.gameVersion")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Versions</SelectItem>
+            <SelectItem value="all">{t("filters.allVersions")}</SelectItem>
             <SelectItem value="path-of-exile-1">Path of Exile 1</SelectItem>
             <SelectItem value="path-of-exile-2">Path of Exile 2</SelectItem>
           </SelectContent>
@@ -110,10 +112,10 @@ export default function BuildFilters({ leagues }: BuildFiltersProps) {
         {leagues.length > 0 && (
           <Select value={league} onValueChange={(v) => updateParam("league", v === "all" ? "" : v)}>
             <SelectTrigger aria-label="Filter builds by league" className="w-auto min-w-[140px] h-9 bg-black/40 border-gray-700/50 text-sm text-gray-300">
-              <SelectValue placeholder="League" />
+              <SelectValue placeholder={t("filters.league")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Leagues</SelectItem>
+              <SelectItem value="all">{t("filters.allLeagues")}</SelectItem>
               {leagues.map((l) => (
                 <SelectItem key={l} value={l}>{l}</SelectItem>
               ))}
@@ -123,10 +125,10 @@ export default function BuildFilters({ leagues }: BuildFiltersProps) {
 
         <Select value={poeClass} onValueChange={(v) => updateParam("class", v === "all" ? "" : v)}>
           <SelectTrigger aria-label="Filter builds by class" className="w-auto min-w-[130px] h-9 bg-black/40 border-gray-700/50 text-sm text-gray-300">
-            <SelectValue placeholder="Class" />
+            <SelectValue placeholder={t("filters.class")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Classes</SelectItem>
+            <SelectItem value="all">{t("filters.allClasses")}</SelectItem>
             {classes.map((c) => (
               <SelectItem key={c.name} value={c.name}>{c.name}</SelectItem>
             ))}
@@ -136,10 +138,10 @@ export default function BuildFilters({ leagues }: BuildFiltersProps) {
         {ascendancies.length > 0 && (
           <Select value={ascendancy} onValueChange={(v) => updateParam("ascendancy", v === "all" ? "" : v)}>
             <SelectTrigger aria-label="Filter builds by ascendancy" className="w-auto min-w-[140px] h-9 bg-black/40 border-gray-700/50 text-sm text-gray-300">
-              <SelectValue placeholder="Ascendancy" />
+              <SelectValue placeholder={t("filters.ascendancy")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Ascendancies</SelectItem>
+              <SelectItem value="all">{t("filters.allAscendancies")}</SelectItem>
               {ascendancies.map((a) => (
                 <SelectItem key={a} value={a}>{a}</SelectItem>
               ))}
