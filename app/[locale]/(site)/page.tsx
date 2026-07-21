@@ -3,7 +3,7 @@ import { Features } from "@/components/features";
 import GameSelection from "@/components/game-selection";
 import CarouselSpacing from "@/components/testemonials-section";
 import { useTranslations } from "next-intl";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { buildCanonical } from "@/lib/utils";
 import type { Metadata } from "next";
 
@@ -51,7 +51,24 @@ export async function generateMetadata(
   };
 }
 
-export default function Home() {
+// Split deliberado. `useTranslations` e um hook: so funciona em componente
+// SINCRONO. Mas ler `params` no Next 15 exige await, o que forcaria async.
+//
+// Sem `setRequestLocale`, o next-intl nao consegue resolver o locale em build
+// e opta por renderizacao dinamica — era o que mantinha a home fora do cache
+// (`x-vercel-cache: MISS`) enquanto /about e /leagues serviam pre-renderizadas.
+// Estas usam `getTranslations({locale})`, que recebe o locale explicitamente e
+// por isso nunca precisaram desta chamada.
+export default async function Home(props: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await props.params;
+  setRequestLocale(locale);
+
+  return <HomeContent />;
+}
+
+function HomeContent() {
   const t = useTranslations("HomePage");
   const tSchema = useTranslations("Schema");
 
