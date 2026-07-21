@@ -7,13 +7,15 @@ import {
   sanitizeCheckoutData,
 } from "@/lib/validations/checkout";
 
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error('STRIPE_SECRET_KEY is not defined in environment variables');
+// Instanciado sob demanda — ver comentário em `api/checkout/verify/route.ts`.
+// `throw` no escopo de módulo quebra o build inteiro, não só esta rota.
+function getStripe(): Stripe {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) {
+    throw new Error('STRIPE_SECRET_KEY is not defined in environment variables');
+  }
+  return new Stripe(key, { apiVersion: "2025-04-30.basil" });
 }
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2025-04-30.basil",
-});
 
 export async function POST(req: Request) {
   try {
@@ -93,6 +95,7 @@ export async function POST(req: Request) {
     }
 
     // Create Stripe checkout session
+    const stripe = getStripe();
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: items.map((item) => ({

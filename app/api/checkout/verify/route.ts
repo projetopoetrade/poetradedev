@@ -2,13 +2,17 @@ import Stripe from "stripe";
 import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error('STRIPE_SECRET_KEY is not defined in environment variables');
+// Instanciado sob demanda, e não no escopo de módulo. Um `throw` no topo do
+// arquivo derruba o BUILD inteiro — a etapa "Collecting page data" importa
+// todas as rotas — em vez de falhar só neste endpoint. Foi exatamente o que
+// quebrou o primeiro deploy de Preview, ambiente onde a chave não existe.
+function getStripe(): Stripe {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) {
+    throw new Error('STRIPE_SECRET_KEY is not defined in environment variables');
+  }
+  return new Stripe(key, { apiVersion: "2025-04-30.basil" });
 }
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2025-04-30.basil",
-});
 
 // Define an interface for our response data to allow for optional fields
 interface SessionResponseData {
@@ -41,6 +45,8 @@ export async function GET(request: Request) {
         { status: 400 }
       );
     }
+
+    const stripe = getStripe();
 
     // Retrieve detailed session information with expanded objects
     const session = await stripe.checkout.sessions.retrieve(sessionId, {
