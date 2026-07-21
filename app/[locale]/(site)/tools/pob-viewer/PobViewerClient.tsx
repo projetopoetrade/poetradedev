@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -110,7 +110,17 @@ import {
   JewelSlotCard,
 } from "@/components/tools/pob-viewer/JewelComponents";
 
-export default function PobViewerClient({
+// Suspense por causa do `useSearchParams` (lê o build compartilhado por URL)
+// agora que a página é pré-renderizada.
+export default function PobViewerClient(props: Props) {
+  return (
+    <Suspense fallback={null}>
+      <PobViewerClientInner {...props} />
+    </Suspense>
+  );
+}
+
+function PobViewerClientInner({
   locale,
   engineBase,
   treeDataUrl,

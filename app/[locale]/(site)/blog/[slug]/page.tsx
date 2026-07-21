@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { getPostBySlug, getRelatedPosts } from "@/sanity/sanity-utils";
+import { getPostBySlug, getRelatedPosts, getAllPostSlugs } from "@/sanity/sanity-utils";
 import RenderBodyContent from "@/components/Blog/RenderBodyContent";
 import RelatedPosts from "@/components/Blog/RelatedPosts";
 import { Blog } from "@/types/blog";
@@ -13,6 +13,31 @@ import { notFound } from "next/navigation";
 
 // ISR: revalidate cache every 5 minutes
 export const revalidate = 300;
+
+// Pré-renderiza todos os posts no build. Esta é a rota mais cara do site:
+// `resolveBlocks` faz 3 passadas sobre a árvore Portable Text e reconstrói uma
+// regex de todos os nomes de currency a cada render. Sem isto, esse custo era
+// pago por visita. Slugs novos continuam funcionando (renderizam sob demanda e
+// entram no cache), então publicar no Sanity não exige rebuild.
+export async function generateStaticParams() {
+  const locales = ['en', 'pt-br'];
+
+  try {
+    const perLocale = await Promise.all(
+      locales.map(async (locale) => {
+        const slugs = await getAllPostSlugs(locale);
+        return slugs.map((slug) => ({ locale, slug }));
+      })
+    );
+
+    return perLocale.flat();
+  } catch (error) {
+    // Não derruba o build por indisponibilidade do Sanity — cai para
+    // renderização sob demanda, que é o comportamento anterior.
+    console.error('blog/[slug] generateStaticParams error:', error);
+    return [];
+  }
+}
 
 interface PageProps {
   params: Promise<{

@@ -10,6 +10,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination"
 import { useRouter, usePathname, useSearchParams } from "next/navigation"
+import { Suspense } from "react"
 
 interface BlogPaginationProps {
   currentPage: number
@@ -17,7 +18,16 @@ interface BlogPaginationProps {
   locale: string
 }
 
-export default function BlogPagination({ currentPage, totalPages, locale }: BlogPaginationProps) {
+// Suspense por causa do `useSearchParams` em rota pré-renderizada.
+export default function BlogPagination(props: BlogPaginationProps) {
+  return (
+    <Suspense fallback={null}>
+      <BlogPaginationInner {...props} />
+    </Suspense>
+  )
+}
+
+function BlogPaginationInner({ currentPage, totalPages, locale }: BlogPaginationProps) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()

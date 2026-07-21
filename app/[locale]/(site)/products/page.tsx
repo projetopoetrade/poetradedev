@@ -113,9 +113,6 @@ export default async function ProductsPage(
   const { locale } = await props.params;
   const t = await getTranslations({ locale, namespace: "Products" });
 
-  // Logs seguros
-  console.log("🔍 [PRODUCTS PAGE] Search Params:", searchParams);
-
   try {
     const products = await getProductsWithParams({
       ...searchParams,

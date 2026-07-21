@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { 
@@ -14,7 +14,16 @@ import {
 import { useSearchParams } from "next/navigation";
 import { Search } from "lucide-react";
 
+// Suspense por causa do `useSearchParams` em rota pré-renderizada.
 export default function ProductSearchForm() {
+  return (
+    <Suspense fallback={null}>
+      <ProductSearchFormInner />
+    </Suspense>
+  );
+}
+
+function ProductSearchFormInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   

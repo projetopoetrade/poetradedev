@@ -7,11 +7,13 @@ import {updateSession} from '@/utils/supabase/middleware';
 
 const handleI18nRouting = createMiddleware(routing);
 
+// Constante de módulo: dentro da função a regex era recompilada a cada request.
+const PRODUCT_SLUG_PATH =
+  /^(\/(?:pt-br\/)?(?:games\/[^/]+\/)?products\/)([^/]+)(\/.*)?$/i;
+
 export async function middleware(request: NextRequest) {
   // Redirect uppercase product slugs to lowercase (308 Permanent Redirect)
-  const productMatch = request.nextUrl.pathname.match(
-    /^(\/(?:pt-br\/)?(?:games\/[^/]+\/)?products\/)([^/]+)(\/.*)?$/i
-  );
+  const productMatch = request.nextUrl.pathname.match(PRODUCT_SLUG_PATH);
   if (productMatch) {
     const [, prefix, slug, rest = ''] = productMatch;
     if (slug !== slug.toLowerCase()) {
@@ -23,10 +25,11 @@ export async function middleware(request: NextRequest) {
 
   // Este código SÓ será executado para as rotas que NÃO SÃO de API.
   const response = handleI18nRouting(request);
-  
-  // Add pathname to headers for layout detection
-  response.headers.set('x-pathname', request.nextUrl.pathname);
-  
+
+  // Não injetar headers de request aqui. O `x-pathname` existia para o layout
+  // raiz ler via `headers()` e decidir admin vs site — acoplamento que tornava
+  // todas as rotas dinâmicas. A distinção agora é estrutural (route groups).
+
   return await updateSession(request, response);
 }
 

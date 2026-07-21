@@ -12,6 +12,18 @@ import { notFound, redirect } from "next/navigation";
 // ISR: revalidate cache every 5 minutes
 export const revalidate = 300;
 
+// Sem isto o segmento [gameVersion] não tem params conhecidos e a rota fica
+// dinâmica apesar do `revalidate` acima. São só dois valores — mesma lista que
+// a rota irmã `[gameVersion]/[category]` já usa.
+export function generateStaticParams() {
+  const locales = ["en", "pt-br"];
+  const gameVersions = ["path-of-exile-1", "path-of-exile-2"];
+
+  return locales.flatMap((locale) =>
+    gameVersions.map((gameVersion) => ({ locale, gameVersion }))
+  );
+}
+
 const GAME_VERSIONS = ["path-of-exile-1", "path-of-exile-2"] as const;
 type GameVersion = (typeof GAME_VERSIONS)[number];
 const DEFAULT_GAME_VERSION: GameVersion = "path-of-exile-1";
