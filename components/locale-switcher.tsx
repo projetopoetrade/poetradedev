@@ -74,6 +74,13 @@ function LocaleLinks({ suffix }: { suffix: string }) {
             <Link
               href={hrefFor(l.code)}
               hrefLang={l.hrefLang}
+              // `prefetch={false}` conserta um bug que afeta o site inteiro:
+              // este link para /pt-br fica visivel em toda pagina, o Next o
+              // prefetcha, e o middleware do next-intl grava NEXT_LOCALE=pt-br
+              // nesse prefetch. A partir dai o visitante EN e redirecionado para
+              // /pt-br ao clicar em QUALQUER link. Ver docs/LEAGUE_PAGES.md.
+              // O <a> continua no HTML, entao a ponte EN<->pt-br segue crawlavel.
+              prefetch={false}
               aria-label={`${l.label} — ${l.switchLabel}`}
               className="text-muted-foreground hover:text-foreground transition-colors"
             >
