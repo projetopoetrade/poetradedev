@@ -373,7 +373,10 @@ export const getBuilds = async (params: {
   limit?: number;
 }): Promise<{ builds: Build[]; total: number }> => {
   const { gameVersion, league, leagueSlug, class: poeClass, ascendancy, tags, search, page = 1, limit = 12 } = params;
-  const supabase = await createClient();
+  // Client publico (sem cookies): ler cookies aqui tornava dinamica toda pagina
+  // que chama esta funcao, matando o ISR de /builds. Dado e publico
+  // (is_published = true), entao a leitura anonima e a correta.
+  const supabase = createPublicClient();
 
   let query = supabase
     .from('builds')
@@ -405,7 +408,10 @@ export const getBuilds = async (params: {
 };
 
 export const getDistinctBuildLeagues = async (): Promise<string[]> => {
-  const supabase = await createClient();
+  // Client publico (sem cookies): ler cookies aqui tornava dinamica toda pagina
+  // que chama esta funcao, matando o ISR de /builds. Dado e publico
+  // (is_published = true), entao a leitura anonima e a correta.
+  const supabase = createPublicClient();
   const { data } = await supabase
     .from('builds')
     .select('league')
@@ -417,7 +423,10 @@ export const getDistinctBuildLeagues = async (): Promise<string[]> => {
 };
 
 export const getBuildBySlug = async (slug: string): Promise<Build | null> => {
-  const supabase = await createClient();
+  // Client publico (sem cookies): ler cookies aqui tornava dinamica toda pagina
+  // que chama esta funcao, matando o ISR de /builds. Dado e publico
+  // (is_published = true), entao a leitura anonima e a correta.
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from('builds')
     .select('*')

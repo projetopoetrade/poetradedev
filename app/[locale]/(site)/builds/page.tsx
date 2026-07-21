@@ -8,7 +8,6 @@ export const revalidate = 3600;
 
 interface Props {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -59,27 +58,19 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   };
 }
 
-export default async function BuildsPage({ params, searchParams }: Props) {
-  const { locale } = await params;
-  const sp = await searchParams;
+// Teto para "traga todos" — a filtragem e a paginacao acontecem no cliente.
+const ALL_BUILDS_LIMIT = 500;
 
-  const gameVersion = typeof sp.gameVersion === 'string' ? sp.gameVersion : undefined;
-  const league = typeof sp.league === 'string' ? sp.league : undefined;
-  const poeClass = typeof sp.class === 'string' ? sp.class : undefined;
-  const ascendancy = typeof sp.ascendancy === 'string' ? sp.ascendancy : undefined;
-  const tagsParam = typeof sp.tags === 'string' ? sp.tags.split(',').filter(Boolean) : undefined;
-  const search = typeof sp.search === 'string' ? sp.search : undefined;
-  const page = typeof sp.page === 'string' ? parseInt(sp.page, 10) : 1;
+// Nao le `searchParams`: filtros e `?page=` eram resolvidos no servidor, o que
+// tornava a rota dinamica (uma execucao de funcao por combinacao). A listagem
+// inteira cabe no payload e o BuildsClient filtra em memoria. Os builds estao
+// individualmente no sitemap, entao a descoberta nao depende desta listagem.
+export default async function BuildsPage({ params }: Props) {
+  const { locale } = await params;
 
   const { builds, total } = await getBuilds({
-    gameVersion,
-    league,
-    class: poeClass,
-    ascendancy,
-    tags: tagsParam,
-    search,
-    page,
-    limit: 12,
+    page: 1,
+    limit: ALL_BUILDS_LIMIT,
   });
 
   // Unique leagues from all published builds for filter options
@@ -103,7 +94,7 @@ export default async function BuildsPage({ params, searchParams }: Props) {
     numberOfItems: total,
     itemListElement: builds.map((build, i) => ({
       '@type': 'ListItem',
-      position: i + 1 + (page - 1) * 12,
+      position: i + 1,
       url: buildAbsoluteUrl(`/builds/${build.slug}`),
       name: build.title,
       description: build.description ?? undefined,
@@ -166,7 +157,7 @@ export default async function BuildsPage({ params, searchParams }: Props) {
           <BuildsClient
             builds={builds}
             total={total}
-            page={page}
+            page={1}
             locale={locale}
             leagues={leagues}
           />

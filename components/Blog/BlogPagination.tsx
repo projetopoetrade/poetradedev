@@ -16,6 +16,7 @@ interface BlogPaginationProps {
   currentPage: number
   totalPages: number
   locale: string
+  onPageChange?: (page: number) => void
 }
 
 // Suspense por causa do `useSearchParams` em rota pré-renderizada.
@@ -27,13 +28,10 @@ export default function BlogPagination(props: BlogPaginationProps) {
   )
 }
 
-function BlogPaginationInner({ currentPage, totalPages, locale }: BlogPaginationProps) {
+function BlogPaginationInner({ currentPage, totalPages, locale, onPageChange }: BlogPaginationProps) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-
-  // Debug logging
-  console.log('BlogPagination render:', { currentPage, totalPages, pathname })
 
   const createPageURL = (pageNumber: number) => {
     const params = new URLSearchParams(searchParams)
@@ -41,11 +39,17 @@ function BlogPaginationInner({ currentPage, totalPages, locale }: BlogPagination
     return `${pathname}?${params.toString()}`
   }
 
+  // Com `onPageChange`, a troca de pagina acontece em memoria (a listagem toda
+  // ja veio no payload) e nao dispara navegacao ao servidor. Os href continuam
+  // reais para acessibilidade e clique com o botao do meio.
   const handlePageChange = (pageNumber: number) => {
-    console.log('Navigating to page:', pageNumber)
-    // Scroll to top of page
     window.scrollTo({ top: 0, behavior: 'smooth' })
-    // Navigate to new page
+
+    if (onPageChange) {
+      onPageChange(pageNumber)
+      return
+    }
+
     router.push(createPageURL(pageNumber))
   }
 

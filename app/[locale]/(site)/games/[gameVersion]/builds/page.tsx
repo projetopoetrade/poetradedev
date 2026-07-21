@@ -14,11 +14,13 @@ type GameVersion = "path-of-exile-1" | "path-of-exile-2";
 
 interface Props {
   params: Promise<{ locale: string; gameVersion: string }>;
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
 const VALID_VERSIONS: GameVersion[] = ["path-of-exile-1", "path-of-exile-2"];
 const LIMIT = 12;
+
+// Teto para "traga todos" — a listagem nao e mais paginada no servidor.
+const ALL_BUILDS_LIMIT = 500;
 
 export async function generateStaticParams() {
   return ["en", "pt-br"].flatMap((locale) =>
@@ -173,21 +175,25 @@ export async function generateMetadata({ params }: { params: Props["params"] }):
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export default async function GameVersionBuildsPage({ params, searchParams }: Props) {
+// Nao le `?page=`: a listagem inteira e renderizada de uma vez, entao a rota
+// deixa de ser dinamica. Ler searchParams custava uma execucao de funcao por
+// pagina, por versao, por locale — para um acervo que hoje tem 2 builds.
+export default async function GameVersionBuildsPage({ params }: Props) {
   const { locale, gameVersion } = await params;
   setRequestLocale(locale);
 
   if (!VALID_VERSIONS.includes(gameVersion as GameVersion)) notFound();
 
-  const sp = await searchParams;
-  const page = typeof sp.page === "string" ? Math.max(1, parseInt(sp.page, 10)) : 1;
+  const page = 1;
   const gv = gameVersion as GameVersion;
   const lang = locale === "pt-br" ? "pt-br" : "en";
   const c = CONTENT[gv][lang];
   const { gameLabel } = CONTENT[gv];
 
-  const { builds, total } = await getBuilds({ gameVersion: gv, page, limit: LIMIT });
-  const totalPages = Math.ceil(total / LIMIT);
+  // Traz tudo numa pagina so; `totalPages` cai para 1 e o bloco de paginacao
+  // (que so renderiza com totalPages > 1) some naturalmente.
+  const { builds, total } = await getBuilds({ gameVersion: gv, page: 1, limit: ALL_BUILDS_LIMIT });
+  const totalPages = 1; // tudo numa pagina: ver comentario no getBuilds acima
 
   const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net").replace(/\/+$/, "");
   const localePath = locale === "en" ? "" : `/${locale}`;

@@ -184,14 +184,14 @@ export async function generateMetadata(props: {
   };
 }
 
+// Nao le `searchParams`: o `?league=` so escolhia qual liga destacar, e a
+// canonical nunca incluiu esse parametro. Ler aqui tornava a rota dinamica —
+// uma execucao de funcao por liga, por categoria, por versao, por locale.
+// A versao estatica usa a liga corrente, que e o que a canonical representa.
 export default async function CategoryPage(props: {
   params: Promise<{ gameVersion: string; category: string; locale: string }>;
-  searchParams: Promise<{ league?: string }>;
 }) {
-  const [{ gameVersion, category, locale }, searchParams] = await Promise.all([
-    props.params,
-    props.searchParams,
-  ]);
+  const { gameVersion, category, locale } = await props.params;
 
   if (!CATEGORIES.includes(category as CategorySlug)) notFound();
   if (!GAME_VERSIONS.includes(gameVersion as any)) notFound();
@@ -208,10 +208,7 @@ export default async function CategoryPage(props: {
   let defaultLeague: string | undefined;
   try {
     allLeagues = await getLeagues(gameVersion as any);
-    const requestedLeague = searchParams.league;
-    defaultLeague = requestedLeague
-      ? (allLeagues.find((l) => l.name === requestedLeague)?.name ?? allLeagues[0]?.name)
-      : allLeagues[0]?.name;
+    defaultLeague = allLeagues[0]?.name;
   } catch {}
 
   const [products, blogPosts] = await Promise.all([
