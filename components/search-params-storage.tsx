@@ -1,35 +1,45 @@
 "use client";
 
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 
-type SearchParams = {
-  gameVersion?: string;
-  league?: string;
-  difficulty?: string;
-  category?: string;
-  search?: string;
-};
+const PERSISTED_KEYS = [
+  "gameVersion",
+  "league",
+  "difficulty",
+  "category",
+  "search",
+] as const;
 
-interface SearchParamsStorageProps {
-  searchParams: SearchParams;
+/**
+ * Persiste os filtros da listagem em localStorage para restaurar a navegação
+ * do usuário entre visitas.
+ *
+ * Le os params por conta própria em vez de recebe-los do servidor: a página de
+ * produtos passou a ser estática, e ler `searchParams` no server component a
+ * tornaria dinâmica de novo — que é exatamente o que estamos eliminando.
+ */
+export function SearchParamsStorage() {
+  return (
+    <Suspense fallback={null}>
+      <SearchParamsStorageInner />
+    </Suspense>
+  );
 }
 
-export function SearchParamsStorage({ searchParams }: SearchParamsStorageProps) {
+function SearchParamsStorageInner() {
+  const searchParams = useSearchParams();
+
   useEffect(() => {
-    // Convert searchParams object to URLSearchParams
     const params = new URLSearchParams();
-    
-    // Add each search parameter if it exists
-    Object.entries(searchParams).forEach(([key, value]) => {
-      if (value) {
-        params.set(key, value);
-      }
+
+    PERSISTED_KEYS.forEach((key) => {
+      const value = searchParams.get(key);
+      if (value) params.set(key, value);
     });
 
-    // Store in localStorage
-    localStorage.setItem('productSearchParams', params.toString());
+    localStorage.setItem("productSearchParams", params.toString());
   }, [searchParams]);
 
-  // This component doesn't render anything
   return null;
-} 
+}

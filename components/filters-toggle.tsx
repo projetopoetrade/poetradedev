@@ -19,6 +19,7 @@ interface ProductFiltersProps {
   currentGameVersion: string;
   currentLeague: string;
   currentDifficulty: string;
+  onFilterChange: (type: string, value: string) => void;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 }
@@ -44,6 +45,7 @@ function ProductFiltersInner({
   currentGameVersion,
   currentLeague,
   currentDifficulty,
+  onFilterChange,
   open,
   onOpenChange,
 }: ProductFiltersProps) {
@@ -81,20 +83,11 @@ function ProductFiltersInner({
     fetchLeagues();
   }, [currentGameVersion]);
 
+  // Antes fazia `router.push('/products?...')` — navegacao completa que
+  // reexecutava a pagina no servidor a cada ajuste de filtro. Agora so avisa o
+  // ProductsClient, que filtra em memoria e sincroniza a URL sozinho.
   const handleFilterChange = (type: string, value: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    
-    if (value === "Current" && type === "gameVersion") {
-      params.delete("gameVersion");
-    } else if (value === "All Leagues" && type === "league") {
-      params.delete("league");
-    } else if (value === "All Difficulties" && type === "difficulty") {
-      params.delete("difficulty");
-    } else {
-      params.set(type, value);
-    }
-
-    router.push(`/products?${params.toString()}`);
+    onFilterChange(type, value);
   };
 
   if (loading) {

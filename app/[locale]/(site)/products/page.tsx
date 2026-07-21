@@ -39,19 +39,21 @@ function buildQueryString(params: SearchParams): string {
 // ---------------------------------------------------------
 // GENERATE METADATA
 // ---------------------------------------------------------
+// Nao le `searchParams`: ler aqui tornaria a rota dinamica tanto quanto ler no
+// componente. Como a canonical sempre apontou para a URL limpa, o titulo e a
+// descricao passam a descrever a listagem completa — que e o que a versao
+// indexavel de fato mostra.
 export async function generateMetadata(
   props: {
     params: Promise<{ locale: string }>;
-    searchParams: Promise<SearchParams>;
   }
 ): Promise<Metadata> {
-  const searchParams = await props.searchParams;
   const { locale } = await props.params;
   const t = await getTranslations({ locale, namespace: "SEO" });
 
-  const league = searchParams.league || "All Leagues";
-  const category = searchParams.category || "All Items";
-  const gameVersion = searchParams.gameVersion || "Current";
+  const league = "All Leagues";
+  const category = "All Items";
+  const gameVersion = "Current";
 
   // Base URL
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net";
@@ -91,10 +93,6 @@ export async function generateMetadata(
     },
     keywords: generateKeywords({
       locale,
-      gameVersion: searchParams.gameVersion as 'path-of-exile-1' | 'path-of-exile-2',
-      league: searchParams.league,
-      category: searchParams.category,
-      difficulty: searchParams.difficulty as 'softcore' | 'hardcore',
       customKeywords: ['buy', 'cheap', 'best price', 'fast delivery']
     })
   };
@@ -103,32 +101,31 @@ export async function generateMetadata(
 // ---------------------------------------------------------
 // COMPONENTE DA PÁGINA
 // ---------------------------------------------------------
+// A pagina nao le mais `searchParams`: todos os produtos listados vem no payload
+// estatico e a filtragem (categoria, busca, liga, dificuldade, versao) acontece
+// no cliente, em `ProductsClient`. Antes, cada combinacao de filtro era uma
+// execucao de funcao no servidor — e a canonical ja apontava para a URL limpa,
+// entao essas variacoes nunca foram indexaveis.
 export default async function ProductsPage(
   props: {
-    searchParams: Promise<SearchParams>;
     params: Promise<{ locale: string }>;
   }
 ) {
-  const searchParams = await props.searchParams;
   const { locale } = await props.params;
   const t = await getTranslations({ locale, namespace: "Products" });
 
   try {
-    const products = await getProductsWithParams({
-      ...searchParams,
-      isListed: true
-    });
+    const products = await getProductsWithParams({ isListed: true });
 
-    // Variáveis para UI
-    const league = searchParams.league || "All Leagues";
-    const difficulty = searchParams.difficulty || "All Difficulties";
-    const category = searchParams.category || "All Items";
-    const gameVersion = searchParams.gameVersion || "Current";
+    // Estado nao-filtrado: e o que a versao estatica representa.
+    const league = "All Leagues";
+    const difficulty = "All Difficulties";
+    const category = "All Items";
+    const gameVersion = "Current";
 
-    // Recria a URL atual para o Schema.org usando a mesma função helper
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net";
     const path = locale === 'en' ? '/products' : `/${locale}/products`;
-    const pageUrl = `${baseUrl}${path}${buildQueryString(searchParams)}`;
+    const pageUrl = `${baseUrl}${path}`;
 
     // SCHEMA.ORG (JSON-LD)
     const catalogStructuredData = {
@@ -183,7 +180,7 @@ export default async function ProductsPage(
 
     return (
       <main className="container mx-auto py-8">
-        <SearchParamsStorage searchParams={searchParams} />
+        <SearchParamsStorage />
 
         <script
           type="application/ld+json"
