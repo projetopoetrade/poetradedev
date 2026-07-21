@@ -2,13 +2,17 @@ import { NextResponse } from "next/server";
 import { createClient } from "@sanity/client";
 import { revalidatePath, revalidateTag } from "next/cache";
 
-const client = createClient({
-    projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
-    dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || "production",
-    apiVersion: "2023-05-03",
-    useCdn: false,
-    token: process.env.SANITY_API_KEY,
-});
+// Sob demanda: `createClient` lança se `projectId` faltar, e no escopo de
+// módulo isso quebraria o build inteiro em vez de só esta rota.
+function getSanityClient() {
+    return createClient({
+        projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
+        dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || "production",
+        apiVersion: "2023-05-03",
+        useCdn: false,
+        token: process.env.SANITY_API_KEY,
+    });
+}
 
 // Converter texto simples do Python (separado por quebras de linha duplas) em blocos PortableText
 function textToBlocks(text: string | any[]) {
@@ -63,7 +67,7 @@ export async function POST(req: Request) {
 
         // 3. Checar se o Produto Existe
         const query = `*[_type == "product" && slug.current == $slug][0]`;
-        const existingProduct = await client.fetch(query, { slug });
+        const existingProduct = await getSanityClient().fetch(query, { slug });
 
         if (existingProduct) {
             // 4a. Update Logic
@@ -76,7 +80,7 @@ export async function POST(req: Request) {
             if (league) updatePayload.league = league;
             if (difficulty) updatePayload.difficulty = difficulty;
 
-            const updated = await client.patch(existingProduct._id).set(updatePayload).commit();
+            const updated = await getSanityClient().patch(existingProduct._id).set(updatePayload).commit();
 
             // Revalida o cache
             revalidateTag("product");
@@ -106,7 +110,7 @@ export async function POST(req: Request) {
                 updatedAt: new Date().toISOString(),
             };
 
-            const created = await client.create(newProduct);
+            const created = await getSanityClient().create(newProduct);
 
             revalidateTag("product");
 

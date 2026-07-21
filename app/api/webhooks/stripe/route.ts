@@ -2,9 +2,15 @@ import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import Stripe from "stripe";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-04-30.basil",
-});
+// Sob demanda — mesma razão das outras rotas Stripe: instanciar no escopo de
+// módulo acopla o build à presença do segredo.
+function getStripe(): Stripe {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) {
+    throw new Error('STRIPE_SECRET_KEY is not defined in environment variables');
+  }
+  return new Stripe(key, { apiVersion: "2025-04-30.basil" });
+}
 
 // Helper function to get appropriate order status from payment event type
 function getOrderStatusFromEvent(eventType: string): string {
@@ -171,7 +177,7 @@ async function handleCheckoutSession(event: Stripe.Event, baseUrl: string) {
   // Get payment intent details
   const paymentIntent =
     typeof session.payment_intent === "string"
-      ? await stripe.paymentIntents.retrieve(session.payment_intent)
+      ? await getStripe().paymentIntents.retrieve(session.payment_intent)
       : session.payment_intent;
 
   console.log(
@@ -256,7 +262,7 @@ export async function POST(req: Request) {
     // Verify webhook signature
     let event;
     try {
-      event = stripe.webhooks.constructEvent(
+      event = getStripe().webhooks.constructEvent(
         body,
         signature,
         process.env.STRIPE_WEBHOOK_SECRET
