@@ -1,68 +1,33 @@
-import HeaderAuth from "@/components/header-auth";
-import { SiteNavbar } from "@/components/site-navbar";
-import { GoogleTagManager } from "@next/third-parties/google";
 import { Roboto, Source_Sans_3 } from "next/font/google";
 import localFont from "next/font/local";
 import { ThemeProvider } from "next-themes";
-import { CurrencyProvider } from "@/lib/contexts/currency-context";
-import { CartProvider } from "@/lib/contexts/cart-context";
-import { Analytics } from "@vercel/analytics/react";
-import ConsentedProviders from "@/components/consented-providers";
 import "../globals.css";
-import Footer from "@/components/footer";
 import { setRequestLocale, getMessages, getTranslations } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
-import CookieConsent from "@/components/cookie-consent";
 import type { Metadata } from "next";
-import { buildCanonical, getHreflangAlternates, generateKeywords } from "@/lib/utils";
+import { generateKeywords } from "@/lib/utils";
 import { Toaster } from "sonner";
-import { headers } from "next/headers";
+import { routing } from "@/i18n/routing";
 
-function getPathWithoutLocale(path: string, locale: string) {
-  if (path === `/${locale}` || path === `/${locale}/`) return '/';
-  if (path.startsWith(`/${locale}/`)) return path.replace(`/${locale}`, '');
-  return path;
+// Sem isto o segmento [locale] não tem params conhecidos em build e TUDO abaixo
+// dele permanece dinâmico — mesmo com `revalidate` declarado nas páginas.
+// É requisito do next-intl para renderização estática.
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
 }
-// -----------------------------------------------------------------------------
+
+// NOTE: este layout NÃO pode chamar `headers()`, `cookies()` nem qualquer API
+// dinâmica. Como é o layout raiz, qualquer uso aqui opta TODAS as rotas do site
+// para renderização dinâmica e neutraliza os ~30 `export const revalidate`
+// espalhados pelas páginas — foi exatamente o que estourou o Fluid Active CPU
+// da Vercel em jul/2026. Metadata por-rota (canonical/hreflang) vive no
+// `generateMetadata` de cada página, que conhece o próprio path sem headers.
 
 export async function generateMetadata(props: {
   params: Promise<{ locale: string }>
 }): Promise<Metadata> {
   const { locale } = await props.params;
   const t = await getTranslations({ locale, namespace: "SEO" });
-
-  // 1. Tenta pegar o caminho real via headers (passado pelo Middleware)
-  const headersList = await headers();
-  // Se o header não existir, fallback para a lógica da home baseada no locale
-  const rawPathname = headersList.get('x-pathname') || (locale === 'en' ? '/' : `/${locale}`);
-
-  // 2. Constrói a Canonical Auto-referenciada (A CORREÇÃO PRINCIPAL)
-  // A canonical deve ser EXATAMENTE a URL atual.
-  // Se estou em /pt-br, canonical = /pt-br. Se estou em /pt-br/trade, canonical = /pt-br/trade
-  const canonical = buildCanonical(rawPathname, locale);
-
-  // 3. Prepara os Hreflangs dinâmicos
-  // Precisamos saber qual é a "rota base" sem o locale para montar os links alternativos
-  const pathWithoutLocale = getPathWithoutLocale(rawPathname, locale);
-
-  // Blog, Products, Games, and League detail pages handle their own hreflangs (alternates).
-  // Naive prefixing in the layout causes duplicates or points to incorrect URLs.
-  const isDynamicRoute = 
-    rawPathname.includes('/blog/') || 
-    rawPathname.includes('/products/') ||
-    rawPathname.includes('/games/') ||
-    rawPathname.includes('/league/');
-
-  // Define os prefixos corretos para cada língua
-  const enPath = pathWithoutLocale === '/' ? '/' : pathWithoutLocale;
-  const ptPath = pathWithoutLocale === '/' ? '/pt-br' : `/pt-br${pathWithoutLocale}`;
-
-  const languages: Record<string, string> = {};
-  if (!isDynamicRoute) {
-    languages['en'] = buildCanonical(enPath, 'en');
-    languages['pt-BR'] = buildCanonical(ptPath, 'pt-br');
-    languages['x-default'] = buildCanonical(enPath, 'en');
-  }
 
   return {
     metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"),
@@ -83,21 +48,14 @@ export async function generateMetadata(props: {
     },
     manifest: "/images/favicon/site.webmanifest",
 
-    // ---------------------------------------------------------
-    // AQUI ESTÁ A CORREÇÃO DE SEO
-    // ---------------------------------------------------------
-    alternates: {
-      // Canonical aponta para a página atual
-      canonical: canonical,
-
-      // Languages apontam para as versões equivalentes (apenas se não for rota específica)
-      languages: languages,
-    },
+    // `alternates` (canonical + hreflang) é responsabilidade de cada página:
+    // 25 das 57 páginas já definem o seu, incluindo a home e todas as rotas
+    // indexáveis. Defini-lo aqui exigiria saber o path via headers(), que é o
+    // que tornava o site inteiro dinâmico.
 
     openGraph: {
       title: t("layout.ogTitle"),
       description: t("layout.ogDescription"),
-      url: canonical,
       type: "website",
       locale: locale === "pt-br" ? "pt_BR" : "en_US",
       alternateLocale: locale === "pt-br" ? ["en_US"] : ["pt_BR"],
@@ -166,73 +124,24 @@ export default async function RootLayout(
 ) {
   const { children, params } = props;
   const { locale } = await params;
-  const headersList = await headers();
-  // x-pathname is set by the middleware; next-url is a built-in Next.js header
-  // that's always available as a reliable fallback.
-  const pathname =
-    headersList.get('x-pathname') ||
-    headersList.get('next-url') ||
-    '';
-
-  const isAdminRoute =
-    pathname.includes('/admin') || pathname.includes('/studio');
 
   setRequestLocale(locale);
   const messages = await getMessages();
 
-
-  // If it's an admin route, render without header/footer
-  if (isAdminRoute) {
-    return (
-      <html
-        lang={locale}
-        className={`${roboto.variable} ${sourceSans.variable} ${fontin.variable}`}
-        suppressHydrationWarning
-      >
-        <body className="bg-gray-900 text-white" suppressHydrationWarning>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="dark"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <NextIntlClientProvider locale={locale} messages={messages}>
-              {children}
-              <Toaster
-                position="top-center"
-                toastOptions={{
-                  style: {
-                    background: '#1f2937',
-                    color: '#ffffff',
-                    border: '1px solid #374151',
-                  },
-                  className: 'border border-gray-600',
-                  duration: 3000,
-                }}
-                richColors
-              />
-            </NextIntlClientProvider>
-          </ThemeProvider>
-        </body>
-      </html>
-    );
-  }
-
+  // Shell mínimo e compartilhado. O chrome público (navbar, footer, providers
+  // de carrinho/moeda) vive em `(site)/layout.tsx`; o admin traz o seu em
+  // `admin/layout.tsx`. Antes isso era um `if (isAdminRoute)` decidido por
+  // `headers()`, o que custava a renderização estática do site inteiro.
   return (
     <html
       lang={locale}
-      // `fontin.variable` was only on the admin/studio branch above, so
-      // `--font-fontin` was never registered on the public site and the
-      // `.font-fontin` utility silently resolved to nothing — taking the whole
-      // font-family declaration with it (an unresolved var() with no inline
-      // fallback invalidates the property, so it inherits Roboto rather than
-      // falling through to the next family in the list). That left the PoB
-      // viewer tooltips, the one thing the font was self-hosted for, rendering
-      // in Roboto.
+      // `fontin.variable` precisa estar aqui: a `.font-fontin` depende dela e
+      // um var() não resolvido invalida a declaração inteira de font-family
+      // (herda Roboto em vez de cair pra próxima família da lista). Era o que
+      // fazia os tooltips do PoB viewer renderizarem em Roboto.
       className={`${roboto.variable} ${sourceSans.variable} ${fontin.variable}`}
       suppressHydrationWarning
     >
-
       <body className="bg-background text-foreground" suppressHydrationWarning>
         {/* Dark-only site. The chrome is built dark-first — the header is
             transparent and the footer sits on black/40 — so a light theme turns
@@ -246,33 +155,20 @@ export default async function RootLayout(
           disableTransitionOnChange
         >
           <NextIntlClientProvider locale={locale} messages={messages}>
-
-            <CurrencyProvider>
-              <CartProvider>
-                <SiteNavbar locale={locale} desktopAuth={<HeaderAuth />} />
-
-                <div className="pt-16">
-                  {children}
-                </div>
-                <Footer locale={locale} />
-                <Analytics />
-                <ConsentedProviders />
-                <CookieConsent locale={locale} />
-                <Toaster
-                  position="top-center"
-                  toastOptions={{
-                    style: {
-                      background: 'hsl(var(--background))',
-                      color: 'hsl(var(--foreground))',
-                      border: '1px solid hsl(var(--border))',
-                    },
-                    className: 'border border-border',
-                    duration: 3000,
-                  }}
-                  richColors
-                />
-              </CartProvider>
-            </CurrencyProvider>
+            {children}
+            <Toaster
+              position="top-center"
+              toastOptions={{
+                style: {
+                  background: 'hsl(var(--background))',
+                  color: 'hsl(var(--foreground))',
+                  border: '1px solid hsl(var(--border))',
+                },
+                className: 'border border-border',
+                duration: 3000,
+              }}
+              richColors
+            />
           </NextIntlClientProvider>
         </ThemeProvider>
       </body>

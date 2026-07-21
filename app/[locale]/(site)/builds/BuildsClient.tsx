@@ -1,5 +1,6 @@
 "use client";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 import { useTranslations } from "next-intl";
 import BuildCard from "@/components/Builds/BuildCard";
 import BuildFilters from "@/components/Builds/BuildFilters";
@@ -15,7 +16,18 @@ interface BuildsClientProps {
   leagues: string[];
 }
 
-export default function BuildsClient({ builds, total, page, locale, leagues }: BuildsClientProps) {
+// Suspense por causa do `useSearchParams`. Rede de segurança: `builds/page.tsx`
+// lê searchParams no servidor, então esta rota é dinâmica e o fallback não
+// chega a renderizar em produção — a lista continua no HTML.
+export default function BuildsClient(props: BuildsClientProps) {
+  return (
+    <Suspense fallback={null}>
+      <BuildsClientInner {...props} />
+    </Suspense>
+  );
+}
+
+function BuildsClientInner({ builds, total, page, locale, leagues }: BuildsClientProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();

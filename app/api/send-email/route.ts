@@ -3,7 +3,12 @@ import { Resend } from 'resend';
 import { EmailTemplate } from '@/components/email-template';
 import { createAdminClient } from '@/utils/supabase/admin';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Sob demanda: o construtor do Resend lança "Missing API key" quando a env var
+// falta, e no escopo de módulo isso quebra o BUILD inteiro (o "Collecting page
+// data" importa toda rota), não só este endpoint.
+function getResend(): Resend {
+  return new Resend(process.env.RESEND_API_KEY);
+}
 
 export async function POST(req: Request) {
   try {
@@ -43,7 +48,7 @@ export async function POST(req: Request) {
     }
     // Send confirmation email
     try {
-      await resend.emails.send({
+      await getResend().emails.send({
         from: 'admin@pathoftrade.net',
         to: order.email,
         subject: `Order Confirmation - #${order.id}`,

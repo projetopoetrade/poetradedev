@@ -14,11 +14,21 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useRef, useState } from "react";
+import { Suspense, useRef, useState } from "react";
 import { OAuthProviders } from "@/components/oauth-providers";
 import { Turnstile } from "next-turnstile";
 
-export function LoginForm({
+// `useSearchParams` (lê ?callbackUrl) exige fronteira de Suspense agora que a
+// página de login é pré-renderizada. Sem isto o build falha com CSR bailout.
+export function LoginForm(props: React.ComponentPropsWithoutRef<"div">) {
+  return (
+    <Suspense>
+      <LoginFormInner {...props} />
+    </Suspense>
+  );
+}
+
+function LoginFormInner({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {

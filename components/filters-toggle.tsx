@@ -3,7 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { getLeagues } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import { Filter } from "lucide-react";
@@ -29,7 +29,18 @@ interface League {
   gameVersion: 'path-of-exile-1' | 'path-of-exile-2';
 }
 
-export default function ProductFilters({
+// Wrapper de Suspense por causa do `useSearchParams` — obrigatório em página
+// pré-renderizada. Fallback null: é um painel de filtros interativo, não
+// conteúdo indexável.
+export default function ProductFilters(props: ProductFiltersProps) {
+  return (
+    <Suspense fallback={null}>
+      <ProductFiltersInner {...props} />
+    </Suspense>
+  );
+}
+
+function ProductFiltersInner({
   currentGameVersion,
   currentLeague,
   currentDifficulty,

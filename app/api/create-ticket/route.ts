@@ -72,9 +72,20 @@ function getClientIP(request: Request): string {
   return cloudflare || real || forwarded?.split(',')[0] || 'unknown';
 }
 
+// Remove entradas expiradas. Chamado no caminho da requisição em vez de por
+// timer: `setInterval` no escopo de módulo mantinha a instância Fluid acordada
+// e consumindo CPU faturada sem nenhuma requisição acontecendo. O mapa é por
+// instância e some no reciclo, então varrer sob demanda basta.
+function pruneExpired(now: number) {
+  rateLimitMap.forEach((data, ip) => {
+    if (now > data.resetTime) rateLimitMap.delete(ip);
+  });
+}
+
 // Security: Check rate limit
 function checkRateLimit(ip: string): { allowed: boolean; remainingTime?: number } {
   const now = Date.now();
+  pruneExpired(now);
   const clientData = rateLimitMap.get(ip);
 
   if (!clientData || now > clientData.resetTime) {
@@ -94,20 +105,6 @@ function checkRateLimit(ip: string): { allowed: boolean; remainingTime?: number 
   clientData.count++;
   return { allowed: true };
 }
-
-// Security: Clean up old rate limit entries periodically
-setInterval(() => {
-  const now = Date.now();
-  const ipsToDelete: string[] = [];
-  
-  rateLimitMap.forEach((data, ip) => {
-    if (now > data.resetTime) {
-      ipsToDelete.push(ip);
-    }
-  });
-  
-  ipsToDelete.forEach(ip => rateLimitMap.delete(ip));
-}, RATE_LIMIT_WINDOW_MS);
 
 export async function POST(request: Request) {
   try {

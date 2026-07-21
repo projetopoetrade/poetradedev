@@ -1,7 +1,7 @@
 "use client";
 import type { Product } from "@/lib/interface";
 import ProductCard from "./product-card";
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import { ProductSkeleton } from "./ui/skeleton";
 import { Input } from "./ui/input";
@@ -19,7 +19,16 @@ interface ProductsClientProps {
   };
 }
 
-export default function ProductsClient({ products, initialFilters }: ProductsClientProps) {
+// Suspense por causa do `useSearchParams` em rota pré-renderizada.
+export default function ProductsClient(props: ProductsClientProps) {
+  return (
+    <Suspense fallback={null}>
+      <ProductsClientInner {...props} />
+    </Suspense>
+  );
+}
+
+function ProductsClientInner({ products, initialFilters }: ProductsClientProps) {
   const t = useTranslations('Products');
   const router = useRouter();
   const searchParams = useSearchParams();

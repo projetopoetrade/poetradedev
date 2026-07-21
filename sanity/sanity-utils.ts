@@ -32,10 +32,30 @@ export async function sanityFetch<QueryResponse>({
           cache: "force-cache",
           next: {
             tags,
-            revalidate: 3600 // Revalidate every 60 seconds
+            revalidate: 3600 // 1 hora (revalidação por tag cobre publicações)
           },
         })
   );
+}
+
+/**
+ * Slugs de todos os posts de um idioma — usado por `generateStaticParams` da
+ * rota de post para pré-renderizar no build em vez de renderizar sob demanda.
+ * Projeta só `slug`: a query roda por locale a cada build.
+ *
+ * @example
+ * const slugs = await getAllPostSlugs('pt-br'); // ['guia-atlas', ...]
+ */
+export async function getAllPostSlugs(language: string): Promise<string[]> {
+  const query = groq`*[_type == "post" && language == $language && defined(slug.current)].slug.current`;
+
+  const slugs = await sanityFetch<(string | null)[]>({
+    query,
+    qParams: { language },
+    tags: ["post"],
+  });
+
+  return (slugs ?? []).filter((slug): slug is string => Boolean(slug));
 }
 
 export const getPosts = async (language: string, page: number = 1, pageSize: number = 10) => {

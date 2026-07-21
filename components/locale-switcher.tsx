@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { Suspense } from 'react';
 import { usePathname } from '@/i18n/navigation';
 import { useParams, useSearchParams } from 'next/navigation';
 import { Globe } from 'lucide-react';
@@ -21,13 +22,29 @@ const LOCALES = [
  * and creates duplicate (redirecting) URLs.
  */
 export default function LocaleSwitcher() {
-  const pathname = usePathname(); // already stripped of the locale prefix
+  // `useSearchParams` obriga uma fronteira de Suspense em página pré-renderizada
+  // (CSR bailout). O fallback renderiza os MESMOS links, só sem a query string —
+  // manter os <a> no HTML estático é o ponto do componente: é a ponte EN<->pt-br
+  // que os crawlers seguem. Um fallback vazio quebraria isso justamente nas
+  // páginas estáticas, que são a maioria.
+  return (
+    <Suspense fallback={<LocaleLinks suffix="" />}>
+      <LocaleLinksWithQuery />
+    </Suspense>
+  );
+}
+
+function LocaleLinksWithQuery() {
   const searchParams = useSearchParams();
+  const qs = searchParams.toString();
+
+  return <LocaleLinks suffix={qs ? `?${qs}` : ''} />;
+}
+
+function LocaleLinks({ suffix }: { suffix: string }) {
+  const pathname = usePathname(); // already stripped of the locale prefix
   const params = useParams();
   const currentLocale = (params?.locale as string) || 'en';
-
-  const qs = searchParams.toString();
-  const suffix = qs ? `?${qs}` : '';
 
   // Blog posts use translated slugs (different per locale), so reusing the
   // same path across locales would 404. For those, point at the /blog listing

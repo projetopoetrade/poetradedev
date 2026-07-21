@@ -1,6 +1,6 @@
 "use client";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { useTransition } from "react";
+import { Suspense, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import {
   Select,
@@ -17,7 +17,16 @@ interface BuildFiltersProps {
   leagues: string[];
 }
 
-export default function BuildFilters({ leagues }: BuildFiltersProps) {
+// Suspense por causa do `useSearchParams` em rota pré-renderizada.
+export default function BuildFilters(props: BuildFiltersProps) {
+  return (
+    <Suspense fallback={null}>
+      <BuildFiltersInner {...props} />
+    </Suspense>
+  );
+}
+
+function BuildFiltersInner({ leagues }: BuildFiltersProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
