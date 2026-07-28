@@ -45,6 +45,17 @@ const getArg = (flag, fallback = null) => {
 const league = getArg("--league");
 const limit = Number(getArg("--limit", "0")) || 0;
 const apply = args.includes("--apply");
+/**
+ * Caminho de um JSON com a copy já escrita, no formato:
+ *   { "<slug>": { "en": {seoTitle, metaDescription, paragraphs[]},
+ *                 "pt_br": {...} } }
+ *
+ * Existe porque o `gemini-2.5-flash-lite` do engine erra em PT-BR de um jeito
+ * que jogador reconhece: traduziu "Map Device" e usou "ranqueadas", termo que
+ * não existe em PoE. Com o arquivo, o texto é escrito à mão e o script vira só
+ * o transporte — mesma conversão para Portable Text, mesmo rascunho no Sanity.
+ */
+const fromFile = getArg("--from-file");
 
 if (!league) {
   console.error("uso: node scripts/generate-product-copy.mjs --league <Liga> [--limit N] [--apply]");
@@ -52,8 +63,8 @@ if (!league) {
 }
 
 const engineBase = (process.env.ENGINE_API_URL || "").trim().replace(/\/$/, "");
-if (!engineBase) {
-  console.error("ENGINE_API_URL ausente no .env.local — este script gera pelo engine.");
+if (!engineBase && !fromFile) {
+  console.error("ENGINE_API_URL ausente no .env.local — use --from-file ou configure o engine.");
   process.exit(1);
 }
 
@@ -73,16 +84,34 @@ const decodeEntities = (t) =>
     .replace(/&lt;/g, "<")
     .replace(/&gt;/g, ">");
 
-/** A wiki usa <br> e links [[wiki]] no meio do texto; nada disso serve de fato. */
-const cleanFact = (t) =>
-  t
-    ? decodeEntities(t)
-        .replace(/<br\s*\/?>/gi, " ")
-        .replace(/\[\[[^\]|]*\|([^\]]*)\]\]/g, "$1")
-        .replace(/\[\[([^\]]*)\]\]/g, "$1")
-        .replace(/\s+/g, " ")
-        .trim()
-    : undefined;
+/**
+ * Normaliza o texto da wiki para virar fato utilizável.
+ *
+ * Não basta trocar `<br>`: vários itens trazem um tooltip inteiro embutido num
+ * `<span class="hoverbox">` — o `drop_text` do Hunter's Exalted Orb vem com a
+ * Maven's Invitation renderizada dentro, mods, flavour text e tudo. Mandar isso
+ * ao modelo é entregar ruído como se fosse fato.
+ *
+ * O nome útil do item citado vive no `alt=` do ativador do hoverbox, então
+ * extraímos ele e descartamos o resto da marcação.
+ */
+const cleanFact = (t) => {
+  if (!t) return undefined;
+  let s = decodeEntities(t).replace(/<br\s*\/?>/gi, " ");
+  // O hoverbox inteiro vira só o nome do item que ele representa.
+  s = s.replace(/<span class="hoverbox[\s\S]*?alt=([^<|"]+)[\s\S]*?<\/span>\s*<\/span>/g, "$1");
+  s = s
+    .replace(/<[^>]*>/g, " ")
+    .replace(/\d+x\d+px\|link=\|alt=/g, "")
+    .replace(/\[\[[^\]|]*\|([^\]]*)\]\]/g, "$1")
+    .replace(/\[\[([^\]]*)\]\]/g, "$1")
+    .replace(/\s+/g, " ")
+    .replace(/\s+([.,;])/g, "$1")
+    .trim();
+  // Sobrou frase truncada ("Can also drop in .") ou blob gigante: não é fato.
+  if (s.length > 300 || /\b(in|from|de)\s*\.$/i.test(s)) return undefined;
+  return s || undefined;
+};
 
 async function getJson(url, init) {
   const res = await fetch(url, { headers: UA, ...init });
@@ -151,8 +180,26 @@ async function generateCopy(name, locale, facts) {
   return res.json();
 }
 
+/** Valida a copy escrita à mão antes de deixá-la virar documento. */
+function validateCopy(entry, slug) {
+  for (const key of ["en", "pt_br"]) {
+    const c = entry?.[key];
+    if (!c) throw new Error(`${slug}: falta "${key}"`);
+    if (!c.seoTitle?.trim()) throw new Error(`${slug}.${key}: seoTitle vazio`);
+    if (!c.metaDescription?.trim()) throw new Error(`${slug}.${key}: metaDescription vazio`);
+    if (!Array.isArray(c.paragraphs) || c.paragraphs.length === 0) {
+      throw new Error(`${slug}.${key}: paragraphs vazio`);
+    }
+  }
+}
+
 async function main() {
-  console.log(`Gerando texto de produto para "${league}" via ${engineBase}\n`);
+  const origem = fromFile ? `arquivo ${path.basename(fromFile)}` : engineBase;
+  console.log(`Gerando texto de produto para "${league}" via ${origem}\n`);
+
+  const escrito = fromFile
+    ? JSON.parse(await (await import("fs/promises")).readFile(fromFile, "utf-8"))
+    : null;
 
   const supabase = createSupabase(
     process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -168,16 +215,28 @@ async function main() {
   const haveDoc = new Set(existing.map((r) => r.s).filter(Boolean));
 
   let pending = products.filter((p) => p.slug && !haveDoc.has(p.slug));
+  // Com arquivo, só entram os slugs que ele traz — permite subir em lotes.
+  if (escrito) pending = pending.filter((p) => escrito[p.slug]);
   // Publicado primeiro: é o que já está gerando (ou desperdiçando) tráfego.
   pending.sort((a, b) => Number(b.is_listed) - Number(a.is_listed));
+  // Conta antes do corte: com `--limit`, a linha abaixo dizia "sem doc: 1" e
+  // dava a impressão de que só faltava um produto.
+  const totalPendentes = pending.length;
   if (limit) pending = pending.slice(0, limit);
 
-  console.log(`produtos na liga: ${products.length} | sem doc no Sanity: ${pending.length}`);
+  console.log(
+    `produtos na liga: ${products.length} | sem doc no Sanity: ${totalPendentes}` +
+      (limit ? ` (processando ${pending.length} por --limit)` : ""),
+  );
   if (pending.length === 0) return;
 
-  const facts = await wikiFacts(pending.map((p) => p.metadata_id).filter(Boolean));
-  const comFato = pending.filter((p) => facts.get(p.metadata_id)?.description).length;
-  console.log(`fatos da wiki resolvidos: ${comFato}/${pending.length}\n`);
+  const facts = escrito
+    ? new Map()
+    : await wikiFacts(pending.map((p) => p.metadata_id).filter(Boolean));
+  if (!escrito) {
+    const comFato = pending.filter((p) => facts.get(p.metadata_id)?.description).length;
+    console.log(`fatos da wiki resolvidos: ${comFato}/${pending.length}\n`);
+  }
 
   let ok = 0;
   const falhas = [];
@@ -185,9 +244,15 @@ async function main() {
   for (const product of pending) {
     const itemFacts = facts.get(product.metadata_id) || {};
     try {
-      const copies = {};
-      for (const { code, sanityKey } of LOCALES) {
-        copies[sanityKey] = await generateCopy(product.name, code, itemFacts);
+      let copies;
+      if (escrito) {
+        validateCopy(escrito[product.slug], product.slug);
+        copies = escrito[product.slug];
+      } else {
+        copies = {};
+        for (const { code, sanityKey } of LOCALES) {
+          copies[sanityKey] = await generateCopy(product.name, code, itemFacts);
+        }
       }
 
       const docId = `drafts.product-${product.slug}`;
@@ -216,7 +281,7 @@ async function main() {
         await sanity.createOrReplace(doc);
       }
       ok++;
-      const marca = itemFacts.description ? " " : "~"; // ~ = sem fato da wiki
+      const marca = escrito || itemFacts.description ? " " : "~"; // ~ = sem fato da wiki
       console.log(`  ${marca} ${product.name.padEnd(34)} ${copies.en.seoTitle.slice(0, 52)}`);
     } catch (e) {
       falhas.push(`${product.name}: ${e.message}`);
