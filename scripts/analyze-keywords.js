@@ -292,9 +292,12 @@ async function fetchRealData() {
         { name: 'Chaos Orb', slug: 'chaos-orb', category: 'currency', gameVersion: 'path-of-exile-1', league: 'Standard', difficulty: 'softcore' },
         { name: 'Mirror of Kalandra', slug: 'mirror-of-kalandra', category: 'currency', gameVersion: 'path-of-exile-1', league: 'Standard', difficulty: 'softcore' }
       ],
+      // Só ligas permanentes no fallback. Nomear uma liga temporária aqui a
+      // deixa envelhecer em silêncio: esta lista dizia 'Keepers of the Flame',
+      // encerrada em 2026, e seguia gerando keyword para ela.
       leagues: [
-        { name: 'Keepers of the Flame', slug: 'keepers-of-the-flame', gameVersion: 'path-of-exile-1', isActive: true },
-        { name: 'Standard', slug: 'standard', gameVersion: 'path-of-exile-1', isActive: true }
+        { name: 'Standard', slug: 'standard', gameVersion: 'path-of-exile-1', isActive: true },
+        { name: 'Hardcore', slug: 'hardcore', gameVersion: 'path-of-exile-1', isActive: true }
       ],
       difficulties: ['softcore', 'hardcore'],
       gameVersions: ['path-of-exile-1', 'path-of-exile-2']

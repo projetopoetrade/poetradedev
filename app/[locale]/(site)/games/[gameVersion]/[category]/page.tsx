@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { getProductsWithParams, getLeagues } from "@/app/actions";
+import { getProductsWithParams, getLeagues, getCurrentTempLeague } from "@/app/actions";
 import { generateKeywords, buildBreadcrumbSchema, getOgLocale } from "@/lib/utils";
 import { encodeProductName } from "@/utils/url-helper";
 import CategoryItemCard from "@/components/category-item-card";
@@ -208,7 +208,12 @@ export default async function CategoryPage(props: {
   let defaultLeague: string | undefined;
   try {
     allLeagues = await getLeagues(gameVersion as any);
-    defaultLeague = allLeagues[0]?.name;
+    // `allLeagues[0]` pegava qualquer liga ativa, inclusive Standard: em 28/07,
+    // com Allflame e Standard ativas, a loja passou a listar o catálogo da
+    // Standard. `getCurrentTempLeague` descarta as permanentes (Standard,
+    // Hardcore, SSF, Ruthless) e é o mesmo default usado no resto do site.
+    defaultLeague =
+      (await getCurrentTempLeague(gameVersion as any)) ?? allLeagues[0]?.name;
   } catch {}
 
   const [products, blogPosts] = await Promise.all([

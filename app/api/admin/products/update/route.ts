@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
-import { createAdminClient } from "@/utils/supabase/admin";
+import { createAdminClient, isAdmin } from "@/utils/supabase/admin";
 
 export async function PATCH(req: Request) {
   try {
@@ -15,8 +15,15 @@ export async function PATCH(req: Request) {
       );
     }
 
+    if (!isAdmin(user.id)) {
+      return NextResponse.json(
+        { error: 'Forbidden' },
+        { status: 403 }
+      );
+    }
+
     const body = await req.json();
-    const { productId, price, in_stock } = body;
+    const { productId, price, in_stock, is_listed, price_locked } = body;
 
     if (!productId) {
       return NextResponse.json(
@@ -36,10 +43,24 @@ export async function PATCH(req: Request) {
         );
       }
       updatePayload.price = price;
+      // Editar o preço à mão trava a linha por padrão: sem isso o próximo
+      // /api/admin/products/reprice desfaria o ajuste em silêncio. Quem quiser
+      // devolver o item ao preço automático manda price_locked: false explícito.
+      if (price_locked === undefined) {
+        updatePayload.price_locked = true;
+      }
+    }
+
+    if (price_locked !== undefined) {
+      updatePayload.price_locked = Boolean(price_locked);
     }
 
     if (in_stock !== undefined) {
       updatePayload.in_stock = Boolean(in_stock);
+    }
+
+    if (is_listed !== undefined) {
+      updatePayload.is_listed = Boolean(is_listed);
     }
 
     if (Object.keys(updatePayload).length === 0) {

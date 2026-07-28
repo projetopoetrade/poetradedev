@@ -2,6 +2,7 @@ import { CurrencyInfo } from "@/components/currency-info";
 import GameVersionPosts from "@/components/GameVersionPosts";
 import { LeagueSelectionPage } from "@/components/league-selection";
 import PatchInfo from "@/components/PatchInfo";
+import { getCurrentPatch } from "@/lib/patch-from-league";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { buildCanonical, generateKeywords, buildBreadcrumbSchema, getOgLocale } from "@/lib/utils";
@@ -131,6 +132,7 @@ export default async function Page({
   const shortGameName = isPoe2 ? "PoE 2" : "PoE";
   const gameTitle = isPoe2 ? "Path of Exile 2" : "Path of Exile";
   const patchVersion = isPoe2 ? "path-of-exile-2" : "path-of-exile-1";
+  const currentPatch = await getCurrentPatch(patchVersion, locale);
 
   const breadcrumbSchema = buildBreadcrumbSchema([
     { name: 'Home', url: '/' },
@@ -167,7 +169,7 @@ export default async function Page({
               <h2 className="text-4xl font-bold">{gameTitle} Major Updates</h2>
               <p className="mt-2 text-base text-muted-foreground">Latest updates and changes for {gameTitle}.</p>
             </header>
-            <PatchInfo gameVersion={patchVersion} />
+            <PatchInfo patch={currentPatch} />
             <CurrencyInfo gameVersion={gameVersion} />
 
             {/* Browse by Category */}

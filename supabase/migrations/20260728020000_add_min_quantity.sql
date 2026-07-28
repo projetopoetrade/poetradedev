@@ -1,0 +1,19 @@
+-- Quantidade mínima de compra, em unidades do próprio item.
+--
+-- Regra do operador: o menor pedido possível de qualquer currency deve valer
+-- pelo menos 1 divine. Como `price_divine` já guarda quanto o item vale em
+-- divines, o mínimo é o inverso arredondado para cima:
+--
+--   min_quantity = máx(1, teto(1 / price_divine))
+--
+-- Na prática: Divine Orb e tudo acima dele ficam em 1; um Chaos Orb a 0,0088
+-- divine passa a exigir ~114 unidades; um Scroll of Wisdom, milhares.
+--
+-- Motivo: pedido de centavos custa mais em atendimento e taxa de gateway do que
+-- rende, e no in-game a entrega de 3 chaos ocupa o mesmo tempo que a de 300.
+--
+-- É recalculado junto com o preço em /api/admin/products/reprice, então itens
+-- com `price_locked` mantêm o preço manual mas seguem tendo o mínimo atualizado
+-- pelo valor de mercado — que é o comportamento desejado: a trava é de preço,
+-- não de política de pedido.
+ALTER TABLE products ADD COLUMN IF NOT EXISTS min_quantity INTEGER NOT NULL DEFAULT 1;

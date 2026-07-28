@@ -37,7 +37,11 @@ export default function ProductDetail({
   productName,
   seoTitle,
 }: ProductDetailProps) {
-  const [count, setCount] = useState(1);
+  // Pedido mínimo calibrado para valer ~1 divine (ver migration
+  // 20260728020000_add_min_quantity.sql). Um Scroll of Wisdom exige milhares de
+  // unidades; um Mirror, uma só.
+  const minQty = Math.max(1, product.min_quantity ?? 1);
+  const [count, setCount] = useState(minQty);
   const { formatPrice, convertPrice } = useCurrency();
   const { addToCart } = useCart();
   const [isProcessing, setIsProcessing] = useState(false);
@@ -60,29 +64,33 @@ export default function ProductDetail({
     if (isQuantityLoading) return;
     setIsQuantityLoading(true);
     try {
-      setCount((prev) => Math.max(0, prev - 1));
+      setCount((prev) => Math.max(minQty, prev - 1));
     } finally {
       setIsQuantityLoading(false);
     }
   };
 
+  // Enquanto digita não travamos no mínimo — com mínimos de milhares, corrigir a
+  // cada tecla tornaria o campo inutilizável. O ajuste acontece no blur e, por
+  // garantia, antes de mandar pro carrinho.
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (isQuantityLoading) return;
     setIsQuantityLoading(true);
     try {
-      const value = parseInt(e.target.value) || 0;
-      setCount(Math.max(0, value));
+      setCount(Math.max(0, parseInt(e.target.value) || 0));
     } finally {
       setIsQuantityLoading(false);
     }
   };
+
+  const handleInputBlur = () => setCount((prev) => Math.max(minQty, prev));
 
   const handleBuyNow = async () => {
     setError(null);
     setIsProcessing(true);
 
     try {
-      addToCart(product, count);
+      addToCart(product, Math.max(minQty, count));
       router.push('/cart');
     } catch (error) {
       console.error('Error:', error);
@@ -93,19 +101,20 @@ export default function ProductDetail({
   };
 
   const handleAddToCart = () => {
-    addToCart(product, count);
+    const quantity = Math.max(minQty, count);
+    addToCart(product, quantity);
 
     // Show success toast
     toast.success(t('itemAddedToCart'), {
       description: t('itemAddedDescription', {
-        quantity: count,
+        quantity,
         productName: product.name
       }),
       icon: <Check className="h-5 w-5" />,
       duration: 3000,
     });
 
-    setCount(1);
+    setCount(minQty);
   };
 
   const handleBackToProducts = () => {
@@ -161,7 +170,7 @@ export default function ProductDetail({
               size="icon"
               className="flex-none h-10"
               onClick={decrement}
-              disabled={isQuantityLoading || count === 0}
+              disabled={isQuantityLoading || count <= minQty}
               aria-label="Decrease quantity"
             >
               <Minus />
@@ -169,11 +178,12 @@ export default function ProductDetail({
             <Input
               className="shrink text-center text-xl w-24 mx-2 h-10 appearance-none [-moz-appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
               type="number"
-              placeholder="1"
+              placeholder={String(minQty)}
               value={count}
               onChange={handleInputChange}
+              onBlur={handleInputBlur}
               disabled={isQuantityLoading}
-              min="0"
+              min={minQty}
             />
             <Button
               variant="outline"
@@ -186,6 +196,12 @@ export default function ProductDetail({
               <Plus />
             </Button>
           </div>
+
+          {minQty > 1 && (
+            <p className="text-sm text-muted-foreground">
+              Pedido mínimo: {minQty.toLocaleString("pt-BR")} unidades
+            </p>
+          )}
 
           {/* Price display — escondido quando sem estoque ou sem preço definido */}
           {isInStock && product.price > 0 && (

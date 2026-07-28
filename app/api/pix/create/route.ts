@@ -3,6 +3,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
 import { createAdminClient } from '@/utils/supabase/admin';
+import { validateCartItems } from '@/lib/checkout/validate-items';
+import { getExchangeRates, toMinorUnits } from '@/lib/pricing/exchange-rates';
 
 // --- Tipos da Requisição (o que o frontend envia) ---
 interface Customer {
@@ -98,12 +100,8 @@ export async function POST(req: NextRequest) {
     });
 
     // Validações
-    if (!amount || amount <= 0) {
-      return NextResponse.json(
-        { error: 'O valor deve ser maior que zero.' },
-        { status: 400 }
-      );
-    }
+    // `amount` do body é ignorado no cálculo — serve só para detectar divergência
+    // entre o que o front mostrou e o que o servidor vai cobrar (ver abaixo).
 
     if (!customer || !customer.taxId || !customer.cellphone || !customer.email) {
       return NextResponse.json(
@@ -126,6 +124,43 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Revalida o carrinho contra o banco: existência, estoque e pedido mínimo.
+    const validated = await validateCartItems(items);
+    if (!validated.ok) {
+      return NextResponse.json({ error: validated.error }, { status: validated.status });
+    }
+
+    // O valor cobrado é calculado AQUI, a partir do preço do banco e da taxa de
+    // câmbio do servidor. O `amount` que o cliente enviou não entra na conta —
+    // era ele que definia a cobrança, e quem forjasse a requisição escolhia o
+    // próprio preço.
+    //
+    // Não há risco de o usuário ver um preço e pagar outro: o front converte com
+    // a taxa de `/api/exchange-rates`, que faz exatamente este mesmo `fetch` e
+    // compartilha o cache do Next.
+    const { rates, source: ratesSource } = await getExchangeRates();
+    const chargeAmount = toMinorUnits(validated.totalAmount, rates.BRL);
+
+    if (chargeAmount <= 0) {
+      return NextResponse.json(
+        { error: 'O valor deve ser maior que zero.' },
+        { status: 400 }
+      );
+    }
+
+    // Divergência acima de 1% indica front desatualizado ou taxa virando entre a
+    // montagem do carrinho e o checkout. Não bloqueia — o servidor manda — mas
+    // fica registrado, porque é o sintoma que apareceria numa tentativa de fraude.
+    if (amount && Math.abs(amount - chargeAmount) / chargeAmount > 0.01) {
+      console.warn('[PIX] Divergência cliente x servidor:', {
+        cliente: amount,
+        servidor: chargeAmount,
+        usd: validated.totalAmount,
+        taxa: rates.BRL,
+        fonte: ratesSource,
+      });
+    }
+
     // Verificar API Key
     const apiKey = process.env.ABACATEPAY_API_KEY;
     if (!apiKey) {
@@ -138,7 +173,7 @@ export async function POST(req: NextRequest) {
 
     // Preparar dados para AbacatePay
     const abacatePayload = {
-      amount,
+      amount: chargeAmount,
       expiresIn,
       description: description || `Pedido - ${characterName}`,
       customer: {
@@ -293,14 +328,15 @@ export async function POST(req: NextRequest) {
     if (!order) {
       // Criar novo pedido no banco de dados
       console.log('💾 Criando novo pedido no banco de dados...');
-      const totalAmount = amount / 100; // Converter centavos para reais
+      const totalAmount = chargeAmount / 100; // Converter centavos para reais
 
       const { data: newOrder, error: orderError } = await supabase
         .from('orders')
         .insert({
           character_name: characterName,
           email: customer.email,
-          items: items,
+          // Grava a versão revalidada (preço e mínimo do banco), não o payload.
+          items: validated.items,
           total_amount: totalAmount,
           currency: 'brl',
           status: 'pending',

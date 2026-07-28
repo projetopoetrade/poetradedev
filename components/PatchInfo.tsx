@@ -5,31 +5,23 @@ import { Card, CardContent } from "@/components/ui/card"
 import PatchCard from "./PatchCard"
 import type { PatchData } from "@/types"
 
-// Fonte única da verdade sobre quais patches existem.
-// Para adicionar um novo patch, basta adicionar sua chave aqui e nos arquivos JSON.
-const PATCH_KEYS = ["path-of-exile-1", "path-of-exile-2"]
-console.log(PATCH_KEYS) 
-
 interface PatchInfoProps {
-  gameVersion?: string // ex: "path-of-exile-1"
+  /**
+   * Patch da liga corrente, vindo do Sanity via `getCurrentPatch`.
+   *
+   * Este conteúdo já morou em `messages/*.json`, o que fazia o site anunciar a
+   * liga errada até alguém lembrar de editar os dois arquivos de tradução — em
+   * 28/07/2026 ele ainda mostrava "Keepers of the Flame" (3.27), três ligas
+   * atrás. Como as páginas que renderizam isto são Server Components, os dados
+   * descem por prop e este componente fica só com a apresentação.
+   */
+  patch?: PatchData | null
 }
 
-export default function PatchInfo({ gameVersion }: PatchInfoProps) {
-  console.log(gameVersion)
+export default function PatchInfo({ patch }: PatchInfoProps) {
   const t = useTranslations("PatchInfo")
 
-  // Carrega todos os dados dos patches do arquivo de tradução de uma vez
-  const allPatches: PatchData[] = PATCH_KEYS.map(key => ({
-    id: key,
-    ...t.raw(`patches.${key}`) // t.raw() é perfeito para buscar objetos/arrays do JSON
-  }))
-
-  // Filtra os patches a serem exibidos. Se gameVersion não for fornecido, mostra todos.
-  const patchesToShow = gameVersion
-    ? allPatches.filter(p => p.id === gameVersion)
-    : allPatches
-
-  if (patchesToShow.length === 0) {
+  if (!patch) {
     return (
       <Card>
         <CardContent className="pt-6">
@@ -38,18 +30,15 @@ export default function PatchInfo({ gameVersion }: PatchInfoProps) {
       </Card>
     )
   }
-  
-  // Labels traduzidas que serão passadas para o componente filho
+
   const labels = {
-      keyFeatures: t("keyFeatures"),
-      keyChanges: t("keyChanges")
+    keyFeatures: t("keyFeatures"),
+    keyChanges: t("keyChanges"),
   }
 
   return (
     <div className="space-y-4">
-      {patchesToShow.map((patch) => (
-        <PatchCard key={patch.id} patch={patch} labels={labels} />
-      ))}
+      <PatchCard patch={patch} labels={labels} />
     </div>
   )
 }

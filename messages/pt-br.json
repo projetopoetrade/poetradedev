@@ -158,7 +158,7 @@
     "faq-title": "Perguntas Frequentes (FAQ)",
     "answers-to-some-questions": "Respostas sobre Comprar Currency, Segurança e Entrega",
     "question1": "Como comprar Divine Orb no PoE com entrega rápida?",
-    "answer1": "Para comprar Divine Orbs com entrega rápida (até 30 minutos), basta selecionar sua liga (Settlers, Standard, ou PoE 2), escolher a quantidade desejada e finalizar o pagamento via PIX ou Cartão. Nossa equipe entrega via trade in-game seguro.",
+    "answer1": "Para comprar Divine Orbs com entrega rápida (até 30 minutos), basta selecionar sua liga, escolher a quantidade desejada e finalizar o pagamento via PIX ou Cartão. Nossa equipe entrega via trade in-game seguro.",
     "question2": "A loja Path of Trade é confiável para comprar currency?",
     "answer2": "Sim, a Path of Trade é uma loja 100% confiável e brasileira. Operamos com CNPJ, gateways de pagamento seguros (Stripe/Pix) e temos milhares de clientes satisfeitos. Nossa reputação é construída na transparência e segurança da sua conta.",
     "question3": "Existe risco de banimento ao comprar currency no PoE?",
@@ -356,78 +356,7 @@
     "keyFeatures": "Recursos Principais",
     "keyChanges": "Principais Mudanças",
     "noPatchInformationAvailable": "Nenhuma informação de patch disponível para a versão selecionada.",
-    "viewFullLeagueGuide": "Ver Guia Completo da Liga",
-    "patches": {
-      "path-of-exile-1": {
-        "version": "3.27",
-        "title": "Keepers of the Flame",
-        "date": "31 de outubro de 2025",
-        "description": "Sequência de Breach com sistema Genesis Tree e Grafts, novas classes de ascendência e mudanças de qualidade de vida que modernizam o jogo.",
-        "changes": [
-          "Sistema Genesis Tree com progressão própria e escolhas estratégicas",
-          "16 tipos de Grafts equipáveis (até 2 simultâneos) com skills dedicadas",
-          "Novos orbes carnais para craft de Grafts (Aug/Regal/Exalted)",
-          "\"Foul\" currency e uniques com distribuição alterada de mods",
-          "Breaches estabilizados com defesa de hives e novos chefes",
-          "Identificação em massa em NPCs sem uso de Scrolls of Wisdom",
-          "Bestiário: itemização gratuita de beasts desde late Act 1",
-          "Heist: Rogues começando no nível máximo",
-          "Trade assíncrono muda dinâmica de venda/compra",
-          "Novos uniques \"Foul\" com variações mutantes"
-        ],
-        "features": [
-          {
-            "title": "Genesis Tree",
-            "description": "Árvore de progressão própria que permite crescer Grafts, currency, raros e até \"Foul\" uniques através de escolhas estratégicas."
-          },
-          {
-            "title": "Grafts Equipáveis",
-            "description": "Até dois Grafts podem ser equipados, com 16 variações incluindo fogo, gelo, raio, físico e opções híbridas que concedem habilidades únicas."
-          },
-          {
-            "title": "Quality of Life",
-            "description": "Identificação em massa, itemização gratuita de beasts, rogues de Heist no nível máximo e melhorias no sistema de trade."
-          },
-          {
-            "title": "Craft Dedicado",
-            "description": "Orbes \"carnais\" que funcionam como Aug/Regal/Exalted para Grafts, e \"Foul Exalted\" com distribuição filtrada de tiers para crafting avançado."
-          }
-        ],
-        "leagueGuideUrl": ""
-      },
-      "path-of-exile-2": {
-        "version": "2.0",
-        "title": "Path of Exile 2",
-        "date": "6 de dezembro de 2024",
-        "description": "Path of Exile 2 é um ARPG gratuito desenvolvido e publicado pela Grinding Gear Games. Continuação do Path of Exile de 2013, lançado em Acesso Antecipado pago para PC, PlayStation 5 e Xbox Series X|S.",
-        "changes": [
-          "Nova Campanha com seis atos",
-          "12 Classes com três Ascendências cada",
-          "Mais de 100 mapas de fim de jogo",
-          "Centenas de bases de equipamentos",
-          "Sistema de Habilidades personalizável com Dupla Especialização",
-          "Novo motor gráfico com visuais de alta fidelidade"
-        ],
-        "features": [
-          {
-            "title": "Nova Campanha",
-            "description": "Se passa vários anos após os eventos do primeiro jogo, com novas áreas, cidades e personagens."
-          },
-          {
-            "title": "Mecânicas de Liga",
-            "description": "Mantém a tradição de ligas temporárias de desafios com mecânicas e recompensas únicas."
-          },
-          {
-            "title": "Sistema de Equipamentos",
-            "description": "Centenas de bases de equipamentos com modificadores mágicos e variantes únicas com poderes ancestrais."
-          },
-          {
-            "title": "Sistema de Habilidades Personalizável",
-            "description": "Qualquer classe pode usar qualquer Gema de Habilidade, modificada por até 5 Gemas de Suporte. A Dupla Especialização permite alternar entre dois estilos de luta."
-          }
-        ]
-      }
-    }
+    "viewFullLeagueGuide": "Ver Guia Completo da Liga"
   },
   "Header": {
     "signIn": "Entrar",
@@ -702,7 +631,7 @@
     "budgetCheap": "Barato",
     "budgetMedium": "Médio",
     "budgetExpensive": "Caro",
-"mainSkill": "Skill Principal",
+    "mainSkill": "Skill Principal",
     "difficulty": "Dificuldade",
     "budget": "Orçamento"
   },

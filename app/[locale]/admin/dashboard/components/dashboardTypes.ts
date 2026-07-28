@@ -57,5 +57,9 @@ export type LeagueAdmin = {
   difficulty: string | null;
   poe_ninja_name: string | null;
   league_slug: string | null;
+  /** Preço do Divine Orb em USD nesta liga — âncora de todo o catálogo. */
+  divine_usd: number | null;
+  /** Margem sobre o mercado, em fração (0.5 = +50%). */
+  price_markup: number | null;
   updated_at: string | null;
 };

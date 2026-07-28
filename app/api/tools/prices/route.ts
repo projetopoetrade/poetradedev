@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/utils/supabase/server'
+import { getCurrentTempLeague } from '@/app/actions'
 import { getEngineApiBase } from '@/lib/placeholders/engine'
 import { getPoeStaticItemImages } from '@/lib/poe-static-data'
 
@@ -237,8 +238,14 @@ async function fetchFromEngine(
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
   const game = (searchParams.get('game') || 'poe1') as 'poe1' | 'poe2'
-  const league = searchParams.get('league') || 'Settlers'
   const category = searchParams.get('category') || 'Currency'
+
+  // Sem `?league=`, cai na liga temporária ativa. O default era o literal
+  // 'Settlers' — uma liga encerrada em 2024, que devolvia lista vazia em toda
+  // chamada sem parâmetro desde então.
+  const gameVersion = game === 'poe2' ? 'path-of-exile-2' : 'path-of-exile-1'
+  const league =
+    searchParams.get('league') || (await getCurrentTempLeague(gameVersion)) || 'Standard'
 
   const useEngine = process.env.USE_ENGINE_PRICES === '1'
   const t0 = Date.now()

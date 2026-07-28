@@ -7,7 +7,12 @@ export interface Product {
   url_slug?: string, // slug canônico curto (sem liga), usado na URL/sitemap
   body?: any, // Portable Text content from Sanity
   alt?: string,
-  price: number,
+  price: number, // USD efetivo — derivado de price_divine, salvo se price_locked
+  price_divine?: number | null, // valor do item em divines (CX oficial ou poe.ninja)
+  price_locked?: boolean, // true = preço editado à mão; o recálculo não encosta
+  price_source?: 'cx' | 'ninja' | 'manual' | null, // quem precificou no último recálculo
+  min_quantity?: number, // menor pedido possível — calibrado para valer ~1 divine
+  metadata_id?: string | null, // caminho de metadata da GGG; chave no Currency Exchange
   in_stock?: boolean, // true = available, false = out of stock (blocks purchases)
   is_listed?: boolean, // true = shown in the store listing, false = hidden but still accessible directly for SEO
   imgUrl: string,

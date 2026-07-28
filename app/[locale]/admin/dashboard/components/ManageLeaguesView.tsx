@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -26,6 +27,7 @@ export default function ManageLeaguesView({ onLeagueDeleted }: ManageLeaguesView
   const [leaguesGameVersionFilter, setLeaguesGameVersionFilter] = useState<
     "all" | "path-of-exile-1" | "path-of-exile-2"
   >("all");
+  const [repricingLeague, setRepricingLeague] = useState<string | null>(null);
 
   useEffect(() => {
     fetchLeagues();
@@ -68,6 +70,56 @@ export default function ManageLeaguesView({ onLeagueDeleted }: ManageLeaguesView
         prev.map((l) => (l.id === id ? { ...l, [field]: !value } : l)),
       );
       toast.error("Erro ao atualizar liga");
+    }
+  };
+
+  // Âncora e margem são numéricas, então não usam o caminho otimista dos
+  // toggles: um valor inválido aqui reprecificaria o catálogo inteiro.
+  const handlePricingSave = async (
+    id: string,
+    field: "divine_usd" | "price_markup",
+    raw: string,
+  ) => {
+    const value = raw.trim() === "" ? null : Number(raw.replace(",", "."));
+    if (value !== null && (!Number.isFinite(value) || value < 0)) {
+      toast.error("Valor inválido");
+      return;
+    }
+    try {
+      const res = await fetch("/api/admin/leagues/all", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, [field]: value }),
+      });
+      if (!res.ok) throw new Error("Failed to update league");
+      setLeaguesList((prev) =>
+        prev.map((l) => (l.id === id ? { ...l, [field]: value } : l)),
+      );
+      toast.success("Precificação atualizada");
+    } catch {
+      toast.error("Erro ao salvar precificação");
+    }
+  };
+
+  const handleReprice = async (name: string, gameVersion: string) => {
+    setRepricingLeague(name);
+    try {
+      const res = await fetch("/api/admin/products/reprice", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ league: name, gameVersion }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to reprice");
+      toast.success(
+        `${data.repriced} produtos reprecificados` +
+          (data.lockedSkipped ? ` · ${data.lockedSkipped} travados` : "") +
+          (data.unmatchedCount ? ` · ${data.unmatchedCount} sem cotação` : ""),
+      );
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erro ao reprecificar");
+    } finally {
+      setRepricingLeague(null);
     }
   };
 
@@ -257,6 +309,86 @@ export default function ManageLeaguesView({ onLeagueDeleted }: ManageLeaguesView
                         Publicada
                       </Label>
                     </div>
+                  </div>
+
+                  {/* Precificação ancorada em divine.
+                      preço = valor do item em divine × divine_usd × (1 + markup) */}
+                  <div className="flex flex-wrap items-end gap-4 pt-3 border-t border-border/50">
+                    <div className="space-y-1">
+                      <Label
+                        htmlFor={`divine-${league.id}`}
+                        className="text-xs text-muted-foreground"
+                      >
+                        Divine em USD
+                      </Label>
+                      <Input
+                        // Remonta quando o valor salvo muda, senão o
+                        // defaultValue de um input não-controlado fica velho.
+                        key={`divine-${league.id}-${league.divine_usd}`}
+                        id={`divine-${league.id}`}
+                        type="number"
+                        step="0.0001"
+                        min="0"
+                        placeholder="0.34"
+                        defaultValue={league.divine_usd ?? ""}
+                        onBlur={(e) => {
+                          if (e.target.value === String(league.divine_usd ?? "")) return;
+                          handlePricingSave(league.id, "divine_usd", e.target.value);
+                        }}
+                        className="h-8 w-28"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <Label
+                        htmlFor={`markup-${league.id}`}
+                        className="text-xs text-muted-foreground"
+                      >
+                        Markup
+                      </Label>
+                      <Input
+                        key={`markup-${league.id}-${league.price_markup}`}
+                        id={`markup-${league.id}`}
+                        type="number"
+                        step="0.05"
+                        min="0"
+                        placeholder="0.5"
+                        defaultValue={league.price_markup ?? ""}
+                        onBlur={(e) => {
+                          if (e.target.value === String(league.price_markup ?? "")) return;
+                          handlePricingSave(league.id, "price_markup", e.target.value);
+                        }}
+                        className="h-8 w-24"
+                      />
+                    </div>
+
+                    {league.divine_usd != null && (
+                      <p className="text-xs text-muted-foreground pb-2">
+                        divine na loja:{" "}
+                        <span className="text-foreground font-medium">
+                          $
+                          {(
+                            league.divine_usd * (1 + (league.price_markup ?? 0))
+                          ).toFixed(4)}
+                        </span>{" "}
+                        <span className="text-foreground/50">
+                          ({((league.price_markup ?? 0) * 100).toFixed(0)}% sobre o mercado)
+                        </span>
+                      </p>
+                    )}
+
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={
+                        repricingLeague !== null || league.divine_usd == null
+                      }
+                      onClick={() => handleReprice(league.name, league.gameVersion)}
+                      className="ml-auto"
+                    >
+                      {repricingLeague === league.name
+                        ? "Recalculando..."
+                        : "Recalcular preços"}
+                    </Button>
                   </div>
                 </div>
               ))}

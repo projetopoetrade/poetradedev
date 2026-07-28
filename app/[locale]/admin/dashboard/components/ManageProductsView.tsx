@@ -20,6 +20,7 @@ export default function ManageProductsView() {
   const [productsLoading, setProductsLoading] = useState(false);
   const [updatingId, setUpdatingId] = useState<number | null>(null);
   const [newPrice, setNewPrice] = useState<number>(0);
+  const [bulkListing, setBulkListing] = useState(false);
   const [selectedGameVersion, setSelectedGameVersion] =
     useState<string>("All Versions");
   const [selectedLeague, setSelectedLeague] = useState<string>("All Leagues");
@@ -136,12 +137,16 @@ export default function ManageProductsView() {
         throw new Error(errorData.error || "Failed to update price");
       }
 
+      // A rota trava a linha ao receber um preço manual — reflita isso aqui,
+      // senão o badge de "travado" só apareceria no próximo refresh.
       setProducts(
         products.map((product) =>
-          product.id === productId ? { ...product, price } : product,
+          product.id === productId
+            ? { ...product, price, price_locked: true }
+            : product,
         ),
       );
-      toast.success("Price updated successfully");
+      toast.success("Preço atualizado e travado contra o recálculo");
       setNewPrice(0);
     } catch (error) {
       console.error("Error updating price:", error);
@@ -219,6 +224,74 @@ export default function ManageProductsView() {
       toast.error(
         error instanceof Error ? error.message : "Failed to update stock",
       );
+    }
+  };
+
+  // Destravar devolve o item ao preço automático; ele só volta a valer no
+  // próximo "Recalcular preços" da liga.
+  const handleToggleLock = async (productId: number, currentLocked: boolean) => {
+    const nextLocked = !currentLocked;
+    setProducts((prev) =>
+      prev.map((p) => (p.id === productId ? { ...p, price_locked: nextLocked } : p)),
+    );
+    try {
+      const response = await fetch("/api/admin/products/update", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productId, price_locked: nextLocked }),
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to update lock");
+      }
+      toast.success(
+        nextLocked
+          ? "Preço travado — o recálculo vai ignorar este item"
+          : "Preço destravado — volta ao automático no próximo recálculo",
+      );
+    } catch (error) {
+      setProducts((prev) =>
+        prev.map((p) =>
+          p.id === productId ? { ...p, price_locked: currentLocked } : p,
+        ),
+      );
+      toast.error(error instanceof Error ? error.message : "Failed to update lock");
+    }
+  };
+
+  const handleBulkListing = async (isListed: boolean) => {
+    if (selectedLeague === "All Leagues") {
+      toast.error("Selecione uma liga primeiro");
+      return;
+    }
+    const verb = isListed ? "publicar" : "despublicar";
+    if (!confirm(`Tem certeza que deseja ${verb} TODO o catálogo de "${selectedLeague}"?`))
+      return;
+
+    setBulkListing(true);
+    try {
+      const response = await fetch("/api/admin/products/bulk", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          league: selectedLeague,
+          // Sem isto, "Standard" atingiria os catálogos de PoE 1 e 2 juntos.
+          gameVersion:
+            selectedGameVersion === "All Versions" ? undefined : selectedGameVersion,
+          is_listed: isListed,
+        }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Failed bulk update");
+      toast.success(
+        `${data.affected} produtos ${isListed ? "publicados" : "despublicados"}` +
+          (data.onlyPriced ? " (só os que têm preço)" : ""),
+      );
+      await fetchProducts();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed bulk update");
+    } finally {
+      setBulkListing(false);
     }
   };
 
@@ -305,7 +378,36 @@ export default function ManageProductsView() {
               </Select>
             </div>
 
-            <div className="flex justify-end">
+            <div className="flex justify-between items-center gap-3 flex-wrap">
+              {/* Publicação em massa. Só habilita com uma liga escolhida — é a
+                  operação da virada de liga, quando o clone cria o catálogo
+                  inteiro despublicado. */}
+              <div className="flex items-center gap-2 flex-wrap">
+                <Button
+                  onClick={() => handleBulkListing(true)}
+                  disabled={bulkListing || selectedLeague === "All Leagues"}
+                  variant="outline"
+                  size="sm"
+                  className="border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/10"
+                >
+                  {bulkListing ? "Aplicando..." : "Publicar liga inteira"}
+                </Button>
+                <Button
+                  onClick={() => handleBulkListing(false)}
+                  disabled={bulkListing || selectedLeague === "All Leagues"}
+                  variant="outline"
+                  size="sm"
+                  className="border-border text-muted-foreground hover:bg-accent"
+                >
+                  Despublicar liga inteira
+                </Button>
+                {selectedLeague === "All Leagues" && (
+                  <span className="text-xs text-muted-foreground">
+                    selecione uma liga para publicar em massa
+                  </span>
+                )}
+              </div>
+
               <Button
                 onClick={handleClearFilters}
                 variant="outline"
@@ -339,10 +441,29 @@ export default function ManageProductsView() {
                             ? "Em Estoque"
                             : "Sem Estoque"}
                         </span>
+                        {product.is_listed === false && (
+                          <span className="text-xs font-bold px-2 py-0.5 rounded-full border bg-muted text-muted-foreground border-border">
+                            Não publicado
+                          </span>
+                        )}
+                        {product.price_locked && (
+                          <span className="text-xs font-bold px-2 py-0.5 rounded-full border bg-amber-500/10 text-amber-400 border-amber-500/30">
+                            Preço travado
+                          </span>
+                        )}
                       </div>
                       <p className="text-sm text-muted-foreground">
                         Preço atual: ${product.price} | {product.league} |{" "}
                         {product.difficulty}
+                        {product.price_divine != null && (
+                          <>
+                            {" "}
+                            |{" "}
+                            <span className="text-foreground/70">
+                              {product.price_divine.toFixed(4)} div
+                            </span>
+                          </>
+                        )}
                       </p>
                     </div>
 
@@ -367,6 +488,21 @@ export default function ManageProductsView() {
                           ? "Tirar do Estoque"
                           : "Colocar em Estoque"}
                       </Button>
+
+                      {/* Trava de preço: só faz sentido oferecer "destravar",
+                          já que travar acontece sozinho ao editar o preço. */}
+                      {product.price_locked && (
+                        <Button
+                          onClick={() =>
+                            product.id && handleToggleLock(product.id, true)
+                          }
+                          size="sm"
+                          variant="outline"
+                          className="border-amber-500/40 text-amber-400 hover:bg-amber-500/10"
+                        >
+                          Destravar preço
+                        </Button>
+                      )}
 
                       {/* Price update */}
                       <div className="flex items-center gap-2">

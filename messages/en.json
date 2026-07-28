@@ -215,7 +215,7 @@
     "faq-title": "Frequently Asked Questions (FAQ)",
     "answers-to-some-questions": "Answers about Buying Currency, Safety, and Delivery",
     "question1": "How to buy Divine Orbs in PoE with fast delivery?",
-    "answer1": "To buy Divine Orbs with fast delivery (up to 30 minutes), simply select your league (Settlers, Standard, or PoE 2), choose the desired amount, and complete payment. Our team delivers via secure in-game trade.",
+    "answer1": "To buy Divine Orbs with fast delivery (up to 30 minutes), simply select your league, choose the desired amount, and complete payment. Our team delivers via secure in-game trade.",
     "question2": "Is Path of Trade a legitimate site to buy currency?",
     "answer2": "Yes, Path of Trade is a 100% legitimate and trusted store. We operate with secure payment gateways (Stripe/Crypto) and have thousands of satisfied customers. Our reputation is built on transparency and account safety.",
     "question3": "Is there a ban risk when buying PoE currency?",
@@ -306,78 +306,7 @@
     "keyFeatures": "Key Features",
     "keyChanges": "Key Changes",
     "noPatchInformationAvailable": "No patch information available for the selected version.",
-    "viewFullLeagueGuide": "View Full League Guide",
-    "patches": {
-      "path-of-exile-1": {
-        "version": "3.27",
-        "title": "Keepers of the Flame",
-        "date": "October 31, 2025",
-        "description": "Breach sequel with Genesis Tree system and Grafts, new ascendancy classes and quality of life changes that modernize the game.",
-        "changes": [
-          "Genesis Tree system with own progression and strategic choices",
-          "16 types of equippable Grafts (up to 2 simultaneous) with dedicated skills",
-          "New carnal orbs for Graft crafting (Aug/Regal/Exalted)",
-          "\"Foul\" currency and uniques with altered mod distribution",
-          "Stabilized Breaches with hive defense and new bosses",
-          "Bulk identification at NPCs without using Scrolls of Wisdom",
-          "Bestiary: free beast itemization from late Act 1",
-          "Heist: Rogues starting at max level",
-          "Asynchronous trade changes buy/sell dynamics",
-          "New \"Foul\" uniques with mutant variations"
-        ],
-        "features": [
-          {
-            "title": "Genesis Tree",
-            "description": "Own progression tree that allows you to grow Grafts, currency, rares and even \"Foul\" uniques through strategic choices."
-          },
-          {
-            "title": "Equippable Grafts",
-            "description": "Up to two Grafts can be equipped, with 16 variations including fire, cold, lightning, physical and hybrid options that grant unique abilities."
-          },
-          {
-            "title": "Quality of Life",
-            "description": "Bulk identification, free beast itemization, Heist rogues at max level and trade system improvements."
-          },
-          {
-            "title": "Dedicated Crafting",
-            "description": "\"Carnal\" orbs that work like Aug/Regal/Exalted for Grafts, and \"Foul Exalted\" with filtered tier distribution for advanced crafting."
-          }
-        ],
-        "leagueGuideUrl": ""
-      },
-      "path-of-exile-2": {
-        "version": "2.0",
-        "title": "Path of Exile 2",
-        "date": "December 6, 2024",
-        "description": "Path of Exile 2 is a free-to-play MMORPG developed and published by Grinding Gear Games. The sequel to 2013's Path of Exile, launching in paid Early Access on Windows PC, PlayStation 5, and Xbox Series X and Series S.",
-        "changes": [
-          "New Campaign with six acts",
-          "12 Character Classes with three Ascendancy subclasses each",
-          "Over 100 endgame maps",
-          "Hundreds of equipment base types",
-          "Customizable Skill System with Dual-Specialisation",
-          "Brand new graphics engine with high-fidelity visuals"
-        ],
-        "features": [
-          {
-            "title": "New Campaign",
-            "description": "Takes place several years after the events of the first game, featuring new areas, towns, and characters."
-          },
-          {
-            "title": "League Mechanics",
-            "description": "Continues the tradition of temporary challenge leagues with unique mechanics and rewards."
-          },
-          {
-            "title": "Equipment System",
-            "description": "Features hundreds of equipment base types with magical modifiers and unique variants with ancient powers."
-          },
-          {
-            "title": "Customizable Skill System",
-            "description": "Any class can use any Skill Gem, modified with up to 5 Support Gems. Dual-Specialisation allows switching between two fighting styles."
-          }
-        ]
-      }
-    }
+    "viewFullLeagueGuide": "View Full League Guide"
   },
   "Orders": {
     "title": "My PoE Orders",

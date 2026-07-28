@@ -4,6 +4,7 @@ import { Metadata } from "next";
 import { SearchParamsStorage } from "@/components/search-params-storage";
 import { CurrencyInfo } from "@/components/currency-info";
 import PatchInfo from "@/components/PatchInfo";
+import { getCurrentPatch } from "@/lib/patch-from-league";
 import { getTranslations } from "next-intl/server";
 import { generateKeywords } from "@/lib/utils"; // Removi buildCanonical pois vamos montar manualmente aqui
 import { Link } from "@/i18n/navigation";
@@ -123,6 +124,11 @@ export default async function ProductsPage(
     const category = "All Items";
     const gameVersion = "Current";
 
+    // Esta página é o catálogo geral, sem jogo selecionado — mostramos o patch de
+    // PoE 1, que é o carro-chefe. Antes recebia a string "Current", que não casava
+    // com chave nenhuma e sempre caía no estado vazio.
+    const currentPatch = await getCurrentPatch("path-of-exile-1", locale);
+
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net";
     const path = locale === 'en' ? '/products' : `/${locale}/products`;
     const pageUrl = `${baseUrl}${path}`;
@@ -213,7 +219,7 @@ export default async function ProductsPage(
           />
         </div>
 
-        <PatchInfo gameVersion={gameVersion} />
+        <PatchInfo patch={currentPatch} />
         <CurrencyInfo gameVersion={gameVersion} />
 
         {(() => {

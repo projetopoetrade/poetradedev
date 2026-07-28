@@ -16,12 +16,17 @@ interface CurrencyContextType {
   apiSource: 'frankfurter' | 'fallback'
 }
 
-// Fallback exchange rates in case API fails
+// Último recurso, só se `/api/exchange-rates` não responder.
+//
+// Precisa espelhar `FALLBACK_RATES` de `lib/pricing/exchange-rates.ts`: aquele
+// decide quanto o cliente PAGA e este decide o que ele VÊ. Divergir entre os dois
+// é mostrar um preço e cobrar outro. O valor antigo aqui (R$5,60) estava 10%
+// acima do mercado (R$5,09 em 28/07/2026).
 const fallbackRates = {
   USD: 1,
-  EUR: 0.93,
-  GBP: 0.79,
-  BRL: 5.60
+  EUR: 0.8788,
+  GBP: 0.7519,
+  BRL: 5.0919
 }
 
 const CurrencyContext = createContext<CurrencyContextType | undefined>(undefined)

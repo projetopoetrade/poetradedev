@@ -225,6 +225,11 @@ export const getLeagues = async (gameVersion: 'path-of-exile-1' | 'path-of-exile
     .select('*')
     .eq('gameVersion', gameVersion)
     .eq('isActive', true)
+    // Sem ORDER BY o Postgres devolve em ordem arbitrária, e quem consome
+    // `leagues[0]` acaba pegando uma liga diferente a cada regeneração de
+    // página. Ordenar por id decrescente coloca a liga criada por último —
+    // a mais nova — em primeiro, que é o padrão desejado em toda virada.
+    .order('id', { ascending: false })
 
   if (error) {
     console.error('Error fetching leagues:', error.message);

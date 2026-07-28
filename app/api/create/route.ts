@@ -1,6 +1,8 @@
 import Stripe from "stripe";
 import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
+import { validateCartItems } from "@/lib/checkout/validate-items";
+import { getExchangeRates, toMinorUnits } from "@/lib/pricing/exchange-rates";
 import { ZodError } from "zod";
 import {
   checkoutSchema,
@@ -28,7 +30,6 @@ export async function POST(req: Request) {
       characterName
     });
 
-    // Security: Validate items
     if (!items || !Array.isArray(items) || items.length === 0) {
       return NextResponse.json(
         { error: 'No items provided' },
@@ -67,8 +68,29 @@ export async function POST(req: Request) {
       );
     }
 
-    // Calculate total amount
-    const totalAmount = items.reduce((total, item) => total + (item.product.price * item.quantity), 0);
+    // Security: o carrinho é revalidado contra o banco DEPOIS da autenticação —
+    // preço, nome e pedido mínimo vêm de lá, nunca do payload, que antes definia
+    // o `unit_amount` cobrado pelo Stripe.
+    const validated = await validateCartItems(items);
+    if (!validated.ok) {
+      return NextResponse.json({ error: validated.error }, { status: validated.status });
+    }
+    const { items: validatedItems, totalAmount } = validated;
+
+    // Preços no banco são em USD. O `unit_amount` do Stripe é cobrado NA moeda
+    // passada em `currency` — antes mandávamos o número em dólar com
+    // `currency: 'brl'`, ou seja, cobrávamos R$0,51 onde o preço era US$0,51,
+    // cerca de um quinto do devido.
+    const { rates } = await getExchangeRates();
+    const currencyCode = String(currency || 'USD').toUpperCase();
+    const rate = rates[currencyCode as keyof typeof rates];
+    if (!rate) {
+      return NextResponse.json(
+        { error: `Unsupported currency: ${currencyCode}` },
+        { status: 400 }
+      );
+    }
+    const totalInCurrency = Number((totalAmount * rate).toFixed(2));
 
     // Create order in database with sanitized data
     const { data: order, error: orderError } = await supabaseServer
@@ -77,8 +99,10 @@ export async function POST(req: Request) {
         character_name: sanitizedData.characterName,
         status: 'processing',
         email: user.email,
-        items: items,
-        total_amount: totalAmount,
+        items: validatedItems,
+        // Na mesma moeda gravada em `currency` logo abaixo — antes o total ia em
+        // USD com a moeda escolhida ao lado, o que tornava o pedido ilegível.
+        total_amount: totalInCurrency,
         currency: currency.toLowerCase(),
         user_id: user.id,
         observations: sanitizedData.observations || null,
@@ -98,14 +122,13 @@ export async function POST(req: Request) {
     const stripe = getStripe();
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
-      line_items: items.map((item) => ({
+      line_items: validatedItems.map((item) => ({
         price_data: {
           currency: currency.toLowerCase(),
           product_data: {
             name: item.product.name,
-            description: item.product.description,
           },
-          unit_amount: Math.round(item.product.price * 100), // Convert to cents
+          unit_amount: toMinorUnits(item.product.price, rate),
         },
         quantity: item.quantity,
       })),
@@ -134,7 +157,8 @@ export async function POST(req: Request) {
       id: session.id,
       url: session.url,
       currency: currency.toLowerCase(),
-      amount: items.reduce((total, item) => total + (item.product.price * item.quantity), 0)
+      amount: totalInCurrency,
+      amountUsd: totalAmount
     });
 
 
