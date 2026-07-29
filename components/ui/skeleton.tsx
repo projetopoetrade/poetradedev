@@ -25,13 +25,12 @@ export function ProductSkeleton() {
 
 export function LeagueSkeleton() {
   return (
-    <div className="w-[380px] h-[360px] rounded-xl overflow-hidden">
-      <div className="p-0 shadow-xl rounded-xl overflow-hidden bg-card/50 backdrop-blur-sm border border-border/50 space-y-3">
-        <div className="p-4">
+    <div className="w-[380px] h-[400px] rounded-xl overflow-hidden">
+      <div className="h-full flex flex-col p-0 shadow-xl rounded-xl overflow-hidden bg-card/50 backdrop-blur-sm border border-border/50">
+        <div className="shrink-0 h-24 flex flex-col justify-center px-6">
           <Skeleton className="h-8 w-3/4 mx-auto" />
-          <Skeleton className="h-4 w-1/2 mx-auto mt-2" />
         </div>
-        <Skeleton className="h-[300px] w-full" />
+        <Skeleton className="flex-1 min-h-0 w-full rounded-none" />
       </div>
     </div>
   )

@@ -3,8 +3,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { useRouter, usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { getLeagues } from "@/app/actions";
+import { sortTempLeagueLast } from "@/lib/leagues";
 import { LeagueSkeleton } from "@/components/ui/skeleton";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
@@ -66,9 +67,9 @@ const LeagueCard = ({ league, gameVersion, isExpanded, onExpand }: LeagueCardPro
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
       className={`
-        w-[380px] 
-        h-[360px]
-        transition-all 
+        w-[380px]
+        h-[400px]
+        transition-all
         duration-300 
         ease-in-out 
         ${isExpanded ? 'scale-105' : 'hover:scale-102'}
@@ -81,35 +82,32 @@ const LeagueCard = ({ league, gameVersion, isExpanded, onExpand }: LeagueCardPro
       aria-pressed={isExpanded}
       aria-label={`${league.name} league, click to expand options`}
     >
-      <Card className="p-0 shadow-xl rounded-xl overflow-hidden bg-card/50 backdrop-blur-sm border border-border/50">
-        <CardContent className="p-0">
-          <CardHeader>
-            <div>
-              <h2 className="text-center font-roboto font-black text-primary tracking-wide text-3xl">
-                {league.name}
-              </h2>
-              {league.description && (
-                <p className="text-center text-sm text-muted-foreground mt-1">
-                  {league.description}
-                </p>
-              )}
-            </div>
-          </CardHeader>
-          <div className="relative h-[300px] w-full">
-            <Image
-              src={league.imageUrl}
-              alt={`${league.name} league image`}
-              fill
-              sizes="(max-width: 380px) 100vw, 380px"
-              quality={90}
-              className="object-cover object-center h-[300px] w-full rounded-t-lg p-4"
-              priority
-            />
-          </div>
+      <Card className="p-0 h-full flex flex-col shadow-xl rounded-xl overflow-hidden bg-card/50 backdrop-blur-sm border border-border/50">
+        {/* Só o nome da liga: a `description` ("Curse of the Allflame (3.29)")
+            saía em um card e não no outro, e era isso que desalinhava os dois.
+            A altura fixa continua para manter os cards iguais mesmo se um nome
+            quebrar em duas linhas. */}
+        <CardHeader className="shrink-0 h-24 justify-center py-4">
+          <h2 className="text-center font-roboto font-black text-primary tracking-wide text-3xl">
+            {league.name}
+          </h2>
+        </CardHeader>
+        {/* `object-contain` em vez de `object-cover`: as artes das ligas têm
+            proporções diferentes e o cover fazia cada logo render num tamanho.  */}
+        <CardContent className="relative flex-1 min-h-0 w-full p-0">
+          <Image
+            src={league.imageUrl}
+            alt={`${league.name} league image`}
+            fill
+            sizes="(max-width: 380px) 100vw, 380px"
+            quality={90}
+            className="object-contain object-center p-4"
+            priority
+          />
         </CardContent>
 
         {isExpanded && (
-          <CardFooter className="flex justify-center gap-2 py-2 mb-4 bg-gradient-to-t from-card via-card/90 to-transparent">
+          <CardFooter className="shrink-0 flex justify-center gap-2 py-2 mb-4 bg-gradient-to-t from-card via-card/90 to-transparent">
             <Link
               href={softcoreProductsUrl}
               prefetch={true}
@@ -151,6 +149,9 @@ export function LeagueSelectionPage({ gameVersion }: LeagueSelectionProps) {
   const t = useTranslations("SelectLeaguePage");
   const isPoe2 = gameVersion === "path-of-exile-2";
   const gameTitle = isPoe2 ? "Path of Exile 2" : "Path of Exile";
+
+  // Standard/Hardcore à esquerda, liga temporária sempre no card da direita.
+  const orderedLeagues = useMemo(() => sortTempLeagueLast(leagues), [leagues]);
 
 
 
@@ -212,7 +213,7 @@ export function LeagueSelectionPage({ gameVersion }: LeagueSelectionProps) {
           {t("description")}
         </p>
         <div className="flex flex-wrap justify-center gap-20 mb-20 md:gap-10 md:mb-30">
-          {leagues.map((league) => (
+          {orderedLeagues.map((league) => (
             <LeagueCard
               key={league.id}
               league={league}
