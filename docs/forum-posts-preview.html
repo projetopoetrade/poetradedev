@@ -1,0 +1,787 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="color-scheme" content="light dark" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body, h1, h2, h3, p, ul, li, pre, figure, article, section, header, footer, details, summary { margin: 0; padding: 0; }
+  ul { list-style: none; }
+  button, input { font: inherit; color: inherit; }
+  img, svg { max-width: 100%; display: block; }
+</style>
+<title>Posts de fórum — Path of Trade</title>
+<style>
+  :root {
+    --bg: #efe9dc;
+    --surface: #f8f4ec;
+    --surface-2: #e4ddcc;
+    --ink: #1d1913;
+    --muted: #6b6252;
+    --gold: #8a6825;
+    --gold-soft: #b08b3c;
+    --line: #d4cab4;
+    --danger: #8c3a24;
+    --ok: #4a6b34;
+    --code-bg: #e9e2d1;
+
+    --display: "Constantia", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+    --body: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", sans-serif;
+    --mono: Consolas, "Cascadia Mono", ui-monospace, "Courier New", monospace;
+
+    --measure: 68ch;
+    --radius: 3px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #100e0a;
+      --surface: #191510;
+      --surface-2: #221d14;
+      --ink: #e9e1ce;
+      --muted: #9a917c;
+      --gold: #c9a45a;
+      --gold-soft: #8f7538;
+      --line: #2e2719;
+      --danger: #c9694a;
+      --ok: #8aab63;
+      --code-bg: #0c0a07;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #100e0a;
+    --surface: #191510;
+    --surface-2: #221d14;
+    --ink: #e9e1ce;
+    --muted: #9a917c;
+    --gold: #c9a45a;
+    --gold-soft: #8f7538;
+    --line: #2e2719;
+    --danger: #c9694a;
+    --ok: #8aab63;
+    --code-bg: #0c0a07;
+  }
+
+  :root[data-theme="light"] {
+    --bg: #efe9dc;
+    --surface: #f8f4ec;
+    --surface-2: #e4ddcc;
+    --ink: #1d1913;
+    --muted: #6b6252;
+    --gold: #8a6825;
+    --gold-soft: #b08b3c;
+    --line: #d4cab4;
+    --danger: #8c3a24;
+    --ok: #4a6b34;
+    --code-bg: #e9e2d1;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 48px 20px 96px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  a { color: var(--gold); }
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  summary:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 2px;
+  }
+
+  /* ---------- cabeçalho ---------- */
+
+  .masthead { display: flex; flex-direction: column; gap: 10px; }
+
+  .eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold-soft);
+    font-weight: 600;
+  }
+
+  h1 {
+    font-family: var(--display);
+    font-size: clamp(30px, 5vw, 44px);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  .lede {
+    color: var(--muted);
+    max-width: var(--measure);
+    font-size: 15px;
+  }
+
+  .scope {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 6px;
+  }
+
+  .tag {
+    font-size: 11.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--muted);
+    border: 1px solid var(--line);
+    border-radius: 100px;
+    padding: 3px 10px;
+    background: var(--surface);
+  }
+
+  .tag--out { color: var(--danger); border-color: color-mix(in srgb, var(--danger) 40%, var(--line)); }
+
+  /* ---------- painel de campos ---------- */
+
+  .fields {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--gold);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .fields h2 {
+    font-family: var(--display);
+    font-size: 17px;
+    font-weight: 700;
+  }
+
+  .fields p { color: var(--muted); font-size: 13.5px; max-width: var(--measure); }
+
+  .field-row { display: flex; flex-wrap: wrap; gap: 16px; }
+
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-size: 11.5px;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--muted);
+  }
+
+  input {
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--ink);
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 8px 10px;
+    min-width: 210px;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  /* ---------- cartão de post ---------- */
+
+  .post {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .post__head {
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--line);
+    padding: 14px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .post__where {
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--gold-soft);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    align-items: baseline;
+  }
+
+  .post__len {
+    letter-spacing: 0.08em;
+    font-weight: 600;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .post__title {
+    font-family: var(--display);
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--gold);
+    line-height: 1.35;
+    text-wrap: balance;
+  }
+
+  .post__titlelabel {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  .post__body {
+    padding: 22px 20px;
+    max-width: var(--measure);
+  }
+
+  .post__body p { margin-bottom: 14px; }
+  .post__body p:last-child { margin-bottom: 0; }
+
+  .post__body strong { color: var(--ink); font-weight: 700; }
+
+  .post__body .s4 {
+    font-family: var(--display);
+    font-size: 21px;
+    line-height: 1.3;
+    display: inline-block;
+  }
+
+  .post__body ul {
+    list-style: none;
+    margin: 0 0 14px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .post__body li { padding-left: 18px; position: relative; }
+
+  .post__body li::before {
+    content: "◆";
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: var(--gold-soft);
+    font-size: 10px;
+    line-height: 1.9;
+  }
+
+  .post__body pre {
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.55;
+    background: var(--code-bg);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    overflow-x: auto;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .tablewrap { overflow-x: auto; margin-bottom: 14px; }
+
+  .post__body table {
+    border-collapse: collapse;
+    font-size: 14px;
+    min-width: 100%;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .post__body th,
+  .post__body td {
+    border: 1px solid var(--line);
+    padding: 6px 12px;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  .post__body th {
+    background: var(--surface-2);
+    font-size: 11.5px;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* ---------- rodapé do cartão ---------- */
+
+  .post__foot {
+    border-top: 1px solid var(--line);
+    padding: 12px 20px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    background: color-mix(in srgb, var(--surface-2) 55%, transparent);
+  }
+
+  .note {
+    font-size: 12.5px;
+    color: var(--muted);
+    flex: 1 1 260px;
+  }
+
+  button {
+    font-family: var(--body);
+    font-size: 12.5px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--bg);
+    background: var(--gold);
+    border: 1px solid var(--gold);
+    border-radius: var(--radius);
+    padding: 7px 14px;
+    cursor: pointer;
+    transition: opacity 120ms ease;
+  }
+
+  button:hover { opacity: 0.85; }
+
+  button.ghost {
+    background: transparent;
+    color: var(--gold);
+  }
+
+  details { border-top: 1px solid var(--line); }
+
+  summary {
+    cursor: pointer;
+    padding: 11px 20px;
+    font-size: 11.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--muted);
+  }
+
+  details pre {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.6;
+    background: var(--code-bg);
+    border-top: 1px solid var(--line);
+    padding: 16px 20px;
+    overflow-x: auto;
+    white-space: pre;
+    color: var(--ink);
+  }
+
+  /* ---------- bloco legendary ---------- */
+
+  .warnbox {
+    border: 1px solid color-mix(in srgb, var(--danger) 45%, var(--line));
+    border-radius: var(--radius);
+    background: color-mix(in srgb, var(--danger) 7%, var(--surface));
+    padding: 14px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .warnbox h3 {
+    font-family: var(--display);
+    font-size: 15px;
+    color: var(--danger);
+  }
+
+  .warnbox p { font-size: 13.5px; color: var(--muted); max-width: var(--measure); }
+
+  .warnbox pre {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    background: var(--code-bg);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    overflow-x: auto;
+  }
+
+  /* ---------- seções ---------- */
+
+  section { display: flex; flex-direction: column; gap: 16px; }
+
+  h2.section {
+    font-family: var(--display);
+    font-size: 24px;
+    font-weight: 700;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .bumps { display: flex; flex-direction: column; gap: 8px; }
+
+  .bump {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    font-size: 14px;
+  }
+
+  .bump span { flex: 1; }
+
+  .checklist {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 18px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+
+  .checklist div { display: flex; gap: 10px; font-size: 14px; align-items: baseline; }
+  .checklist .mark { color: var(--ok); font-size: 12px; }
+
+  footer {
+    color: var(--muted);
+    font-size: 12.5px;
+    border-top: 1px solid var(--line);
+    padding-top: 16px;
+    max-width: var(--measure);
+  }
+
+  #toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(12px);
+    background: var(--ink);
+    color: var(--bg);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 9px 18px;
+    border-radius: 100px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 160ms ease, transform 160ms ease;
+  }
+
+  #toast.on { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="masthead">
+    <div class="eyebrow">Path of Trade · revisão de copy</div>
+    <h1>Posts de fórum</h1>
+    <p class="lede">
+      Como os três posts vão aparecer depois de colados. O BBCode abaixo de cada um é a
+      fonte — o preview é gerado a partir dele, então o que você lê é o que vai ser publicado.
+    </p>
+    <div class="scope">
+      <span class="tag">Curse of the Allflame · softcore</span>
+      <span class="tag">Standard</span>
+      <span class="tag">PC</span>
+      <span class="tag tag--out">sem hardcore</span>
+      <span class="tag tag--out">sem console</span>
+    </div>
+  </header>
+
+  <div class="fields">
+    <h2>Os dois campos que faltam</h2>
+    <p>
+      Preencha aqui e eles entram nos três posts, no preview e no botão de copiar.
+      O Discord vai como <strong>username</strong>, nunca como convite de servidor: o EpicNPC
+      proíbe link de grupo e o OwnedCore desativa link externo fora de thread Legendary.
+    </p>
+    <div class="field-row">
+      <label>
+        Discord (username)
+        <input id="f-discord" type="text" placeholder="pathoftrade" autocomplete="off" spellcheck="false" />
+      </label>
+      <label>
+        Operando desde
+        <input id="f-ano" type="text" placeholder="2021" autocomplete="off" spellcheck="false" />
+      </label>
+    </div>
+  </div>
+
+  <section id="posts"></section>
+
+  <section>
+    <h2 class="section">Mensagens de bump</h2>
+    <p class="lede">
+      Uma por semana. No OwnedCore, “I'm online now” é spam passível de ban, mas promo e
+      status update são permitidos — e thread sem atualização é trancada por abandono.
+      No EpicNPC o bump é botão, a cada 6 horas; responder não bumpa.
+    </p>
+    <div class="bumps" id="bumps"></div>
+  </section>
+
+  <section>
+    <h2 class="section">Antes de publicar</h2>
+    <div class="checklist" id="checklist"></div>
+  </section>
+
+  <footer>
+    Regras verificadas ao vivo em 28/07/2026 nos regulamentos do OwnedCore e do EpicNPC.
+    O elitepvpers não entrou: o site está atrás de challenge da Cloudflare e o regulamento
+    não pôde ser lido.
+  </footer>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+  const POSTS = [
+    {
+      where: "OwnedCore · thread de venda",
+      norm: "~44",
+      title: "Selling PoE 1 & 2 Currency ⚡ Divine · Exalted · Chaos · Mirror ⚡ Allflame & Standard ⚡ PC ⚡ Face-to-Face Delivery",
+      note: "Política de reembolso escrita no corpo — lá é obrigatório e link para política não vale.",
+      legendary: true,
+      body: `[B]PoE 1 & 2 currency, hand-delivered by real players. Running since «ano».[/B]
+
+[B]Selling:[/B] Divine Orb, Exalted Orb, Chaos Orb, Mirror of Kalandra, plus PoE 2 currency and items.
+[B]Leagues:[/B] Curse of the Allflame (Softcore) and Standard. PC only — no Xbox or PlayStation.
+[B]Rates:[/B] ask. The league economy moves daily, so we quote live instead of posting a number that goes stale in a day. Bulk orders quoted individually.
+[B]Delivery:[/B] in-game face-to-face trade, usually within 30 minutes of the payment confirming. No delivery bots, and we never ask for your account login.
+[B]Payment:[/B] card, Google Pay, Apple Pay, crypto, and PIX for customers in Brazil.
+[B]Refund policy:[/B] if we cannot deliver within the stated window because of stock or server issues, you get a full refund to the original payment method, no fee on our side.
+
+[B]Discord: «discord»[/B] — or a forum PM.
+
+Feedback goes in this thread. If an order went wrong, post it here and we answer publicly.`
+    },
+    {
+      where: "OwnedCore · thread de compra",
+      norm: "~44",
+      title: "Buying PoE 1 & 2 Orbs — Divine · Exalted · Mirror — Allflame & Standard — PC — Instant Payment — LF Long-Term Suppliers",
+      note: "Segunda thread do limite de 3. É assim que se forma estoque — a seção tem várias no topo.",
+      body: `[B]We buy PoE currency every day. Instant payment, recurring volume.[/B]
+
+[B]Buying:[/B] Divine Orb, Exalted Orb, Mirror of Kalandra, plus PoE 2 currency and items.
+[B]Where:[/B] Curse of the Allflame (Softcore) and Standard, PC.
+[B]How it works:[/B] tell us the league, currency and amount, we quote right away, we trade in-game, and payment goes out right after the trade.
+[B]No minimum.[/B] Solo farmers and small teams welcome — recurring suppliers get priority and better rates.
+
+[B]Discord: «discord»[/B] — or a forum PM. We answer every offer, including the small ones.`
+    },
+    {
+      where: "EpicNPC · thread de venda",
+      norm: "~19",
+      title: "PoE 1 & 2 Orbs — Divine / Exalted / Chaos / Mirror — Allflame & Standard — PC — Player-to-Player Trade",
+      note: "Sem link nenhum: o site vai só na Contact page do perfil. Preço e contato obrigatórios no corpo.",
+      body: `[B]Hand-farmed Path of Exile currency, delivered player to player. No bots, no account access.[/B]
+
+[B]Currency[/B]
+[TABLE]
+[TR][TH]League[/TH][TH]Currency[/TH][TH]Price[/TH][/TR]
+[TR][TD]Curse of the Allflame[/TD][TD]Divine Orb[/TD][TD]$ask[/TD][/TR]
+[TR][TD]Curse of the Allflame[/TD][TD]Exalted Orb[/TD][TD]$ask[/TD][/TR]
+[TR][TD]Curse of the Allflame[/TD][TD]Chaos Orb[/TD][TD]$ask[/TD][/TR]
+[TR][TD]Curse of the Allflame[/TD][TD]Mirror of Kalandra[/TD][TD]$ask[/TD][/TR]
+[TR][TD]Standard[/TD][TD]Divine Orb[/TD][TD]$ask[/TD][/TR]
+[/TABLE]
+Prices change constantly during a league — message me and you get the current rate straight away. Bulk orders quoted individually.
+
+[B]Platform:[/B] PC only, no Xbox or PlayStation. [B]Leagues:[/B] Curse of the Allflame (Softcore) and Standard. PoE 2 currency and items also available.
+[B]Delivery:[/B] in-game trade, face to face, usually within 30 minutes of payment. I never ask for your login.
+[B]Payment:[/B] card, Google Pay, Apple Pay, crypto, PIX.
+[B]If it goes wrong:[/B] not delivered within the stated window because of stock or server issues means a full refund to the original payment method, no fee.
+
+[B]Contact:[/B] Discord «discord» (username), or reply here / DM me on the forum.`
+    }
+  ];
+
+  const LEGENDARY = `[B]Order online:[/B] [URL=https://www.pathoftrade.net]Path of Trade — live prices per league[/URL] · [URL=https://discord.gg/pathoftrade]Discord server[/URL]`;
+
+  const BUMPS = [
+    "Stock update: Allflame Divine and Exalted restocked, delivery times back to the usual window.",
+    "Delivery times are back to the usual window after today's maintenance — thanks for the patience.",
+    "Weekend promo: discount on bulk Divine orders until Sunday, message for the current rate.",
+    "PoE 2 stock is live for the new league — Divine and Exalted available now.",
+    "Heads up: league ends «data». Standard transfers are business as usual after that."
+  ];
+
+  const CHECKS = [
+    "Discord como username — nunca discord.gg fora de thread Legendary",
+    "Nenhum domínio no título, username, assinatura ou perfil do OwnedCore",
+    "Nenhum link no corpo do post do EpicNPC — o site vai na Contact page",
+    "Sem “Best / Cheapest / Fastest / beating everyone's price”",
+    "Sem “Trusted / Verified / Escrow / Middleman / MM” (palavras protegidas no EpicNPC)",
+    "Reembolso escrito no post, sem link",
+    "Preço e contato no corpo (exigência do EpicNPC)",
+    "Textos diferentes entre os dois fóruns — duplicata dá infração",
+    "Nenhuma menção a Hardcore ou a Xbox/PlayStation sobrou"
+  ];
+
+  const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+  // Linhas úteis: é assim que os posts da concorrência foram medidos (linhas não
+  // vazias do BBCode), então a comparação com a mediana da seção é a mesma conta.
+  const countLines = (s) => s.split("\n").filter((l) => l.trim() !== "").length;
+
+  // Render do BBCode. A fonte é o próprio texto que vai ser colado no fórum, então
+  // o preview não pode divergir do que se copia — os dois saem daqui.
+  function renderBB(src) {
+    const blocks = [];
+    const stash = (html) => `@@B${blocks.push(html) - 1}@@`;
+    let t = esc(src);
+
+    t = t.replace(/\[CODE\]\n?([\s\S]*?)\[\/CODE\]/g, (_, c) =>
+      stash(`<pre>${c.replace(/\n$/, "")}</pre>`));
+
+    t = t.replace(/\[TABLE\]([\s\S]*?)\[\/TABLE\]/g, (_, c) => {
+      const rows = c.replace(/\s*\n\s*/g, "")
+        .replace(/\[TR\]/g, "<tr>").replace(/\[\/TR\]/g, "</tr>")
+        .replace(/\[TH\]/g, "<th>").replace(/\[\/TH\]/g, "</th>")
+        .replace(/\[TD\]/g, "<td>").replace(/\[\/TD\]/g, "</td>");
+      return stash(`<div class="tablewrap"><table>${rows}</table></div>`);
+    });
+
+    t = t.replace(/\[LIST\]([\s\S]*?)\[\/LIST\]/g, (_, c) => {
+      const items = c.split(/\[\*\]/).slice(1)
+        .map((i) => `<li>${inline(i.trim())}</li>`).join("");
+      return stash(`<ul>${items}</ul>`);
+    });
+
+    return t.split(/\n{2,}/).map((chunk) => {
+      const solo = chunk.trim().match(/^@@B(\d+)@@$/);
+      if (solo) return blocks[Number(solo[1])];
+      const html = inline(chunk.trim()).replace(/\n/g, "<br />")
+        .replace(/@@B(\d+)@@/g, (_, i) => blocks[Number(i)]);
+      return html ? `<p>${html}</p>` : "";
+    }).join("");
+  }
+
+  function inline(s) {
+    return s
+      .replace(/\[SIZE=4\]([\s\S]*?)\[\/SIZE\]/g, '<span class="s4">$1</span>')
+      .replace(/\[B\]([\s\S]*?)\[\/B\]/g, "<strong>$1</strong>")
+      .replace(/\[URL=([^\]]+)\]([\s\S]*?)\[\/URL\]/g,
+        '<a href="$1" target="_blank" rel="noopener noreferrer">$2</a>');
+  }
+
+  const fields = { discord: "", ano: "" };
+
+  function fill(text) {
+    return text
+      .replace(/«discord»/g, fields.discord || "«discord»")
+      .replace(/«ano»/g, fields.ano || "«ano»");
+  }
+
+  function copy(text, label) {
+    navigator.clipboard.writeText(text).then(
+      () => toast(label + " copiado"),
+      () => toast("Não consegui copiar — selecione o texto à mão")
+    );
+  }
+
+  let toastTimer;
+  function toast(msg) {
+    const el = document.getElementById("toast");
+    el.textContent = msg;
+    el.classList.add("on");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove("on"), 1800);
+  }
+
+  function draw() {
+    document.getElementById("posts").innerHTML = POSTS.map((p, i) => `
+      <article class="post">
+        <div class="post__head">
+          <div class="post__where">
+            <span>${p.where}</span>
+            <span class="post__len">${countLines(p.body)} linhas · mediana da seção ${p.norm}</span>
+          </div>
+          <div class="post__titlelabel">Título da thread</div>
+          <div class="post__title">${esc(p.title)}</div>
+        </div>
+        <div class="post__body">${renderBB(fill(p.body))}</div>
+        ${p.legendary ? `
+        <div class="post__body" style="padding-top:0">
+          <div class="warnbox">
+            <h3>Só cole isto se a thread estiver Legendary</h3>
+            <p>
+              Fora de Legendary o OwnedCore desativa todo link externo automaticamente,
+              e o domínio não pode aparecer em título, username, assinatura ou perfil.
+              Legendary custa 10.000 CoreCoins por 7 dias.
+            </p>
+            <pre>${esc(LEGENDARY)}</pre>
+            <div><button class="ghost" data-copy="legendary">Copiar bloco Legendary</button></div>
+          </div>
+        </div>` : ""}
+        <div class="post__foot">
+          <span class="note">${p.note}</span>
+          <button data-copy="post" data-i="${i}">Copiar BBCode</button>
+        </div>
+        <details>
+          <summary>Ver BBCode cru</summary>
+          <pre>${esc(fill(p.body))}</pre>
+        </details>
+      </article>
+    `).join("");
+
+    document.getElementById("bumps").innerHTML = BUMPS.map((b, i) => `
+      <div class="bump">
+        <span>${esc(b)}</span>
+        <button class="ghost" data-copy="bump" data-i="${i}">Copiar</button>
+      </div>
+    `).join("");
+
+    document.getElementById("checklist").innerHTML = CHECKS.map((c) => `
+      <div><span class="mark">✓</span><span>${esc(c)}</span></div>
+    `).join("");
+  }
+
+  document.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-copy]");
+    if (!btn) return;
+    const kind = btn.dataset.copy;
+    if (kind === "post") copy(fill(POSTS[Number(btn.dataset.i)].body), "Post");
+    if (kind === "bump") copy(BUMPS[Number(btn.dataset.i)], "Bump");
+    if (kind === "legendary") copy(LEGENDARY, "Bloco");
+  });
+
+  ["discord", "ano"].forEach((k) => {
+    const input = document.getElementById("f-" + k);
+    const saved = localStorage.getItem("potf-" + k);
+    if (saved) { input.value = saved; fields[k] = saved; }
+    input.addEventListener("input", () => {
+      fields[k] = input.value.trim();
+      localStorage.setItem("potf-" + k, fields[k]);
+      draw();
+    });
+  });
+
+  draw();
+</script>
+</body>
+</html>

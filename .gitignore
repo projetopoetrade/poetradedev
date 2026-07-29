@@ -32,6 +32,9 @@ yarn-error.log*
 # local env files
 .env*.local
 .env
+# backups de .env: `.env*.local` não pega `.env.local.bak-20260729`, e um
+# desses commitado vaza service role key e token do Sanity.
+.env.local.bak-*
 
 public/robots.txt
 public/sitemap*.xml
