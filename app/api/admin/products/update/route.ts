@@ -23,7 +23,7 @@ export async function PATCH(req: Request) {
     }
 
     const body = await req.json();
-    const { productId, price, in_stock, is_listed, price_locked } = body;
+    const { productId, price, in_stock, is_listed, price_locked, is_featured, featured_order } = body;
 
     if (!productId) {
       return NextResponse.json(
@@ -61,6 +61,28 @@ export async function PATCH(req: Request) {
 
     if (is_listed !== undefined) {
       updatePayload.is_listed = Boolean(is_listed);
+    }
+
+    if (is_featured !== undefined) {
+      updatePayload.is_featured = Boolean(is_featured);
+      // Tirar do destaque zera a posição: guardar a ordem de um item que não
+      // está mais na vitrine só cria buraco na numeração quando ele voltar.
+      if (!is_featured) updatePayload.featured_order = null;
+    }
+
+    if (featured_order !== undefined) {
+      if (featured_order === null || featured_order === "") {
+        updatePayload.featured_order = null;
+      } else {
+        const order = Number(featured_order);
+        if (!Number.isInteger(order) || order < 0) {
+          return NextResponse.json(
+            { error: 'featured_order must be a non-negative integer or null' },
+            { status: 400 }
+          );
+        }
+        updatePayload.featured_order = order;
+      }
     }
 
     if (Object.keys(updatePayload).length === 0) {

@@ -15,6 +15,8 @@ export interface Product {
   metadata_id?: string | null, // caminho de metadata da GGG; chave no Currency Exchange
   in_stock?: boolean, // true = available, false = out of stock (blocks purchases)
   is_listed?: boolean, // true = shown in the store listing, false = hidden but still accessible directly for SEO
+  is_featured?: boolean, // true = vai para o bloco Destaque e sai da grade normal
+  featured_order?: number | null, // posição manual no Destaque; null cai no fim do bloco
   imgUrl: string,
   gameVersion: 'path-of-exile-1' | 'path-of-exile-2',
   league: string,

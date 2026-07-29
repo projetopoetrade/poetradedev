@@ -227,6 +227,98 @@ export default function ManageProductsView() {
     }
   };
 
+  // Destaque: o produto sobe para o bloco do topo da /products e sai da grade
+  // normal. `featured_order` é a posição manual dentro do bloco; sem ordem, o
+  // item cai no fim dele, ordenado por preço.
+  const handleToggleFeatured = async (
+    productId: number,
+    currentFeatured: boolean,
+  ) => {
+    const nextFeatured = !currentFeatured;
+    setProducts((prev) =>
+      prev.map((p) =>
+        p.id === productId
+          ? {
+              ...p,
+              is_featured: nextFeatured,
+              featured_order: nextFeatured ? p.featured_order : null,
+            }
+          : p,
+      ),
+    );
+    try {
+      const response = await fetch("/api/admin/products/update", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productId, is_featured: nextFeatured }),
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to update featured");
+      }
+      toast.success(
+        nextFeatured
+          ? "Produto no bloco Destaque — ele sai da grade normal"
+          : "Produto de volta à listagem normal",
+      );
+    } catch (error) {
+      setProducts((prev) =>
+        prev.map((p) =>
+          p.id === productId ? { ...p, is_featured: currentFeatured } : p,
+        ),
+      );
+      toast.error(
+        error instanceof Error ? error.message : "Failed to update featured",
+      );
+    }
+  };
+
+  const handleFeaturedOrder = async (
+    productId: number,
+    previousOrder: number | null | undefined,
+    raw: string,
+  ) => {
+    const nextOrder = raw.trim() === "" ? null : Number(raw);
+    if (nextOrder !== null && (!Number.isInteger(nextOrder) || nextOrder < 0)) {
+      toast.error("A posição precisa ser um número inteiro a partir de 0");
+      return;
+    }
+    if ((previousOrder ?? null) === nextOrder) return;
+
+    setProducts((prev) =>
+      prev.map((p) =>
+        p.id === productId ? { ...p, featured_order: nextOrder } : p,
+      ),
+    );
+    try {
+      const response = await fetch("/api/admin/products/update", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productId, featured_order: nextOrder }),
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to update order");
+      }
+      toast.success(
+        nextOrder === null
+          ? "Sem posição fixa — vai para o fim do Destaque"
+          : `Posição ${nextOrder} no Destaque`,
+      );
+    } catch (error) {
+      setProducts((prev) =>
+        prev.map((p) =>
+          p.id === productId
+            ? { ...p, featured_order: previousOrder ?? null }
+            : p,
+        ),
+      );
+      toast.error(
+        error instanceof Error ? error.message : "Failed to update order",
+      );
+    }
+  };
+
   // Destravar devolve o item ao preço automático; ele só volta a valer no
   // próximo "Recalcular preços" da liga.
   const handleToggleLock = async (productId: number, currentLocked: boolean) => {
@@ -451,6 +543,14 @@ export default function ManageProductsView() {
                             Preço travado
                           </span>
                         )}
+                        {product.is_featured && (
+                          <span className="text-xs font-bold px-2 py-0.5 rounded-full border bg-indigo-500/10 text-indigo-400 border-indigo-500/30">
+                            Destaque
+                            {product.featured_order != null
+                              ? ` #${product.featured_order}`
+                              : ""}
+                          </span>
+                        )}
                       </div>
                       <p className="text-sm text-muted-foreground">
                         Preço atual: ${product.price} | {product.league} |{" "}
@@ -488,6 +588,53 @@ export default function ManageProductsView() {
                           ? "Tirar do Estoque"
                           : "Colocar em Estoque"}
                       </Button>
+
+                      {/* Destaque */}
+                      <div className="flex items-center gap-2">
+                        <Button
+                          onClick={() =>
+                            product.id &&
+                            handleToggleFeatured(
+                              product.id,
+                              product.is_featured === true,
+                            )
+                          }
+                          size="sm"
+                          variant="outline"
+                          className={
+                            product.is_featured
+                              ? "border-indigo-500/40 text-indigo-400 hover:bg-indigo-500/10"
+                              : "border-border text-foreground hover:bg-accent"
+                          }
+                        >
+                          {product.is_featured
+                            ? "Tirar do Destaque"
+                            : "Destacar"}
+                        </Button>
+
+                        {product.is_featured && (
+                          <Input
+                            type="number"
+                            min={0}
+                            step={1}
+                            placeholder="ordem"
+                            defaultValue={product.featured_order ?? ""}
+                            title="Posição no bloco Destaque — menor aparece primeiro. Vazio = fim do bloco."
+                            onBlur={(e) =>
+                              product.id &&
+                              handleFeaturedOrder(
+                                product.id,
+                                product.featured_order,
+                                e.target.value,
+                              )
+                            }
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") e.currentTarget.blur();
+                            }}
+                            className="w-20 bg-background border-border"
+                          />
+                        )}
+                      </div>
 
                       {/* Trava de preço: só faz sentido oferecer "destravar",
                           já que travar acontece sozinho ao editar o preço. */}

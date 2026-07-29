@@ -1,4 +1,5 @@
 import { getProductsWithParams } from "@/app/actions";
+import { orderForListing } from "@/lib/products-order";
 import ProductsClient from "@/components/products-client";
 import { Metadata } from "next";
 import { SearchParamsStorage } from "@/components/search-params-storage";
@@ -116,7 +117,11 @@ export default async function ProductsPage(
   const t = await getTranslations({ locale, namespace: "Products" });
 
   try {
-    const products = await getProductsWithParams({ isListed: true });
+    // Destaque no topo, resto por preço decrescente. A mesma ordem alimenta o
+    // JSON-LD abaixo e o `ProductsClient`, que só re-separa os dois blocos.
+    const products = orderForListing(
+      await getProductsWithParams({ isListed: true }),
+    );
 
     // Estado nao-filtrado: e o que a versao estatica representa.
     const league = "All Leagues";

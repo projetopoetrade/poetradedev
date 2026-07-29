@@ -14,6 +14,7 @@ import { useSearchParams } from "next/navigation";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import FiltersToggle from "./filters-toggle";
+import { splitFeatured } from "@/lib/products-order";
 
 interface ProductsClientProps {
   products: Product[];
@@ -134,7 +135,11 @@ function ProductsClientInner({ products, initialFilters }: ProductsClientProps) 
     e.preventDefault();
   };
 
-  const filteredList = products.filter(matchesFilters);
+  // Os destaques saem da grade normal — quem aparece em cima não reaparece
+  // embaixo. O filtro roda antes da separação, então um destaque que não casa
+  // com a categoria/busca atual simplesmente não é mostrado.
+  const { featured, rest } = splitFeatured(products.filter(matchesFilters));
+  const isEmpty = featured.length === 0 && rest.length === 0;
 
   return (
     <div className="border rounded-b-lg py-4 md:min-h-[678px] bg-black/5 mb-12">
@@ -202,25 +207,58 @@ function ProductsClientInner({ products, initialFilters }: ProductsClientProps) 
         </div>
       </div>
 
-      {/* Products Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 px-3">
-        {/* Sem gate de "carregando": os produtos ja vem no payload estatico.
-            O `setTimeout(500)` que existia aqui fazia o HTML do servidor conter
-            SKELETONS em vez de produtos — o crawler nunca via a listagem. */}
-        {filteredList.length > 0 ? (
-          // Show products
-          filteredList.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))
-        ) : (
-          // Show empty state
-          <div className="col-span-full text-center py-12">
-            <p className="text-lg text-muted-foreground">
-              {t("noProductsFound")}
-            </p>
-          </div>
-        )}
-      </div>
+      {/* Sem gate de "carregando": os produtos ja vem no payload estatico.
+          O `setTimeout(500)` que existia aqui fazia o HTML do servidor conter
+          SKELETONS em vez de produtos — o crawler nunca via a listagem. */}
+      {isEmpty ? (
+        <div className="text-center py-12 px-3">
+          <p className="text-lg text-muted-foreground">{t("noProductsFound")}</p>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-8 px-3">
+          {featured.length > 0 && (
+            <section aria-labelledby="featured-heading" className="flex flex-col gap-4">
+              <h2
+                id="featured-heading"
+                className="text-sm font-bold uppercase tracking-[0.18em] text-indigo-400"
+              >
+                {t("featured")}
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {featured.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            </section>
+          )}
+
+          {rest.length > 0 && (
+            <section
+              aria-labelledby={featured.length > 0 ? "all-products-heading" : undefined}
+              className="flex flex-col gap-4"
+            >
+              {/* O título do segundo bloco só existe para separá-lo do destaque;
+                  sem destaque na tela, a grade é a listagem inteira e um
+                  cabeçalho "todos os produtos" sozinho não diz nada. Sem título
+                  não vai `aria-labelledby` junto, senão a referência fica
+                  pendurada num id inexistente. */}
+              {featured.length > 0 && (
+                <h2
+                  id="all-products-heading"
+                  className="text-sm font-bold uppercase tracking-[0.18em] text-muted-foreground"
+                >
+                  {t("allProducts")}
+                </h2>
+              )}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {rest.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            </section>
+          )}
+        </div>
+      )}
     </div>
   );
 }
