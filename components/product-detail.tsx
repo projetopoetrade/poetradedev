@@ -12,7 +12,7 @@ import Filters from "../app/[locale]/(site)/products/[name]/filters";
 import type { Product } from "@/lib/interface";
 import { CurrencyInfo } from "./currency-info";
 import { toast } from "sonner";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 
 interface ProductDetailProps {
   product: Product;
@@ -49,6 +49,7 @@ export default function ProductDetail({
   const [isQuantityLoading, setIsQuantityLoading] = useState(false);
   const router = useRouter();
   const t = useTranslations("ProductCard");
+  const locale = useLocale();
 
   const increment = () => {
     if (isQuantityLoading) return;
@@ -199,7 +200,9 @@ export default function ProductDetail({
 
           {minQty > 1 && (
             <p className="text-sm text-muted-foreground">
-              Pedido mínimo: {minQty.toLocaleString("pt-BR")} unidades
+              {/* Estava fixo em português; num site com locale EN o texto saía
+                  em pt-BR e o número no formato brasileiro. */}
+              {t("minimumOrder", { quantity: minQty.toLocaleString(locale) })}
             </p>
           )}
 

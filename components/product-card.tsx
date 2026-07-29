@@ -22,7 +22,11 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const t = useTranslations("ProductCard");
-  const [count, setCount] = useState(1);
+  // Pedido mínimo calibrado para valer ~1 divine (ver migration
+  // 20260728020000_add_min_quantity.sql). O card ignorava isso e deixava fechar
+  // 1 unidade de um item que só existe em lote — a página de detalhe já barrava.
+  const minQty = Math.max(1, product.min_quantity ?? 1);
+  const [count, setCount] = useState(minQty);
   const { formatPrice, currency, convertPrice } = useCurrency();
   const { addToCart } = useCart();
   const [isProcessing, setIsProcessing] = useState(false);
@@ -44,12 +48,15 @@ export default function ProductCard({ product }: ProductCardProps) {
     if (isQuantityLoading) return;
     setIsQuantityLoading(true);
     try {
-      setCount((prev) => Math.max(0, prev - 1));
+      setCount((prev) => Math.max(minQty, prev - 1));
     } finally {
       setIsQuantityLoading(false);
     }
   };
 
+  // Enquanto digita não travamos no mínimo — com mínimos de milhares, corrigir a
+  // cada tecla tornaria o campo inutilizável. O ajuste acontece no blur e, por
+  // garantia, antes de mandar pro carrinho.
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (isQuantityLoading) return;
     setIsQuantityLoading(true);
@@ -61,13 +68,15 @@ export default function ProductCard({ product }: ProductCardProps) {
     }
   };
 
+  const handleInputBlur = () => setCount((prev) => Math.max(minQty, prev));
+
   const handleBuyNow = async () => {
     setError(null);
     setIsProcessing(true);
 
     try {
       // Add to cart with original price
-      addToCart(product, count);
+      addToCart(product, Math.max(minQty, count));
       router.push('/cart');
     } catch (error) {
       console.error('Error:', error);
@@ -78,20 +87,21 @@ export default function ProductCard({ product }: ProductCardProps) {
   };
 
   const handleAddToCart = () => {
+    const quantity = Math.max(minQty, count);
     // Add to cart with original price
-    addToCart(product, count);
+    addToCart(product, quantity);
 
     // Show success toast
     toast.success(t('itemAddedToCart'), {
       description: t('itemAddedDescription', {
-        quantity: count,
+        quantity,
         productName: product.name
       }),
       icon: <Check className="h-5 w-5" />,
       duration: 3000,
     });
 
-    setCount(1);
+    setCount(minQty);
   };
 
   // Calculate display price
@@ -149,7 +159,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               size="icon"
               className="flex-none h-8"
               onClick={decrement}
-              disabled={isQuantityLoading || count === 0}
+              disabled={isQuantityLoading || count <= minQty}
               aria-label={t('decrementQuantity')}
             >
               <Minus />
@@ -157,11 +167,12 @@ export default function ProductCard({ product }: ProductCardProps) {
             <Input
               className="shrink text-center text-xl w-24 mx-1 h-8 appearance-none mb-2 [-moz-appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
               type="number"
-              placeholder="1"
+              placeholder={String(minQty)}
               value={count}
               onChange={handleInputChange}
+              onBlur={handleInputBlur}
               disabled={isQuantityLoading}
-              min="0"
+              min={minQty}
               aria-label={t('quantityInput')}
             />
             <Button
@@ -175,6 +186,12 @@ export default function ProductCard({ product }: ProductCardProps) {
               <Plus />
             </Button>
           </div>
+
+          {minQty > 1 && (
+            <span className="text-xs text-muted-foreground mb-2">
+              {t("minimumOrder", { quantity: minQty.toLocaleString(locale) })}
+            </span>
+          )}
 
           {/* Price — escondido quando sem estoque ou sem preço definido */}
           {isInStock && product.price > 0 && (
