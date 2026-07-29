@@ -1,3 +1,17 @@
+-- ATENÇÃO (29/07/2026): esta migration NUNCA foi aplicada em produção.
+-- A tabela `currency_rates` não existe no banco — confira `supabase/schema.sql`,
+-- o dump do remoto, onde ela não aparece. Ainda assim ela consta como "applied"
+-- no histórico do Supabase: foi marcada assim de propósito na reconciliação do
+-- histórico, porque a alternativa era o `db push` criar uma tabela morta.
+--
+-- Quem faz conversão de moeda hoje é a `exchange_rate_cache` (migration
+-- 20260728030000) junto com `lib/pricing/exchange-rates.ts`. Nenhum código
+-- referencia `currency_rates`, `convert_currency` ou a view
+-- `current_currency_rates` definidas aqui.
+--
+-- Não apague o arquivo: ele é o registro de uma decisão. Se um dia precisar da
+-- tabela, rode este SQL à mão — um `db push` vai ignorá-la.
+
 -- Create currency_rates table
 CREATE TABLE IF NOT EXISTS currency_rates (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,

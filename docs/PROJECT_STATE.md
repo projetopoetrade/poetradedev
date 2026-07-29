@@ -103,11 +103,30 @@ poetrade-dev/
 |---|---|
 | `products` | Produtos sincronizados do Sanity (moedas, itens, serviços) |
 | `orders` | Pedidos com status, itens, pagamento Stripe/PIX |
-| `currency_rates` | Taxas de câmbio BRL/USD/EUR com função SQL de conversão |
+| `exchange_rate_cache` | Cache de taxas de câmbio (substituiu a `currency_rates`, que nunca chegou a existir no banco — ver nota no fim desta seção) |
+| `difficulties` | Dificuldades por versão do jogo |
+| `cron_job_logs` | Log das execuções de cron |
 | `pob_builds` | Builds do Path of Building compartilhados por hash curto (geradas por usuários via PoB Viewer) |
 | `builds` | **[NOVO]** Builds curadas pelo admin com guia, tags, ascendência, código PoB — ver `docs/BUILDS_FEATURE.md` |
 | `items` | Dados completos de itens PoE (via PoE Wiki Cargo) |
 | `skill_gems` | Dados de skill gems PoE (atributos, tags, variantes) |
+
+> **Nota sobre `currency_rates` (29/07/2026).** A migration
+> `20240320000000_create_currency_rates.sql` está no repo e consta como aplicada
+> no histórico do Supabase, mas a tabela **não existe** no banco — confirmado no
+> dump em `supabase/schema.sql`, que lista 10 tabelas e nenhuma delas é essa. Ela
+> foi marcada como aplicada de propósito durante a reconciliação do histórico:
+> a alternativa era deixar o `db push` criar uma tabela morta, já que quem
+> resolve câmbio hoje é `exchange_rate_cache` + `lib/pricing/exchange-rates.ts`.
+> Nenhum código referencia `currency_rates`. Se um dia ela for necessária, rode o
+> SQL da migration à mão.
+>
+> **`supabase db pull` não funciona neste repo** e não é problema de ambiente: o
+> pull replaya as migrations locais num shadow database, e nenhuma delas cria a
+> tabela `products` — o schema nasceu fora desse conjunto. O replay morre em
+> `20260624000000_add_products_url_slug` com *relation "products" does not
+> exist*. Enquanto não existir uma migration base, o retrato do schema sai por
+> `npx supabase db dump --linked -f supabase/schema.sql`, que lê o remoto direto.
 
 ### Políticas RLS
 
@@ -301,7 +320,7 @@ Todas as tabelas têm RLS ativado. Padrão:
 | 1 | `typescript.ignoreBuildErrors: true` no `next.config.ts` — erros de tipo são ignorados no build |
 | 2 | Join manual entre `items` e `skill_gems` em `/api/tools/poe-gems` (sem FK direta) |
 | 3 | Tabela `pob_builds` armazena o código PoB completo em texto — pode crescer bastante |
-| 4 | `currency_rates` com taxas hardcoded (BRL/USD = 0.2 → 1 USD = 5 BRL) — não é atualizada automaticamente |
+| 4 | Conjunto de migrations não é auto-suficiente: nenhuma cria `products`, então `supabase db pull` / shadow database não sobem do zero (usar `db dump`) |
 | 5 | Sem cobertura de testes (sem `jest`, `vitest` ou `playwright` no projeto) |
 | 6 | Sanity Studio em `/admin/studio` sem proteção de rota visível além da autenticação Sanity |
 | 7 | Script `postbuild` encadeia `next-sitemap` e `analyze-keywords.js` |
