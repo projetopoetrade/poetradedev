@@ -111,22 +111,23 @@ poetrade-dev/
 | `items` | Dados completos de itens PoE (via PoE Wiki Cargo) |
 | `skill_gems` | Dados de skill gems PoE (atributos, tags, variantes) |
 
-> **Nota sobre `currency_rates` (29/07/2026).** A migration
-> `20240320000000_create_currency_rates.sql` está no repo e consta como aplicada
-> no histórico do Supabase, mas a tabela **não existe** no banco — confirmado no
-> dump em `supabase/schema.sql`, que lista 10 tabelas e nenhuma delas é essa. Ela
-> foi marcada como aplicada de propósito durante a reconciliação do histórico:
-> a alternativa era deixar o `db push` criar uma tabela morta, já que quem
-> resolve câmbio hoje é `exchange_rate_cache` + `lib/pricing/exchange-rates.ts`.
-> Nenhum código referencia `currency_rates`. Se um dia ela for necessária, rode o
-> SQL da migration à mão.
->
-> **`supabase db pull` não funciona neste repo** e não é problema de ambiente: o
-> pull replaya as migrations locais num shadow database, e nenhuma delas cria a
-> tabela `products` — o schema nasceu fora desse conjunto. O replay morre em
+> **Migrations: baseline única (30/07/2026).** `supabase/migrations/` tem um
+> arquivo só, `20240101000000_baseline_remote_schema.sql`, gerado do banco de
+> produção. As 14 migrations anteriores estão em `supabase/migrations_archive/`
+> (marcadas `reverted` no histórico) porque nenhuma delas criava `products`,
+> `leagues`, `orders` ou `difficulties` — o schema nasceu fora do controle de
+> migrations, e sem uma base o `db pull` e o `migration squash` morriam em
 > `20260624000000_add_products_url_slug` com *relation "products" does not
-> exist*. Enquanto não existir uma migration base, o retrato do schema sai por
-> `npx supabase db dump --linked -f supabase/schema.sql`, que lê o remoto direto.
+> exist*. Com a baseline, `db pull` roda e reporta **"No schema changes found"**:
+> o arquivo reproduz produção sem drift.
+>
+> Fluxo daqui pra frente: `npx supabase migration new <nome>` → escrever o SQL →
+> `npx supabase db push --dry-run` → `npx supabase db push`.
+>
+> **`currency_rates` não existe no banco.** A migration original está no arquivo
+> morto e nunca foi aplicada; quem resolve câmbio é `exchange_rate_cache` +
+> `lib/pricing/exchange-rates.ts`, e nenhum código referencia `currency_rates`,
+> `convert_currency` ou a view `current_currency_rates`.
 
 ### Políticas RLS
 
@@ -320,7 +321,7 @@ Todas as tabelas têm RLS ativado. Padrão:
 | 1 | `typescript.ignoreBuildErrors: true` no `next.config.ts` — erros de tipo são ignorados no build |
 | 2 | Join manual entre `items` e `skill_gems` em `/api/tools/poe-gems` (sem FK direta) |
 | 3 | Tabela `pob_builds` armazena o código PoB completo em texto — pode crescer bastante |
-| 4 | Conjunto de migrations não é auto-suficiente: nenhuma cria `products`, então `supabase db pull` / shadow database não sobem do zero (usar `db dump`) |
+| 4 | Baseline de schema (`20240101000000`) é um dump de 1.189 linhas — schema do zero funciona, mas o histórico anterior vive em `supabase/migrations_archive/`, fora da CLI |
 | 5 | Sem cobertura de testes (sem `jest`, `vitest` ou `playwright` no projeto) |
 | 6 | Sanity Studio em `/admin/studio` sem proteção de rota visível além da autenticação Sanity |
 | 7 | Script `postbuild` encadeia `next-sitemap` e `analyze-keywords.js` |

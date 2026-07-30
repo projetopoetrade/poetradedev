@@ -1,3 +1,25 @@
+-- BASELINE do schema — gerada em 30/07/2026 a partir do banco de produção
+-- (`supabase db dump --linked`), com timestamp anterior a todas as outras para
+-- ser a primeira coisa que roda em qualquer replay.
+--
+-- POR QUE ELA EXISTE: nenhuma das migrations anteriores criava as tabelas
+-- `products`, `leagues`, `orders` e `difficulties` — elas nasceram fora do
+-- controle de migrations. Sem uma base, montar o schema do zero era impossível:
+-- `supabase db pull` e `supabase migration squash` morriam em
+-- `20260624000000_add_products_url_slug` com *relation "products" does not
+-- exist*, porque os dois replayam as migrations locais num shadow database.
+--
+-- O QUE ELA SUBSTITUI: as 14 migrations que existiam antes dela foram movidas
+-- para `supabase/migrations_archive/` — o efeito de todas já está aqui dentro,
+-- e elas ficam preservadas lá pelo racional escrito nos comentários. No
+-- histórico do Supabase foram marcadas como `reverted` e esta como `applied`,
+-- sem nunca ter rodado contra produção: o schema já era este.
+--
+-- Também está aqui o efeito das 6 migrations de out/2025 que estavam
+-- registradas no banco sem arquivo local nenhum.
+--
+-- NÃO EDITE À MÃO. Mudança de schema daqui pra frente é migration nova.
+
 
 
 SET statement_timeout = 0;
