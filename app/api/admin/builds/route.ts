@@ -116,7 +116,6 @@ export async function POST(req: NextRequest) {
         pob_hash: pobHash,
         image_url: body.image_url ?? null,
         video_url: body.video_url ?? null,
-        guide_content: body.guide_content ?? null,
         seo_title: body.seo_title ?? null,
         seo_description: body.seo_description ?? null,
         is_published: body.is_published ?? false,

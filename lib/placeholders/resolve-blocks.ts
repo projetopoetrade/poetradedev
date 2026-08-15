@@ -38,6 +38,15 @@ interface ResolveState {
   items: Record<string, ItemRawData>;
   pobItems: Record<string, PobItemRawData>;
   passives: Map<string, PassiveRawData>;
+  /**
+   * Monotonic counter for generating unique span/markDef keys across the whole
+   * tree. MUST NOT derive keys from `span._key`: script-seeded content can ship
+   * blocks/spans with missing or duplicate `_key`, and a per-span counter then
+   * produces colliding markDef keys (e.g. two `phitem-auto-0`), which makes
+   * PortableText resolve every poeItem mark to the FIRST markDef — rendering
+   * the wrong item (all cards show the first item's name/icon).
+   */
+  seq: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -161,7 +170,7 @@ export async function resolveBlocks(
 
   // 3. Walk the tree, transforming spans (CTA blocks pass through unchanged
   //    because transformBlock only touches `_type: 'block'`).
-  const state: ResolveState = { ctx, prices, items, pobItems, passives };
+  const state: ResolveState = { ctx, prices, items, pobItems, passives, seq: 0 };
   return ctaResolved.map((b) => transformBlock(promoteMarkdownHeading(b), state));
 }
 
@@ -499,8 +508,9 @@ function expandSpan(span: any, state: ResolveState, markDefs: any[]): any[] {
   const originalMarks: string[] = Array.isArray(span.marks) ? span.marks : [];
   const out: any[] = [];
   let cursor = 0;
-  let keyCounter = 0;
-  const nextKey = () => `ph-${span._key ?? 'auto'}-${keyCounter++}`;
+  // Keys come from the tree-global `state.seq`, never from `span._key`, so
+  // markDef keys stay unique even when the source spans lack/duplicate _key.
+  const nextKey = (prefix = 'ph') => `${prefix}-${state.seq++}`;
 
   for (const ph of placeholders) {
     if (ph.index > cursor) {
@@ -511,7 +521,7 @@ function expandSpan(span: any, state: ResolveState, markDefs: any[]): any[] {
     if (resolved.type === 'text') {
       out.push(makeSpan(resolved.text, originalMarks, nextKey()));
     } else if (resolved.type === 'link') {
-      const linkKey = `phlink-${span._key ?? 'auto'}-${keyCounter++}`;
+      const linkKey = nextKey('phlink');
       markDefs.push({ _key: linkKey, _type: 'link', href: resolved.href });
       out.push(
         makeSpan(
@@ -525,7 +535,7 @@ function expandSpan(span: any, state: ResolveState, markDefs: any[]): any[] {
       // which mounts the PoeItemBlogCard tooltip. Currency markers carry
       // extra metadata so the tooltip can render the centered-icon variant
       // with a price block.
-      const itemKey = `phitem-${span._key ?? 'auto'}-${keyCounter++}`;
+      const itemKey = nextKey('phitem');
       markDefs.push({
         _key: itemKey,
         _type: 'poeItem',

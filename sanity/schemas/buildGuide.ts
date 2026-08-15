@@ -8,7 +8,7 @@ const buildGuide = {
       title: "Slug",
       type: "slug",
       description:
-        "Must match the build slug in Supabase (e.g. cold-dot-elementalist). Used to link this guide to a build when the build's guide_content (Markdown) is empty.",
+        "Must match the build slug in Supabase (e.g. cold-dot-elementalist). Links this guide to the build.",
       options: {
         maxLength: 96,
       },
@@ -19,7 +19,7 @@ const buildGuide = {
       title: "Guide content",
       type: "blockContent",
       description:
-        "Rich guide content (blocks, images, code, table, PoE Item). Shown on the build page when the build's Markdown guide is empty.",
+        "Rich guide content (blocks, images, code, table, PoE Item). This is the build's guide on /builds/[slug] — supports {{item:...}}, gems, currency, {{price:...}} and {{cta:...}} placeholders, same as the blog.",
       validation: (Rule: any) => Rule.required(),
     },
   ],

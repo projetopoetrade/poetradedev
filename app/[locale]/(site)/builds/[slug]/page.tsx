@@ -4,9 +4,9 @@ import { getBuildBySlug, getPublishedBuildSlugs, getRelatedBuilds } from "@/app/
 import { getBuildGuideBySlug, getBuildOverviewBySlug } from "@/sanity/sanity-utils";
 import { generateKeywords, buildBreadcrumbSchema, getOgLocale } from "@/lib/utils";
 import BuildHero from "@/components/Builds/BuildHero";
-import BuildGuide from "@/components/Builds/BuildGuide";
 import RelatedBuilds from "@/components/Builds/RelatedBuilds";
 import { BlockContentRenderer } from "@/components/portable-text/blockContentComponents";
+import { resolveBlocks } from "@/lib/placeholders/resolve-blocks";
 
 export const revalidate = 300;
 
@@ -85,10 +85,36 @@ export default async function BuildPage({ params }: Props) {
 
 const [sanityGuide, relatedBuilds, buildOverview] =
     await Promise.all([
-      !build.guide_content?.trim() ? getBuildGuideBySlug(build.slug) : null,
+      getBuildGuideBySlug(build.slug),
       getRelatedBuilds(build.slug, 3, { ascendancy: build.ascendancy }),
       getBuildOverviewBySlug(build.slug),
     ]);
+
+  // Resolve placeholders ({{item:...}}, gems, currency, {{price:...}},
+  // {{pobitem:...}}, {{passive:...}}, {{cta:...}}) in the Sanity-authored guide
+  // content — the exact pipeline the blog runs — so build guides can embed the
+  // same item/gem cards. Server-side; cached by ISR (revalidate 300).
+  // gameVersion drives {{cta:...}} defaulting (poe1/poe2).
+  const resolveCtx = {
+    locale,
+    gameVersion:
+      build.game_version === "path-of-exile-2"
+        ? ("path-of-exile-2" as const)
+        : ("path-of-exile-1" as const),
+  };
+  const [resolvedSections, resolvedGuideBody] = await Promise.all([
+    Promise.all(
+      (buildOverview?.sections ?? []).map(async (section) => ({
+        ...section,
+        body: Array.isArray(section.body)
+          ? await resolveBlocks(section.body as never, resolveCtx)
+          : section.body,
+      })),
+    ),
+    sanityGuide && Array.isArray((sanityGuide as { body?: unknown }).body)
+      ? resolveBlocks((sanityGuide as { body: never }).body, resolveCtx)
+      : Promise.resolve(null),
+  ]);
 
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.pathoftrade.net';
   const buildsUrl = locale === 'en' ? `${baseUrl}/builds` : `${baseUrl}/pt-br/builds`;
@@ -143,9 +169,9 @@ const [sanityGuide, relatedBuilds, buildOverview] =
         <BuildHero build={build} />
 
         {/* Sanity-authored sections */}
-        {buildOverview && buildOverview.sections.length > 0 && (
+        {resolvedSections.length > 0 && (
           <div className="mt-8 space-y-8">
-            {buildOverview.sections.map((section) => (
+            {resolvedSections.map((section) => (
               <section key={section._key}>
                 {section.heading && (
                   <h2 className="text-xl font-semibold text-white mb-3 flex items-center gap-2">
@@ -153,7 +179,7 @@ const [sanityGuide, relatedBuilds, buildOverview] =
                     {section.heading}
                   </h2>
                 )}
-                {section.body && (
+                {Array.isArray(section.body) && section.body.length > 0 && (
                   <div className="prose prose-lg dark:prose-invert max-w-none prose-headings:text-gray-900 dark:prose-headings:text-white prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-a:text-amber-600 dark:prose-a:text-amber-400 prose-strong:text-gray-900 dark:prose-strong:text-white prose-code:text-amber-700 dark:prose-code:text-amber-300 prose-li:text-gray-700 dark:prose-li:text-gray-300">
                     <BlockContentRenderer value={section.body} />
                   </div>
@@ -178,16 +204,12 @@ const [sanityGuide, relatedBuilds, buildOverview] =
           </div>
         )}
 
-        {/* Guide content: same prose style as blog (no card background) */}
-        {(build.guide_content?.trim() || sanityGuide) && (
+        {/* Guide content (Sanity Portable Text) — same prose style as blog */}
+        {resolvedGuideBody && (
           <div className="mt-8">
-            {build.guide_content?.trim() ? (
-              <BuildGuide content={build.guide_content} />
-            ) : sanityGuide ? (
-              <div className="prose prose-lg dark:prose-invert max-w-none prose-headings:text-gray-900 dark:prose-headings:text-white prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-a:text-amber-600 dark:prose-a:text-amber-400 prose-strong:text-gray-900 dark:prose-strong:text-white prose-code:text-amber-700 dark:prose-code:text-amber-300 prose-li:text-gray-700 dark:prose-li:text-gray-300">
-                <BlockContentRenderer value={sanityGuide.body} />
-              </div>
-            ) : null}
+            <div className="prose prose-lg dark:prose-invert max-w-none prose-headings:text-gray-900 dark:prose-headings:text-white prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-a:text-amber-600 dark:prose-a:text-amber-400 prose-strong:text-gray-900 dark:prose-strong:text-white prose-code:text-amber-700 dark:prose-code:text-amber-300 prose-li:text-gray-700 dark:prose-li:text-gray-300">
+              <BlockContentRenderer value={resolvedGuideBody} />
+            </div>
           </div>
         )}
 

@@ -53,7 +53,6 @@ export default function AddBuildView({
     budget: initialData?.budget ?? "",
     image_url: initialData?.image_url ?? "",
     video_url: initialData?.video_url ?? "",
-    guide_content: initialData?.guide_content ?? "",
     seo_title: initialData?.seo_title ?? "",
     seo_description: initialData?.seo_description ?? "",
     author: initialData?.author ?? "",
@@ -77,7 +76,6 @@ export default function AddBuildView({
       budget: initialData?.budget ?? "",
       image_url: initialData?.image_url ?? "",
       video_url: initialData?.video_url ?? "",
-      guide_content: initialData?.guide_content ?? "",
       seo_title: initialData?.seo_title ?? "",
       seo_description: initialData?.seo_description ?? "",
       author: initialData?.author ?? "",
@@ -486,17 +484,17 @@ export default function AddBuildView({
       <Card className="bg-card border-border">
         <CardHeader>
           <CardTitle className="text-card-foreground text-base">
-            Guia (Markdown)
+            Guia da Build
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <Textarea
-            value={form.guide_content}
-            onChange={(e) => set("guide_content", e.target.value)}
-            rows={8}
-            placeholder="# Guia da Build&#10;&#10;## Mecânica principal..."
-            className="border-border font-mono text-xs"
-          />
+          <p className="text-sm text-muted-foreground">
+            O guia é escrito no <span className="text-foreground font-medium">Sanity Studio</span>{" "}
+            (documentos <span className="font-mono text-xs">Build Guide</span> e{" "}
+            <span className="font-mono text-xs">Build Overview</span>), ligado a esta build pelo{" "}
+            <span className="font-mono text-xs">slug</span>. Lá dá pra embutir itens e gemas com{" "}
+            <span className="font-mono text-xs">{"{{item:...}}"}</span>, preços e CTAs — igual ao blog.
+          </p>
         </CardContent>
       </Card>
 
