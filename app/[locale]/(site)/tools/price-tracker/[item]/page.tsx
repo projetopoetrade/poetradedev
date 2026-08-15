@@ -2,9 +2,15 @@ import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { Link } from '@/i18n/navigation'
 import { ChevronRight, TrendingUp } from 'lucide-react'
-import { createClient } from '@/utils/supabase/server'
+import { createPublicClient } from '@/utils/supabase/public'
 import PriceHistoryChart from '@/components/Product/PriceHistoryChart'
 import { buildCanonical, buildAbsoluteUrl, buildBreadcrumbSchema, getOgLocale } from '@/lib/utils'
+import { slugToIlikePattern } from '@/utils/url-helper'
+
+// ISR de 1h, igual à página-índice. Sem isto a rota rendereza a cada request:
+// é a página que queremos servir rápido para o crawler agora que ela entrou no
+// sitemap. createPublicClient (sem cookies) é o que mantém o ISR de pé.
+export const revalidate = 3600
 
 interface PageProps {
   params: Promise<{
@@ -18,11 +24,20 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const decodedItem = decodeURIComponent(item).replace(/-/g, ' ')
   
-  const supabase = await createClient()
-  const { data: bySlug } = await supabase.from('products').select('slug, name').eq('slug', item).limit(1)
+  // Mesma resolução em três passos do corpo da página — ver comentário lá.
+  const supabase = createPublicClient()
+  const { data: bySlug } = await supabase
+    .from('products')
+    .select('slug, name')
+    .or(`slug.eq.${item},url_slug.eq.${item}`)
+    .limit(1)
   let ourProduct = bySlug?.[0] || null
   if (!ourProduct) {
-    const { data: byName } = await supabase.from('products').select('slug, name').ilike('name', `%${decodedItem}%`).limit(1)
+    const { data: byName } = await supabase
+      .from('products')
+      .select('slug, name')
+      .ilike('name', slugToIlikePattern(item))
+      .limit(1)
     ourProduct = byName?.[0] || null
   }
   const itemName = ourProduct?.name || decodedItem.replace(/\b\w/g, l => l.toUpperCase()).replace(/'S\b/g, "'s")
@@ -102,24 +117,35 @@ export default async function TrackerItemPage({ params }: PageProps) {
   const itemName = decodedItem.replace(/\b\w/g, l => l.toUpperCase())
   const isPt = locale === 'pt-br'
 
-  const supabase = await createClient()
+  const supabase = createPublicClient()
 
-  // Find product by slug first, then fallback to ilike on name
+  // Resolução em três passos. O slug do tracker vem de encodeProductName, que
+  // colapsa apóstrofos em hífen — por isso o ilike direto em `decodedItem`
+  // falhava em nomes como "Blacksmith's Whetstone"; slugToIlikePattern troca os
+  // separadores por % e atravessa a pontuação perdida.
+  const SELECT = 'slug, url_slug, gameVersion, price, in_stock, name'
+
   const { data: bySlug } = await supabase
     .from('products')
-    .select('slug, price, in_stock, name')
-    .eq('slug', item)
+    .select(SELECT)
+    .or(`slug.eq.${item},url_slug.eq.${item}`)
     .limit(1)
   let ourProduct = bySlug?.[0] || null
 
   if (!ourProduct) {
     const { data: byName } = await supabase
       .from('products')
-      .select('slug, price, in_stock, name')
-      .ilike('name', `%${decodedItem}%`)
+      .select(SELECT)
+      .ilike('name', slugToIlikePattern(item))
       .limit(1)
     ourProduct = byName?.[0] || null
   }
+
+  // URL canônica de compra — /games/<jogo>/products/<url_slug>. Sem url_slug
+  // não linkamos: a rota legada /products/<slug> responde 301.
+  const buyUrl = ourProduct?.url_slug
+    ? `/games/${ourProduct.gameVersion ?? 'path-of-exile-1'}/products/${ourProduct.url_slug}`
+    : null
 
   // Use the database name if available, otherwise fallback to formatting the URL slug
   const finalItemName = ourProduct?.name || decodedItem.replace(/\b\w/g, l => l.toUpperCase()).replace(/'S\b/g, "'s")
@@ -202,9 +228,9 @@ export default async function TrackerItemPage({ params }: PageProps) {
           </p>
         </div>
 
-        {ourProduct && ourProduct.in_stock && (
+        {ourProduct && ourProduct.in_stock && buyUrl && (
           <Link
-            href={`/products/${ourProduct.slug}`}
+            href={buyUrl}
             className="inline-flex items-center justify-center rounded-lg bg-green-500 hover:bg-green-600 text-black font-semibold text-sm px-5 py-2.5 transition-colors shrink-0"
           >
             {isPt ? `Comprar ${finalItemName} — $${ourProduct.price}` : `Buy ${finalItemName} — $${ourProduct.price}`}

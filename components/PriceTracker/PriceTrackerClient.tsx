@@ -16,6 +16,7 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { TrendingUp, TrendingDown, ShoppingCart, ChevronUp, ChevronDown, ChevronsUpDown, Search, RefreshCw } from 'lucide-react'
+import { getPriceTrackerUrl } from '@/utils/url-helper'
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
 
@@ -32,6 +33,18 @@ interface NormalizedItem {
   weSellThis: boolean
   inStock: boolean
   ourPriceUSD: number | null
+  ourUrl: string | null
+}
+
+/**
+ * Destino do nome do item na tabela: página de compra quando vendemos (URL
+ * canônica resolvida pela API a partir do url_slug) e página de preço quando
+ * não. Sem ourUrl caímos no tracker em vez de forjar uma URL de produto que
+ * pode não existir.
+ */
+function itemHref(item: NormalizedItem): string {
+  if (item.weSellThis && item.ourUrl) return item.ourUrl
+  return getPriceTrackerUrl(item.name)
 }
 
 interface ApiResponse {
@@ -157,7 +170,7 @@ function PriceRow({ item, currencyLabel, convertPrice, formatPrice, game, league
         )}
         <div className="flex flex-col min-w-0">
           <Link
-            href={item.weSellThis ? `/products/${encodeURIComponent(item.name.replace(/ /g, '-').toLowerCase())}` : `/tools/price-tracker/${encodeURIComponent(item.name.replace(/ /g, '-').toLowerCase())}`}
+            href={itemHref(item)}
             className="text-sm font-medium truncate hover:underline"
             prefetch={false}
           >
@@ -206,9 +219,9 @@ function PriceRow({ item, currencyLabel, convertPrice, formatPrice, game, league
 
       {/* Buy */}
       <div className="flex justify-end">
-        {item.weSellThis ? (
+        {item.weSellThis && item.ourUrl ? (
           <Link
-            href={`/products/${encodeURIComponent(item.name.replace(/ /g, '-').toLowerCase())}`}
+            href={item.ourUrl}
             className="inline-flex items-center gap-1 text-xs bg-primary text-primary-foreground hover:bg-primary/90 px-2.5 py-1.5 rounded-md transition-colors whitespace-nowrap"
           >
             <ShoppingCart className="h-3 w-3" />
@@ -247,7 +260,7 @@ function PriceCard({ item, convertPrice, formatPrice, game, league }: {
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
           <Link
-            href={item.weSellThis ? `/products/${encodeURIComponent(item.name.replace(/ /g, '-').toLowerCase())}` : `/tools/price-tracker/${encodeURIComponent(item.name.replace(/ /g, '-').toLowerCase())}`}
+            href={itemHref(item)}
             className="text-sm font-medium truncate hover:underline"
             prefetch={false}
           >
@@ -276,9 +289,9 @@ function PriceCard({ item, convertPrice, formatPrice, game, league }: {
           </span>
         )}
       </div>
-      {item.weSellThis && (
+      {item.weSellThis && item.ourUrl && (
         <Link
-          href={`/products/${encodeURIComponent(item.name.replace(/ /g, '-').toLowerCase())}`}
+          href={item.ourUrl}
           className="inline-flex items-center gap-1 text-xs bg-primary text-primary-foreground hover:bg-primary/90 px-2.5 py-2 rounded-md transition-colors flex-shrink-0"
         >
           <ShoppingCart className="h-3.5 w-3.5" />

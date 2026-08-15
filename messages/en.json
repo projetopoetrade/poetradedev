@@ -87,10 +87,10 @@
       "ogDescription": "Don't miss the best offers on {category} for the {league} league! Low prices, instant delivery, and 100% safety for your {gameVersion} account at Path of Trade."
     },
     "productDetail": {
-      "title": "Buy {productName} {gameVersionLabel} — Cheap Currency & Orbs | Path of Trade",
-      "description": "Get {productName} for {gameVersionLabel} at the best market price. Instant and 100% secure delivery. Buy your PoE currency now at Path of Trade!",
-      "ogTitle": "Buy {productName} for {gameVersionLabel} | Safe Currency | Path of Trade",
-      "ogDescription": "Secure your {productName} in {gameVersionLabel}. We offer the best price, delivery in minutes, and fully secure transactions. Visit Path of Trade!"
+      "title": "{productName} {gameVersionLabel} — Price & Where to Buy | Path of Trade",
+      "description": "Current {productName} price in {gameVersionLabel}: live market value, price history, and where to buy with fast, secure in-game delivery.",
+      "ogTitle": "{productName} {gameVersionLabel} — Price & Where to Buy | Path of Trade",
+      "ogDescription": "Check the live {productName} price in {gameVersionLabel}, see its market history, and buy at a competitive rate with delivery in minutes."
     },
     "gameVersion": {
       "poe1Title": "Buy Path of Exile 1 Currency — Chaos, Divine & Exalted Orbs | Path of Trade",

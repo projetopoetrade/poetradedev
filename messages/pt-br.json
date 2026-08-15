@@ -88,10 +88,10 @@
       "ogDescription": "Não perca as melhores ofertas de {category} para a liga {league}! Preços baixos, entrega imediata e 100% de segurança para sua conta {gameVersion} no Path of Trade."
     },
     "productDetail": {
-      "title": "Comprar {productName} para {gameVersionLabel} — Preço Baixo em Moedas | Path of Trade",
-      "description": "Adquira {productName} para {gameVersionLabel} com o melhor preço do mercado. Entrega instantânea e segura. Compre suas moedas PoE agora no Path of Trade!",
-      "ogTitle": "Compre {productName} para {gameVersionLabel} | Moeda Segura | Path of Trade",
-      "ogDescription": "Garanta seu {productName} em {gameVersionLabel}. Oferecemos o melhor preço, entrega em minutos e transações totalmente seguras. Visite o Path of Trade!"
+      "title": "{productName} {gameVersionLabel} — Preço e Onde Comprar | Path of Trade",
+      "description": "Preço atual do {productName} em {gameVersionLabel}: valor de mercado ao vivo, histórico de preço e onde comprar com entrega rápida e segura.",
+      "ogTitle": "{productName} {gameVersionLabel} — Preço e Onde Comprar | Path of Trade",
+      "ogDescription": "Veja o preço do {productName} em {gameVersionLabel} em tempo real, o histórico de mercado e compre com entrega em minutos."
     },
     "gameVersion": {
       "poe1Title": "Compre Moedas de Path of Exile 1 — Chaos, Divine e Exalted Orbs | Path of Trade",

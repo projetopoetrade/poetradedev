@@ -23,6 +23,11 @@ interface NormalizedItem {
   weSellThis: boolean
   inStock: boolean
   ourPriceUSD: number | null
+  // URL canônica de compra (/games/<jogo>/products/<url_slug>) quando vendemos
+  // o item. Resolvida aqui, no servidor, porque só aqui existe o url_slug do
+  // Supabase — o cliente montava a URL a partir do nome e caía na rota legada
+  // /products/<slug>, que responde 301.
+  ourUrl: string | null
 }
 
 // ─── Helpers poe.ninja ────────────────────────────────────────────────────────
@@ -82,6 +87,7 @@ async function fetchPoeNinja(
         weSellThis: false,
         inStock: false,
         ourPriceUSD: null,
+        ourUrl: null,
       }
     })
   }
@@ -129,6 +135,7 @@ async function fetchPoeNinja(
         weSellThis: false,
         inStock: false,
         ourPriceUSD: null,
+        ourUrl: null,
       })
     }
     return items
@@ -157,6 +164,7 @@ async function fetchPoeNinja(
         weSellThis: false,
         inStock: false,
         ourPriceUSD: null,
+        ourUrl: null,
       })
     }
     return items
@@ -180,6 +188,7 @@ async function fetchPoeNinja(
       weSellThis: false,
       inStock: false,
       ourPriceUSD: null,
+      ourUrl: null,
     })
   }
   return items
@@ -225,6 +234,7 @@ async function fetchFromEngine(
       weSellThis: false,
       inStock: false,
       ourPriceUSD: null,
+      ourUrl: null,
     }))
   } catch {
     return null
@@ -291,24 +301,27 @@ export async function GET(request: NextRequest) {
     // Também pegar todos os produtos que vendemos para marcar weSellThis e inStock
     const { data: allProducts } = await supabase
       .from('products')
-      .select('name, price, slug, in_stock, imgUrl')
+      .select('name, price, slug, url_slug, in_stock, imgUrl')
       .eq('gameVersion', game === 'poe1' ? 'path-of-exile-1' : 'path-of-exile-2')
 
     // Mapeamos os produtos por uma chave normalizada (sem apóstrofos e espaços)
-    const productMap = new Map<string, { name: string; price: number; slug: string; inStock: boolean; imgUrl?: string | null }>()
+    const productMap = new Map<string, { name: string; price: number; slug: string; urlSlug: string | null; inStock: boolean; imgUrl?: string | null }>()
     for (const p of allProducts || []) {
       const normalizedName = p.name.toLowerCase().replace(/['\s]/g, '')
       // Se houver duplicata, preferimos o que tem o nome mais "correto" (com apóstrofo)
       if (!productMap.has(normalizedName) || p.name.includes("'")) {
-        productMap.set(normalizedName, { 
+        productMap.set(normalizedName, {
           name: p.name,
-          price: p.price, 
-          slug: p.slug, 
+          price: p.price,
+          slug: p.slug,
+          urlSlug: p.url_slug ?? null,
           inStock: p.in_stock ?? false,
-          imgUrl: p.imgUrl 
+          imgUrl: p.imgUrl
         })
       }
     }
+
+    const gameVersionPath = game === 'poe1' ? 'path-of-exile-1' : 'path-of-exile-2'
 
     // 3. Para currencyoverview (PoE 1), calcular divineValue
     // Primeiro, tentar pegar chaos value do Divine Orb nos items
@@ -339,6 +352,12 @@ export async function GET(request: NextRequest) {
       const weSellThis = !!productEntry
       const inStock = productEntry ? productEntry.inStock : false
       const ourPriceUSD = productEntry ? productEntry.price : null
+
+      // Só emitimos ourUrl quando há url_slug — é ele que forma a URL canônica.
+      // Sem url_slug o link cairia na rota legada /products/<slug>, que 301eia.
+      const ourUrl = productEntry?.urlSlug
+        ? `/games/${gameVersionPath}/products/${productEntry.urlSlug}`
+        : null
 
       // PRIORIDADE: Usar o nome do banco de dados se disponível, pois ele é o "correto" (com apóstrofos)
       const displayName = productEntry?.name || item.name
@@ -388,6 +407,7 @@ export async function GET(request: NextRequest) {
         weSellThis,
         inStock,
         ourPriceUSD,
+        ourUrl,
       }
     })
 

@@ -1,0 +1,2046 @@
+{
+  "migratedAt": "2026-08-15T13:49:50.122Z",
+  "note": "Valores anteriores de seoTitle/metaDescription. Reverter com --revert <este arquivo>.",
+  "documents": [
+    {
+      "_id": "kQR8exxdlkc70NhvJSUSQ4",
+      "name": "Abrasive Catalyst",
+      "seoTitle": {
+        "en": "Buy Abrasive Catalyst - PoE Currency & Orbs",
+        "pt_br": "Catalisador Abrasivo PoE: Compre com Preço Baixo"
+      },
+      "metaDescription": {
+        "en": "Instantly buy Abrasive Catalysts in Path of Exile. Enhance your jewelry's Attack modifiers with fast and secure trade. Get your PoE currency now!",
+        "pt_br": "Compre Catalisador Abrasivo em Path of Exile! Potencialize seus modificadores de Ataque em anéis, amuletos e cintos. Entrega rápida."
+      }
+    },
+    {
+      "_id": "kQR8exxdlkc70NhvJSZH4G",
+      "name": "Accelerating Catalyst",
+      "seoTitle": {
+        "en": "Accelerating Catalyst - PoE Currency | Buy Now",
+        "pt_br": "Catalisador Acelerador: Compre Agora | Preço Baixo"
+      },
+      "metaDescription": {
+        "en": "Enhance your Speed modifiers! Buy Accelerating Catalysts for your rings, amulets, and belts. Fast, secure PoE currency trades available.",
+        "pt_br": "Aumente a velocidade de seus itens com o Catalisador Acelerador! Compra segura e entrega rápida no Path of Exile. Adquira já!"
+      }
+    },
+    {
+      "_id": "kQR8exxdlkc70NhvJSZpAO",
+      "name": "Ancient Orb",
+      "seoTitle": {
+        "en": "Buy Ancient Orb | Path of Exile Currency",
+        "pt_br": "Comprar Ancient Orb | Moeda Barata Path of Exile"
+      },
+      "metaDescription": {
+        "en": "Fast and secure delivery of Ancient Orbs in Path of Exile. Reforge unique items to unlock new power! Buy now for the best PoE currency deals.",
+        "pt_br": "Compre Ancient Orbs no Path of Exile com entrega rápida e trade seguro. Renove seus itens únicos com um dos itens de moeda mais versáteis. Compre agora!"
+      }
+    },
+    {
+      "_id": "yaj6dHWVBIOVRoHcLYtdlH",
+      "name": "Armourer's Scrap",
+      "seoTitle": {
+        "en": "Buy Armourer's Scrap - PoE Currency for Armours",
+        "pt_br": "Comprar Armourer's Scrap - Moeda Barata PoE"
+      },
+      "metaDescription": {
+        "en": "Need Armourer's Scrap for your armour quality? Buy cheap PoE currency fast and secure! Boost your defences with instant delivery. Shop now!",
+        "pt_br": "Compre Armourer's Scrap para melhorar a qualidade de armaduras em Path of Exile. Trade seguro e entrega rápida. Otimize sua defesa agora!"
+      }
+    },
+    {
+      "_id": "z4ZBjmLMt2ahe51fSm11Se",
+      "name": "Awakener's Orb",
+      "seoTitle": {
+        "en": "Buy Awakener's Orb - PoE Currency & Crafting",
+        "pt_br": "Comprar Orb do Despertar | Moedas Path of Exile | Preço Baixo"
+      },
+      "metaDescription": {
+        "en": "Buy Awakener's Orbs for Path of Exile! Instantly apply influence and craft powerful rare items. Fast delivery and secure trades. Get yours now!",
+        "pt_br": "Compre Orb do Despertar para Path of Exile com entrega rápida e segura. Aumente seu poder com itens de influência única. Compre agora!"
+      }
+    },
+    {
+      "_id": "yaj6dHWVBIOVRoHcLYyLM1",
+      "name": "Blacksmith's Whetstone",
+      "seoTitle": {
+        "en": "Buy Blacksmith's Whetstone - PoE Currency & Orbs",
+        "pt_br": "Comprar Pedra de Amolar de Ferreiro - Moeda Barata"
+      },
+      "metaDescription": {
+        "en": "Secure and fast delivery for Blacksmith's Whetstone in Path of Exile. Enhance your weapon's physical damage. Buy now for instant trade!",
+        "pt_br": "Compre Pedra de Amolar de Ferreiro com entrega rápida e segura. Aumente a qualidade de suas armas em Path of Exile. Compre agora!"
+      }
+    },
+    {
+      "_id": "kQR8exxdlkc70NhvJSSILG",
+      "name": "Blessed Orb",
+      "seoTitle": {
+        "en": "Buy Blessed Orbs - PoE Currency",
+        "pt_br": "Comprar Blessed Orb Path of Exile | Moeda Barata"
+      },
+      "metaDescription": {
+        "en": "Securely buy cheap Blessed Orbs for Path of Exile. Instantly reroll implicit modifiers on your gear. Fast delivery guaranteed!",
+        "pt_br": "Adquira seu Blessed Orb em Path of Exile com preço baixo e entrega rápida! Otimize seus itens com esta moeda essencial. Compre agora!"
+      }
+    },
+    {
+      "_id": "z4ZBjmLMt2ahe51fSlwIhY",
+      "name": "Blessing of Esh",
+      "seoTitle": {
+        "en": "Buy Blessing of Esh - PoE Currency for Breachstones",
+        "pt_br": "Comprar Bênção de Esh | Moedas PoE Baratas | Entrega Rápida"
+      },
+      "metaDescription": {
+        "en": "Upgrade your Esh's Breachstone with Blessing of Esh. Fast delivery and secure trade for all your Path of Exile currency needs. Buy now!",
+        "pt_br": "Adquira a Bênção de Esh para aprimorar seus Breachstones! Compre agora com moedas PoE e garanta uma entrega rápida e segura. Melhore sua experiência em Wraeclast!"
+      }
+    },
+    {
+      "_id": "product-bloodstained-fossil",
+      "name": "Bloodstained Fossil",
+      "seoTitle": {
+        "en": "Buy Bloodstained Fossil - PoE Crafting Currency",
+        "pt_br": "Compre Bloodstained Fossil - Moeda de Craft PoE"
+      },
+      "metaDescription": {
+        "en": "Bloodstained Fossil corrupts the item and gives it a corrupted implicit modifier. Used inside a Resonator.",
+        "pt_br": "Bloodstained Fossil corrompe o item e concede um implicit corrompido. Usado dentro de um Resonator."
+      }
+    },
+    {
+      "_id": "kQR8exxdlkc70NhvJSST9u",
+      "name": "Cartographer's Chisel",
+      "seoTitle": {
+        "en": "Buy Cartographer's Chisels - Cheap PoE Currency",
+        "pt_br": "Comprar Cincel do Cartógrafo POE | Moedas Baratas"
+      },
+      "metaDescription": {
+        "en": "Securely buy Cartographer's Chisels for your Path of Exile maps. Fast delivery, affordable prices. Enhance your map item quantity instantly!",
+        "pt_br": "Compre Cincéis do Cartógrafo em Path of Exile! Aumente a Quantidade de Itens dos seus Mapas com entrega rápida e trade seguro. Garanta os seus agora!"
+      }
+    },
+    {
+      "_id": "Lf6O9pmwNsVRF4yGIbAJ7M",
+      "name": "Chaos Orb",
+      "seoTitle": {
+        "en": "Buy Chaos Orbs - Path of Exile Currency",
+        "pt_br": "Comprar Orbes de Caos PoE | Preço Baixo | Moeda Rara"
+      },
+      "metaDescription": {
+        "en": "Securely buy Chaos Orbs for Path of Exile. Instantly reroll rare item modifiers. Fast and reliable currency trades. Get cheap PoE Chaos Orbs now!",
+        "pt_br": "Compre Orbes de Caos para Path of Exile! Essencial para refinar equipamentos raros. Entrega rápida e trade seguro. Garanta já suas moedas!"
+      }
+    },
+    {
+      "_id": "product-chaotic-astrolabe",
+      "name": "Chaotic Astrolabe",
+      "seoTitle": {
+        "en": "Buy Chaotic Astrolabe - PoE Atlas Currency",
+        "pt_br": "Compre Chaotic Astrolabe - Moeda de Atlas PoE"
+      },
+      "metaDescription": {
+        "en": "Chaotic Astrolabe adds a Shaped Region containing Ultimatum encounters to a quadrant of your Atlas.",
+        "pt_br": "Chaotic Astrolabe adiciona uma Shaped Region com encontros de Ultimatum a um quadrante do seu Atlas."
+      }
+    },
+    {
+      "_id": "yaj6dHWVBIOVRoHcLZ2cjB",
+      "name": "Chromatic Orb",
+      "seoTitle": {
+        "en": "Buy Chromatic Orb - PoE Currency for Socket Crafting",
+        "pt_br": "Comprar Orb Cromática Po8 - Moedas Baratas e Entrega Rápida"
+      },
+      "metaDescription": {
+        "en": "Get your Chromatic Orbs for socket colour rerolling in Path of Exile. Fast, secure trades. Buy PoE currency now and optimize your gear!",
+        "pt_br": "Compre Orbs Cromáticas em Path of Exile com o melhor preço! Garanta seus itens com sockets coloridos perfeitos. Trade seguro e entrega rápida."
+      }
+    },
+    {
+      "_id": "product-crusader-s-exalted-orb",
+      "name": "Crusader's Exalted Orb",
+      "seoTitle": {
+        "en": "Buy Crusader's Exalted Orb - PoE Currency",
+        "pt_br": "Compre Crusader's Exalted Orb - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Crusader's Exalted Orb adds Crusader influence and a new Crusader modifier to an uninfluenced high-level rare item.",
+        "pt_br": "Crusader's Exalted Orb adiciona influência Crusader e um novo modificador Crusader a um item raro de nível alto sem influência."
+      }
+    },
+    {
+      "_id": "product-crystallised-rancour",
+      "name": "Crystallised Rancour",
+      "seoTitle": {
+        "en": "Buy Crystallised Rancour - PoE Harvest Currency",
+        "pt_br": "Compre Crystallised Rancour - Moeda Harvest PoE"
+      },
+      "metaDescription": {
+        "en": "Crystallised Rancour is used at the Horticrafting bench in your hideout. Drops from Harvest bosses.",
+        "pt_br": "Crystallised Rancour é usada na bancada de Horticrafting do seu hideout. Dropa dos chefes de Harvest."
+      }
+    },
+    {
+      "_id": "product-deceptive-astrolabe",
+      "name": "Deceptive Astrolabe",
+      "seoTitle": {
+        "en": "Buy Deceptive Astrolabe - PoE Atlas Currency",
+        "pt_br": "Compre Deceptive Astrolabe - Moeda de Atlas PoE"
+      },
+      "metaDescription": {
+        "en": "Deceptive Astrolabe adds a Shaped Region containing Mirrors of Delirium to a quadrant of your Atlas.",
+        "pt_br": "Deceptive Astrolabe adiciona uma Shaped Region com Mirrors of Delirium a um quadrante do seu Atlas."
+      }
+    },
+    {
+      "_id": "yaj6dHWVBIOVRoHcLZPtHH",
+      "name": "Delirious Scouting Report",
+      "seoTitle": {
+        "en": "Delirious Scouting Report - PoE Currency & Trade",
+        "pt_br": "Relatório de Reconhecimento Delirante: Comprar Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Buy Delirious Scouting Reports for Kirac missions! Enhance your Atlas with Delirium layers. Fast delivery and secure trading on our Path of Exile platform.",
+        "pt_br": "Compre o Relatório de Reconhecimento Delirante em Path of Exile! Garanta missões de Kirac com Delirium. Entrega rápida e trade seguro."
+      }
+    },
+    {
+      "_id": "npSnfkTNuJYOvaKND1RmUc",
+      "name": "Divine Orb",
+      "seoTitle": {
+        "en": "Buy Divine Orbs - PoE Currency & Crafting",
+        "pt_br": "Divine Orb PoE: Comprar Moeda Rara com Entrega Rápida"
+      },
+      "metaDescription": {
+        "en": "Buy Divine Orbs for Path of Exile! Fast delivery & secure trade for the ultimate crafting currency. Enhance your gear now!",
+        "pt_br": "Compre Divine Orbs PoE com segurança e entrega rápida! A moeda essencial para otimizar seus itens e dominar o endgame. Preço baixo garantido."
+      }
+    },
+    {
+      "_id": "product-elder-s-exalted-orb",
+      "name": "Elder's Exalted Orb",
+      "seoTitle": {
+        "en": "Buy Elder's Exalted Orb - PoE Currency",
+        "pt_br": "Compre Elder's Exalted Orb - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Elder's Exalted Orb adds Elder influence and a new Elder modifier to a rare item. Drops from Elder and Uber Elder encounters.",
+        "pt_br": "Elder's Exalted Orb adiciona influência Elder e um novo modificador Elder a um item raro. Dropa de Elder e Uber Elder."
+      }
+    },
+    {
+      "_id": "z4ZBjmLMt2ahe51fSlxZLQ",
+      "name": "Eldritch Chaos Orb",
+      "seoTitle": {
+        "en": "Buy Eldritch Chaos Orb - PoE Currency | Fast Delivery",
+        "pt_br": "Comprar Eldritch Chaos Orb - Moedas Baratas PoE"
+      },
+      "metaDescription": {
+        "en": "Need an Eldritch Chaos Orb? Buy PoE currency for fast delivery and secure trades. Reroll prefixes or suffixes on Eldritch-influenced rares. Get yours now!",
+        "pt_br": "Compre Eldritch Chaos Orb com entrega rápida e segura em Path of Exile. Melhore seus itens com esta moeda essencial. Compre agora!"
+      }
+    },
+    {
+      "_id": "yaj6dHWVBIOVRoHcLZQYpH",
+      "name": "Eldritch Exalted Orb",
+      "seoTitle": {
+        "en": "Eldritch Exalted Orb: Buy PoE Currency & Orbs",
+        "pt_br": "Comprar Eldritch Exalted Orb - Moedas PoE Baratas"
+      },
+      "metaDescription": {
+        "en": "Fast and secure delivery of Eldritch Exalted Orbs in Path of Exile. Buy this essential currency now to enhance your gear with powerful Eldritch modifiers.",
+        "pt_br": "Compre Eldritch Exalted Orbs em Path of Exile com entrega rápida e segura. Adicione modificadores únicos aos seus itens raros com este item de moeda essencial. Venda e compre agora!"
+      }
+    },
+    {
+      "_id": "yaj6dHWVBIOVRoHcLZQvML",
+      "name": "Eldritch Orb of Annulment",
+      "seoTitle": {
+        "en": "Buy Eldritch Orb of Annulment | PoE Currency for Sale",
+        "pt_br": "Comprar Orb da Anulação Eldritch - Moeda PoE Barata"
+      },
+      "metaDescription": {
+        "en": "Securely buy Eldritch Orb of Annulment in Path of Exile. Fast delivery and cheap prices on this essential currency for modifying Eldritch implicits. Get yours now!",
+        "pt_br": "Compre Orb da Anulação Eldritch para Path of Exile com entrega rápida e segura. A moeda essencial para refinar seus itens raros. Compre agora!"
+      }
+    },
+    {
+      "_id": "yaj6dHWVBIOVRoHcLZYYOJ",
+      "name": "Engineer's Orb",
+      "seoTitle": {
+        "en": "Engineer's Orb - PoE Currency for Strongboxes",
+        "pt_br": "Comprar Engineer's Orb - Moedas Baratas PoE"
+      },
+      "metaDescription": {
+        "en": "Buy Engineer's Orbs for Path of Exile! Enhance your Strongboxes and increase item drops. Fast, secure currency trade available now.",
+        "pt_br": "Compre Engineer's Orb em Path of Exile com entrega rápida e segura. Melhore a qualidade de suas Strongboxes e aumente seus drops. Ofertas imperdíveis!"
+      }
+    },
+    {
+      "_id": "kQR8exxdlkc70NhvJSUrOw",
+      "name": "Enkindling Orb",
+      "seoTitle": {
+        "en": "Enkindling Orb - Path of Exile Currency | Buy Now",
+        "pt_br": "Comprar Enkindling Orb PoE | Preço Baixo | Moeda"
+      },
+      "metaDescription": {
+        "en": "Buy Enkindling Orbs for Path of Exile. Instantly add powerful enchantments to your utility flasks, enhancing your builds. Fast and secure delivery.",
+        "pt_br": "Compre Enkindling Orb para Path of Exile com entrega rápida e trade seguro. Melhore seus frascos utilitários e obtenha vantagens únicas. Compre agora!"
+      }
+    },
+    {
+      "_id": "npSnfkTNuJYOvaKND1QkkC",
+      "name": "Exalted Orb",
+      "seoTitle": {
+        "en": "Exalted Orb: Buy PoE Currency - Fast & Secure",
+        "pt_br": "Comprar Orbe Exaltado PoE | Moeda Rara | Melhor Preço"
+      },
+      "metaDescription": {
+        "en": "Buy Exalted Orbs in Path of Exile! The most sought-after currency for crafting rare items. Fast delivery and secure trading. Enhance your gear now!",
+        "pt_br": "Compre Orbes Exaltados para Path of Exile com entrega rápida e trade seguro. Aumente o poder dos seus itens raros. Garanta já!"
+      }
+    },
+    {
+      "_id": "z4ZBjmLMt2ahe51fSlyaO0",
+      "name": "Exceptional Eldritch Ember",
+      "seoTitle": {
+        "en": "Exceptional Eldritch Ember - Path of Exile",
+        "pt_br": "Comprar Exceptional Eldritch Ember - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Confira os detalhes sobre o item Exceptional Eldritch Ember.",
+        "pt_br": "Compre Exceptional Eldritch Ember com entrega rápida e trade seguro em Path of Exile. Obtenha essa moeda valiosa para sua build agora!"
+      }
+    },
+    {
+      "_id": "kQR8exxdlkc70NhvJSi3MU",
+      "name": "Exceptional Eldritch Ichor",
+      "seoTitle": {
+        "en": "Buy Exceptional Eldritch Ichor | PoE Currency",
+        "pt_br": "Comprar Exceptional Eldritch Ichor | Moeda Barata PoE"
+      },
+      "metaDescription": {
+        "en": "Fast & secure delivery of Exceptional Eldritch Ichor for your PoE builds. Buy Eldritch currency now to enhance your gear with powerful Eater of Worlds implicits!",
+        "pt_br": "Compre Exceptional Eldritch Ichor para Path of Exile com entrega rápida e trade seguro. Melhore seu equipamento com implícitos únicos do Eater of Worlds. Compre agora!"
+      }
+    },
+    {
+      "_id": "z4ZBjmLMt2ahe51fSlvCkE",
+      "name": "Explorer's Scouting Report",
+      "seoTitle": {
+        "en": "Buy Explorer's Scouting Report | PoE Currency",
+        "pt_br": "Comprar Explorer's Scouting Report | PoE Moedas"
+      },
+      "metaDescription": {
+        "en": "Fast and secure delivery for Explorer's Scouting Reports. Reroll Kirac's Atlas Missions with uncompleted non-unique maps. Buy now for cheap PoE currency!",
+        "pt_br": "Adquira o Explorer's Scouting Report em Path of Exile com entrega rápida e trade seguro. Renove missões do Kirac e expanda seu Atlas. Compre agora!"
+      }
+    },
+    {
+      "_id": "product-faceted-fossil",
+      "name": "Faceted Fossil",
+      "seoTitle": {
+        "en": "Buy Faceted Fossil - PoE Crafting Currency",
+        "pt_br": "Compre Faceted Fossil - Moeda de Craft PoE"
+      },
+      "metaDescription": {
+        "en": "Faceted Fossil weights the craft toward gem modifiers. Place it in a Resonator and apply it to the target item.",
+        "pt_br": "Faceted Fossil direciona o craft para modificadores de gema. Coloque num Resonator e aplique no item alvo."
+      }
+    },
+    {
+      "_id": "yaj6dHWVBIOVRoHcLZPK5z",
+      "name": "Fertile Catalyst",
+      "seoTitle": {
+        "en": "Buy Fertile Catalyst | PoE Currency for Life/Mana Mods",
+        "pt_br": "Comprar Fertile Catalyst PoE | Preço Baixo | Moedas Raras"
+      },
+      "metaDescription": {
+        "en": "Fast delivery! Buy Fertile Catalyst for Path of Exile to enhance Life and Mana modifiers on rings, amulets, and belts. Secure and cheap PoE currency.",
+        "pt_br": "Compre Fertile Catalyst em Path of Exile! Melhore seus anéis, amuletos e cintos com bônus de Vida e Mana. Entrega rápida e trade seguro."
+      }
+    },
+    {
+      "_id": "product-flesh-of-xesht",
+      "name": "Flesh of Xesht",
+      "seoTitle": {
+        "en": "Buy Flesh of Xesht - PoE Currency",
+        "pt_br": "Compre Flesh of Xesht - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Flesh of Xesht transforms a Breach Unique item into its alternate form.",
+        "pt_br": "Flesh of Xesht transforma um item Breach Unique na sua forma alternativa."
+      }
+    },
+    {
+      "_id": "product-foulborn-exalted-orb",
+      "name": "Foulborn Exalted Orb",
+      "seoTitle": {
+        "en": "Buy Foulborn Exalted Orb - PoE Currency",
+        "pt_br": "Compre Foulborn Exalted Orb - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Foulborn Exalted Orb augments a rare item with a new random modifier, weighted toward higher level modifiers. Birthed from the Genesis Tree.",
+        "pt_br": "Foulborn Exalted Orb adiciona um modificador aleatório a um item raro, com peso maior para modificadores de nível alto."
+      }
+    },
+    {
+      "_id": "product-foulborn-orb-of-augmentation",
+      "name": "Foulborn Orb of Augmentation",
+      "seoTitle": {
+        "en": "Buy Foulborn Orb of Augmentation - PoE Currency",
+        "pt_br": "Compre Foulborn Orb of Augmentation - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Foulborn Orb of Augmentation adds a new modifier to a magic item, weighted toward higher level modifiers.",
+        "pt_br": "Foulborn Orb of Augmentation adiciona um modificador a um item mágico, com peso para modificadores de nível alto."
+      }
+    },
+    {
+      "_id": "product-foulborn-regal-orb",
+      "name": "Foulborn Regal Orb",
+      "seoTitle": {
+        "en": "Buy Foulborn Regal Orb - PoE Currency",
+        "pt_br": "Compre Foulborn Regal Orb - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Foulborn Regal Orb upgrades a magic item to rare, weighted toward higher level modifiers.",
+        "pt_br": "Foulborn Regal Orb transforma um item mágico em raro, com peso maior para modificadores de nível alto."
+      }
+    },
+    {
+      "_id": "product-fractured-fossil",
+      "name": "Fractured Fossil",
+      "seoTitle": {
+        "en": "Buy Fractured Fossil - PoE Crafting Currency",
+        "pt_br": "Compre Fractured Fossil - Moeda de Craft PoE"
+      },
+      "metaDescription": {
+        "en": "Fractured Fossil fractures a random modifier on the item. Cannot be used on Influenced or already Fractured items.",
+        "pt_br": "Fractured Fossil fratura um modificador aleatório do item. Não funciona em itens Influenced nem já fraturados."
+      }
+    },
+    {
+      "_id": "z4ZBjmLMt2ahe51fSm130A",
+      "name": "Fracturing Orb",
+      "seoTitle": {
+        "en": "Fracturing Orb | Path of Exile Currency | Buy Now",
+        "pt_br": "Comprar Orb of Fractura em Path of Exile | Moeda Rara"
+      },
+      "metaDescription": {
+        "en": "Secure and instant delivery for your Fracturing Orbs in Path of Exile. Buy now to fracture powerful modifiers and upgrade your gear. Cheap PoE currency available!",
+        "pt_br": "Adquira Orbs of Fractura em Path of Exile! Ferramenta essencial para crafters. Garanta já o seu com entrega rápida e segura. Compre agora!"
+      }
+    },
+    {
+      "_id": "product-fracturing-shard",
+      "name": "Fracturing Shard",
+      "seoTitle": {
+        "en": "Buy Fracturing Shard - PoE Currency",
+        "pt_br": "Compre Fracturing Shard - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "A stack of 20 Fracturing Shards becomes a Fracturing Orb. Obtained by vendoring a Harbinger unique.",
+        "pt_br": "Uma pilha de 20 Fracturing Shards vira um Fracturing Orb. Obtido vendendo um único de Harbinger."
+      }
+    },
+    {
+      "_id": "product-fruiting-astrolabe",
+      "name": "Fruiting Astrolabe",
+      "seoTitle": {
+        "en": "Buy Fruiting Astrolabe - PoE Atlas Currency",
+        "pt_br": "Compre Fruiting Astrolabe - Moeda de Atlas PoE"
+      },
+      "metaDescription": {
+        "en": "Fruiting Astrolabe adds a Shaped Region containing the Sacred Grove to a quadrant of your Atlas.",
+        "pt_br": "Fruiting Astrolabe adiciona uma Shaped Region com o Sacred Grove a um quadrante do seu Atlas."
+      }
+    },
+    {
+      "_id": "product-fungal-astrolabe",
+      "name": "Fungal Astrolabe",
+      "seoTitle": {
+        "en": "Buy Fungal Astrolabe - PoE Atlas Currency",
+        "pt_br": "Compre Fungal Astrolabe - Moeda de Atlas PoE"
+      },
+      "metaDescription": {
+        "en": "Fungal Astrolabe adds a Shaped Region containing Blight encounters to a quadrant of your Atlas.",
+        "pt_br": "Fungal Astrolabe adiciona uma Shaped Region com encontros de Blight a um quadrante do seu Atlas."
+      }
+    },
+    {
+      "_id": "z4ZBjmLMt2ahe51fSltHJS",
+      "name": "Gemcutter's Prism",
+      "seoTitle": {
+        "en": "Buy Gemcutter's Prism | PoE Currency & Orbs",
+        "pt_br": "Comprar Gemcutter's Prism Path of Exile | Moeda Barata"
+      },
+      "metaDescription": {
+        "en": "Instantly buy Gemcutter's Prisms for Path of Exile. Boost gem quality fast with our secure and cheap currency trade. Level 20 gem recipe available!",
+        "pt_br": "Aumente a qualidade das suas gemas com Gemcutter's Prism em Path of Exile. Compre agora com entrega rápida e trade seguro para otimizar seu personagem!"
+      }
+    },
+    {
+      "_id": "yaj6dHWVBIOVRoHcLZ4A3R",
+      "name": "Glassblower's Bauble",
+      "seoTitle": {
+        "en": "Buy Glassblower's Bauble | Path of Exile Currency",
+        "pt_br": "Comprar Glassblower's Bauble PoE | Moedas Baratas"
+      },
+      "metaDescription": {
+        "en": "Securely buy Glassblower's Baubles in Path of Exile. Instantly upgrade your Flask and Tincture quality for enhanced build effectiveness. Cheap currency, fast delivery!",
+        "pt_br": "Compre Glassblower's Bauble em Path of Exile! Aumente a qualidade de Frascos e Tinturas. Entrega rápida e trade seguro. Garanta o seu agora!"
+      }
+    },
+    {
+      "_id": "kQR8exxdlkc70NhvJSdFB2",
+      "name": "Grand Eldritch Ember",
+      "seoTitle": {
+        "en": "Buy Grand Eldritch Ember | PoE Currency",
+        "pt_br": "Comprar Grand Eldritch Ember | Moeda Rara PoE | Melhor Preço"
+      },
+      "metaDescription": {
+        "en": "Get Grand Eldritch Embers fast! Add powerful Searing Exarch implicits to your gear. Secure and instant delivery for your Path of Exile needs.",
+        "pt_br": "Obtenha Grand Eldritch Ember para adicionar Implícitos do Grande Searing Exarch em seus equipamentos. Compra segura e entrega rápida no Path of Exile."
+      }
+    },
+    {
+      "_id": "z4ZBjmLMt2ahe51fSlwH70",
+      "name": "Grand Eldritch Ichor",
+      "seoTitle": {
+        "en": "Buy Grand Eldritch Ichor | PoE Currency & Orbs",
+        "pt_br": "Comprar Grand Eldritch Ichor - Moeda PoE Barata"
+      },
+      "metaDescription": {
+        "en": "Securely buy Grand Eldritch Ichor for Path of Exile. Instantly add powerful Eater of Worlds implicits to your gear. Fast, safe trading!",
+        "pt_br": "Compre Grand Eldritch Ichor para Path of Exile. Adicione modificadores implícitos do Devorador de Mundos. Entrega rápida e segura. Adquira já!"
+      }
+    },
+    {
+      "_id": "product-grasping-astrolabe",
+      "name": "Grasping Astrolabe",
+      "seoTitle": {
+        "en": "Buy Grasping Astrolabe - PoE Atlas Currency",
+        "pt_br": "Compre Grasping Astrolabe - Moeda de Atlas PoE"
+      },
+      "metaDescription": {
+        "en": "Grasping Astrolabe adds a Shaped Region containing Breaches to a quadrant of your Atlas.",
+        "pt_br": "Grasping Astrolabe adiciona uma Shaped Region com Breaches a um quadrante do seu Atlas."
+      }
+    },
+    {
+      "_id": "yaj6dHWVBIOVRoHcLZ9OET",
+      "name": "Greater Eldritch Ember",
+      "seoTitle": {
+        "en": "Buy Greater Eldritch Ember - PoE Currency",
+        "pt_br": "Comprar Greater Eldritch Ember - Moeda PoE Barata"
+      },
+      "metaDescription": {
+        "en": "Buy Greater Eldritch Embers for Path of Exile! Fast, secure delivery of this valuable currency item. Enhance your gear with powerful Searing Exarch implicits. Trade now!",
+        "pt_br": "Compre Greater Eldritch Ember em Path of Exile com entrega rápida e trade seguro. Potencialize seus equipamentos com este item de Moeda essencial. Garanta o seu agora!"
+      }
+    },
+    {
+      "_id": "z4ZBjmLMt2ahe51fSlsQyw",
+      "name": "Greater Eldritch Ichor",
+      "seoTitle": {
+        "en": "Buy Greater Eldritch Ichor - PoE Currency Orbs",
+        "pt_br": "Comprar Greater Eldritch Ichor | Moeda Path of Exile"
+      },
+      "metaDescription": {
+        "en": "Fast and secure delivery of Greater Eldritch Ichor. Enhance your gear with powerful Eater of Worlds implicit modifiers. Buy PoE currency now!",
+        "pt_br": "Compre Greater Eldritch Ichor com entrega rápida e trade seguro. Adicione modificadores do Devorador de Mundos ao seu equipamento. Garanta já!"
+      }
+    },
+    {
+      "_id": "yaj6dHWVBIOVRoHcLZBwNt",
+      "name": "Harbinger's Orb",
+      "seoTitle": {
+        "en": "Buy Harbinger's Orb - PoE Currency & Maps",
+        "pt_br": "Harbinger's Orb: Compre Moeda Barata e Rara no PoE"
+      },
+      "metaDescription": {
+        "en": "Securely buy Harbinger's Orbs for Path of Exile. Reforge maps to a higher tier or transform them into The Beachhead. Fast, reliable currency trading.",
+        "pt_br": "Compre Harbinger's Orb no Path of Exile! Transforme seus mapas em recompensas superiores. Entrega rápida e trade seguro. Garanta já!"
+      }
+    },
+    {
+      "_id": "U58g24bB9lWm8PtvYSSLGj",
+      "name": "Hinekora Lock",
+      "seoTitle": {
+        "en": "Buy Hinekora's Lock - PoE Currency & Best Prices",
+        "pt_br": "Comprar Hinekora's Lock | Poe Moedas | Preço Baixo"
+      },
+      "metaDescription": {
+        "en": "Securely buy Hinekora's Lock for Path of Exile currency. Fast delivery and cheap prices. Preview currency outcomes instantly!",
+        "pt_br": "Compre Hinekora's Lock em Path of Exile! Garanta o seu com entrega rápida e trade seguro. Otimize seus orbes com antecedência. Compre agora!"
+      }
+    },
+    {
+      "_id": "kQR8exxdlkc70NhvJSk2fq",
+      "name": "Hinekora's Lock",
+      "seoTitle": {
+        "en": "Hinekora's Lock | Buy PoE Currency & Orbs",
+        "pt_br": "Comprar Hinekora's Lock | Moeda Barata PoE"
+      },
+      "metaDescription": {
+        "en": "Buy Hinekora's Lock for Path of Exile! Preview currency results with fast, secure delivery. Cheap PoE currency for your builds.",
+        "pt_br": "Adquira Hinekora's Lock em Path of Exile com segurança e entrega rápida. Antecipe resultados de moedas e otimize seus trades. Compre agora!"
+      }
+    },
+    {
+      "_id": "product-hollow-fossil",
+      "name": "Hollow Fossil",
+      "seoTitle": {
+        "en": "Buy Hollow Fossil - PoE Crafting Currency",
+        "pt_br": "Compre Hollow Fossil - Moeda de Craft PoE"
+      },
+      "metaDescription": {
+        "en": "Hollow Fossil guarantees an Abyssal socket on the crafted item. Place it in a Resonator to influence the outcome.",
+        "pt_br": "Hollow Fossil garante um socket Abyssal no item craftado. Use dentro de um Resonator para influenciar o resultado."
+      }
+    },
+    {
+      "_id": "product-hunter-s-exalted-orb",
+      "name": "Hunter's Exalted Orb",
+      "seoTitle": {
+        "en": "Buy Hunter's Exalted Orb - PoE Currency",
+        "pt_br": "Compre Hunter's Exalted Orb - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Hunter's Exalted Orb adds Hunter influence and a new Hunter modifier to a rare item. Applied to high-level rares with no influence yet.",
+        "pt_br": "Hunter's Exalted Orb adiciona influência Hunter e um novo modificador Hunter a um item raro sem influência prévia. Veja como usar."
+      }
+    },
+    {
+      "_id": "z4ZBjmLMt2ahe51fSlstFa",
+      "name": "Imbued Catalyst",
+      "seoTitle": {
+        "en": "Buy Imbued Catalyst - PoE Currency & Orbs",
+        "pt_br": "Comprar Imbued Catalyst PoE | Moedas Baratas"
+      },
+      "metaDescription": {
+        "en": "Instantly buy Imbued Catalysts in Path of Exile. Enhance your caster modifiers on rings, amulets, and belts with fast and secure trade. Cheap prices available!",
+        "pt_br": "Imbued Catalyst para aprimorar modificadores de Caster em joias! Compre agora com entrega rápida e segura no Path of Exile. Ofertas imperdíveis!"
+      }
+    },
+    {
+      "_id": "z4ZBjmLMt2ahe51fSlvEg0",
+      "name": "Influenced Scouting Report",
+      "seoTitle": {
+        "en": "Buy Influenced Scouting Report | PoE Currency",
+        "pt_br": "Relatório de Escotismo Influenciado: Compre Barato | Moedas PoE"
+      },
+      "metaDescription": {
+        "en": "Get your Influenced Scouting Report now! Reroll Kirac's Atlas Missions with guaranteed Shaper/Elder Guardians or Elderslayers. Fast delivery & secure trade.",
+        "pt_br": "Compre Relatório de Escotismo Influenciado em PoE com entrega rápida e segura. Revire as missões do Kirac com foco em mapas influenciados. Moedas PoE e itens para seu personagem."
+      }
+    },
+    {
+      "_id": "kQR8exxdlkc70NhvJSo1eu",
+      "name": "Infused Engineer's Orb",
+      "seoTitle": {
+        "en": "Buy Infused Engineer's Orb - Path of Exile Currency",
+        "pt_br": "Comprar Infused Engineer's Orb - Moeda PoE Barata"
+      },
+      "metaDescription": {
+        "en": "Secure and fast delivery for Infused Engineer's Orbs in Path of Exile. Enhance your strongboxes for better loot! Buy now for instant trade.",
+        "pt_br": "Garanta seu Infused Engineer's Orb em Path of Exile! Melhore seus Strongboxes com entrega rápida e trade seguro. Compre agora!"
+      }
+    },
+    {
+      "_id": "yaj6dHWVBIOVRoHcLZ13dr",
+      "name": "Instilling Orb",
+      "seoTitle": {
+        "en": "Instilling Orb - PoE Currency for Flask Enchantments",
+        "pt_br": "Comprar Instilling Orb Barato | Moedas PoE | Entrega Rápida"
+      },
+      "metaDescription": {
+        "en": "Buy Instilling Orbs in Path of Exile for fast flask enchantment with safe trade. Instantly add powerful automated effects to your utility flasks.",
+        "pt_br": "Compre Instilling Orbs em Path of Exile com entrega rápida e segura. Melhore suas Frascos Utilitários com encantamentos únicos. Garanta já suas moedas PoE!"
+      }
+    },
+    {
+      "_id": "yaj6dHWVBIOVRoHcLZYv5l",
+      "name": "Intrinsic Catalyst",
+      "seoTitle": {
+        "en": "Buy Intrinsic Catalyst - PoE Currency",
+        "pt_br": "Comprar Intrinsic Catalyst PoEx Moedas Barato"
+      },
+      "metaDescription": {
+        "en": "Enhance your ring, amulet, or belt's Attribute modifiers with Intrinsic Catalysts. Fast delivery and secure trade when you buy PoE currency from us!",
+        "pt_br": "Compre Intrinsic Catalyst em Path of Exile com entrega rápida e segura. Potencialize seus atributos! Venda e trade garantidos."
+      }
+    },
+    {
+      "_id": "yaj6dHWVBIOVRoHcLYygxx",
+      "name": "Jeweller's Orb",
+      "seoTitle": {
+        "en": "Buy Jeweller's Orb | Path of Exile Currency",
+        "pt_br": "Comprar Orbe de Joalheiro em Path of Exile | Moedas POE"
+      },
+      "metaDescription": {
+        "en": "Fast and secure delivery of Jeweller's Orbs for Path of Exile. Enhance your gear with the right number of sockets. Buy PoE currency now!",
+        "pt_br": "Compre Orbes de Joalheiro com entrega rápida e segura em Path of Exile. Essencial para otimizar seus itens. Compre agora e melhore seu personagem!"
+      }
+    },
+    {
+      "_id": "z4ZBjmLMt2ahe51fSlrEz8",
+      "name": "Lesser Eldritch Ember",
+      "seoTitle": {
+        "en": "Buy Lesser Eldritch Ember | PoE Currency",
+        "pt_br": "Comprar Lesser Eldritch Ember - Moeda Barata PoE"
+      },
+      "metaDescription": {
+        "en": "Securely buy Lesser Eldritch Embers for Path of Exile! Add powerful Searing Exarch implicits. Fast delivery & cheap prices. Get yours now!",
+        "pt_br": "Compre Lesser Eldritch Ember em Path of Exile com entrega rápida e trade seguro. Adicione um modificador implícito Searing Exarch de nível 1. Compre agora!"
+      }
+    },
+    {
+      "_id": "kQR8exxdlkc70NhvJSkJsU",
+      "name": "Lesser Eldritch Ichor",
+      "seoTitle": {
+        "en": "Buy Lesser Eldritch Ichor - PoE Currency",
+        "pt_br": "Comprar Icor Eldritch Menor - Moeda Barata"
+      },
+      "metaDescription": {
+        "en": "Purchase Lesser Eldritch Ichor for Path of Exile. Add powerful Eater of Worlds implicits to your gear. Fast and secure trade for your PoE currency needs.",
+        "pt_br": "Adquira Icor Eldritch Menor barato para seus equipamentos. Compre agora e receba entrega rápida e segura em Path of Exile."
+      }
+    },
+    {
+      "_id": "product-lightless-astrolabe",
+      "name": "Lightless Astrolabe",
+      "seoTitle": {
+        "en": "Buy Lightless Astrolabe - PoE Atlas Currency",
+        "pt_br": "Compre Lightless Astrolabe - Moeda de Atlas PoE"
+      },
+      "metaDescription": {
+        "en": "Lightless Astrolabe adds a Shaped Region containing Abysses to a quadrant of your Atlas.",
+        "pt_br": "Lightless Astrolabe adiciona uma Shaped Region com Abysses a um quadrante do seu Atlas."
+      }
+    },
+    {
+      "_id": "product-maraketh-enshrouding-crystal",
+      "name": "Maraketh Enshrouding Crystal",
+      "seoTitle": {
+        "en": "Buy Maraketh Enshrouding Crystal - PoE Currency",
+        "pt_br": "Compre Maraketh Enshrouding Crystal - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Maraketh Enshrouding Crystal enshrouds Unique Body Armours. Drops from Aukuna in Legion encounters.",
+        "pt_br": "Maraketh Enshrouding Crystal faz enshroud em Unique Body Armours. Dropa de Aukuna em encontros de Legion."
+      }
+    },
+    {
+      "_id": "yaj6dHWVBIOVRoHcLZTMTV",
+      "name": "Maven's Chisel of Avarice",
+      "seoTitle": {
+        "en": "Buy Maven's Chisel of Avarice | PoE Currency & Maps",
+        "pt_br": "Comprar Maven's Chisel of Avarice - Moedas PoE | Preço Baixo"
+      },
+      "metaDescription": {
+        "en": "Securely buy Maven's Chisel of Avarice in Path of Exile. Enhance your maps for increased currency drops. Fast delivery guaranteed. Get yours now!",
+        "pt_br": "Melhore seus mapas com Maven's Chisel of Avarice! Obtenha mais moedas em seus drops. Compre agora com entrega rápida e segura no Path of Exile."
+      }
+    },
+    {
+      "_id": "z4ZBjmLMt2ahe51fSlxUWk",
+      "name": "Maven's Chisel of Divination",
+      "seoTitle": {
+        "en": "Buy Maven's Chisel of Divination | Path of Exile Currency",
+        "pt_br": "Comprar Cinzel da Divinação da Maven | Moedas PoE"
+      },
+      "metaDescription": {
+        "en": "Enhance your maps with Maven's Chisel of Divination! Get more Divination Cards. Fast delivery & secure trade. Buy now for cheap PoE currency!",
+        "pt_br": "Otimize seus mapas para mais Cartas de Divinação! Compre Cinzéis da Divinação da Maven com entrega rápida e trade seguro. Melhore sua chance de encontrar itens raros."
+      }
+    },
+    {
+      "_id": "kQR8exxdlkc70NhvJScaEA",
+      "name": "Maven's Chisel of Procurement",
+      "seoTitle": {
+        "en": "Buy Maven's Chisel of Procurement - PoE Currency",
+        "pt_br": "Comprar Maven's Chisel of Procurement | Moeda Barata PoE"
+      },
+      "metaDescription": {
+        "en": "Fast delivery on Maven's Chisel of Procurement! Enhance map Item Rarity with this essential PoE currency. Buy now for secure and instant trade.",
+        "pt_br": "Melhore a Raridade de Itens em seus Mapas! Compre Maven's Chisel of Procurement com entrega rápida e segura. Otimize seu farming agora!"
+      }
+    },
+    {
+      "_id": "U58g24bB9lWm8PtvYSSrR3",
+      "name": "Maven's Chisel of Proliferation",
+      "seoTitle": {
+        "en": "Buy Maven's Chisel of Proliferation | PoE Currency",
+        "pt_br": "Comprar Cinzel de Proliferação da Maven | Moedas PoE Baratas"
+      },
+      "metaDescription": {
+        "en": "Fast delivery on Maven's Chisel of Proliferation for Path of Exile. Enhance your maps with increased pack size. Buy PoE currency safely and instantly!",
+        "pt_br": "Compre o Cinzel de Proliferação da Maven para aumentar o Pack Size de seus mapas! Entrega rápida e segura em Path of Exile. Venda garantida!"
+      }
+    },
+    {
+      "_id": "z4ZBjmLMt2ahe51fSm0zv8",
+      "name": "Maven's Chisel of Scarabs",
+      "seoTitle": {
+        "en": "Buy Maven's Chisel of Scarabs - PoE Currency for Scarabs",
+        "pt_br": "Comprar Maven's Chisel of Scarabs - Moeda PoE Barata"
+      },
+      "metaDescription": {
+        "en": "Fast delivery! Buy Maven's Chisel of Scarabs to enhance your map scarabs. Secure and cheap Path of Exile currency. Get more scarabs with quality!",
+        "pt_br": "Compre Maven's Chisel of Scarabs em Path of Exile com entrega rápida e trade seguro. Melhore seus mapas e obtenha mais Scarabs. Preço baixo garantido!"
+      }
+    },
+    {
+      "_id": "product-memory-of-reverence",
+      "name": "Memory of Reverence",
+      "seoTitle": {
+        "en": "Buy Memory of Reverence - PoE Atlas Currency",
+        "pt_br": "Compre Memory of Reverence - Moeda de Atlas PoE"
+      },
+      "metaDescription": {
+        "en": "Memory of Reverence adds a Memory Thread to the Atlas leading to the Incarnation of Dread.",
+        "pt_br": "Memory of Reverence adiciona um Memory Thread ao Atlas levando ao Incarnation of Dread."
+      }
+    },
+    {
+      "_id": "product-message-in-a-bottle",
+      "name": "Message in a Bottle",
+      "seoTitle": {
+        "en": "Buy Message in a Bottle - PoE Allflame Currency",
+        "pt_br": "Compre Message in a Bottle - Moeda Allflame PoE"
+      },
+      "metaDescription": {
+        "en": "Message in a Bottle is opened with a right click and is found in The Fathomless Depths during the Allflame league.",
+        "pt_br": "Message in a Bottle é aberta com clique direito e encontrada no The Fathomless Depths durante a liga Allflame."
+      }
+    },
+    {
+      "_id": "yaj6dHWVBIOVRoHcLZX6QR",
+      "name": "Mirror Shard",
+      "seoTitle": {
+        "en": "Buy Mirror Shards PoE | Cheap Currency & Orbs",
+        "pt_br": "Comprar Mirror Shard PoE | Moeda Rara Barata"
+      },
+      "metaDescription": {
+        "en": "Securely buy Mirror Shards in Path of Exile. Fast delivery and instant trade for this valuable currency. Elevate your item crafting today!",
+        "pt_br": "Adquira Mirror Shards no Path of Exile com entrega rápida e trade seguro. Essencial para criar o Mirror of Kalandra. Compre agora!"
+      }
+    },
+    {
+      "_id": "npSnfkTNuJYOvaKND1UcV2",
+      "name": "Mirror of Kalandra",
+      "seoTitle": {
+        "en": "Mirror of Kalandra | PoE Currency | Buy Now",
+        "pt_br": "Comprar Mirror of Kalandra | Moeda Rara PoE"
+      },
+      "metaDescription": {
+        "en": "Secure & Fast Delivery! Buy Mirror of Kalandra for your Path of Exile build. The ultimate currency item for duplicating powerful equipment. Instant trade.",
+        "pt_br": "Adquira o Mirror of Kalandra, a moeda mais cobiçada de Path of Exile. Duplique itens raros com entrega rápida e segura. Compre agora!"
+      }
+    },
+    {
+      "_id": "product-nameless-astrolabe",
+      "name": "Nameless Astrolabe",
+      "seoTitle": {
+        "en": "Buy Nameless Astrolabe - PoE Atlas Currency",
+        "pt_br": "Compre Nameless Astrolabe - Moeda de Atlas PoE"
+      },
+      "metaDescription": {
+        "en": "Nameless Astrolabe adds a Shaped Region containing Ritual Altars to a quadrant of your Atlas.",
+        "pt_br": "Nameless Astrolabe adiciona uma Shaped Region com Ritual Altars a um quadrante do seu Atlas."
+      }
+    },
+    {
+      "_id": "yaj6dHWVBIOVRoHcLZYjMf",
+      "name": "Noxious Catalyst",
+      "seoTitle": {
+        "en": "Buy Noxious Catalyst - PoE Currency & Orbs",
+        "pt_br": "Comprar Noxious Catalyst PoE | Moedas e Itens Baratos"
+      },
+      "metaDescription": {
+        "en": "Fast and secure delivery of Noxious Catalysts. Enhance your Physical and Chaos Damage modifiers on jewelry. Buy PoE currency now!",
+        "pt_br": "Adquira o Noxious Catalyst em Path of Exile! Aumente seu Dano Físico e de Caos em anéis, amuletos e cintos. Compra segura e entrega rápida. Compre agora!"
+      }
+    },
+    {
+      "_id": "product-opulent-fossil",
+      "name": "Opulent Fossil",
+      "seoTitle": {
+        "en": "Buy Opulent Fossil - PoE Crafting Currency",
+        "pt_br": "Compre Opulent Fossil - Moeda de Craft PoE"
+      },
+      "metaDescription": {
+        "en": "Opulent Fossil weights the craft toward drop modifiers and blocks tagless ones. Used inside a Resonator.",
+        "pt_br": "Opulent Fossil aumenta a chance de modificadores de drop e remove os sem tag do pool. Usado dentro de um Resonator."
+      }
+    },
+    {
+      "_id": "yaj6dHWVBIOVRoHcLYx5Mp",
+      "name": "Orb of Alchemy",
+      "seoTitle": {
+        "en": "Buy Orb of Alchemy | PoE Currency for Sale",
+        "pt_br": "Orb of Alchemy: Moedas Baratas e Trade Seguro"
+      },
+      "metaDescription": {
+        "en": "Upgrade normal items to rare with Orbs of Alchemy! Fast delivery & secure trade. Buy PoE currency now for the best deals.",
+        "pt_br": "Compre Orbs of Alchemy para transformar itens normais em raros. Entrega rápida e segura para sua jornada em Path of Exile. Compre agora!"
+      }
+    },
+    {
+      "_id": "yaj6dHWVBIOVRoHcLYzLqP",
+      "name": "Orb of Alteration",
+      "seoTitle": {
+        "en": "Buy Orb of Alteration | Path of Exile Currency",
+        "pt_br": "Comprar Orbe de Alteração PoE | Moeda Barata"
+      },
+      "metaDescription": {
+        "en": "Fast and secure delivery on Orbs of Alteration! Buy Path of Exile currency to reroll magic item modifiers. Cheap prices available now.",
+        "pt_br": "Encontre Orbes de Alteração PoE com preço baixo! Essencial para refinar itens mágicos. Compra rápida e segura para seu avanço em Wraeclast. Compre agora!"
+      }
+    },
+    {
+      "_id": "kQR8exxdlkc70NhvJSZwAi",
+      "name": "Orb of Annulment",
+      "seoTitle": {
+        "en": "Orb of Annulment | Buy PoE Currency & Orbs",
+        "pt_br": "Comprar Orb of Annulment - Moeda PoE Barata e Rápida"
+      },
+      "metaDescription": {
+        "en": "Buy Orb of Annulment for Path of Exile. Safely remove unwanted modifiers from magic or rare items. Fast delivery and secure trading.",
+        "pt_br": "Compre Orb of Annulment em Path of Exile com entrega rápida e trade seguro. Ideal para remover modificadores indesejados em itens raros e mágicos. Garanta o seu!"
+      }
+    },
+    {
+      "_id": "kQR8exxdlkc70NhvJSPOWa",
+      "name": "Orb of Augmentation",
+      "seoTitle": {
+        "en": "Buy Orb of Augmentation | PoE Currency | Fast Delivery",
+        "pt_br": "Comprar Orb of Augmentation | Moeda Rara PoE"
+      },
+      "metaDescription": {
+        "en": "Buy Orbs of Augmentation for your Path of Exile crafting needs. Fast, secure, and cheap currency trading. Enhance your magic items instantly!",
+        "pt_br": "Compre Orbs of Augmentation para Path of Exile! Melhore seus itens mágicos com um novo modificador. Entrega rápida e segura para sua jornada em Wraeclast."
+      }
+    },
+    {
+      "_id": "z4ZBjmLMt2ahe51fSlqGRC",
+      "name": "Orb of Binding",
+      "seoTitle": {
+        "en": "Buy Orb of Binding | Path of Exile Currency",
+        "pt_br": "Comprar Orb of Binding | Moedas Baratas Path of Exile"
+      },
+      "metaDescription": {
+        "en": "Fast and secure delivery of Orb of Binding for your Path of Exile needs. Upgrade items instantly with this valuable currency. Buy now!",
+        "pt_br": "Compre Orb of Binding para Path of Exile com entrega rápida e trade seguro. Aprimore seus itens com esta moeda essencial. Compre agora!"
+      }
+    },
+    {
+      "_id": "z4ZBjmLMt2ahe51fSlqQOG",
+      "name": "Orb of Chance",
+      "seoTitle": {
+        "en": "Buy Orb of Chance - PoE Currency & Orbs",
+        "pt_br": "Orb of Chance: Moeda Barata para Upgrades"
+      },
+      "metaDescription": {
+        "en": "Fast and secure delivery for Orbs of Chance. Buy Path of Exile currency now to upgrade your items and discover rare uniques. Instant trade!",
+        "pt_br": "Compre Orbs of Chance com entrega rápida em Path of Exile! Transforme itens normais em mágicos, raros ou únicos. Garanta já as suas moedas!"
+      }
+    },
+    {
+      "_id": "yaj6dHWVBIOVRoHcLZUkvF",
+      "name": "Orb of Conflict",
+      "seoTitle": {
+        "en": "Buy Orb of Conflict | Path of Exile Currency",
+        "pt_br": "Comprar Orb of Conflict | Moeda PoE Barata"
+      },
+      "metaDescription": {
+        "en": "Buy Orb of Conflict for Path of Exile. Fast delivery and secure trades. Enhance your Eldritch implicit modifiers with this essential currency. Get yours now!",
+        "pt_br": "Adquira o Orb of Conflict para aprimorar seus itens Eldritch! Entrega rápida e segura. Compre agora e domine o endgame de Path of Exile."
+      }
+    },
+    {
+      "_id": "z4ZBjmLMt2ahe51fSlyfUs",
+      "name": "Orb of Dominance",
+      "seoTitle": {
+        "en": "Buy Orb of Dominance - Path of Exile Currency",
+        "pt_br": "Orb of Dominance PoE | Moedas Baratas | Compre Agora"
+      },
+      "metaDescription": {
+        "en": "Upgrade your influenced items with the Orb of Dominance! Buy cheap PoE currency for fast, secure trades. Get Elevated modifiers now!",
+        "pt_br": "Compre Orb of Dominance em Path of Exile com entrega rápida e segura. Transforme seus itens com modificadores elevados. Confira os melhores preços!"
+      }
+    },
+    {
+      "_id": "yaj6dHWVBIOVRoHcLZ3Wlf",
+      "name": "Orb of Fusing",
+      "seoTitle": {
+        "en": "Orb of Fusing Currency | PoE Trade",
+        "pt_br": "Comprar Orbe de Fusão PoE | Moedas Baratas e Seguras"
+      },
+      "metaDescription": {
+        "en": "Buy Orbs of Fusing for Path of Exile! Reroll item socket links instantly. Secure and fast PoE currency trading. Get your Fusing Orbs now!",
+        "pt_br": "Compre Orbes de Fusão para Path of Exile com entrega rápida e segura. Essencial para otimizar links de sockets. Compre agora!"
+      }
+    },
+    {
+      "_id": "yaj6dHWVBIOVRoHcLZ3l5l",
+      "name": "Orb of Horizons",
+      "seoTitle": {
+        "en": "Buy Orb of Horizons | PoE Currency | Fast Delivery",
+        "pt_br": "Comprar Orb of Horizons | Moedas Path of Exile Barato"
+      },
+      "metaDescription": {
+        "en": "Securely buy Orb of Horizons for Path of Exile. Instantly reforge maps of the same tier for your Atlas progression. Cheap PoE currency with fast, safe trades.",
+        "pt_br": "Compre Orbs of Horizons em Path of Exile com entrega rápida e segura. Transforme seus mapas com esta moeda essencial para o endgame. Venda e compre agora!"
+      }
+    },
+    {
+      "_id": "product-orb-of-intention",
+      "name": "Orb of Intention",
+      "seoTitle": {
+        "en": "Buy Orb of Intention - PoE Currency",
+        "pt_br": "Compre Orb of Intention - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Orb of Intention makes a Memory Influenced Map drop items with more Memory Strands, but fewer items overall.",
+        "pt_br": "Orb of Intention faz um Memory Influenced Map dropar itens com mais Memory Strands, porém menos itens no total."
+      }
+    },
+    {
+      "_id": "yaj6dHWVBIOVRoHcLZYckN",
+      "name": "Orb of Regret",
+      "seoTitle": {
+        "en": "Buy Orb of Regret | Path of Exile Currency",
+        "pt_br": "Orb of Regret PoE: Compre Moedas Baratas e Entrega Rápida"
+      },
+      "metaDescription": {
+        "en": "Securely buy Orbs of Regret for Path of Exile! Essential currency for respeccing passive skills. Fast delivery & safe trades.",
+        "pt_br": "Precisa resetar seu passive tree? Compre Orbs of Regret em Path of Exile com segurança e entrega rápida. Otimize seu build hoje!"
+      }
+    },
+    {
+      "_id": "product-orb-of-remembrance",
+      "name": "Orb of Remembrance",
+      "seoTitle": {
+        "en": "Buy Orb of Remembrance - PoE Currency",
+        "pt_br": "Compre Orb of Remembrance - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Orb of Remembrance randomises the number of Memory Strands on a normal equipment item.",
+        "pt_br": "Orb of Remembrance sorteia novamente a quantidade de Memory Strands num item de equipamento normal."
+      }
+    },
+    {
+      "_id": "z4ZBjmLMt2ahe51fSls12K",
+      "name": "Orb of Scouring",
+      "seoTitle": {
+        "en": "Buy Orb of Scouring | Cheap PoE Currency",
+        "pt_br": "Comprar Orb of Scouring Barato | Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Instantly buy Orbs of Scouring for Path of Exile. Secure and fast currency trade for all your crafting needs. Level 1 currency item.",
+        "pt_br": "Compre Orb of Scouring para Path of Exile! Remova modificadores indesejados e otimize seu equipamento. Entrega rápida e segura."
+      }
+    },
+    {
+      "_id": "kQR8exxdlkc70NhvJSO7c4",
+      "name": "Orb of Transmutation",
+      "seoTitle": {
+        "en": "Buy Orb of Transmutation | PoE Currency",
+        "pt_br": "Orb of Transmutation PoE: Compre Moedas Baratas"
+      },
+      "metaDescription": {
+        "en": "Upgrade normal items to magic rarity with Orbs of Transmutation. Fast delivery and secure trade. Buy PoE currency now!",
+        "pt_br": "Compre Orb of Transmutation em Path of Exile com entrega rápida e segura. Essencial para refinar seu equipamento. Aproveite os melhores preços!"
+      }
+    },
+    {
+      "_id": "kQR8exxdlkc70NhvJSSLE6",
+      "name": "Orb of Unmaking",
+      "seoTitle": {
+        "en": "Orb of Unmaking - Buy PoE Currency for Atlas Respec",
+        "pt_br": "Orb of Unmaking Comprar | Moeda Path of Exile | Barato"
+      },
+      "metaDescription": {
+        "en": "Fast and secure delivery of Orb of Unmaking for Path of Exile Atlas passive skill respecs. Buy PoE currency now for instant trade!",
+        "pt_br": "Compre Orb of Unmaking em Path of Exile! A moeda essencial para resetar seus pontos de passiva do Atlas. Entrega rápida e segura. Compre agora!"
+      }
+    },
+    {
+      "_id": "kQR8exxdlkc70NhvJShrfY",
+      "name": "Orb of Unravelling",
+      "seoTitle": {
+        "en": "Orb of Unravelling | PoE Currency | Buy Now",
+        "pt_br": "Orb of Unravelling PoE | Preço Baixo | Moeda Rara"
+      },
+      "metaDescription": {
+        "en": "Buy Orb of Unravelling for Path of Exile! Instantly upgrade item modifiers with this powerful currency. Secure and fast delivery. Don't miss out!",
+        "pt_br": "Compre Orb of Unravelling em Path of Exile. Obtenha melhorias poderosas para seus itens com entrega rápida e trade seguro. Compre agora!"
+      }
+    },
+    {
+      "_id": "yaj6dHWVBIOVRoHcLYtiXJ",
+      "name": "Portal Scroll",
+      "seoTitle": {
+        "en": "Buy Portal Scrolls - PoE Currency",
+        "pt_br": "Comprar Pergaminho de Portal PoE | Moeda Barata"
+      },
+      "metaDescription": {
+        "en": "Instantly teleport to town with Portal Scrolls! Fast delivery and secure trading. Buy now for essential Path of Exile currency.",
+        "pt_br": "Compre Pergaminhos de Portal para Path of Exile com entrega rápida e trade seguro. Essencial para retorno à cidade. Garanta o seu agora!"
+      }
+    },
+    {
+      "_id": "product-powerful-chaotic-resonator",
+      "name": "Powerful Chaotic Resonator",
+      "seoTitle": {
+        "en": "Buy Powerful Chaotic Resonator - PoE Currency",
+        "pt_br": "Compre Powerful Chaotic Resonator - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Powerful Chaotic Resonator reforges a rare item with new random modifiers, steered by the fossils socketed into it.",
+        "pt_br": "Powerful Chaotic Resonator reforja um item raro com novos modificadores aleatórios, guiado pelos fossils encaixados."
+      }
+    },
+    {
+      "_id": "yaj6dHWVBIOVRoHcLYyWFB",
+      "name": "Primal Crystallised Lifeforce",
+      "seoTitle": {
+        "en": "Buy Primal Crystallised Lifeforce | PoE Currency | Fast Delivery",
+        "pt_br": "Comprar Primal Crystallised Lifeforce Barato | Moedas PoE"
+      },
+      "metaDescription": {
+        "en": "Securely buy Primal Crystallised Lifeforce in Path of Exile. Fast delivery and cheap prices for this essential Harvest currency. Upgrade your gear today!",
+        "pt_br": "Adquira Primal Crystallised Lifeforce com entrega rápida e segura. A moeda essencial para crafts poderosos da Colheita. Compre agora!"
+      }
+    },
+    {
+      "_id": "product-prime-chaotic-resonator",
+      "name": "Prime Chaotic Resonator",
+      "seoTitle": {
+        "en": "Buy Prime Chaotic Resonator - PoE Currency",
+        "pt_br": "Compre Prime Chaotic Resonator - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Prime Chaotic Resonator reforges a rare item with new random modifiers, using the fossils socketed into it.",
+        "pt_br": "Prime Chaotic Resonator reforja um item raro com novos modificadores aleatórios, usando os fossils encaixados nele."
+      }
+    },
+    {
+      "_id": "z4ZBjmLMt2ahe51fSm0xcc",
+      "name": "Prismatic Catalyst",
+      "seoTitle": {
+        "en": "Buy Prismatic Catalyst | PoE Currency | Fast Delivery",
+        "pt_br": "Comprar Prismatic Catalyst PoE | Moedas Baratas"
+      },
+      "metaDescription": {
+        "en": "Securely buy Prismatic Catalysts in Path of Exile for fast, instant delivery. Enhance your gear with resistance quality. Cheapest prices and safe trade guaranteed!",
+        "pt_br": "Compre Prismatic Catalyst em Path of Exile com entrega rápida e trade seguro. Aumente a qualidade dos seus itens com este catalisador versátil. Compre agora!"
+      }
+    },
+    {
+      "_id": "product-redeemer-s-exalted-orb",
+      "name": "Redeemer's Exalted Orb",
+      "seoTitle": {
+        "en": "Buy Redeemer's Exalted Orb - PoE Currency",
+        "pt_br": "Compre Redeemer's Exalted Orb - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Redeemer's Exalted Orb adds Redeemer influence and a new Redeemer modifier to a rare item that carries no influence yet.",
+        "pt_br": "Redeemer's Exalted Orb adiciona influência Redeemer e um novo modificador Redeemer a um item raro que ainda não tem influência."
+      }
+    },
+    {
+      "_id": "z4ZBjmLMt2ahe51fSlylVq",
+      "name": "Reflecting Mist",
+      "seoTitle": {
+        "en": "Buy Fading Reflecting Mist Currency | Path of Exile",
+        "pt_br": "Comprar Fading Reflecting Mist PoE | Moedas Baratas"
+      },
+      "metaDescription": {
+        "en": "Securely buy Fading Reflecting Mist currency for Path of Exile. Instantly upgrade your rare rings and amulets with mirrored modifiers. Fast delivery!",
+        "pt_br": "Compre Fading Reflecting Mist em Path of Exile com entrega rápida e trade seguro. Potencialize seus anéis e amuletos agora! Preço baixo garantido."
+      }
+    },
+    {
+      "_id": "z4ZBjmLMt2ahe51fSlranW",
+      "name": "Regal Orb",
+      "seoTitle": {
+        "en": "Buy Regal Orb - Path of Exile Currency",
+        "pt_br": "Comprar Orbe Regal PoE | Moeda Rara Barata"
+      },
+      "metaDescription": {
+        "en": "Fast and secure delivery for Regal Orbs in Path of Exile. Upgrade magic items to rare with this essential currency. Buy now!",
+        "pt_br": "Compre Orbes Regais em Path of Exile! Aprimore seus itens de mágicos para raros com um novo modificador. Entrega rápida e segura."
+      }
+    },
+    {
+      "_id": "z4ZBjmLMt2ahe51fSlwKmQ",
+      "name": "Ritual Vessel",
+      "seoTitle": {
+        "en": "Buy Ritual Vessel - PoE Currency for Rituals",
+        "pt_br": "Ritual Vessel PoE: Comprar Moeda Barata e Rápida"
+      },
+      "metaDescription": {
+        "en": "Instantly buy Ritual Vessels in Path of Exile! Capture powerful Ritual monsters and enhance your Favour rewards. Secure and fast currency trade.",
+        "pt_br": "Compre Ritual Vessel em Path of Exile com entrega rápida e trade seguro. Ideal para otimizar seus Rituais. Garanta já a sua moeda!"
+      }
+    },
+    {
+      "_id": "product-rogue-s-marker",
+      "name": "Rogue's Marker",
+      "seoTitle": {
+        "en": "Buy Rogue's Marker - PoE Heist Currency",
+        "pt_br": "Compre Rogue's Marker - Moeda de Heist PoE"
+      },
+      "metaDescription": {
+        "en": "Rogue's Marker opens a portal to the Rogue Harbour and pays for services there. Used from a Town or Hideout.",
+        "pt_br": "Rogue's Marker abre portal para o Rogue Harbour e paga os serviços de lá. Usado a partir de Town ou Hideout."
+      }
+    },
+    {
+      "_id": "product-rotmothers-ducat",
+      "name": "Rotmother's Ducat",
+      "seoTitle": {
+        "en": "Buy Rotmother's Ducat - PoE Allflame Currency",
+        "pt_br": "Compre Rotmother's Ducat - Moeda Allflame PoE"
+      },
+      "metaDescription": {
+        "en": "Rotmother's Ducat augments a rare belt with a Trap or Mine modifier, used in Allflame Crafting aboard The Sovereign.",
+        "pt_br": "Rotmother's Ducat adiciona um modificador de Trap ou Mine a um cinto raro, usado no Allflame Crafting a bordo do The Sovereign."
+      }
+    },
+    {
+      "_id": "product-runegraft-of-bellows",
+      "name": "Runegraft of Bellows",
+      "seoTitle": {
+        "en": "Buy Runegraft of Bellows - PoE Currency",
+        "pt_br": "Compre Runegraft of Bellows - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Runegraft of Bellows grants 100% increased Warcry Speed if you have not Warcried Recently.",
+        "pt_br": "Runegraft of Bellows concede 100% de Warcry Speed aumentada se você não tiver usado Warcry recentemente."
+      }
+    },
+    {
+      "_id": "product-runegraft-of-blasphemy",
+      "name": "Runegraft of Blasphemy",
+      "seoTitle": {
+        "en": "Buy Runegraft of Blasphemy - PoE Currency",
+        "pt_br": "Compre Runegraft of Blasphemy - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Runegraft of Blasphemy gives a 30% chance to Curse non-Cursed enemies with a random Hex on Hit.",
+        "pt_br": "Runegraft of Blasphemy dá 30% de chance de aplicar uma Hex aleatória em inimigos sem curse ao acertar."
+      }
+    },
+    {
+      "_id": "product-runegraft-of-connection",
+      "name": "Runegraft of Connection",
+      "seoTitle": {
+        "en": "Buy Runegraft of Connection - PoE Currency",
+        "pt_br": "Compre Runegraft of Connection - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Runegraft of Connection gives Link Skills 50% increased range, keeping links alive at greater distance.",
+        "pt_br": "Runegraft of Connection dá 50% de alcance aumentado às Link Skills, mantendo o link vivo a mais distância."
+      }
+    },
+    {
+      "_id": "product-runegraft-of-consecration",
+      "name": "Runegraft of Consecration",
+      "seoTitle": {
+        "en": "Buy Runegraft of Consecration - PoE Currency",
+        "pt_br": "Compre Runegraft of Consecration - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Runegraft of Consecration makes your Consecrated Ground grant 30% increased Mana Regeneration to you and allies.",
+        "pt_br": "Runegraft of Consecration faz seu Consecrated Ground dar 30% de Mana Regeneration aumentada a você e aos aliados."
+      }
+    },
+    {
+      "_id": "product-runegraft-of-fury",
+      "name": "Runegraft of Fury",
+      "seoTitle": {
+        "en": "Buy Runegraft of Fury - PoE Currency",
+        "pt_br": "Compre Runegraft of Fury - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Runegraft of Fury grants 3 Rage every time you use a Life Flask.",
+        "pt_br": "Runegraft of Fury concede 3 de Rage toda vez que você usa uma Life Flask."
+      }
+    },
+    {
+      "_id": "product-runegraft-of-gemcraft",
+      "name": "Runegraft of Gemcraft",
+      "seoTitle": {
+        "en": "Buy Runegraft of Gemcraft - PoE Currency",
+        "pt_br": "Compre Runegraft of Gemcraft - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Runegraft of Gemcraft grants +1 to Level of all non-Exceptional Support Gems on your character.",
+        "pt_br": "Runegraft of Gemcraft concede +1 de nível a todas as Support Gems não-Exceptional do seu personagem."
+      }
+    },
+    {
+      "_id": "product-runegraft-of-loyalty",
+      "name": "Runegraft of Loyalty",
+      "seoTitle": {
+        "en": "Buy Runegraft of Loyalty - PoE Currency",
+        "pt_br": "Compre Runegraft of Loyalty - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Runegraft of Loyalty gives a 40% chance for Elemental Ailments on you to hit a nearby Minion instead.",
+        "pt_br": "Runegraft of Loyalty dá 40% de chance de Elemental Ailments em você atingirem um Minion próximo no lugar."
+      }
+    },
+    {
+      "_id": "product-runegraft-of-quaffing",
+      "name": "Runegraft of Quaffing",
+      "seoTitle": {
+        "en": "Buy Runegraft of Quaffing - PoE Currency",
+        "pt_br": "Compre Runegraft of Quaffing - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Runegraft of Quaffing recovers non-instant Flask Mana as Life too, with 25% reduced Mana Recovery from Flasks.",
+        "pt_br": "Runegraft of Quaffing faz a Mana não-instantânea de Flasks recuperar Life também, com 25% de Mana reduzida."
+      }
+    },
+    {
+      "_id": "product-runegraft-of-rallying",
+      "name": "Runegraft of Rallying",
+      "seoTitle": {
+        "en": "Buy Runegraft of Rallying - PoE Currency",
+        "pt_br": "Compre Runegraft of Rallying - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Runegraft of Rallying grants 1 Fortification per 5 Valour consumed when you place a Banner.",
+        "pt_br": "Runegraft of Rallying concede 1 de Fortification a cada 5 de Valour consumidos ao plantar um Banner."
+      }
+    },
+    {
+      "_id": "product-runegraft-of-refraction",
+      "name": "Runegraft of Refraction",
+      "seoTitle": {
+        "en": "Buy Runegraft of Refraction - PoE Currency",
+        "pt_br": "Compre Runegraft of Refraction - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Runegraft of Refraction limits you to 1 Projectile, but makes Projectiles Fork and Chain an additional time.",
+        "pt_br": "Runegraft of Refraction limita você a 1 Projectile, mas faz os Projectiles Fork e Chain uma vez a mais."
+      }
+    },
+    {
+      "_id": "product-runegraft-of-restitching",
+      "name": "Runegraft of Restitching",
+      "seoTitle": {
+        "en": "Buy Runegraft of Restitching - PoE Currency",
+        "pt_br": "Compre Runegraft of Restitching - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Runegraft of Restitching recoups 40% of Damage taken from Critical Strikes as Life over time.",
+        "pt_br": "Runegraft of Restitching recupera 40% do dano sofrido de Critical Strikes como Life ao longo do tempo."
+      }
+    },
+    {
+      "_id": "product-runegraft-of-resurgence",
+      "name": "Runegraft of Resurgence",
+      "seoTitle": {
+        "en": "Buy Runegraft of Resurgence - PoE Currency",
+        "pt_br": "Compre Runegraft of Resurgence - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Runegraft of Resurgence makes Arcane Surge also grant 15% increased Life Regeneration Rate to you.",
+        "pt_br": "Runegraft of Resurgence faz Arcane Surge também conceder 15% de Life Regeneration Rate aumentada a você."
+      }
+    },
+    {
+      "_id": "product-runegraft-of-rotblood",
+      "name": "Runegraft of Rotblood",
+      "seoTitle": {
+        "en": "Buy Runegraft of Rotblood - PoE Currency",
+        "pt_br": "Compre Runegraft of Rotblood - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Runegraft of Rotblood makes poisoned enemies convert 10% of the Physical Damage they deal to Chaos.",
+        "pt_br": "Runegraft of Rotblood faz inimigos envenenados converterem 10% do dano físico que causam em Chaos."
+      }
+    },
+    {
+      "_id": "product-runegraft-of-stability",
+      "name": "Runegraft of Stability",
+      "seoTitle": {
+        "en": "Buy Runegraft of Stability - PoE Currency",
+        "pt_br": "Compre Runegraft of Stability - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Runegraft of Stability turns your Lucky and Unlucky effects into Unexciting, removing the reroll in both directions.",
+        "pt_br": "Runegraft of Stability transforma seus efeitos Lucky e Unlucky em Unexciting, tirando o reroll dos dois lados."
+      }
+    },
+    {
+      "_id": "product-runegraft-of-suffering",
+      "name": "Runegraft of Suffering",
+      "seoTitle": {
+        "en": "Buy Runegraft of Suffering - PoE Currency",
+        "pt_br": "Compre Runegraft of Suffering - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Runegraft of Suffering grants 50% increased Damage with Damaging Ailments while you suffer the same Ailment.",
+        "pt_br": "Runegraft of Suffering dá 50% de dano aumentado com Damaging Ailments enquanto você sofre o mesmo Ailment."
+      }
+    },
+    {
+      "_id": "product-runegraft-of-time",
+      "name": "Runegraft of Time",
+      "seoTitle": {
+        "en": "Buy Runegraft of Time - PoE Currency",
+        "pt_br": "Compre Runegraft of Time - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Runegraft of Time gives skills a 20% chance not to consume a Cooldown when used.",
+        "pt_br": "Runegraft of Time dá 20% de chance de uma skill não consumir Cooldown ao ser usada."
+      }
+    },
+    {
+      "_id": "product-runegraft-of-treachery",
+      "name": "Runegraft of Treachery",
+      "seoTitle": {
+        "en": "Buy Runegraft of Treachery - PoE Currency",
+        "pt_br": "Compre Runegraft of Treachery - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Runegraft of Treachery makes your ally auras affect enemies too, with 15% increased Reservation Efficiency.",
+        "pt_br": "Runegraft of Treachery faz suas auras de aliado afetarem inimigos também, com 15% de Reservation Efficiency aumentada."
+      }
+    },
+    {
+      "_id": "product-runegraft-of-the-agile",
+      "name": "Runegraft of the Agile",
+      "seoTitle": {
+        "en": "Buy Runegraft of the Agile - PoE Currency",
+        "pt_br": "Compre Runegraft of the Agile - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Runegraft of the Agile makes Elusive's effect on you increase for the first 2 seconds instead of decaying.",
+        "pt_br": "Runegraft of the Agile faz o efeito de Elusive aumentar nos primeiros 2 segundos em vez de decair."
+      }
+    },
+    {
+      "_id": "product-runegraft-of-the-angler",
+      "name": "Runegraft of the Angler",
+      "seoTitle": {
+        "en": "Buy Runegraft of the Angler - PoE Currency",
+        "pt_br": "Compre Runegraft of the Angler - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Runegraft of the Angler makes all your hits Critical Strikes while holding a Fishing Rod. Applied to an allocated Passive Mastery.",
+        "pt_br": "Runegraft of the Angler torna todos os seus hits Critical Strikes enquanto você segura uma Fishing Rod. Aplicado numa Passive Mastery."
+      }
+    },
+    {
+      "_id": "product-runegraft-of-the-bound",
+      "name": "Runegraft of the Bound",
+      "seoTitle": {
+        "en": "Buy Runegraft of the Bound - PoE Currency",
+        "pt_br": "Compre Runegraft of the Bound - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Runegraft of the Bound increases bonuses from Gloves by 20% and reduces bonuses from Boots by 20%.",
+        "pt_br": "Runegraft of the Bound aumenta em 20% os bônus das Gloves e reduz em 20% os das Boots."
+      }
+    },
+    {
+      "_id": "product-runegraft-of-the-combatant",
+      "name": "Runegraft of the Combatant",
+      "seoTitle": {
+        "en": "Buy Runegraft of the Combatant - PoE Currency",
+        "pt_br": "Compre Runegraft of the Combatant - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Runegraft of the Combatant grants 50% increased Attack Damage against enemies with a higher Life percentage than you.",
+        "pt_br": "Runegraft of the Combatant dá 50% de Attack Damage aumentado contra inimigos com percentual de Life maior que o seu."
+      }
+    },
+    {
+      "_id": "product-runegraft-of-the-fortress",
+      "name": "Runegraft of the Fortress",
+      "seoTitle": {
+        "en": "Buy Runegraft of the Fortress - PoE Currency",
+        "pt_br": "Compre Runegraft of the Fortress - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Runegraft of the Fortress grants 40% increased Global Defences at the cost of 10% reduced Attributes.",
+        "pt_br": "Runegraft of the Fortress dá 40% de Global Defences aumentadas ao custo de 10% de Atributos reduzidos."
+      }
+    },
+    {
+      "_id": "product-runegraft-of-the-imbued",
+      "name": "Runegraft of the Imbued",
+      "seoTitle": {
+        "en": "Buy Runegraft of the Imbued - PoE Currency",
+        "pt_br": "Compre Runegraft of the Imbued - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Runegraft of the Imbued gives Tinctures 30% increased Effect while you are affected by no Flasks.",
+        "pt_br": "Runegraft of the Imbued dá 30% de Efeito aumentado às Tinctures enquanto nenhuma Flask estiver ativa em você."
+      }
+    },
+    {
+      "_id": "product-runegraft-of-the-jeweller",
+      "name": "Runegraft of the Jeweller",
+      "seoTitle": {
+        "en": "Buy Runegraft of the Jeweller - PoE Currency",
+        "pt_br": "Compre Runegraft of the Jeweller - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Runegraft of the Jeweller grants 10% increased Damage per unlinked Socket in your equipped Two Handed Weapon.",
+        "pt_br": "Runegraft of the Jeweller dá 10% de dano aumentado por Socket não linkado na sua Two Handed Weapon equipada."
+      }
+    },
+    {
+      "_id": "product-runegraft-of-the-novamark",
+      "name": "Runegraft of the Novamark",
+      "seoTitle": {
+        "en": "Buy Runegraft of the Novamark - PoE Currency",
+        "pt_br": "Compre Runegraft of the Novamark - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Runegraft of the Novamark makes Nova Spells cast at your Marked target instead of around you.",
+        "pt_br": "Runegraft of the Novamark faz Nova Spells serem conjuradas no alvo Marked em vez de ao seu redor."
+      }
+    },
+    {
+      "_id": "product-runegraft-of-the-river",
+      "name": "Runegraft of the River",
+      "seoTitle": {
+        "en": "Buy Runegraft of the River - PoE Currency",
+        "pt_br": "Compre Runegraft of the River - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Runegraft of the River gives a 20% chance to recover to Full Life whenever you reach Low Life.",
+        "pt_br": "Runegraft of the River dá 20% de chance de recuperar Full Life sempre que você chega a Low Life."
+      }
+    },
+    {
+      "_id": "product-runegraft-of-the-sinistral",
+      "name": "Runegraft of the Sinistral",
+      "seoTitle": {
+        "en": "Buy Runegraft of the Sinistral - PoE Currency",
+        "pt_br": "Compre Runegraft of the Sinistral - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Runegraft of the Sinistral grants 10% more Attack Speed with your Offhand weapon.",
+        "pt_br": "Runegraft of the Sinistral concede 10% more de Attack Speed com a arma da Offhand."
+      }
+    },
+    {
+      "_id": "product-runegraft-of-the-soulwick",
+      "name": "Runegraft of the Soulwick",
+      "seoTitle": {
+        "en": "Buy Runegraft of the Soulwick - PoE Currency",
+        "pt_br": "Compre Runegraft of the Soulwick - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Runegraft of the Soulwick grants 1 Vaal Soul per second, feeding Vaal skills without needing kills.",
+        "pt_br": "Runegraft of the Soulwick concede 1 Vaal Soul por segundo, alimentando Vaal skills sem depender de abates."
+      }
+    },
+    {
+      "_id": "product-runegraft-of-the-spellbound",
+      "name": "Runegraft of the Spellbound",
+      "seoTitle": {
+        "en": "Buy Runegraft of the Spellbound - PoE Currency",
+        "pt_br": "Compre Runegraft of the Spellbound - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Runegraft of the Spellbound adds Spell Damage equal to 30% of your equipped Two Handed Weapon's Physical Damage.",
+        "pt_br": "Runegraft of the Spellbound adiciona Spell Damage igual a 30% do dano físico da sua Two Handed Weapon equipada."
+      }
+    },
+    {
+      "_id": "product-runegraft-of-the-warp",
+      "name": "Runegraft of the Warp",
+      "seoTitle": {
+        "en": "Buy Runegraft of the Warp - PoE Currency",
+        "pt_br": "Compre Runegraft of the Warp - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Runegraft of the Warp makes debuffs on you expire 30% faster and buffs on you expire 30% slower.",
+        "pt_br": "Runegraft of the Warp faz debuffs em você expirarem 30% mais rápido e buffs expirarem 30% mais devagar."
+      }
+    },
+    {
+      "_id": "product-runegraft-of-the-witchmark",
+      "name": "Runegraft of the Witchmark",
+      "seoTitle": {
+        "en": "Buy Runegraft of the Witchmark - PoE Currency",
+        "pt_br": "Compre Runegraft of the Witchmark - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Runegraft of the Witchmark makes Spells cost +8% of Life and deal added Chaos Damage equal to 2% of maximum Life.",
+        "pt_br": "Runegraft of the Witchmark faz Spells custarem +8% de Life e causarem Chaos Damage igual a 2% da Life máxima."
+      }
+    },
+    {
+      "_id": "product-runic-astrolabe",
+      "name": "Runic Astrolabe",
+      "seoTitle": {
+        "en": "Buy Runic Astrolabe - PoE Atlas Currency",
+        "pt_br": "Compre Runic Astrolabe - Moeda de Atlas PoE"
+      },
+      "metaDescription": {
+        "en": "Runic Astrolabe adds a Shaped Region containing Expedition encounters to a quadrant of your Atlas.",
+        "pt_br": "Runic Astrolabe adiciona uma Shaped Region com encontros de Expedition a um quadrante do seu Atlas."
+      }
+    },
+    {
+      "_id": "kQR8exxdlkc70NhvJSnQck",
+      "name": "Sacred Crystallised Lifeforce",
+      "seoTitle": {
+        "en": "Sacred Crystallised Lifeforce Currency - PoE Trade",
+        "pt_br": "Comprar Sacred Crystallised Lifeforce - Moeda Rara PoE"
+      },
+      "metaDescription": {
+        "en": "Buy Sacred Crystallised Lifeforce in Path of Exile. Essential currency for potent Harvest crafts. Fast & secure delivery. Get yours now!",
+        "pt_br": "Compre Sacred Crystallised Lifeforce em Path of Exile com entrega rápida e segura. A moeda essencial para crafts poderosos de Colheita."
+      }
+    },
+    {
+      "_id": "yaj6dHWVBIOVRoHcLZRkxZ",
+      "name": "Sacred Orb",
+      "seoTitle": {
+        "en": "Buy Sacred Orb | Path of Exile Currency",
+        "pt_br": "Comprar Sacred Orb PoE | Moeda Rara Barata | Compre Agora"
+      },
+      "metaDescription": {
+        "en": "Instantly buy Sacred Orbs for your Path of Exile character! Secure and fast delivery. Enhance your armour's base defenses with this valuable currency.",
+        "pt_br": "Sacred Orb: Melhore defesas de armaduras em Path of Exile. Compra segura e entrega rápida. Encontre o melhor preço!"
+      }
+    },
+    {
+      "_id": "product-sanctified-fossil",
+      "name": "Sanctified Fossil",
+      "seoTitle": {
+        "en": "Buy Sanctified Fossil - PoE Crafting Currency",
+        "pt_br": "Compre Sanctified Fossil - Moeda de Craft PoE"
+      },
+      "metaDescription": {
+        "en": "Sanctified Fossil makes numeric modifier values lucky and high level modifiers more common. Used in a Resonator.",
+        "pt_br": "Sanctified Fossil deixa os valores numéricos lucky e torna modificadores de nível alto mais comuns. Usado em Resonator."
+      }
+    },
+    {
+      "_id": "yaj6dHWVBIOVRoHcLYtnoV",
+      "name": "Scroll of Wisdom",
+      "seoTitle": {
+        "en": "Buy Scroll of Wisdom | PoE Currency for Identification",
+        "pt_br": "Comprar Pergaminho de Sabedoria PoE | Moeda Barata"
+      },
+      "metaDescription": {
+        "en": "Instantly identify items and strongboxes with Scrolls of Wisdom. The most common PoE currency. Buy now for fast and secure delivery!",
+        "pt_br": "Compre Pergaminhos de Sabedoria para identificar itens e strongboxes em Path of Exile. Entrega rápida e segura. Obtenha suas moedas PoE agora!"
+      }
+    },
+    {
+      "_id": "product-shaper-s-exalted-orb",
+      "name": "Shaper's Exalted Orb",
+      "seoTitle": {
+        "en": "Buy Shaper's Exalted Orb - PoE Currency",
+        "pt_br": "Compre Shaper's Exalted Orb - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Shaper's Exalted Orb adds Shaper influence and a new Shaper modifier to a high-level rare item with no influence applied.",
+        "pt_br": "Shaper's Exalted Orb adiciona influência Shaper e um novo modificador Shaper a um item raro de nível alto sem influência aplicada."
+      }
+    },
+    {
+      "_id": "product-shuddering-fossil",
+      "name": "Shuddering Fossil",
+      "seoTitle": {
+        "en": "Buy Shuddering Fossil - PoE Crafting Currency",
+        "pt_br": "Compre Shuddering Fossil - Moeda de Craft PoE"
+      },
+      "metaDescription": {
+        "en": "Shuddering Fossil weights the craft toward speed modifiers and removes mana modifiers from the pool.",
+        "pt_br": "Shuddering Fossil direciona o craft para modificadores de velocidade e remove os de mana do pool."
+      }
+    },
+    {
+      "_id": "kQR8exxdlkc70NhvJSksHm",
+      "name": "Singular Scouting Report",
+      "seoTitle": {
+        "en": "Buy Singular Scouting Report | PoE Currency & Maps",
+        "pt_br": "Singular Scouting Report: Compre Moedas Baratas"
+      },
+      "metaDescription": {
+        "en": "Fast and secure delivery for Singular Scouting Reports. Reroll Kirac's missions for guaranteed Unique Maps. Buy now for efficient Atlas progression!",
+        "pt_br": "Compre Singular Scouting Report com entrega rápida e segura para otimizar as missões do Kirac. Garanta seus mapas únicos agora!"
+      }
+    },
+    {
+      "_id": "yaj6dHWVBIOVRoHcLZDg1b",
+      "name": "Stacked Deck",
+      "seoTitle": {
+        "en": "Buy Stacked Deck - Path of Exile Currency",
+        "pt_br": "Comprar Stacked Deck PoE | Moeda Rara Barata"
+      },
+      "metaDescription": {
+        "en": "Instantly buy Stacked Decks in Path of Exile! A currency item for a random Divination Card. Fast delivery & secure trade.",
+        "pt_br": "Compre Stacked Decks em Path of Exile! Entrega rápida e trade seguro. Obtenha cartas de adivinhação raras e valiosas. Compre agora!"
+      }
+    },
+    {
+      "_id": "yaj6dHWVBIOVRoHcLZUq23",
+      "name": "Tailoring Orb",
+      "seoTitle": {
+        "en": "Buy Tailoring Orb | Path of Exile Currency",
+        "pt_br": "Comprar Orbe de Costura | Moeda Path of Exile"
+      },
+      "metaDescription": {
+        "en": "Securely buy Tailoring Orbs for your body armour enchantments in Path of Exile. Fast delivery for all your crafting needs. Get your PoE currency now!",
+        "pt_br": "Compre Orbes de Costura para Path of Exile com entrega rápida e segura. Melhore suas armaduras corporais com encantamentos únicos. Garanta já!"
+      }
+    },
+    {
+      "_id": "z4ZBjmLMt2ahe51fSlzx2q",
+      "name": "Tainted Armourer's Scrap",
+      "seoTitle": {
+        "en": "Tainted Armourer's Scrap | Path of Exile Currency",
+        "pt_br": "Comprar Tainted Armourer's Scrap PoE | Moeda Rara Barata"
+      },
+      "metaDescription": {
+        "en": "Buy Tainted Armourer's Scrap for Path of Exile. Safely randomize corrupted armour quality up to 20%. Fast delivery and cheap prices for your PoE currency needs.",
+        "pt_br": "Garanta seu Tainted Armourer's Scrap em Path of Exile! Aumente a qualidade de armaduras corrompidas com entrega rápida e segura. Compre agora!"
+      }
+    },
+    {
+      "_id": "kQR8exxdlkc70NhvJSnqzq",
+      "name": "Tainted Blacksmith's Whetstone",
+      "seoTitle": {
+        "en": "Buy Tainted Blacksmith's Whetstone - Path of Exile Currency",
+        "pt_br": "Comprar Tainted Blacksmith's Whetstone | Moeda PoE Barata"
+      },
+      "metaDescription": {
+        "en": "Secure and fast delivery for Tainted Blacksmith's Whetstones in Path of Exile. Buy now to randomize corrupted weapon quality! Instant trade.",
+        "pt_br": "Compre Tainted Blacksmith's Whetstone em Path of Exile com entrega rápida e segura. Melhore suas armas corrompidas agora!"
+      }
+    },
+    {
+      "_id": "kQR8exxdlkc70NhvJSf0Tk",
+      "name": "Tainted Catalyst",
+      "seoTitle": {
+        "en": "Buy Tainted Catalyst - Path of Exile Currency & Orbs",
+        "pt_br": "Comprar Tainted Catalyst PoE | Moedas Baratas"
+      },
+      "metaDescription": {
+        "en": "Fast and secure delivery for Tainted Catalysts in Path of Exile. Enhance your corrupted rings, amulets, and belts. Buy now for instant trade!",
+        "pt_br": "Catalisador Corrompido essencial para itens amaldiçoados. Compre Tainted Catalyst com entrega rápida e trade seguro em Path of Exile."
+      }
+    },
+    {
+      "_id": "z4ZBjmLMt2ahe51fSlxboY",
+      "name": "Tainted Chaos Orb",
+      "seoTitle": {
+        "en": "Tainted Chaos Orb | Buy Path of Exile Currency",
+        "pt_br": "Comprar Tainted Chaos Orb | Moeda Rara Path of Exile"
+      },
+      "metaDescription": {
+        "en": "Buy Tainted Chaos Orbs for Path of Exile. Fast, secure delivery for your corrupting needs. Reforge or strip modifiers from corrupted rares. Get yours now!",
+        "pt_br": "Compre Tainted Chaos Orb para Path of Exile! Reforja ou remove modificadores de itens corrompidos. Entrega rápida e segura."
+      }
+    },
+    {
+      "_id": "z4ZBjmLMt2ahe51fSlvJoO",
+      "name": "Tainted Chromatic Orb",
+      "seoTitle": {
+        "en": "Buy Tainted Chromatic Orb | PoE Currency for Corrupted Items",
+        "pt_br": "Tainted Chromatic Orb: Comprar Moedas PoE | Preço Baixo"
+      },
+      "metaDescription": {
+        "en": "Fast and secure delivery of Tainted Chromatic Orbs. Reforge socket colors on your corrupted items with this essential PoE currency. Buy now!",
+        "pt_br": "Compre Tainted Chromatic Orb em Path of Exile com entrega rápida e trade seguro. A moeda essencial para reformular cores de sockets em itens corrompidos. Compre agora!"
+      }
+    },
+    {
+      "_id": "product-tainted-divine-teardrop",
+      "name": "Tainted Divine Teardrop",
+      "seoTitle": {
+        "en": "Buy Tainted Divine Teardrop - PoE Currency",
+        "pt_br": "Compre Tainted Divine Teardrop - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Tainted Divine Teardrop unpredictably raises or lowers the tier of each modifier on a corrupted rare item.",
+        "pt_br": "Tainted Divine Teardrop sobe ou desce de forma imprevisível o tier de cada modificador de um raro corrompido."
+      }
+    },
+    {
+      "_id": "product-tainted-exalted-orb",
+      "name": "Tainted Exalted Orb",
+      "seoTitle": {
+        "en": "Buy Tainted Exalted Orb - PoE Currency",
+        "pt_br": "Compre Tainted Exalted Orb - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Tainted Exalted Orb unpredictably adds or removes a modifier on a corrupted rare item. Drops from Beyond monsters.",
+        "pt_br": "Tainted Exalted Orb adiciona ou remove um modificador de forma imprevisível em item raro corrompido. Dropa de monstros Beyond."
+      }
+    },
+    {
+      "_id": "z4ZBjmLMt2ahe51fSltFlw",
+      "name": "Tainted Jeweller's Orb",
+      "seoTitle": {
+        "en": "Buy Tainted Jeweller's Orb | Path of Exile Currency",
+        "pt_br": "Comprar Tainted Jeweller's Orb | Moedas Path of Exile"
+      },
+      "metaDescription": {
+        "en": "Securely buy Tainted Jeweller's Orbs for your corrupted items in Path of Exile. Fast delivery and cheap prices. Enhance your gear now!",
+        "pt_br": "Compre Tainted Jeweller's Orb para Path of Exile com entrega rápida e trade seguro. Adicione ou remova engastes em itens corrompidos. Preço baixo!"
+      }
+    },
+    {
+      "_id": "kQR8exxdlkc70NhvJSepIk",
+      "name": "Tainted Mythic Orb",
+      "seoTitle": {
+        "en": "Buy Tainted Mythic Orb - Path of Exile Currency",
+        "pt_br": "Comprar Tainted Mythic Orb Preço Baixo PoE - Moedas Baratas"
+      },
+      "metaDescription": {
+        "en": "Secure and fast delivery for your Tainted Mythic Orb in Path of Exile. Upgrade your corrupted items to powerful uniques. Buy now!",
+        "pt_br": "Compre Tainted Mythic Orb em Path of Exile com entrega rápida e segura. Transforme itens corruptos em únicos lendários ou arrisque tudo! Venda agora."
+      }
+    },
+    {
+      "_id": "kQR8exxdlkc70NhvJSl7NU",
+      "name": "Tainted Orb of Fusing",
+      "seoTitle": {
+        "en": "Tainted Orb of Fusing - PoE Currency for Linked Sockets",
+        "pt_br": "Comprar Tainted Orb of Fusing Barato | Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Buy Tainted Orbs of Fusing for your corrupted items! Unpredictably link sockets on PoE gear. Fast, secure delivery. Get yours now!",
+        "pt_br": "Compre Tainted Orb of Fusing com entrega rápida e segura! Essencial para corromper itens e obter linkings únicos no Path of Exile. Compre agora!"
+      }
+    },
+    {
+      "_id": "kQR8exxdlkc70NhvJSnuky",
+      "name": "Tempering Catalyst",
+      "seoTitle": {
+        "en": "Buy Tempering Catalyst - Path of Exile Currency",
+        "pt_br": "Catalisador de Temperamento PoE: Comprar Moedas Barato"
+      },
+      "metaDescription": {
+        "en": "Acquire Tempering Catalysts for your rings, amulets, and belts in Path of Exile. Fast delivery and secure trading for your PoE currency needs.",
+        "pt_br": "Compre Catalisador de Temperamento em Path of Exile! Melhore seus equipamentos com modificadores de Defesa. Entrega rápida e segura. Garanta já o seu!"
+      }
+    },
+    {
+      "_id": "kQR8exxdlkc70NhvJSiB5W",
+      "name": "Tempering Orb",
+      "seoTitle": {
+        "en": "Buy Tempering Orb - Path of Exile Currency",
+        "pt_br": "Comprar Orb de Temperamento - Moeda PoE Barata"
+      },
+      "metaDescription": {
+        "en": "Buy unique Tempering Orbs for Path of Exile weapons! Secure and fast delivery for your PoE currency needs. Enhance your gear now!",
+        "pt_br": "Compre Orb de Temperamento em Path of Exile com entrega rápida e segura. A moeda essencial para aprimorar suas armas. Compre agora!"
+      }
+    },
+    {
+      "_id": "product-templar-astrolabe",
+      "name": "Templar Astrolabe",
+      "seoTitle": {
+        "en": "Buy Templar Astrolabe - PoE Atlas Currency",
+        "pt_br": "Compre Templar Astrolabe - Moeda de Atlas PoE"
+      },
+      "metaDescription": {
+        "en": "Templar Astrolabe adds a Shaped Region to a quadrant of your Atlas.",
+        "pt_br": "Templar Astrolabe adiciona uma Shaped Region a um quadrante do seu Atlas."
+      }
+    },
+    {
+      "_id": "product-the-changelings-ducat",
+      "name": "The Changeling's Ducat",
+      "seoTitle": {
+        "en": "Buy The Changeling's Ducat - PoE Allflame Currency",
+        "pt_br": "Compre The Changeling's Ducat - Moeda Allflame PoE"
+      },
+      "metaDescription": {
+        "en": "The Changeling's Ducat transforms into a random Ducat, used in Allflame Crafting aboard The Sovereign.",
+        "pt_br": "The Changeling's Ducat se transforma num Ducat aleatório, usado no Allflame Crafting a bordo do The Sovereign."
+      }
+    },
+    {
+      "_id": "product-timeless-astrolabe",
+      "name": "Timeless Astrolabe",
+      "seoTitle": {
+        "en": "Buy Timeless Astrolabe - PoE Atlas Currency",
+        "pt_br": "Compre Timeless Astrolabe - Moeda de Atlas PoE"
+      },
+      "metaDescription": {
+        "en": "Timeless Astrolabe adds a Shaped Region containing Legion encounters to a quadrant of your Atlas.",
+        "pt_br": "Timeless Astrolabe adiciona uma Shaped Region com encontros de Legion a um quadrante do seu Atlas."
+      }
+    },
+    {
+      "_id": "kQR8exxdlkc70NhvJSUgAk",
+      "name": "Turbulent Catalyst",
+      "seoTitle": {
+        "en": "Buy Turbulent Catalyst - PoE Currency & Orbs",
+        "pt_br": "Turbulent Catalyst PoE: Comprar Moedas Baratas e Entrega Rápida"
+      },
+      "metaDescription": {
+        "en": "Fast and secure delivery of Turbulent Catalysts for your Path of Exile builds. Enhance your gear with elemental damage quality. Buy now!",
+        "pt_br": "Compre Turbulent Catalyst em Path of Exile com segurança e entrega rápida! Potencialize seus itens com dano elemental. Ofertas imperdíveis para jogadores."
+      }
+    },
+    {
+      "_id": "kQR8exxdlkc70NhvJScWpO",
+      "name": "Unstable Catalyst",
+      "seoTitle": {
+        "en": "Buy Unstable Catalyst PoE | Cheap Currency | Fast Delivery",
+        "pt_br": "Catalisador Instável PoE | Preço Baixo | Comprar Moedas"
+      },
+      "metaDescription": {
+        "en": "Securely buy Unstable Catalysts in Path of Exile. Enhance your Critical modifiers on jewelry with fast, instant delivery. Get your PoE currency now!",
+        "pt_br": "Compre Catalisador Instável em Path of Exile com entrega rápida. Potencialize seus anéis, amuletos e cintos com este item de moeda essencial. Trade seguro!"
+      }
+    },
+    {
+      "_id": "product-vaal-enshrouding-crystal",
+      "name": "Vaal Enshrouding Crystal",
+      "seoTitle": {
+        "en": "Buy Vaal Enshrouding Crystal - PoE Currency",
+        "pt_br": "Compre Vaal Enshrouding Crystal - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Vaal Enshrouding Crystal enshrouds Unique Helmets. Drops from Viper Napuatzi in Legion encounters.",
+        "pt_br": "Vaal Enshrouding Crystal faz enshroud em Unique Helmets. Dropa de Viper Napuatzi em encontros de Legion."
+      }
+    },
+    {
+      "_id": "z4ZBjmLMt2ahe51fSlsq1S",
+      "name": "Vaal Orb",
+      "seoTitle": {
+        "en": "Buy Vaal Orbs - PoE Currency & Orbs | Safe Trade",
+        "pt_br": "Comprar Orbe Vaal PoE | Preço Baixo | Moeda"
+      },
+      "metaDescription": {
+        "en": "Need Vaal Orbs for your Path of Exile build? Buy cheap Vaal Orbs instantly with fast and secure delivery. Enhance your items today!",
+        "pt_br": "Compre Orbes Vaal em Path of Exile com entrega rápida e trade seguro. Adquira essa moeda essencial para corromper itens e obter modificadores poderosos. Compre agora!"
+      }
+    },
+    {
+      "_id": "z4ZBjmLMt2ahe51fSlv6gE",
+      "name": "Vaal Scouting Report",
+      "seoTitle": {
+        "en": "Buy Vaal Scouting Report - PoE Currency & Items",
+        "pt_br": "Comprar Vaal Scouting Report | Moedas PoE | Barato"
+      },
+      "metaDescription": {
+        "en": "Instantly buy Vaal Scouting Report for Path of Exile. Secure and fast trade for essential currency items. Get your Vaal Scouting Report now!",
+        "pt_br": "Vaal Scouting Report: Encontre o melhor preço e entrega rápida em moedas PoE. Compre agora com segurança e adicione este item essencial à sua coleção!"
+      }
+    },
+    {
+      "_id": "product-valdos-puzzle-box",
+      "name": "Valdo's Puzzle Box",
+      "seoTitle": {
+        "en": "Buy Valdo's Puzzle Box - PoE Currency",
+        "pt_br": "Compre Valdo's Puzzle Box - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Valdo's Puzzle Box contains a Mysterious Map with a Foil Unique reward. Right click to open it.",
+        "pt_br": "Valdo's Puzzle Box contém um Mysterious Map com recompensa de Foil Unique. Clique com o direito para abrir."
+      }
+    },
+    {
+      "_id": "kQR8exxdlkc70NhvJShoTY",
+      "name": "Veiled Chaos Orb",
+      "seoTitle": {
+        "en": "Buy Veiled Chaos Orb | PoE Currency | Fast Delivery",
+        "pt_br": "Comprar Orbe do Caos Velado PoE | Moeda Barata"
+      },
+      "metaDescription": {
+        "en": "Buy Veiled Chaos Orbs in Path of Exile! Secure and fast delivery for your crafting needs. Upgrade your rare items with guaranteed veiled modifiers. Cheap currency now!",
+        "pt_br": "Compre Orbes do Caos Velados PoE com entrega rápida e segura. Aprimore seus itens raros com modificadores velados garantidos. Compre agora!"
+      }
+    },
+    {
+      "_id": "kQR8exxdlkc70NhvJSmOEo",
+      "name": "Veiled Exalted Orb",
+      "seoTitle": {
+        "en": "Buy Veiled Exalted Orb | PoE Currency & Orbs",
+        "pt_br": "Veiled Exalted Orb - Path of Exile"
+      },
+      "metaDescription": {
+        "en": "Fast and secure delivery of Veiled Exalted Orbs for your Path of Exile build. Instantly upgrade your rare items. Buy now for a cheap price!",
+        "pt_br": "Confira os detalhes sobre o item Veiled Exalted Orb."
+      }
+    },
+    {
+      "_id": "z4ZBjmLMt2ahe51fSltSMk",
+      "name": "Veiled Scarab",
+      "seoTitle": {
+        "en": "Buy Veiled Scarabs - Path of Exile Currency",
+        "pt_br": "Comprar Veiled Scarab | Preço Baixo | Moedas PoE"
+      },
+      "metaDescription": {
+        "en": "Securely buy Veiled Scarabs for your Path of Exile builds. Instant delivery for fast trading. Enhance your endgame maps today!",
+        "pt_br": "Entrega rápida e segura de Veiled Scarabs em Path of Exile. Compre agora para otimizar seu endgame e trade com preços competitivos!"
+      }
+    },
+    {
+      "_id": "yaj6dHWVBIOVRoHcLYybgl",
+      "name": "Vivid Crystallised Lifeforce",
+      "seoTitle": {
+        "en": "Buy Vivid Crystallised Lifeforce | Cheap PoE Currency",
+        "pt_br": "Vivid Crystallised Lifeforce: Comprar Moeda de Harvest - Preço Baixo"
+      },
+      "metaDescription": {
+        "en": "Instantly buy Vivid Crystallised Lifeforce for your Path of Exile character! Secure and fast delivery. Enhance your Harvest crafting with this valuable currency.",
+        "pt_br": "Compre Vivid Crystallised Lifeforce para suas receitas de Harvest! Entrega rápida e segura. Otimize seu crafting em Path of Exile."
+      }
+    },
+    {
+      "_id": "product-volatile-vaal-orb",
+      "name": "Volatile Vaal Orb",
+      "seoTitle": {
+        "en": "Buy Volatile Vaal Orb - PoE Currency",
+        "pt_br": "Compre Volatile Vaal Orb - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Volatile Vaal Orb either randomises the modifier values on a unique and corrupts it, or destroys the item outright.",
+        "pt_br": "Volatile Vaal Orb ou sorteia novamente os valores dos modificadores de um único e o corrompe, ou destrói o item."
+      }
+    },
+    {
+      "_id": "product-warlord-s-exalted-orb",
+      "name": "Warlord's Exalted Orb",
+      "seoTitle": {
+        "en": "Buy Warlord's Exalted Orb - PoE Currency",
+        "pt_br": "Compre Warlord's Exalted Orb - Moeda PoE"
+      },
+      "metaDescription": {
+        "en": "Warlord's Exalted Orb adds Warlord influence and a new Warlord modifier to a rare item with no influence. Learn how it is applied.",
+        "pt_br": "Warlord's Exalted Orb adiciona influência Warlord e um novo modificador Warlord a um item raro sem influência. Saiba como aplicar."
+      }
+    },
+    {
+      "_id": "yaj6dHWVBIOVRoHcLYyADH",
+      "name": "Wild Crystallised Lifeforce",
+      "seoTitle": {
+        "en": "Buy Wild Crystallised Lifeforce | PoE Currency",
+        "pt_br": "Comprar Wild Crystallised Lifeforce - Moeda PoE Barata"
+      },
+      "metaDescription": {
+        "en": "Secure and fast delivery for Wild Crystallised Lifeforce in Path of Exile. The essential currency for powerful Harvest crafting. Buy now!",
+        "pt_br": "Wild Crystallised Lifeforce para suas crafts de Harvest! Compre agora com entrega rápida e trade seguro em Path of Exile."
+      }
+    }
+  ]
+}

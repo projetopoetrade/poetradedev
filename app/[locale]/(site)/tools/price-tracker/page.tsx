@@ -5,6 +5,8 @@ import PriceTrackerClient from '@/components/PriceTracker/PriceTrackerClient'
 import { CurrencyCtaSection } from '@/components/currency-cta-section'
 import { Link } from '@/i18n/navigation'
 import { ArrowLeft } from 'lucide-react'
+import { createPublicClient } from '@/utils/supabase/public'
+import { getCurrencyIndexLinks } from '@/lib/price-tracker-items'
 
 export const revalidate = 3600
 
@@ -59,6 +61,16 @@ export default async function PriceTrackerPage(props: {
   setRequestLocale(locale)
 
   const isPt = locale === 'pt-br'
+
+  // createPublicClient e não createClient: o client de server lê cookies(), o
+  // que forçaria render dinâmico e derrubaria em silêncio o revalidate = 3600
+  // desta página.
+  const supabase = createPublicClient()
+  const { data: soldProducts } = await supabase
+    .from('products')
+    .select('name, url_slug')
+    .eq('gameVersion', 'path-of-exile-1')
+  const currencyLinks = getCurrencyIndexLinks(soldProducts || [])
 
   const breadcrumbSchema = buildBreadcrumbSchema([
     { name: isPt ? 'Início' : 'Home', url: '/' },
@@ -192,6 +204,39 @@ export default async function PriceTrackerPage(props: {
 
         {/* Client tracker */}
         <PriceTrackerClient labels={labels} />
+
+        {/* Índice de currency — renderizado no servidor.
+            O tracker acima é 'use client' e monta a tabela depois de um fetch,
+            então nenhuma âncora de item chegava ao HTML servido: a página com
+            mais impressões do site não passava autoridade para nenhuma página
+            de item. Esta seção é o caminho de crawl que faltava, e de quebra dá
+            navegação direta ao leitor. */}
+        {currencyLinks.length > 0 && (
+          <section className="pt-8 border-t border-border/40 space-y-4">
+            <div className="space-y-1">
+              <h2 className="text-xl font-semibold">
+                {isPt ? 'Preço de cada currency de PoE 1' : 'PoE 1 currency prices, item by item'}
+              </h2>
+              <p className="text-sm text-muted-foreground max-w-2xl">
+                {isPt
+                  ? 'Página dedicada por item, com valor de mercado atual e histórico de preço.'
+                  : 'A dedicated page per item, with current market value and price history.'}
+              </p>
+            </div>
+            <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-2">
+              {currencyLinks.map((item) => (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {isPt ? `Preço ${item.name}` : `${item.name} price`}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
 
         {/* FAQ section */}
         <section className="pt-8 border-t border-border/40 space-y-4">

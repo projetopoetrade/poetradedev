@@ -149,6 +149,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     );
   }
 
+  // Nota: /tools/price-tracker/<item> NÃO entra aqui de propósito. A rota
+  // existe, mas hoje o catálogo cobre as 88 currencies de PoE 1 que o
+  // poe.ninja serve — ou seja, todo item com dado vivo já tem a página
+  // canônica de produto respondendo à mesma busca. Anunciar as duas seria
+  // colocar duas páginas nossas na mesma SERP. Reavaliar quando o engine
+  // (USE_ENGINE_PRICES=1) cobrir uniques/gems/cards, que é o conjunto que não
+  // vendemos e cujos endpoints legados do poe.ninja hoje respondem 404.
+
   for (const post of posts) {
     if (!post.slug) continue;
     const basePath = `/blog/${encodeURIComponent(post.slug)}`;

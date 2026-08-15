@@ -8,8 +8,16 @@ import {updateSession} from '@/utils/supabase/middleware';
 const handleI18nRouting = createMiddleware(routing);
 
 // Constante de módulo: dentro da função a regex era recompilada a cada request.
+//
+// Só a rota CANÔNICA (/games/<jogo>/products/<slug>) entra aqui. A rota legada
+// /products/<slug> ficou de fora de propósito: ela sempre termina num
+// permanentRedirect para a canônica, então normalizar o case antes só
+// acrescentava um salto. A URL que o Google tem indexada
+// (/products/Orb%20of%20Scouring?...) fazia 308 → 308 → 200; agora faz 308 →
+// 200, e a consolidação do índice acontece mais rápido. O resolvedor da página
+// legada busca por ilike, que é case-insensitive — o lowercase não lhe faz falta.
 const PRODUCT_SLUG_PATH =
-  /^(\/(?:pt-br\/)?(?:games\/[^/]+\/)?products\/)([^/]+)(\/.*)?$/i;
+  /^(\/(?:pt-br\/)?games\/[^/]+\/products\/)([^/]+)(\/.*)?$/;
 
 export async function middleware(request: NextRequest) {
   // Redirect uppercase product slugs to lowercase (308 Permanent Redirect)

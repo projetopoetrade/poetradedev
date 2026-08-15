@@ -10,6 +10,7 @@ import PriceHistoryChart from "@/components/Product/PriceHistoryChart";
 import { getTranslations } from "next-intl/server";
 import { buildAbsoluteUrl, generateKeywords, buildBreadcrumbSchema, getOgLocale } from "@/lib/utils";
 import { createAdminClient } from "@/utils/supabase/admin";
+import { createPublicClient } from "@/utils/supabase/public";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 
 // ISR: revalidate cache every 5 minutes
@@ -206,6 +207,35 @@ export default async function ProductDetailPage(props: {
 
     const currentLeague = targetLeague || product.league;
     const currentDifficulty = searchParams.difficulty || product.difficulty;
+
+    // Itens relacionados para o bloco de links no rodapé. createPublicClient
+    // (sem cookies) para não acrescentar mais um motivo de render dinâmico.
+    // Deduplica por url_slug: o mesmo item existe em várias ligas.
+    const relatedProducts: Array<{ name: string; url_slug: string }> = await (async () => {
+      try {
+        const supabase = createPublicClient();
+        const { data } = await supabase
+          .from("products")
+          .select("name, url_slug")
+          .eq("gameVersion", targetGameVersion)
+          .eq("is_listed", true)
+          .eq("category", product.category || "Currency")
+          .neq("url_slug", product.url_slug)
+          .not("url_slug", "is", null)
+          .limit(60);
+
+        const seen = new Set<string>();
+        const unique: Array<{ name: string; url_slug: string }> = [];
+        for (const p of data || []) {
+          if (!p.url_slug || seen.has(p.url_slug)) continue;
+          seen.add(p.url_slug);
+          unique.push({ name: p.name, url_slug: p.url_slug });
+        }
+        return unique.sort((a, b) => a.name.localeCompare(b.name)).slice(0, 16);
+      } catch {
+        return [];
+      }
+    })();
 
     // priceValidUntil: 30 days from build time
     const priceValidUntil = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
@@ -434,6 +464,35 @@ export default async function ProductDetailPage(props: {
             </div>
           </div>
         </div>
+
+        {/* Itens relacionados.
+            Cada página de produto era uma ilha: o único link de saída era o
+            "voltar" para a categoria. São ~388 páginas, muitas rankeando em
+            posição 8-12, sem passar autoridade entre si nem dar ao leitor um
+            caminho lateral. Links canônicos diretos, sem passar pelo 301. */}
+        {relatedProducts.length > 0 && (
+          <div className="max-w-6xl mx-auto mt-8">
+            <div className="p-4 md:p-6 bg-muted/5 rounded-xl border border-white/5">
+              <h2 className="text-xl font-bold text-gray-100 mb-4">
+                {isPt
+                  ? `Outros itens de ${product.category || 'currency'}`
+                  : `More ${(product.category || 'currency').toLowerCase()} in ${gameVersionLabel}`}
+              </h2>
+              <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-2">
+                {relatedProducts.map((rel) => (
+                  <li key={rel.url_slug}>
+                    <Link
+                      href={`${params.locale === 'en' ? '' : `/${params.locale}`}/games/${targetGameVersion}/products/${rel.url_slug}`}
+                      className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {isPt ? `Preço ${rel.name}` : `${rel.name} price`}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        )}
       </div>
     );
   } catch (error) {

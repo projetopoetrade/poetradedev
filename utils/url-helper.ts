@@ -62,6 +62,34 @@ export const getProductUrl = (
 };
 
 /**
+ * URL da página de preço de um item no price tracker.
+ * Usa o mesmo encodeProductName do sitemap/produtos — antes os links do
+ * PriceTrackerClient montavam o slug com replace(/ /g,'-'), o que divergia em
+ * nomes com apóstrofo (Blacksmith's Whetstone) e gerava %27 na URL.
+ */
+export const getPriceTrackerUrl = (itemName: string, locale: string = 'en'): string => {
+  const localePath = locale === 'en' ? '' : `/${locale}`;
+  return `${localePath}/tools/price-tracker/${encodeProductName(itemName)}`;
+};
+
+/**
+ * Converte um slug de item num padrão ilike tolerante para buscar o produto
+ * no Supabase. encodeProductName colapsa apóstrofos e pontuação em hífen, então
+ * "blacksmith-s-whetstone" precisa casar com "Blacksmith's Whetstone" — trocar
+ * cada separador por % faz o ilike atravessar a pontuação perdida.
+ */
+export const slugToIlikePattern = (slug: string): string => {
+  const decoded = (() => {
+    try {
+      return decodeURIComponent(slug);
+    } catch {
+      return slug;
+    }
+  })();
+  return `%${decoded.split('-').filter(Boolean).join('%')}%`;
+};
+
+/**
  * Ensure URLs always use HTTPS
  */
 export const enforceHttps = (url: string): string => {

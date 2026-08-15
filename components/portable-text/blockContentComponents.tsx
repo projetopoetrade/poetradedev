@@ -251,6 +251,86 @@ function renderMarkdownTable(text: string) {
 const justifyClass = (_textLength: number) =>
   "leading-relaxed mb-4 text-justify hyphens-auto [text-wrap:pretty]";
 
+const headingClasses: Record<number, string> = {
+  1: "text-3xl font-bold mt-10 mb-4 text-white",
+  2: "text-2xl font-bold mt-8 mb-3 text-white",
+  3: "text-xl font-semibold mt-6 mb-2 text-white",
+  4: "text-lg font-semibold mt-4 mb-2 text-white",
+};
+
+/**
+ * Renderiza um bloco multilinha misturando listas, headings e parágrafos.
+ *
+ * A detecção anterior exigia que TODAS as linhas fossem bullet
+ * (`lines.every`). Uma única linha de introdução no mesmo bloco — comum nos
+ * posts importados, que despejam a seção inteira num parágrafo só — derrubava
+ * a detecção e o bloco caía no `<p>` final com o markdown à mostra: o leitor
+ * via "* **Persistence:** ..." com os asteriscos literais. Agrupando por
+ * trechos, a lista é reconhecida mesmo cercada de texto.
+ */
+function renderMixedLines(lines: string[]): React.ReactNode[] {
+  const out: React.ReactNode[] = [];
+  let buffer: string[] = [];
+  let ordered = false;
+
+  const flushList = () => {
+    if (buffer.length === 0) return;
+    const items = buffer.map((l) => l.replace(/^(?:\d+\.|[*-])\s+/, ""));
+    const listClass = ordered
+      ? "list-decimal pl-6 mb-4 space-y-1"
+      : "list-disc pl-6 mb-4 space-y-1";
+    const rendered = items.map((item, i) => (
+      <li key={i} className="text-gray-300">{renderTextWithLinks(item)}</li>
+    ));
+    out.push(
+      ordered ? (
+        <ol key={`list-${out.length}`} className={listClass}>{rendered}</ol>
+      ) : (
+        <ul key={`list-${out.length}`} className={listClass}>{rendered}</ul>
+      )
+    );
+    buffer = [];
+  };
+
+  for (const line of lines) {
+    const isOrdered = /^\d+\.\s+/.test(line);
+    const isBullet = /^[*-]\s+/.test(line);
+
+    if (isOrdered || isBullet) {
+      // Trocar de ordenada para não-ordenada (ou vice-versa) fecha a lista atual.
+      if (buffer.length > 0 && ordered !== isOrdered) flushList();
+      ordered = isOrdered;
+      buffer.push(line);
+      continue;
+    }
+
+    flushList();
+
+    const heading = line.match(/^(#{1,6})\s+(.+)$/);
+    if (heading) {
+      const level = Math.min(heading[1].length, 4);
+      const content = renderTextWithLinks(heading[2]);
+      const cls = headingClasses[level];
+      out.push(
+        level === 1 ? <h2 key={`h-${out.length}`} className={cls}>{content}</h2>
+        : level === 2 ? <h2 key={`h-${out.length}`} className={cls}>{content}</h2>
+        : level === 3 ? <h3 key={`h-${out.length}`} className={cls}>{content}</h3>
+        : <h4 key={`h-${out.length}`} className={cls}>{content}</h4>
+      );
+      continue;
+    }
+
+    out.push(
+      <p key={`p-${out.length}`} className={justifyClass(line.length)}>
+        {renderTextWithLinks(line)}
+      </p>
+    );
+  }
+
+  flushList();
+  return out;
+}
+
 function processNormalBlock(children: React.ReactNode) {
   const { first: firstText, full: fullText } = getTextParts(children);
 
@@ -292,12 +372,6 @@ function processNormalBlock(children: React.ReactNode) {
       const level = Math.min(headingMatch[1].length, 4);
       const headingText = headingMatch[2];
       const content = renderTextWithLinks(headingText);
-      const headingClasses: Record<number, string> = {
-        1: "text-3xl font-bold mt-10 mb-4 text-white",
-        2: "text-2xl font-bold mt-8 mb-3 text-white",
-        3: "text-xl font-semibold mt-6 mb-2 text-white",
-        4: "text-lg font-semibold mt-4 mb-2 text-white",
-      };
       const Tag = `h${level}` as keyof JSX.IntrinsicElements;
 
       // Check if there's additional content after the heading (other children)
@@ -315,33 +389,15 @@ function processNormalBlock(children: React.ReactNode) {
       return <Tag className={headingClasses[level]}>{content}</Tag>;
     }
 
-    // Markdown list — every line is a bullet (`*` / `-`) or numbered (`1.`).
-    // The LLM-imported posts often dump list items as a single paragraph with
-    // newlines, which would otherwise render as a literal "- foo" run-on.
+    // Markdown list — os posts importados despejam a seção inteira num
+    // parágrafo só, com as linhas separadas por \n. Basta UMA linha de bullet
+    // ou numerada para tratarmos o bloco como conteúdo misto: renderMixedLines
+    // agrupa as listas e manda o resto como parágrafo/heading, cada trecho
+    // passando pelo markdown inline.
     if (fullText && fullText.includes("\n")) {
       const lines = fullText.split("\n").map((l) => l.trim()).filter(Boolean);
-      if (lines.length >= 2) {
-        const isOrdered = lines.every((l) => /^\d+\.\s+/.test(l));
-        const isBullet = lines.every((l) => /^[*-]\s+/.test(l));
-        if (isOrdered || isBullet) {
-          const items = lines.map((l) => l.replace(/^(?:\d+\.|[*-])\s+/, ""));
-          if (isOrdered) {
-            return (
-              <ol className="list-decimal pl-6 mb-4 space-y-1">
-                {items.map((item, i) => (
-                  <li key={i} className="text-gray-300">{renderTextWithLinks(item)}</li>
-                ))}
-              </ol>
-            );
-          }
-          return (
-            <ul className="list-disc pl-6 mb-4 space-y-1">
-              {items.map((item, i) => (
-                <li key={i} className="text-gray-300">{renderTextWithLinks(item)}</li>
-              ))}
-            </ul>
-          );
-        }
+      if (lines.length >= 2 && lines.some((l) => /^(?:\d+\.|[*-])\s+/.test(l))) {
+        return <>{renderMixedLines(lines)}</>;
       }
     }
   }

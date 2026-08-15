@@ -1,0 +1,3274 @@
+{
+  "migratedAt": "2026-08-15T14:23:53.520Z",
+  "note": "Corpo anterior dos posts. Reverter com --revert <este arquivo>.",
+  "documents": [
+    {
+      "_id": "9338a6e7-89f0-4e17-a18a-3148ee608d7a",
+      "slug": "amount-of-energy-shield---guide-mechanic",
+      "body": [
+        {
+          "_key": "41df9e0f02a1",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "9e687211e2cc",
+              "_type": "span",
+              "marks": [],
+              "text": "## What is Maximum Energy Shield?"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "8cb5d9999e10",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "858b940de39b",
+              "_type": "span",
+              "marks": [],
+              "text": "**Maximum Energy Shield** is a defensive resource in Path of Exile that acts as a secondary buffer, absorbing incoming damage before it affects a character's life pool. Unlike Life, which requires active recovery like flasks or leech, Energy Shield (ES) features an innate recharge mechanic that triggers after a short period of not taking damage, making it the definitive protective layer for **Intelligence**-based archetypes and **hiero** builds."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "9b617e92ac63",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "17facb79567d",
+              "_type": "span",
+              "marks": [],
+              "text": "You will encounter Energy Shield gear as early as Act 1 through Intelligence-based bases like **Circlets** and **Robes**, but its true power is realized in the endgame. It is a core progression stat for **Chaos Inoculation** (CI) setups that need a massive pool to compensate for having only 1 Life, and for **low life** casters who use their Life pool to reserve powerful auras. In the current meta, particularly since the 3.24 rework of **Archmage**, stacking ES is no longer just a niche option; it is a requirement for anyone aiming to **stomp** **t17** maps or survive **uber** boss encounters."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "ddf9cf2c710b",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "632355945520",
+              "_type": "span",
+              "marks": [],
+              "text": "Scaling your Maximum Energy Shield is a high-ceiling *grind* that separates mid-tier characters from **minmaxed** gods. While Life usually caps out around 6k-8k for most builds, a dedicated **int stacker** can easily push past 15k ES using **t1** flat and percentage modifiers on gear. Items like the **Corrupted Energy** unique jewel (Level 1 req) further evolve this mechanic by allowing 50% of Chaos damage to be absorbed by your ES instead of bypassing it, provided you have 5 corrupted items equipped. Whether you are doing a **zero to a mirror** run or just pushing your **leaguestart** character, your total ES pool is the primary metric for how much *juice* your build can actually handle."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "41d4a13ad701",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "6043a250ec80",
+              "_type": "span",
+              "marks": [],
+              "text": "---"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "2a129f841cf2",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "3ca4ea1d8f24",
+              "_type": "span",
+              "marks": [],
+              "text": "## How Maximum Energy Shield Works"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "4680d006f47f",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "99a1fea7e5b5",
+              "_type": "span",
+              "marks": [],
+              "text": "In the current state of **PoE 1**, especially since the rise of **Archmage** and **Mana-stacking** archetypes in recent leagues, understanding the nuances of Maximum Energy Shield (ES) is the difference between a character that feels like paper and a **giga tank**. ES is more than just a second health bar; it is a complex layer with unique recovery interactions that can be *minmaxed* far beyond raw life totals."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "5d47d6fa43a5",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "296c7fb6449b",
+              "_type": "span",
+              "marks": [],
+              "text": "### The Foundation: Scaling and Calculation"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "0527b4bc3e2e",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "d7c731ba8ae6",
+              "_type": "span",
+              "marks": [],
+              "text": "Your total Maximum Energy Shield is calculated based on the flat ES provided by your gear (base values on **Intelligence**-aligned armours), multiplied by the sum of all your \"% increased Maximum Energy Shield\" modifiers from the passive tree and jewels."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "9c284a83c66a",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "345584268315",
+              "_type": "span",
+              "marks": [],
+              "text": "The basic formula follows the standard PoE scaling logic:\n`Total ES = (Base ES from Gear + Flat ES from Passives/Levels) * (1 + % Increased ES from Tree/Quality/Int) * (More/Less Modifiers)`"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "2ba0cb66fafc",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "6b9c52bfaf2c",
+              "_type": "span",
+              "marks": [],
+              "text": "Intelligence is the primary attribute for any **int stacker**, providing 1% increased Maximum Energy Shield for every 5 points of Intelligence. On a high-end build reaching 2,000 Intelligence, this provides a massive 400% increased ES from the attribute alone, making it the most efficient way to scale the pool."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "869e0c195ed7",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "95bda96a729a",
+              "_type": "span",
+              "marks": [],
+              "text": "### Chaos Damage and Damage Bypass"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "c539963fb9ab",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "bbc59eac67ed",
+              "_type": "span",
+              "marks": [],
+              "text": "By default, Chaos damage completely bypasses Energy Shield and applies directly to Life. This is the primary \"hard counter\" to ES-heavy builds and necessitates specific keystones:"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "b9464f47df26",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "46a559f9c5c4",
+              "_type": "span",
+              "marks": [],
+              "text": "* **Chaos Inoculation (CI):** Sets Maximum Life to 1, making you immune to Chaos damage. This is the ultimate defensive layer for ES builds, but requires **capping res** and heavy investment in ES to avoid being one-shot.\n* **Low Life (Shavronne's Wrappings):** Uses items to prevent Chaos damage from bypassing ES, allowing the player to reserve Life for extra auras while keeping the ES pool as the primary buffer.\n* **Corrupted Energy:** As noted in **DADOS EXATOS**, this unique jewel requires 5 corrupted items to be equipped. It forces 50% of Chaos damage taken to NOT bypass ES, while simultaneously causing 50% of Physical damage to bypass it. This is a niche *off-meta* tool used to balance damage intake across both pools."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "e04d693df04e",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "c9afc7a09419",
+              "_type": "span",
+              "marks": [],
+              "text": "---"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "599754c75387",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "9845c958fffe",
+              "_type": "span",
+              "marks": [],
+              "text": "### Recovery Mechanics: Recharge, Regen, and Leech"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "9a2107a3d2c2",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "7af8e581a4c0",
+              "_type": "span",
+              "marks": [],
+              "text": "Unlike Life, which usually requires active recovery (flasks or leech), Energy Shield has a built-in \"Recharge\" mechanic."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "65852d0978be",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "58e5a669bd18",
+              "_type": "span",
+              "marks": [],
+              "text": "#### 1. Energy Shield Recharge\nThis is an automatic recovery of 33% of your Maximum Energy Shield per second. It kicks in after a delay (default 2 seconds) of not taking damage.\n* **Start of Recharge:** You can reduce the delay using \"Energy Shield Recharge Occurrence\" modifiers.\n* **Wicked Ward:** A crucial keystone for many. It prevents damage from interrupting the recharge once it has started, though it halves the recharge rate."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "f2aa6a964926",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "9adaa786dd5c",
+              "_type": "span",
+              "marks": [],
+              "text": "#### 2. Energy Shield Regeneration\nRegen is a constant recovery, unaffected by taking damage. This is vital for **RF** (Righteous Fire) builds that use ES. Regeneration is often sourced from the **Inquisitor** or **Hierophant** ascendancies or through Zealot's Oath, which converts Life Regen to ES Regen."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "667c454d9625",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "58be0f4876d0",
+              "_type": "span",
+              "marks": [],
+              "text": "#### 3. Energy Shield Leech\nThis allows you to recover ES based on a percentage of damage dealt.\n* The default total recovery from leech is capped at 10% of Maximum ES per second.\n* The **Instant Leech** mastery is currently a *bis* pick for builds with high hit rates, allowing a portion of the leech to apply immediately, bypassing the recovery rate cap."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "70b17a1d3a66",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "5e2f534ac800",
+              "_type": "span",
+              "marks": [],
+              "text": "---"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "75bc640fbf3f",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "d7fe3787e0c5",
+              "_type": "span",
+              "marks": [],
+              "text": "### Key Interactions and Breakpoints"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "149c4151fd21",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "1c6eb6c69146",
+              "_type": "span",
+              "marks": [],
+              "text": "#### Stun and Ailment Thresholds\nA common pitfall for new players transitioning to CI or high ES builds is the \"Stun Problem.\" In PoE, stun and elemental ailment (freeze/shock) thresholds are calculated based on your Maximum Life."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "780e058672d7",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "15ef83a0d0c6",
+              "_type": "span",
+              "marks": [],
+              "text": "If you take **Chaos Inoculation** and have 1 Life, you will be stunned or frozen by almost every hit unless you have \"Ignore Stun while having Energy Shield\" (an innate 50% chance) or specific items like **Skyforth** or the **Brine King** pantheon to mitigate this."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "207fc7397b14",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "ffbabd4dfc16",
+              "_type": "span",
+              "marks": [],
+              "text": "#### Implicit Defenses\nWhile having Energy Shield, you have an innate 50% chance to ignore being stunned. This is a core mechanic that often goes unexplained. If a hit would stun you, the game rolls a 50/50 chance to negate it entirely, provided you have at least 1 point of ES remaining."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "49ce4e98638f",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "d8766a03fbb7",
+              "_type": "span",
+              "marks": [],
+              "text": "---"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "916eaad5f57b",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "8f583589e32e",
+              "_type": "span",
+              "marks": [],
+              "text": "### Budget Tiers for ES Investment"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "10c016d03402",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "3d23eff90fe8",
+              "_type": "span",
+              "marks": [],
+              "text": "| Tier | ES Pool Goal | Key Items | Context |\n| :--- | :--- | :--- | :--- |\n| **Budget** | 4,000 - 5,500 | Rare Vaal Regalia, Sin Trek | Enough for yellow maps and early *leaguestart*. |\n| **Mid-Tier** | 7,000 - 9,000 | **Aegis Aurora**, T1 ES Bases | Comfortable for **T17** maps and most bosses. |\n| **Endgame** | 12,000+ | **Atziri's Reflection**, Triple T1 Crafted Gear | **Minmaxed** territory, usually for **int stackers**. |"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "bbfb47d1f966",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "86435e410087",
+              "_type": "span",
+              "marks": [],
+              "text": "### Common Misconceptions"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "b9ce20aabaf4",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "71ebfc7c5afd",
+              "_type": "span",
+              "marks": [],
+              "text": "* **\"More ES is always better\":** While a high pool is great, without recovery mechanics (leech/recharge), a 15k ES pool is just a slow death. You must invest in \"Energy Shield Recovery Rate\" to make the pool effective in **uber** encounters.\n* **Armor/Evasion and ES:** ES does not have inherent damage reduction. If you have 10,000 ES but 0 Armor, a physical hit from a **T17** boss will still *stomp* you. Most *all-around builds* combine ES with **Aegis Aurora** to recover ES on Block, reaching the **block cap** for ultimate safety."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "b4a66a9f358f",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "349385ecae96",
+              "_type": "span",
+              "marks": [],
+              "text": "---"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "e7dbb700cf09",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "347a43294c3d",
+              "_type": "span",
+              "marks": [],
+              "text": "### Final Pro-Tip for Crafting\nWhen using **craftofexile** to gear up, prioritize high flat ES prefixes. Because % increased ES is so abundant on the passive tree, the flat ES value on your body armour and shield acts as the multiplier for everything else. A **Vaal Regalia** with a **T1** flat ES roll is often better than one with a high % roll but low flat base."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "f04f7afe46e7",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "8ada9135198a",
+              "_type": "span",
+              "marks": [],
+              "text": "---"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "5c1ea01516bd",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "110b00f5dd89",
+              "_type": "span",
+              "marks": [],
+              "text": "## How to use Maximum Energy Shield effectively"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "5cb5a3acc8c6",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "ab97e103acb5",
+              "_type": "span",
+              "marks": [],
+              "text": "To transition from a basic life build to a functional Energy Shield powerhouse, you need to manage three pillars: **raw pool size**, **recovery mechanics**, and **mitigation**. In the current meta, simply having 10k ES isn't enough if you can't recover it under pressure or if *chaos damage* bypasses it entirely."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "bf2d2cfeb7d8",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "0ddd027b0a19",
+              "_type": "span",
+              "marks": [],
+              "text": "### Core Strategies for ES Management"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "61a00f7ec92e",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "a249b1b70c68",
+              "_type": "span",
+              "marks": [],
+              "text": "* **Chaos Inoculation (CI) vs. Low Life:** If you are playing a **CI** build, you are immune to chaos damage but stuck at 1 Life. This is the ultimate \"comfy\" mapping experience. For **Low Life** (LL) builds using **Pain Attunement** for 30% more spell damage, you must use **Shavronne's Wrappings** or **Solaris Lorica** to prevent chaos damage from bypassing ES and killing you instantly.\n* **The Recharge Engine:** Unlike life, ES recharges automatically after 2 seconds of not taking damage. You can reduce this delay using *Faster Start of Energy Shield Recharge* modifiers on rings and amulets. For **giga tank** setups, the **Wicked Ward** keystone is essential—it prevents damage from stopping your recharge once it starts, though it halves your recharge rate.\n* **Instant Leech and Ghost Reaver:** For aggressive attackers or spellcasters, **Ghost Reaver** converts Life Leech into ES Leech. To make this feel like a *Mageblood* level of tankiness, seek \"10% of Leech is Instant\" from the Ethereal Feast wheel or specific **Watcher's Eye** mods.\n* **Energy Blade Scaling:** If you're running an **Energy Blade** build (popular on **Hiero**), your lightning damage scales directly from your Maximum Energy Shield. In these setups, every +100 ES isn't just defense—it's *raw dps*.\n* **Corrupted Energy Interaction:** According to the **poedb** data, the **Corrupted Energy** unique jewel allows 50% of Chaos damage to not bypass ES (if you have 5 corrupted items). This is a niche but powerful tech for hybrid builds that aren't ready to commit to **CI** or **Shavronne's**."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "83c35d033c14",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "dec94235fadf",
+              "_type": "span",
+              "marks": [],
+              "text": "### Pro-Tips for Efficiency"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "fe2125953844",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "0243ca2404ba",
+              "_type": "span",
+              "marks": [],
+              "text": "* **Check poe.ninja:** High-end **Archmage** and **Int stacker** builds are currently dominating the ladder. Look for characters with 10k+ ES to see how they path through the \"Unnatural Calm\" and \"Melding of the Flesh\" clusters.\n* **Stun Immunity is Mandatory:** Because stun threshold is based on your (tiny) Life pool, ES builds will get stun-locked constantly. Use the **Brine King** pantheon or, ideally, reach 100% chance to avoid being stunned through the \"Practical Application\" cluster or implicit modifiers.\n* **The Aegis Aurora Tech:** If you have high Armor, **Aegis Aurora** recovers ES equal to 2% of your Armor on block. This is the gold standard for **all-around builds** looking to *stomp* **T17** maps without dying.\n* **Crafting Advice:** Use **craftofexile** to calculate the weight of **T1** % Increased Energy Shield. On chests, it's often more efficient to use **Dense Fossils** than spamming **c's** or **divines**."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "2386f0d0427e",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "f50745357d1b",
+              "_type": "span",
+              "marks": [],
+              "text": "---"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "8ee670ca65ad",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "44a09b23f3aa",
+              "_type": "span",
+              "marks": [],
+              "text": "---"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "57ee347f3543",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "e9b30cf43a34",
+              "_type": "span",
+              "marks": [],
+              "text": "## FAQ"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "dd41a6f50985",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "cdd1845e82b7",
+              "_type": "span",
+              "marks": [],
+              "text": "### Q: How do I increase my Maximum Energy Shield?\nYou increase your Maximum Energy Shield by equipping gear with high base ES (Intelligence-based armor) and scaling your character's Intelligence. Each 5 points of Intelligence grant a 1% increased Maximum Energy Shield bonus. To reach *endgame* levels, you must prioritize \"Increased Maximum Energy Shield\" nodes on the passive tree and use multipliers like **Infused Flesh** or specialized unique items."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "87eb749cd0a8",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "27549a37355c",
+              "_type": "span",
+              "marks": [],
+              "text": "### Q: Is Maximum Energy Shield better than Life?\nYes, for specific high-investment archetypes like **Int stacker** or **Hiero** mana-stackers, Energy Shield can reach much higher raw pools than Life. While Life is easier to sustain at *leaguestart*, ES allows you to reach 10,000 to 15,000+ effective HP, which is essential for surviving *uber* boss slams. However, it requires solving the chaos damage bypass issue, typically through the **Chaos Inoculation** keystone."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "471f5ac84dc2",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "69c92cf39978",
+              "_type": "span",
+              "marks": [],
+              "text": "### Q: Does Chaos damage always bypass Energy Shield?\nYes, by default, Chaos damage ignores Energy Shield and applies directly to your Life pool. To prevent this, you must either take the **Chaos Inoculation** keystone (making you immune to Chaos but setting Life to 1) or equip **Shavronne's Wrappings** to prevent bypass. Another niche option is the **Corrupted Energy** jewel, which, with 5 corrupted items equipped, ensures 50% of Chaos damage does not bypass Energy Shield."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "8b1bf2bf71c4",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "fa732abbd707",
+              "_type": "span",
+              "marks": [],
+              "text": "### Q: Can I play an Energy Shield build in SSF?\nYes, but it is significantly harder to *stomp* content early on compared to Life builds. In Solo Self-Found (SSF), you will need to focus on **Essence** farming (specifically Essence of Woe) to craft high-tier flat ES on your chest and shield. Transitioning to CI is usually recommended only after you have acquired at least 4,000 to 5,000 *raw* ES to avoid being stun-locked or killed by small hits."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "11bffa0a9eb8",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "8a571c17a8a7",
+              "_type": "span",
+              "marks": [],
+              "text": "### Q: How do I stop being stunned on an Energy Shield build?\nYou must use specific mechanics like the **Brine King** pantheon or the \"Stun Threshold is based on 60% of Energy Shield\" mastery. Since stun duration is naturally calculated based on your maximum Life, and most ES builds have very low Life, you will be permanently stunned without these mitigations. Many *minmaxed* builds solve this by reaching a 100% chance to avoid being stunned via jewels or explicit gear modifiers."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "4a0667066102",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "458465b1003f",
+              "_type": "span",
+              "marks": [],
+              "text": "### Q: Is \"Energy Shield Recharge\" the same as \"Energy Shield Leech\"?\nNo, they are distinct recovery mechanics with different scaling. Recharge starts automatically after a delay (default 2 seconds) of not taking damage and can be accelerated with \"Faster Start of ES Recharge\" mods. Leech requires you to deal damage to enemies and provides active recovery during combat, which is often more reliable for *all-around builds* that face constant pressure in *t17* maps."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        }
+      ]
+    },
+    {
+      "_id": "99792910-df51-496f-a153-cf8fa03576ac",
+      "slug": "guia-de-mecanica-energy-shield",
+      "body": [
+        {
+          "_key": "41df9e0f02a1",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "9e687211e2cc",
+              "_type": "span",
+              "marks": [],
+              "text": "\nO que é Maximum Energy Shield?\nMaximum Energy Shield é um recurso defensivo no Path of Exile que atua como um buffer secundário, absorvendo o dano recebido antes que ele afete o life pool do personagem. Diferente de Life, que exige recuperação ativa como flasks ou leech, o Energy Shield (ES) possui uma mecânica inata de recharge que ativa após um curto período sem receber dano, tornando-o a camada de proteção definitiva para arquétipos baseados em Intelligence e builds de hiero.\nVocê encontrará equipamentos de Energy Shield logo no Act 1 através de bases de Intelligence como Circlets e Robes, mas seu verdadeiro poder é alcançado no endgame. É um stat de progressão essencial para setups de Chaos Inoculation (CI) que precisam de um pool massivo para compensar o fato de terem apenas 1 Life, e para casters low life que usam seu life pool para reservar auras poderosas. No meta atual, particularmente desde o rework do Archmage na 3.24, stackar ES não é mais apenas uma opção de nicho; é um requisito para qualquer um que planeje dar stomp em mapas t17 ou sobreviver a lutas contra uber bosses.\nEscalar seu Maximum Energy Shield é um grind de teto alto que separa personagens mid-tier de deuses minmaxed. Enquanto o Life geralmente estagna em torno de 6k-8k para a maioria das builds, um int stacker dedicado pode facilmente ultrapassar 15k ES usando modificadores t1 de flat e percentage no gear. Itens como a unique jewel Corrupted Energy (Level 1 req) evoluem ainda mais essa mecânica, permitindo que 50% do Chaos damage seja absorvido pelo seu ES em vez de ignorá-lo, desde que você tenha 5 itens corrompidos equipados. Esteja você em uma run de zero to a mirror ou apenas evoluindo seu personagem de leaguestart, seu pool total de ES é a métrica primária de quanto juice sua build consegue aguentar de verdade.\n---\nComo o Maximum Energy Shield Funciona\nNo estado atual do PoE 1, especialmente com a ascensão de arquétipos de Archmage e Mana-stacking em ligas recentes, entender as nuances de Maximum Energy Shield (ES) é a diferença entre um personagem de papel e um giga tank. ES é muito mais do que apenas uma segunda barra de vida; é uma camada complexa com interações de recuperação únicas que podem ser minmaxed muito além dos totais de life brutos.\n"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "015a61b74671",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "e5ae41ca5472",
+              "_type": "span",
+              "marks": [],
+              "text": "A Base: Scaling e Cálculo\nSeu Maximum Energy Shield total é calculado com base no flat ES fornecido pelos seus itens (valores base em armaduras de Intelligence), multiplicado pela soma de todos os seus modificadores de \"% increased Maximum Energy Shield\" da passive tree e jewels.\nA fórmula básica segue a lógica padrão de scaling do PoE:\n`Total ES = (Base ES de Itens + Flat ES de Passivas/Levels) * (1 + % Increased ES de Tree/Quality/Int) * (More/Less Modifiers)`\nIntelligence é o atributo principal para qualquer int stacker, fornecendo 1% increased Maximum Energy Shield para cada 5 pontos de Intelligence. Em uma build high-end que atinge 2.000 Intelligence, isso garante massivos 400% increased ES apenas pelo atributo, tornando-o a forma mais eficiente de escalar a pool.\nChaos Damage e Damage Bypass\nPor padrão, Chaos damage ignora completamente o Energy Shield e aplica dano direto no Life. Este é o principal \"hard counter\" para builds focadas em ES e exige keystones específicas:\nChaos Inoculation (CI): Define seu Maximum Life como 1, tornando você imune a Chaos damage. Esta é a camada defensiva definitiva para builds de ES, mas exige capping res e alto investimento em ES para evitar ser solado.\nLow Life (Shavronne's Wrappings): Utiliza itens para impedir que Chaos damage ignore o ES, permitindo que o jogador reserve Life para auras extras enquanto mantém a pool de ES como buffer principal.\nCorrupted Energy: Como observado em DADOS EXATOS, esta unique jewel requer 5 itens corrompidos equipados. Ela força 50% do Chaos damage recebido a NÃO ignorar o ES, enquanto simultaneamente faz 50% do Physical damage ignorá-lo. É uma ferramenta off-meta de nicho usada para equilibrar o dano recebido entre as duas pools.\n---\nMecânicas de Recuperação: Recharge, Regen e Leech\nAo contrário do Life, que geralmente exige recuperação ativa (flasks ou leech), o Energy Shield possui uma mecânica nativa de \"Recharge\".\n1. Energy Shield Recharge\nEsta é uma recuperação automática de 33% do seu Maximum Energy Shield por segundo. Ela é ativada após um delay (padrão de 2 segundos) sem receber dano.\nStart of Recharge: Você pode reduzir esse delay usando modificadores de \"Energy Shield Recharge Occurrence\".\nWicked Ward: Uma keystone crucial para muitos. Ela impede que o dano interrompa o recharge depois de iniciado, embora corte a taxa de recharge pela metade.\n2. Energy Shield Regeneration\nRegen é uma recuperação constante, não afetada por receber dano. Isso é vital para builds de RF (Righteous Fire) que utilizam ES. A Regeneration geralmente vem das ascendancies Inquisitor ou Hierophant, ou através de Zealot's Oath, que converte Life Regen em ES Regen.\n3. Energy Shield Leech\nIsso permite recuperar ES com base em uma porcentagem do dano causado.\nA recuperação total padrão via leech é limitada a 10% do Maximum ES por segundo.\nA mastery de Instant Leech é atualmente uma escolha bis para builds com altas taxas de acerto, permitindo que uma porção do leech seja aplicada imediatamente, ignorando o limite da taxa de recuperação.\n---\nInterações Chave e Breakpoints\nStun e Ailment Thresholds\nUm erro comum de jogadores iniciantes ao transicionar para CI ou builds de alto ES é o \"Problema do Stun\". No PoE, os limiares de stun e elemental ailment (freeze/shock) são calculados com base no seu Maximum Life.\nSe você pegar Chaos Inoculation e tiver 1 de Life, você será stunado ou congelado por quase qualquer hit, a menos que tenha \"Ignore Stun while having Energy Shield\" (uma chance inata de 50%) ou itens específicos como Skyforth ou o pantheon do Brine King para mitigar isso.\nDefesas Implicitas\nEnquanto tiver Energy Shield, você tem uma chance inata de 50% de ignorar stuns. Esta é uma mecânica base que muitas vezes não é explicada. Se um hit fosse te stunar, o jogo roda um dado de 50/50 para negá-lo inteiramente, desde que você tenha pelo menos 1 ponto de ES sobrando.\n---\nTiers de Orçamento para Investimento em ES\nTier\tMeta de ES Pool\tItens Chave\tContexto\nBudget\t4.000 - 5.500\tRare Vaal Regalia, Sin Trek\tSuficiente para yellow maps e início de leaguestart.\nMid-Tier\t7.000 - 9.000\tAegis Aurora, T1 ES Bases\tConfortável para mapas T17 e a maioria dos bosses.\nEndgame\t12.000+\tAtziri's Reflection, Triple T1 Crafted Gear\tTerritório minmaxed, geralmente para int stackers."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "58bccaa1ae87",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "9a6a10bae2d5",
+              "_type": "span",
+              "marks": [],
+              "text": "\nEquívocos Comuns\n\"Mais ES é sempre melhor\": Embora uma pool alta seja ótima, sem mecânicas de recuperação (leech/recharge), uma pool de 15k de ES é apenas uma morte lenta. Você deve investir em \"Energy Shield Recovery Rate\" para tornar a pool eficaz em encontros uber.\nArmor/Evasion e ES: ES não possui redução de dano inerente. Se você tiver 10.000 de ES mas 0 de Armor, um hit físico de um boss T17 ainda vai te dar um stomp. A maioria das all-around builds combina ES com Aegis Aurora para recuperar ES no Block, atingindo o block cap para segurança máxima.\n---\nPro-Tip Final para Crafting\nAo usar o craftofexile para se equipar, priorize prefixos de flat ES alto. Como o % increased ES é abundante na passive tree, o valor de flat ES no seu peitoral e shield atua como o multiplicador para todo o resto. Uma Vaal Regalia com um roll T1 de flat ES costuma ser melhor do que uma com um % alto mas base flat baixa.\n---\nComo usar Maximum Energy Shield de forma eficiente\nPara transitar de uma build básica de life para uma potência de Energy Shield funcional, você precisa gerenciar três pilares: raw pool size, recovery mechanics e mitigation. No meta atual, ter apenas 10k de ES não é o suficiente se você não consegue recuperá-lo sob pressão ou se o chaos damage ignorar sua proteção completamente.\nEstratégias Principais para Gestão de ES\nChaos Inoculation (CI) vs. Low Life: Se você está jogando de CI, você é imune a chaos damage, mas fica travado em 1 de Life. Essa é a experiência definitiva de \"conforto\" no mapping. Para builds Low Life (LL) que usam Pain Attunement para 30% more spell damage, você deve usar Shavronne's Wrappings ou Solaris Lorica para evitar que o chaos damage ignore o ES e te mate instantaneamente.\nA Engine de Recharge: Diferente de life, o ES dá recharge automaticamente após 2 segundos sem tomar dano. Você pode reduzir esse delay usando modificadores de Faster Start of Energy Shield Recharge em rings e amulets. Para setups giga tank, a keystone Wicked Ward é essencial — ela impede que o dano pare seu recharge depois que ele começa, embora corte sua recharge rate pela metade.\nInstant Leech e Ghost Reaver: Para attackers agressivos ou spellcasters, Ghost Reaver converte Life Leech em ES Leech. Para fazer isso parecer um nível de tankiness de Mageblood, busque \"10% of Leech is Instant\" na roda de Ethereal Feast ou em mods específicos de Watcher's Eye.\nEscalamento de Energy Blade: Se você está rodando uma build de Energy Blade (popular em Hiero), seu lightning damage escala diretamente do seu Maximum Energy Shield. Nesses setups, cada +100 de ES não é apenas defesa — é raw dps.\nInteração com Corrupted Energy: De acordo com os dados do poedb, a jewel única Corrupted Energy permite que 50% do Chaos damage não ignore o ES (se você tiver 5 itens corrompidos). Essa é uma tecnologia de nicho, mas poderosa para builds híbridas que não estão prontas para commitar com CI ou Shavronne's."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "27eaf05d9e37",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "8a67e357a9f2",
+              "_type": "span",
+              "marks": [],
+              "text": "Pro-Tips para Eficiência"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "e773c992899a",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "8822cbc9a07e",
+              "_type": "span",
+              "marks": [],
+              "text": "Confira o poe.ninja: Builds de alto nível de Archmage e Int stacker estão dominando o ladder atualmente. Procure por personagens com 10k+ de ES para ver como eles fazem o pathing pelos clusters de \"Unnatural Calm\" e \"Melding of the Flesh\".\nStun Immunity é Mandatória: Como o stun threshold é baseado na sua (minúscula) pool de Life, builds de ES serão stun-locked constantemente. Use o pantheon do Brine King ou, idealmente, alcance 100% chance to avoid being stunned através do cluster \"Practical Application\" ou modificadores implicitos.\nA Tech da Aegis Aurora: Se você tem Armor alta, a Aegis Aurora recupera ES igual a 2% da sua Armor ao dar block. Este é o padrão ouro para all-around builds que buscam dar stomp em mapas T17 sem morrer.\nDica de Crafting: Use o craftofexile para calcular o peso de T1 % Increased Energy Shield. Em peitos, costuma ser muito mais eficiente usar Dense Fossils do que ficar dando spam de c's ou divines.\n---\n---\nFAQ\nQ: Como aumento meu Maximum Energy Shield?\nVocê aumenta seu Maximum Energy Shield equipando itens com base alta de ES (armaduras de Intelligence) e escalando a Intelligence do seu personagem. Cada 5 pontos de Intelligence garantem um bônus de 1% increased Maximum Energy Shield. Para alcançar níveis de endgame, você deve priorizar nodes de \"Increased Maximum Energy Shield\" na passive tree e usar multiplicadores como Infused Flesh ou itens uniques especializados.\nQ: Maximum Energy Shield é melhor que Life?\nSim, para arquétipos específicos de alto investimento como Int stacker ou Hiero mana-stackers, o Energy Shield pode atingir pools brutos muito maiores que Life. Enquanto Life é mais fácil de sustentar no leaguestart, ES permite que você alcance 10.000 a 15.000+ de effective HP, o que é essencial para sobreviver aos slams de uber bosses. No entanto, isso exige resolver o problema do chaos damage bypass, geralmente através da keystone Chaos Inoculation.\nQ: Chaos damage sempre atravessa o Energy Shield?\nSim, por padrão, o Chaos damage ignora o Energy Shield e é aplicado diretamente no seu pool de Life. Para evitar isso, você deve pegar a keystone Chaos Inoculation (tornando você imune a Chaos, mas definindo seu Life para 1) ou equipar uma Shavronne's Wrappings para impedir o bypass. Outra opção de nicho é a jewel Corrupted Energy, que, com 5 itens corrompidos equipados, garante que 50% do Chaos damage não atravesse o Energy Shield.\nQ: Posso jogar com uma build de Energy Shield no SSF?\nSim, mas é significativamente mais difícil dar stomp no conteúdo cedo em comparação com builds de Life. No Solo Self-Found (SSF), você precisará focar em farmar Essence (especificamente Essence of Woe) para craftar tiers altos de flat ES no seu peito e escudo. A transição para CI geralmente é recomendada apenas após você adquirir pelo menos 4.000 a 5.000 de ES raw para evitar stun-lock ou morrer para hits pequenos.\nQ: Como paro de tomar stun em uma build de Energy Shield?\nVocê deve usar mecânicas específicas como o pantheon do Brine King ou a mastery \"Stun Threshold is based on 60% of Energy Shield\". Como a duração do stun é calculada naturalmente com base no seu Life máximo, e a maioria das builds de ES tem Life muito baixo, você ficará permanentemente stunado sem essas mitigações. Muitas builds minmaxed resolvem isso atingindo 100% chance to avoid being stunned via jewels ou modificadores explícitos nos itens.\nQ: \"Energy Shield Recharge\" é o mesmo que \"Energy Shield Leech\"?\nNão, são mecânicas de recuperação distintas com escalonamentos diferentes. Recharge começa automaticamente após um delay (padrão de 2 segundos) sem tomar dano e pode ser acelerado com mods de \"Faster Start of ES Recharge\". O Leech exige que você cause dano aos inimigos e fornece recuperação ativa durante o combate, o que costuma ser mais confiável para all-around builds que enfrentam pressão constante em mapas t17."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        }
+      ]
+    },
+    {
+      "_id": "42fa3900-d108-4923-b48f-7e7663d8a363",
+      "slug": "guia-definitivo-de-abyss-crafting-em-poe-2--modificadores-desecrados",
+      "body": [
+        {
+          "_key": "1cbddacbfa9b",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "e32aef5e06e2",
+              "_type": "span",
+              "marks": [],
+              "text": "Em **Path of Exile 2**, o crafting deixou de ser um caos aleatório focado apenas em sorte para se tornar um sistema de escolhas deliberadas e engenharia de status. O novo **Abyss Crafting** é a prova definitiva disso, introduzindo os poderosos **Modificadores Desecrados** e moedas que permitem ao jogador moldar ativamente o destino de seu equipamento.\n\nSe você quer entender como os jogadores de elite criam itens Mirror-tier e dominam o mercado, este guia é o seu manual de operações.\n\n## 1. O Que é o Abyss Crafting e a Anatomia dos Ossos\n\nDiferente do primeiro jogo, onde o foco do Abismo eram apenas as joias, em PoE 2 você usa os **Abyssal Bones** (Ossos Abissais) para adicionar modificadores ocultos (Desecrated) a itens raros. Esses modificadores muitas vezes não existem no pool natural do item.\n\n* **Tipos Específicos:** Existem ossos exatos para Armas (**Jawbone**), Armaduras (**Rib**), Acessórios (**Collarbone**) e Joias (**Cranium**).\n* **A Importância da Qualidade:** Nunca desperdice recursos em bases de endgame com ossos inferiores. O uso de **Ancient Abyssal Bones** é obrigatório para garantir que o modificador revelado seja de nível alto (Tier 40+).\n\n## 2. O Poço das Almas e Modificadores Exclusivos\n\nApós aplicar um osso ao seu item, você deve viajar até **The Mastodon Badlands (Ato 2)**. No **Well of Souls** (Poço das Almas), você revelará o modificador e terá o poder de **escolher uma entre três opções**. Essa mecânica reduz drasticamente a frustração da aleatoriedade.\n\n* **A Busca pelas Lendas:** É no Poço que você procura os cobiçados modificadores exclusivos de **Kurgal, Ulaman e Amanamu**. Eles oferecem status que definem builds, como eficiência de custo de mana e multiplicadores críticos únicos.\n\n## 3. A Matemática das Moedas Perfect e Greater\n\nPara maximizar o uso do Abismo, você precisa preparar a base do item. É aqui que entram as novas variantes de moedas, que definem um piso de nível para os status:\n\n* **Greater Currencies:** Garantem que o modificador adicionado seja, no mínimo, de **iLvl 35**. Isso remove os status inúteis iniciais.\n* **Perfect Currencies:** O padrão ouro da maestria. Garantem **iLvl 50** para Exalt/Chaos e **iLvl 70** para Augments. Ao usar uma *Perfect Exalted Orb* em luvas, por exemplo, você elimina as chances de rolar tiers baixos, forçando o jogo a te dar status de elite.\n\n## 4. Regras de Ouro para a Gestão de Recursos\n\nSaber que essas moedas existem não basta; você precisa saber quando e como usá-las para não falir:\n\n* **Sincronia de Item Level (iLvl):** De nada adianta usar uma moeda cara se a base do item não suportar o modificador desejado. Guarde suas *Greater* e *Perfect* exclusivamente para o endgame, aplicando-as apenas em *Exceptional Bases* (como *Polish Bracers* iLvl 80+). Para a progressão inicial, os orbs comuns dão conta do recado e salvam sua economia.\n* **Oportunidades de Mercado:** Como parte da comunidade ainda não entende completamente a força desse sistema, materiais valiosos (como as *Ribs* de armadura) muitas vezes ficam subvalorizados na economia da liga. Monitore o mercado e compre-os enquanto estão baratos para manter seu custo de craft viável.\n* **Sinergia com a Build:** O investimento brilha quando a sua build exige o acúmulo de um status muito específico (stacking). Um ótimo exemplo é a build de **Gemling Legionnaire** focada em Accuracy. Usar *Perfect Exalted Orbs* para garantir Tier 1 de Precisão Plana e Velocidade de Ataque pode transformar a habilidade *Falcon Dive* em uma máquina de dano com multiplicadores absurdos.\n\n## 5. Estratégias Avançadas com Omens e Essências\n\nO segredo para não quebrar um item caro durante o processo é usar **Omens** (Presságios) como travas de segurança e manipuladores de probabilidade:\n\n* **O Reroll Supremo:** Combine uma *Perfect Chaos Orb* com o **Omen of Abyssal Echoes**. Isso não apenas rolará o seu item garantindo apenas status de alto nível, mas te dará opções ampliadas (seis escolhas) ao revelar no poço, criando as melhores opções desecradas possíveis.\n* **Direcionamento Cirúrgico:** Use o **Omen of Sinistral/Dextral Necromancy** para forçar o modificador desecrado a ser um Prefixo ou Sufixo exato, garantindo que ele ocupe o espaço correto na sua base.\n* **A Marca do Abismo:** A **Essence of the Abyss** funciona como o preparo perfeito. Ela adiciona uma Marca do Abismo, garantindo que o seu próximo modificador desecrado seja puxado de um tier muito superior.\n* **Isolamento e Segurança:** Se a revelação no Poço for terrível, não se desespere. O **Omen of Light** garante que a sua próxima *Annulment Orb* remova **exclusivamente** o modificador desecrado, preservando os status perfeitos que você já havia craftado.\n\n## 6. Estudo de Caso Prático: Luvas Mirror-Tier\n\nPara entender como tudo se conecta na prática, mesmo com as limitações de manipulação de afixos das versões mais recentes:\n\n1. Pegue uma base *Exceptional* com sockets (ex: *Polish Bracers* iLvl 80+).\n2. Use uma **Corrupted Essence of Horror** para garantir 100% de aumento do efeito de itens engastados. (Lembre-se de usar o *Omen of Crystallization* caso precise proteger um afixo que já está na base).\n3. Coloque *Cat Talismans* nos sockets (8% de Attack Speed vira 16% cada).\n4. Use **Perfect Exalted Orbs** para preencher os afixos restantes. Como a moeda garante status de nível alto (iLvl 50+), você isola o pool de modificadores do jogo, aumentando muito as chances de cravar o Tier 1 de Velocidade de Ataque natural de forma determinística.\n5. Finalize no Poço das Almas com um **Ancient Abyssal Bone** buscando o modificador exclusivo de *Skill Speed* ou *Amanamu*.\n\n## 7. Ferramentas Essenciais: PoEDB e Craft of Exile\n\nNenhum mestre clica em um item no escuro. O uso de ferramentas externas é o que diferencia um jogador casual de um bilionário do mercado:\n\n* **[PoEDB](https://poe2db.tw/):** A Bíblia dos dados. Utilize para verificar os níveis de item (iLvl) exigidos para aquele mod T1 que você quer, e estude o pool de modificadores exclusivos de chefes antes de gastar sua moeda.\n* **[Craft of Exile 2](https://www.google.com/search?q=https://p2.craftofexile.com/):** O laboratório definitivo. Simule suas chances, teste as interações de Omens com moedas Perfect e calcule o custo médio para obter o item dos seus sonhos sem arriscar sua economia real no jogo.\n\n## Conclusão\n\nO Abyss Crafting e o uso de moedas de alta patente representam o equilíbrio perfeito entre inteligência, planejamento e recompensa. Ao dominar o uso dos Ossos, a restrição de iLvl das moedas Perfect, o controle cirúrgico dos Omens e as ferramentas de simulação, você não está apenas jogando com a sorte — você garante que cada clique seja um passo sólido em direção ao topo do ranking.\n\n*Qual base Exceptional você está planejando desecrar primeiro nesta liga?"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        }
+      ]
+    },
+    {
+      "_id": "bba756a7-4a7d-41a9-8ea3-6fd8bdc8c915",
+      "slug": "mana-issues--how-to-fix",
+      "body": [
+        {
+          "_key": "49e291f49b2e",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "79e9b710bb49",
+              "_type": "span",
+              "marks": [],
+              "text": "# FAQ: Mana Issues and Attributes in Patch 3.28 - How to Fix"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "7ef3f9fc5bf1",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "3ff295524689",
+              "_type": "span",
+              "marks": [],
+              "text": "## Quick Answer\nHaving mana issues in Path of Exile 3.28 usually stems from an imbalance between your **actual attack rate** and your mana recovery rate. Characters start with 40 base mana, gaining +6 per level and +1 per 2 Intelligence, with a base regeneration of 1.8% of the maximum pool per second. If your skill cost multiplied by your attacks/casts per second exceeds this recovery, your build will stutter. Quick fixes include using a **Clarity** aura for flat regeneration, crafting \"Non-Channeled Skills have -7 to Total Mana Cost\" on rings/amulets, or utilizing mana leech which is capped at 10% of your maximum mana per second."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "00b2e95b5a98",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "63ab62f7741e",
+              "_type": "span",
+              "marks": [],
+              "text": "---"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "a5fca10aee89",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "5cd7f8f2eda3",
+              "_type": "span",
+              "marks": [],
+              "text": "## 1. How it works\nMana functions as the primary resource for skill execution, with costs dynamically calculated based on the base skill and its linked support gems. The game defines **Low Mana** as being at or below 50% of your maximum mana pool—a state that triggers specific defensive and offensive modifiers."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "cce0521ec6af",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "3e860d246cdc",
+              "_type": "span",
+              "marks": [],
+              "text": "### Core Scaling & Recovery\n* **Base Pool:** 40 Mana at level 1, +6 per level. At level 90, you have 574 base mana before Intelligence or gear.\n* **Intelligence:** Every 2 points of Intelligence grant +1 flat mana. **Int stacker** builds leverage this to reach 10,000+ mana pools.\n* **Regeneration:** Default rate is 1.8% of max mana per second. This is easily outpaced by modern high-speed builds.\n* **Leech:** Standard leech grants 2% of maximum mana per second per \"instance,\" up to a total cap of 10% of your max mana. For most **all-around builds**, this is the most reliable way to sustain during combat."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "98c29152f9d8",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "e7cf3be1cd1c",
+              "_type": "span",
+              "marks": [],
+              "text": "---"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "8067e24b27cd",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "b2056e70be39",
+              "_type": "span",
+              "marks": [],
+              "text": "## 2. Interactions\nMana management is not just about having a large pool; it’s about how that pool interacts with reservation and damage mitigation."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "5cc074c61d98",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "e697bc14be95",
+              "_type": "span",
+              "marks": [],
+              "text": "### Mana before Life (MoM)\nThe **Mind Over Matter** keystone allows 40% of damage taken from hits to be deducted from mana before life. This makes mana a potent defensive layer. However, if you are **having mana issues** offensively, your defenses will also collapse, as a heavy hit will \"mana screw\" you, leaving you unable to counter-attack or move."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "2fe1f5905dc2",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "fec8cfef25b0",
+              "_type": "span",
+              "marks": [],
+              "text": "### Reservation vs. Usable Pool\nMost players reserve 90-95% of their mana for **purities** or offensive auras. The remaining \"unreserved mana\" must be enough to cover at least two full skill rotations to account for the **actual attack rate** and server latency. If your unreserved mana is lower than your skill cost, the skill simply won't fire."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "3ea40305bbdc",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "68dede8ff52e",
+              "_type": "span",
+              "marks": [],
+              "text": "### Attribute Requirements\nAttributes (Str/Dex/Int) often bottleneck mana solutions. If you need to **reforge attributes** on your gear to hit high Intelligence requirements for gems or **bis** gear like **Cogwork Ring**, you inadvertently increase your mana pool and regeneration."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "1aec2c1b911d",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "89ac7b362b44",
+              "_type": "span",
+              "marks": [],
+              "text": "---"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "f391984cc057",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "ea60fce9c93b",
+              "_type": "span",
+              "marks": [],
+              "text": "## 3. Practical Implications\nFixing mana is a tiered process based on your current **grind** and budget."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "100a05601633",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "b897e875c1f9",
+              "_type": "span",
+              "marks": [],
+              "text": "### Budget Solutions\n* **Clarity Gem:** A level 1-10 **Clarity** provides enough flat regen for most **leaguestart** scenarios.\n* **Mana Flasks:** Use an \"Enduring\" prefix so the effect doesn't end when mana is full.\n* **Passive Tree:** Points into \"Mana Leech\" nodes are mandatory for attack builds."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "0d10e5553747",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "a53e3d0191ad",
+              "_type": "span",
+              "marks": [],
+              "text": "### Mid-Tier Optimization\n* **Jewelry Crafting:** Use **C's** or **D's** to buy or craft rings with \"-7 to total mana cost of non-channeled skills.\"\n* **Inspiration Support:** This gem reduces mana cost significantly while providing **percent damage scaling**."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "bf38919d7f47",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "7c4397d76362",
+              "_type": "span",
+              "marks": [],
+              "text": "### Endgame/Minmaxed Solutions\n* **Cogwork Ring:** Utilizing a **Cogwork Ring** (Level 24, Experimental Base) allows for an extra suffix. You can use this to **reforge attributes** or add T1 mana regeneration, benefiting from the \"25% increased Suffix Modifier magnitudes\" implicit.\n* **Amanamu's Gaze:** While primarily for minion builds (granting up to +30% DoT Multi), using **Ghastly Eye Jewels** with \"Mana on Hit\" can solve sustain for high-hit-rate minion archetypes.\n* **90 All Res & Mana:** Many **giga tank** builds use the \"Internal Conviction\" or \"Valako\" setups which require precise mana tuning to ensure **purities** stay active while maintaining enough mana to **stomp** **t17** nightmare maps."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "c0ce73308d0c",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "870aa95a7082",
+              "_type": "span",
+              "marks": [],
+              "text": "| Budget Tier | Primary Fix | Estimated Cost |\n| :--- | :--- | :--- |\n| **Budget** | Clarity + Mana Leech Node | < 5 c |\n| **Mid-Tier** | -7 Mana Cost Crafts + Inspiration | 1 - 5 d |\n| **Endgame** | Cogwork Ring + T1 Mana/Int Rolls | 20+ d |"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "dcd60dfef6ae",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "065953f605c7",
+              "_type": "span",
+              "marks": [],
+              "text": "If you are following a **pobb** from **poe ninja** and still struggling, check your **actual attack rate** versus the creator's; higher speed requires exponentially more recovery."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "4715100dc699",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "52424f2ea847",
+              "_type": "span",
+              "marks": [],
+              "text": "---"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "a68d5799e7c6",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "9588b20ac7a8",
+              "_type": "span",
+              "marks": [],
+              "text": "## In-Depth Explanation: Solving the Mana and Attribute Puzzle"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "217473a31f7e",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "75b371a254e7",
+              "_type": "span",
+              "marks": [],
+              "text": "Understanding why your character is stuttering mid-map requires looking beyond just your mana globe. In the current **sc trade league** meta, players often push their **actual attack rate** or cast speed to levels that outpace their recovery stats, leading to a \"bricked\" feel during combat."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "eae545e25b21",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "10db5a732b43",
+              "_type": "span",
+              "marks": [],
+              "text": "---"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "e91f31796614",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "a7f8ddbb5039",
+              "_type": "span",
+              "marks": [],
+              "text": "### 1. How Mana Mechanics Work"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "8cf75437f8ec",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "92f1ae6e382d",
+              "_type": "span",
+              "marks": [],
+              "text": "Mana management in **PoE 1** is a balance of maximum pool, cost reduction, and recovery rate. Every character begins with 40 base mana, gaining +6 per level. However, the most significant scaling comes from **Intelligence**, providing +1 mana for every 2 points."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "a4f90e8c02ad",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "f396fd58784d",
+              "_type": "span",
+              "marks": [],
+              "text": "Base regeneration is fixed at 1.8% of your maximum mana per second. This means if you have a 1,000 mana pool, you only regenerate 18 mana per second naturally. If your main skill costs 30 mana and you attack 5 times per second (a 150 mana/sec requirement), you will deplete your pool in seconds unless you supplement this with other mechanics."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "183b1a047311",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "3b72c7cb4f66",
+              "_type": "span",
+              "marks": [],
+              "text": "**The \"Low Mana\" Threshold:**\nMany players overlook that \"Low Mana\" is strictly defined as 50% or less of your maximum mana. This is critical for builds using specific unique items or passives that trigger effects when your resource drops below this halfway point."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "381115b8e352",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "3fd129438ad5",
+              "_type": "span",
+              "marks": [],
+              "text": "---"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "d7c9ffb3675c",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "6609ee09af58",
+              "_type": "span",
+              "marks": [],
+              "text": "### 2. Interactions and Misconceptions"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "533c91c7e26c",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "b9952635e496",
+              "_type": "span",
+              "marks": [],
+              "text": "#### Mana before Life (MoM)\nOne of the most powerful interactions is **Mind Over Matter**, which causes 40% of damage taken to be deducted from mana before life. This effectively increases your *e-health pool*, but it creates a \"mana tension\" where taking damage prevents you from using skills. To solve this, **hiero** builds often stack massive amounts of mana to ensure their recovery can handle both damage and skill costs simultaneously."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "d539785a23ed",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "56eb5a1fe0e3",
+              "_type": "span",
+              "marks": [],
+              "text": "#### The \"Reduced Cost\" Trap\nPlayers often confuse \"Reduced Mana Cost\" with \"Less Mana Cost.\"\n* **Reduced Cost (Additive):** 50% reduced + 50% reduced = 100% (Free skills).\n* **Less Cost (Multiplicative):** Typically found on support gems like Inspiration.\n* **Flat Cost Reduction:** Found on rings (e.g., -7 to Total Mana Cost of Skills). This is usually the **bis** solution for fast-attacking builds like **CWC** or **Cyclone** where the base cost is low."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "69216b152e0d",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "52fc58f5938e",
+              "_type": "span",
+              "marks": [],
+              "text": "#### Attribute Requirements\nAttributes (Str, Dex, Int) do more than just unlock gems. If you **reforge attributes** on your gear to hit higher tiers, you gain hidden power:\n* **Strength:** +1 Life per 2 Str and 1% Melee Physical Damage per 5 Str.\n* **Intelligence:** +1 Mana per 2 Int and 1% Ward/Energy Shield per 5 Int.\n* **Amanamu's Gaze Interaction:** This **AbyssJewel** requires level 40 and grants **+(5-10) to all Attributes**. For summoners, this jewel is a staple, providing up to +30% Damage over Time Multiplier for minions, making it essential for **giga prolif** poison builds."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "e180d24236ec",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "1c8c797e9564",
+              "_type": "span",
+              "marks": [],
+              "text": "---"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "526674a69d24",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "c5a9547facb9",
+              "_type": "span",
+              "marks": [],
+              "text": "### 3. Practical Implications for Builds"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "485c1de5b9e3",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "a3fd76e2d5dc",
+              "_type": "span",
+              "marks": [],
+              "text": "When you are **having mana issues**, your solution depends on your budget and build archetype:"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "c628f138228f",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "d4cd88cdf43e",
+              "_type": "span",
+              "marks": [],
+              "text": "| Budget Tier | Primary Strategy | Common Gear/Fix |\n| :--- | :--- | :--- |\n| **Budget** | Flasks & Mana Leech | Mana Flask with \"Enduring\" prefix (doesn't stop at full mana) |\n| **Mid-Tier** | Skill Cost Reduction | Non-Channeling Skills have -(6-7) to Total Mana Cost on rings |\n| **Endgame** | Reservation Efficiency | **Minmaxed** clusters or **Aul's Uprising** to free up the mana pool |"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "33cd6241b9ea",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "f8ba27be6249",
+              "_type": "span",
+              "marks": [],
+              "text": "#### Pro-Tips for Patch 3.28:\n* **Mana Leech:** Unlike life leech, mana leech is capped at 10% of your maximum mana per second. If your skill cost exceeds this cap, no amount of \"leech damage\" will fix the stutter.\n* **Int Stacker Context:** For an **int stacker**, mana is rarely an issue because their primary damage attribute inherently increases their pool and regeneration.\n* **T17 and Nightmare Maps:** In high-tier content like **t17**, modifiers that reduce recovery rate or prevent leech can instantly disable a build that relies purely on mana recovery to function. Always check map mods before you **juice** your Atlas."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "f52229b0968b",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "82f773dd7556",
+              "_type": "span",
+              "marks": [],
+              "text": "If you find yourself stuck, use **pobb** to check your \"Mana Cost per Second\" versus your \"Total Recovery per Second.\" If the cost is higher, you aren't ready to **stomp** **uber** bosses yet."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "4214b8d23278",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "17d7981b45e1",
+              "_type": "span",
+              "marks": [],
+              "text": "---"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "51dcb1526cbe",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "a618186a4b2d",
+              "_type": "span",
+              "marks": [],
+              "text": "## Related Questions"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "477569ebaec3",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "f69058e62cc5",
+              "_type": "span",
+              "marks": [],
+              "text": "## Q: How do I calculate if my mana recovery can sustain my actual attack rate?\nTo check this, multiply your skill's mana cost by your attacks or casts per second found in your **pobb** (Path of Building) calc tab. If this number is higher than your total mana regeneration and leech combined, your character will stutter, especially in high-density maps where you are constantly *farming*."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "4e5be369e3d3",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "d35224cce49b",
+              "_type": "span",
+              "marks": [],
+              "text": "## Q: What is the most efficient way to reforge attributes on gear for high-end builds?\nThe most reliable method is using **Essences** (like Essence of Spite for Intelligence) on a fractured base to guarantee one T1 attribute while rolling for others. Since mana scales with +1 per 2 Intelligence, an **int stacker** or high-cost caster should use **craftofexile** to calculate the average cost of hitting multiple T1 attribute suffixes before spending **raw div**."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "ab85d15b6cec",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "0c424d09797a",
+              "_type": "span",
+              "marks": [],
+              "text": "## Q: Why are mana builds considered pretty strong in the current 3.28 meta?\nMana builds are pretty dominant because they utilize the **Archmage Support** and **Indigon** mechanics to convert a large mana pool into massive **percent damage scaling**. By stacking maximum mana and using a **hiero** (Hierophant), players can achieve a **giga tank** status while maintaining enough damage to **stomp** **uber** bosses."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "e1fdc5ff9f30",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "abc2f7972e58",
+              "_type": "span",
+              "marks": [],
+              "text": "## Q: How does Mana Leech interact with the \"Low Mana\" threshold?\nMana Leech is capped at a base of 20% of your maximum mana per second, regardless of how much damage you deal. Because \"Low Mana\" is defined as 50% or less of your total pool, builds with high reservation must be careful; if your unreserved mana is already near this threshold, a single cast can trigger low mana effects or brick your recovery cycle."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "895cc9a1be2c",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "9e41e29e1bca",
+              "_type": "span",
+              "marks": [],
+              "text": "## Q: Is Amanamu's Gaze a good choice for solving attribute issues on a summoner?\nWhile **Amanamu's Gaze** provides +(5-10) to all Attributes, its primary value is granting minions up to +30% Damage over Time Multiplier based on your **Ghastly Eye Jewels**. It is a **bis** item for poison minion *strats*, but you should not rely on it as your primary source for **capping res** or meeting high attribute requirements."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        }
+      ]
+    },
+    {
+      "_id": "0753e080-e8aa-4464-bf2c-aeefa2d83582",
+      "slug": "nameless-seer-atlas-guide",
+      "body": [
+        {
+          "_key": "a3ae91e02bdd",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "29407b1449c4",
+              "_type": "span",
+              "marks": [],
+              "text": "# How to Use Nameless Seer and Scrying for Profit in Mirage"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "c182e3102a74",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "fbd836bc1393",
+              "_type": "span",
+              "marks": [],
+              "text": "The **Nameless Seer** and the new **Scrying** mechanic introduced in the **Necropolis league** (3.25) have fundamentally changed how players approach long-term *farming* and *minmaxed* Atlas strategies. Traditionally, players were forced to run layouts they hated just because a specific Divination Card—like **The Apothecary**—was tied to that map. With Scrying, you can now \"map\" the drop table of one map onto another, allowing you to *stomp* your favorite layouts while hunting for the most expensive *raw div* and high-value rewards in the game."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "2b9bc9daefea",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "e7d171b83df7",
+              "_type": "span",
+              "marks": [],
+              "text": "This system is a massive buff for both intermediate mappers and endgame grinders. For those just starting their *leaguestart* push, finding the Nameless Seer can provide a massive gear boost through his unique item shop. For high-end players, it represents the ultimate tool for *juice* consistency, enabling *all-around builds* to farm **Defiled Cathedral** rewards on open layouts like **Dunes** or **City Square**."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "b1032919efe7",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "1fb46e94b7d4",
+              "_type": "span",
+              "marks": [],
+              "text": "As of 3.25, the Nameless Seer is no longer a random encounter you just hope to find; he is a targetable objective that scales with map density. By optimizing your Atlas for natural monster pack size and using specific scarabs, you can reliably find him to set up your Scrying for the rest of the league. Whether you are aiming for a *zero to a mirror* run or just trying to finish your **Headhunter** grind, mastering the Seer is non-negotiable in the current meta."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "01ab3e5c5ed3",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "504d5b506cc5",
+              "_type": "span",
+              "marks": [],
+              "text": "---"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "f6115db61444",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "93b70379820f",
+              "_type": "span",
+              "marks": [],
+              "text": "## How it works — Core Rules and Mechanics"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "9628601980bb",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "d149730aff9e",
+              "_type": "span",
+              "marks": [],
+              "text": "Finding the **Nameless Seer** is the prerequisite for the **Scrying** mechanic. He has a natural chance to spawn upon defeating the final pack of \"natural\" monsters in a map. Unlike league mechanics that are forced via the Map Device, the Seer's spawn rate is directly tied to the number of monsters that belong to the map's native pool."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "b4f4fd268773",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "708761fda4d5",
+              "_type": "span",
+              "marks": [],
+              "text": "- **The Spawn Trigger:** The Seer spawns when you kill a monster that satisfies a hidden \"spawn chance\" roll. This chance is increased by the total pack size and the number of natural monsters in the map.\n- **The Scrying Mechanic:** Once the Nameless Seer appears, he offers two main options:\n1. **View Shop:** He presents a selection of unique items (all with **Level 1** requirement but varying rarity). You can take one for free.\n2. **Scry Map:** This is the profit-maker. You can choose to \"Scry\" the current map's Divination Card pool onto another map on your Atlas.\n- **Persistence:** Once a map is scried, its Divination Card drops are permanently replaced by the cards from the source map (where you found the Seer) for the remainder of the league, or until you overwrite it."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "0aa489a3e645",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "e548df671cbc",
+              "_type": "span",
+              "marks": [],
+              "text": "## Interactions — Synergies and Misconceptions"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "3a43b25d5495",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "278e38cd6da4",
+              "_type": "span",
+              "marks": [],
+              "text": "The most common misconception is that the Nameless Seer can spawn from *any* monster. According to data from the community and veterans like **Fubgun**, he only spawns from natural monsters. This means mechanics like **Breach**, **Legion**, or **Delirium** monsters do not contribute to his spawn chance."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "1edc9835bbe1",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "9376e16e8c91",
+              "_type": "span",
+              "marks": [],
+              "text": "- **Scaling Pack Size:** To find him efficiently, you must stack **Increased Pack Size** and **Magic Monster Pack Size** on your Atlas. Shrines are excellent here because they add packs that are considered native to the map.\n- **Map Tier Influence:** While he can appear in lower tiers, running **8-mod T16 maps** significantly increases the odds due to the massive multiplier to pack size and map effect.\n- **The Scrying Overwrite:** You can only have one \"source\" map scried onto a \"destination\" map at a time. If you scry **Defiled Cathedral** onto **Dunes**, and later find the Seer in **Tower**, scrying **Tower** onto **Dunes** will delete the previous link."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "17b9d0f0e7a6",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "fe040cd6557a",
+              "_type": "span",
+              "marks": [],
+              "text": "## Practical Implications — Build and Gear Choices"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "d3084d452dd8",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "63977834cc4e",
+              "_type": "span",
+              "marks": [],
+              "text": "The ability to scry cards affects your choice of *bis* gear and farming *strats*. If you are an **Int Stacker** or a **Deadeye** that excels in open areas, you no longer have to struggle with the cramped corridors of **cells** or **dungeon** to get specific drops."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "fdf5794ec8e4",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "6f50436ff91a",
+              "_type": "span",
+              "marks": [],
+              "text": "- **Best Maps to Scry:**\n- **Defiled Cathedral:** Currently the gold standard. It contains **The Apothecary** (Mageblood) and **Seven Years Bad Luck** (Mirror Shards). Scrying this onto **Dunes** is the current high-end meta.\n- **Tower:** Good for **The Nurse** and **The Patient**, though its value fluctuates based on the price of **Headhunter** on **poe ninja**.\n- **Beach:** The \"consistency\" play. It drops **The Fortunate**, providing a steady stream of *raw div* for mid-budget players.\n- **The \"Seer Hunt\" Setup:** To find him, use a combination of **2x Monsters Lineage Scarabs** and **3x Domination Scarabs**. This maximizes the natural monster count."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "a0461acbdcfa",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "40ee3a0ab9f9",
+              "_type": "span",
+              "marks": [],
+              "text": "---"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "705574fe5afa",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "0ffd1c31011b",
+              "_type": "span",
+              "marks": [],
+              "text": "## How It Works"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "f9f4cf7a3427",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "475b6fc0dbd0",
+              "_type": "span",
+              "marks": [],
+              "text": "The **Nameless Seer** is a rare NPC encounter in the **Mirage league** (3.28) that serves two purposes: providing a free unique item and, more importantly, allowing you to **Scry** a map. When you find him in a Tier 16 map (excluding **Vaal Temple**, **Nightmare maps**, or Guardian maps), he offers to \"record\" the Divination Card pool of the current map and project it onto another map of your choosing on the Atlas."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "1ceccccf7fce",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "b5c3961a0bc5",
+              "_type": "span",
+              "marks": [],
+              "text": "### Core Mechanics and Scrying Rules\nScrying essentially overwrites the natural card drops of a destination map with those of the source map. If you find the Seer in **Defiled Cathedral**, you can Scry it onto **Dunes**. From that point forward, every **Dunes** map you run will drop **The Apothecary** and **Seven Years Bad Luck** instead of its native cards."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "7d584d536981",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "62a0bd3e6d36",
+              "_type": "span",
+              "marks": [],
+              "text": "* **One-Way Link:** The source map (where you found the Seer) keeps its drops. Only the destination map is changed.\n* **Exclusivity:** A map can only be part of one scrying pair. You cannot stack multiple card pools onto one map.\n* **Persistence:** The effect is permanent on your Atlas until you manually remove it using an **Orb of Scouring** on the Atlas screen or overwrite it by finding the Seer again.\n* **The Unique Reward:** You still get a free unique item from the Seer's window even if you use the Scrying function."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "5b3eb458b0b3",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "8e75eda01bbb",
+              "_type": "span",
+              "marks": [],
+              "text": "### Atlas Passive Tree Recommendations\nTo efficiently **find Nameless Seer poe**, you must maximize the number of \"natural\" monsters in your maps. The Seer has a chance to spawn upon slaying monsters that naturally belong to the area."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "efbea727ada0",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "1a91e0a431d0",
+              "_type": "span",
+              "marks": [],
+              "text": "Key nodes to allocate:\n* **Mounting Confusion & Mining Partnership:** Essential for increasing map modifier effect, which scales pack size.\n* **Enduring Influence:** Increases the efficiency of your influence (Eater/Exarch) to spawn more packs quickly.\n* **All Shrine Nodes:** Shrines are the most cost-effective way to add huge clusters of natural monsters to a map layout.\n* **Notable: Nameless Bloodline:** Increases the frequency of specific monster types that have a higher weight for Seer spawns."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "04dc028e69d3",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "8c12ab068fd7",
+              "_type": "span",
+              "marks": [],
+              "text": "### Map Selection and Strategy\nThe **best map to scry poe** depends on your current economy goals and build speed."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "fffda62f5fc0",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "02f65bc08c04",
+              "_type": "span",
+              "marks": [],
+              "text": "| Strategy | Source Map (Seer Location) | Destination Map (Where you farm) | Primary Reward |\n| :--- | :--- | :--- | :--- |\n| **High Roll** | **Defiled Cathedral** | **Dunes** or **City Square** | **The Apothecary** |\n| **Consistent Profit** | **Beach** | **Toxic Sewer** or **Underground Sea** | **The Fortunate** |\n| **Intermediate** | **Tower** | **Cemetery** | **The Nurse** / **The Patient** |"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "838fe8c8b3e0",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "5fc51b895d6a",
+              "_type": "span",
+              "marks": [],
+              "text": "**Pro Tip:** If you are early in the league, scrying **Beach** for **The Fortunate** provides the most stable *raw div* income. If **Headhunter** or **Mageblood** prices are soaring (900+ *d*), switch to **Defiled Cathedral**."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "3f8a3ac465cc",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "1311c5cd2194",
+              "_type": "span",
+              "marks": [],
+              "text": "### Scarab and Fragment Usage\nTo force the Seer to spawn, you need to *juice* for monster density rather than specific mechanics like Breach or Legion."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "87b44287ad56",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "54ae89c70884",
+              "_type": "span",
+              "marks": [],
+              "text": "1. **8-Mod Maps:** Always run corrupted T16 maps with 8 modifiers. This maximizes the pack size multiplier.\n2. **Scarabs:**\n* **2x Scarab of Monstrous Lineage:** Massive boost to magic monster pack size.\n* **3x Domination Scarab:** Adds extra Shrines. Each Shrine spawns several packs of natural monsters.\n3. **Influence:** Use **Searing Exarch** or **Eater of Worlds** influence. These monsters spawn instantly as you walk, allowing for a faster *clear* and more chances for the Seer to appear per hour."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "43a0c45177d0",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "371a3b5de52f",
+              "_type": "span",
+              "marks": [],
+              "text": "---"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "94b04861817a",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "84c281d59139",
+              "_type": "span",
+              "marks": [],
+              "text": "---"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "3f5197f40c56",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "263adac4bd84",
+              "_type": "span",
+              "marks": [],
+              "text": "## Setup & Requirements"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "c2798689f56c",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "2930a0c6826f",
+              "_type": "span",
+              "marks": [],
+              "text": "To consistently find the **Nameless Seer** and maximize the **Scrying** mechanic in the **Mirage league** (3.28), you cannot rely on random chance. Since the Seer spawns from slaying natural monster packs, your goal is to maximize *pack size* and the raw number of monsters inside every map."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "057e9d1b683a",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "9cc4064d9e19",
+              "_type": "span",
+              "marks": [],
+              "text": "### Atlas Passive Tree Allocation\nYour Atlas must be specialized for \"Map Sustain\" and \"Monster Density.\" Prioritize nodes in this order:"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "b2a158af3577",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "94a1376b1a67",
+              "_type": "span",
+              "marks": [],
+              "text": "1. **Map Effect & Pack Size:** Grab all small nodes that grant *Increased Effect of Explicit Modifiers*. This scales the *pack size* on your map, directly increasing the number of monsters that can trigger a Seer spawn.\n2. **Domination (Shrines):** Shrines are mandatory. They don't just give buffs; they spawn large groups of natural monsters.\n3. **Influenced Packs:** Allocate **Eldritch Altars** (Searing Exarch or Eater of Worlds). These monsters spawn instantly and count towards the kill threshold for the Seer.\n4. **Higher Tier Map Drops:** Ensure you have your **Voidstones** and map equity nodes to keep a steady supply of T16 maps."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "ab2cd6c37ba6",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "8493a129f20b",
+              "_type": "span",
+              "marks": [],
+              "text": "### Budget Estimate\nThe cost of entry is relatively low, making this accessible for most players at *mid league*."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "f204e662b478",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "618c2caddec9",
+              "_type": "span",
+              "marks": [],
+              "text": "| Tier | Investment per 10 Maps | Estimated Return |\n| :--- | :--- | :--- |\n| **Budget** | ~50 **c's** (Basic Alch & Go + Shrines) | Low (Purely RNG based) |\n| **Mid-Tier** | ~2-3 **d** (8-mod maps + Scraps) | High (Consistent Seer spawns) |\n| **Endgame** | 10+ **d** (Winged Scarabs + Delirium) | Massive (High chance for **The Apothecary** scrying) |"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "3d83e10657bb",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "5172706fe2e1",
+              "_type": "span",
+              "marks": [],
+              "text": "---"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "a6f8f67ca5f9",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "722903e94841",
+              "_type": "span",
+              "marks": [],
+              "text": "---"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "3f2b6b6fe710",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "8e4681b3da55",
+              "_type": "span",
+              "marks": [],
+              "text": "## Tips & Common Mistakes"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "eb88f54277f4",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "ff93109d57f9",
+              "_type": "span",
+              "marks": [],
+              "text": "Finding the **Nameless Seer** is only half the battle. To maximize your *raw div* per hour and avoid wasting hours of *grind*, you need to understand the nuances of how he spawns and which maps actually yield a return on investment."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "c120b130b04d",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "385ed554d008",
+              "_type": "span",
+              "marks": [],
+              "text": "### Pro-Tips for Efficient Farming"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "648fc7308641",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "68ff8bb6673c",
+              "_type": "span",
+              "marks": [],
+              "text": "* **Speed is King:** Do not full clear for the sake of completion. Once you hit the \"50 monsters remaining\" threshold, leave. The Seer spawns from natural monster packs; if he hasn't appeared by the time you've cleared the main density, your time is better spent starting a fresh map.\n* **The \"Scry Choice\" is Permanent-ish:** You can overwrite a Scried map by finding the Seer again, but you cannot \"undo\" it to get the original card pool back without another Seer encounter. Think twice before mapping **Defiled Cathedral** onto a layout you might not enjoy running for the next 100 maps.\n* **Juice the Pack Size:** Since the Seer's spawn chance is per-monster slain, **8-mod maps** are mandatory for serious *farming*. Use **Domination Scarabs** to force shrines, which add massive amounts of natural monsters to the instance.\n* **Ignore the Boss:** Unless you are specifically farming for boss-specific loot or **Nightmare maps** (T17), skip the boss. The Nameless Seer does not require the boss to be dead to spawn, and the time saved significantly increases your chances of finding him across multiple sessions."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "41b11723eff2",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "223983ed092f",
+              "_type": "span",
+              "marks": [],
+              "text": "### Common Mistakes to Avoid"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "ff96efeb15f2",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "67d9c96656c6",
+              "_type": "span",
+              "marks": [],
+              "text": "* **Running the Wrong Maps:** A common pitfall is scrying a map with a single high-value card like **The Doctor** (from Burial Chambers) when the market for **Headhunter** is crashing. As of 3.28, **Defiled Cathedral** is generally the superior choice because it offers both **The Apothecary** and **Seven Years Bad Luck**, providing better variance protection.\n* **Mistaking Mirage Seer for Guaranteed:** While the league mechanic can occasionally offer a \"Mirage Seer\" as a choice, community data suggests this is exceptionally rare. Do not \"Mirage-rush\" (entering a map just to check the Mirage mechanic and leaving). You are far more likely to find the Seer through raw *clear* speed and monster density.\n* **Scrying T17s:** You cannot Scry a **Nightmare map**. The mechanic is strictly for the Atlas proper. You can, however, Scry a high-tier card pool onto a fast, linear map like **City Square** or **Atoll** to make your T16 *stomping* much more profitable.\n* **Forgetting Influence:** Always run **Eldritch Altars** (Eater or Exarch). They provide additional monsters that can trigger the Seer spawn and add extra *juice* to your maps while you hunt for the NPC."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "c65f0fc72f5f",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "f32a151de4c8",
+              "_type": "span",
+              "marks": [],
+              "text": "---"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "1e0132ffadbb",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "f33ea2611723",
+              "_type": "span",
+              "marks": [],
+              "text": "### Best Maps to Scry (3.28 Meta)"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "e0c1078620bb",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "bc62cc267455",
+              "_type": "span",
+              "marks": [],
+              "text": "| Map Pool (Source) | Key Drops | Strategy |\n| :--- | :--- | :--- |\n| **Defiled Cathedral** | The Apothecary, Seven Years Bad Luck | The *bis* choice for long-term wealth. |\n| **Tower** | The Nurse, The Patient | High consistency, but value fluctuates with Headhunter prices. |\n| **Beach** | The Fortunate | Best for *leaguestart* or consistent *raw div* income via smaller trades. |"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "5d1a1ad488ed",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "f38059add153",
+              "_type": "span",
+              "marks": [],
+              "text": "If you are looking to go **zero to a mirror**, targeting **Defiled Cathedral** and scrying it onto a layout like **Dunes** or **Underground Sea** is currently the most optimized *strat* in the Mirage league. Check **poe.ninja** frequently to ensure the card values haven't shifted before committing your Scry."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        }
+      ]
+    },
+    {
+      "_id": "14e6b513-4106-419c-befe-4fbffc7f515e",
+      "slug": "nameless-seer-guia-de-atlas",
+      "body": [
+        {
+          "_key": "ca17c25fc7fa",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "a4f8c3d75847",
+              "_type": "span",
+              "marks": [],
+              "text": "# Como usar Nameless Seer e Scrying para Lucro na Mirage"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "5643e25b4475",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "09f9f5194476",
+              "_type": "span",
+              "marks": [],
+              "text": "O **Nameless Seer** e a mecânica de **Scrying** introduzida na **Necrópolis league** (3.25) mudaram fundamentalmente a forma como os jogadores abordam o *farming* de longo prazo e estratégias de Atlas *minmaxed*. Tradicionalmente, os jogadores eram forçados a rodar layouts que odiavam apenas porque uma Divination Card específica — como **The Apothecary** — estava atrelada àquele mapa. Com o Scrying, agora você pode \"mapear\" a drop table de um mapa em outro, permitindo que você dê um *stomp* nos seus layouts favoritos enquanto caça os *raw div* mais caros e recompensas de alto valor do jogo."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "b00bda8d3a72",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "4514a4689b3a",
+              "_type": "span",
+              "marks": [],
+              "text": "Este sistema é um buff massivo tanto para mappers intermediários quanto para grinders de endgame. Para aqueles que estão apenas começando seu rush de *leaguestart*, encontrar o Nameless Seer pode proporcionar um aumento massivo de gear através de sua loja de itens únicos. Para jogadores de alto nível, ele representa a ferramenta definitiva para consistência no *juice*, permitindo que *all-around builds* farmem recompensas de **Defiled Cathedral** em layouts abertos como **Dunes** ou **City Square**."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "0a277cade209",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "2b22bb4191fe",
+              "_type": "span",
+              "marks": [],
+              "text": "Desde a 3.25, o Nameless Seer não é mais um encontro aleatório que você apenas espera encontrar; ele é um objetivo visável que escala com a densidade do mapa. Ao otimizar seu Atlas para pack size de monstros naturais e usar scarabs específicos, você pode encontrá-lo com segurança para configurar seu Scrying pelo resto da liga. Esteja você visando uma run de *zero to a mirror* ou apenas tentando terminar seu grind de **Headhunter**, dominar o Seer é inegociável no meta atual."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "ff39ef2d8cd3",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "8083e4e74c80",
+              "_type": "span",
+              "marks": [],
+              "text": "---"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "266404e46eb5",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "0fd6976e8c97",
+              "_type": "span",
+              "marks": [],
+              "text": "## Como funciona — Regras Principais e Mecânicas"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "a89d37202513",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "2d8e818623ff",
+              "_type": "span",
+              "marks": [],
+              "text": "Encontrar o **Nameless Seer** é o pré-requisito para a mecânica de **Scrying**. Ele tem uma chance natural de dar spawn ao derrotar o último pack de monstros \"naturais\" em um mapa. Diferente de mecânicas de liga que são forçadas via Map Device, a taxa de spawn do Seer está diretamente ligada ao número de monstros que pertencem ao pool nativo do mapa."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "c4ac3a485fc4",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "2b5164c2977d",
+              "_type": "span",
+              "marks": [],
+              "text": "- **O Gatilho de Spawn:** O Seer spawna quando você mata um monstro que satisfaz uma rolagem oculta de \"spawn chance\". Essa chance é aumentada pelo pack size total e pelo número de monstros naturais no mapa.\n- **A Mecânica de Scrying:** Assim que o Nameless Seer aparece, ele oferece duas opções principais:\n1. **View Shop:** Ele apresenta uma seleção de itens únicos (todos com requerimento de **Level 1**, mas raridade variada). Você pode pegar um de graça.\n2. **Scry Map:** Este é o gerador de lucro. Você pode escolher dar \"Scry\" no pool de Divination Card do mapa atual em outro mapa do seu Atlas.\n- **Persistência:** Uma vez que um mapa recebeu o scry, seus drops de Divination Card são permanentemente substituídos pelas cartas do mapa de origem (onde você encontrou o Seer) pelo restante da liga, ou até que você o sobrescreva."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "f030f85534fd",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "40f4df228f48",
+              "_type": "span",
+              "marks": [],
+              "text": "## Interações — Sinergias e Equívocos"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "f8cf90d1618a",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "007fda64b5a0",
+              "_type": "span",
+              "marks": [],
+              "text": "O erro mais comum é achar que o Nameless Seer pode spawnar de *qualquer* monstro. De acordo com dados da comunidade e veteranos como **Fubgun**, ele só spawna de monstros naturais. Isso significa que monstros de mecânicas como **Breach**, **Legion** ou **Delirium** não contribuem para sua chance de spawn."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "6012c469cb07",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "db17b0dca190",
+              "_type": "span",
+              "marks": [],
+              "text": "- **Escalando Pack Size:** Para encontrá-lo de forma eficiente, você deve acumular **Increased Pack Size** e **Magic Monster Pack Size** no seu Atlas. Shrines são excelentes aqui porque adicionam packs que são considerados nativos do mapa.\n- **Influência do Map Tier:** Embora ele possa aparecer em tiers baixos, rodar **8-mod T16 maps** aumenta significativamente as chances devido ao multiplicador massivo de pack size e map effect.\n- **O Scrying Overwrite:** Você só pode ter um mapa de \"origem\" com scry em um mapa de \"destino\" por vez. Se você der scry de **Defiled Cathedral** em **Dunes**, e depois encontrar o Seer em **Tower**, dar scry de **Tower** em **Dunes** deletará o link anterior."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "10586ad10169",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "17c8d0c6eeb7",
+              "_type": "span",
+              "marks": [],
+              "text": "## Implicações Práticas — Escolhas de Build e Gear"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "a81c4f0cd85c",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "bdcfc614f8d7",
+              "_type": "span",
+              "marks": [],
+              "text": "A habilidade de dar scry em cartas afeta sua escolha de gear *bis* e *strats* de farming. Se você é um **Int Stacker** ou um **Deadeye** que brilha em áreas abertas, não precisa mais sofrer nos corredores apertados de **cells** ou **dungeon** para conseguir drops específicos."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "15c575f7d77d",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "2372cc9392da",
+              "_type": "span",
+              "marks": [],
+              "text": "- **Melhores Mapas para Scry:**\n- **Defiled Cathedral:** Atualmente o padrão ouro. Contém **The Apothecary** (Mageblood) e **Seven Years Bad Luck** (Mirror Shards). Dar scry disso em **Dunes** é o meta atual de alto nível.\n- **Tower:** Bom para **The Nurse** e **The Patient**, embora seu valor flutue baseado no preço da **Headhunter** no **poe ninja**.\n- **Beach:** A jogada de \"consistência\". Dropa **The Fortunate**, fornecendo um fluxo constante de *raw div* para jogadores de orçamento médio.\n- **O Setup de \"Seer Hunt\":** Para encontrá-lo, use uma combinação de **2x Monsters Lineage Scarabs** e **3x Domination Scarabs**. Isso maximiza a contagem de monstros naturais."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "659415709e2c",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "8b786a4d86b1",
+              "_type": "span",
+              "marks": [],
+              "text": "---"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "351acee797e8",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "96bd14268504",
+              "_type": "span",
+              "marks": [],
+              "text": "## Como Funciona\nO **Nameless Seer** é um NPC raro na **Mirage league** (3.28) que serve a dois propósitos: fornecer um item unique de graça e, mais importante, permitir que você faça o **Scry** de um mapa. Quando você o encontra em um mapa Tier 16 (excluindo **Vaal Temple**, **Nightmare maps**, ou mapas de Guardian), ele oferece \"gravar\" o drop de Divination Cards do mapa atual e projetá-lo em outro mapa da sua escolha no Atlas."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "4afa1b8ea2b6",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "2d03fe865816",
+              "_type": "span",
+              "marks": [],
+              "text": "### Core Mechanics e Scrying Rules\nO Scrying essencialmente substitui os drops naturais de cartas de um mapa de destino pelos do mapa de origem. Se você encontrar o Seer em **Defiled Cathedral**, pode dar Scry para o **Dunes**. A partir desse momento, todo mapa **Dunes** que você rodar dropará **The Apothecary** e **Seven Years Bad Luck** em vez de suas cartas nativas."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "e2ca2d5554e0",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "971da66094ad",
+              "_type": "span",
+              "marks": [],
+              "text": "* **One-Way Link:** O mapa de origem (onde você achou o Seer) mantém seus drops. Apenas o mapa de destino é alterado.\n* **Exclusivity:** Um mapa só pode fazer parte de um par de scrying. Você não pode acumular vários pools de cartas em um único mapa.\n* **Persistence:** O efeito é permanente no seu Atlas até que você o remova manualmente usando um **Orb of Scouring** na tela do Atlas ou o sobrescreva encontrando o Seer novamente.\n* **The Unique Reward:** Você ainda ganha um item unique grátis da janela do Seer mesmo se utilizar a função de Scrying."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "344a35d4bbbd",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "a92c11e51978",
+              "_type": "span",
+              "marks": [],
+              "text": "### Atlas Passive Tree Recommendations\nPara encontrar o **Nameless Seer poe** com eficiência, você deve maximizar o número de monstros \"naturais\" nos seus mapas. O Seer tem uma chance de spawnar ao derrotar monstros que pertencem naturalmente à área."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "bbe3ef4e3a86",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "a354b1ea402e",
+              "_type": "span",
+              "marks": [],
+              "text": "Key nodes para alocar:\n* **Mounting Confusion & Mining Partnership:** Essenciais para aumentar o efeito dos modificadores de mapa, o que escala o pack size.\n* **Enduring Influence:** Aumenta a eficiência da sua influência (Eater/Exarch) para spawnar mais packs rapidamente.\n* **All Shrine Nodes:** Shrines são a forma mais custo-benefício de adicionar aglomerados enormes de monstros naturais ao layout do mapa.\n* **Notable: Nameless Bloodline:** Aumenta a frequência de tipos específicos de monstros que possuem um peso maior para o spawn do Seer."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "b5c529823e98",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "1843625c4abe",
+              "_type": "span",
+              "marks": [],
+              "text": "### Map Selection and Strategy\nO **best map to scry poe** depende dos seus objetivos econômicos atuais e da velocidade da sua build."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "617bd550ea8d",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "76977515f560",
+              "_type": "span",
+              "marks": [],
+              "text": "| Strategy | Source Map (Seer Location) | Destination Map (Where you farm) | Primary Reward |\n| :--- | :--- | :--- | :--- |\n| **High Roll** | **Defiled Cathedral** | **Dunes** ou **City Square** | **The Apothecary** |\n| **Consistent Profit** | **Beach** | **Toxic Sewer** ou **Underground Sea** | **The Fortunate** |\n| **Intermediate** | **Tower** | **Cemetery** | **The Nurse** / **The Patient** |"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "ec78d7054a24",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "03e5b777c770",
+              "_type": "span",
+              "marks": [],
+              "text": "**Pro Tip:** Se você estiver no início da league, dar scrying no **Beach** para buscar **The Fortunate** oferece a renda mais estável de *raw div*. Se os preços de **Headhunter** ou **Mageblood** estiverem disparando (900+ *d*), mude para **Defiled Cathedral**."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "d7d8cfb58618",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "27263a963d23",
+              "_type": "span",
+              "marks": [],
+              "text": "### Scarab and Fragment Usage\nPara forçar o spawn do Seer, você precisa dar *juice* focado em densidade de monstros em vez de mecânicas específicas como Breach ou Legion."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "9188a08cb631",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "f6f23cfdbba0",
+              "_type": "span",
+              "marks": [],
+              "text": "1. **8-Mod Maps:** Sempre rode mapas T16 corrompidos com 8 modificadores. Isso maximiza o multiplicador de pack size.\n2. **Scarabs:**\n* **2x Scarab of Monstrous Lineage:** Boost massivo no pack size de monstros magic.\n* **3x Domination Scarab:** Adiciona Shrines extras. Cada Shrine spawna vários packs de monstros naturais.\n3. **Influence:** Use influência de **Searing Exarch** ou **Eater of Worlds**. Esses monstros spawnagem instantaneamente conforme você anda, permitindo um *clear* mais rápido e mais chances do Seer aparecer por hora."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "be85290f7806",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "fe0462d4ab5d",
+              "_type": "span",
+              "marks": [],
+              "text": "---"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "370d266e3560",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "70b1db7f4889",
+              "_type": "span",
+              "marks": [],
+              "text": "---"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "7e9e4d2dc974",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "633e49fd0847",
+              "_type": "span",
+              "marks": [],
+              "text": "Seu Atlas precisa ser especializado em \"Map Sustain\" e \"Monster Density\". Priorize os nodes nesta ordem:"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "450c217ecabd",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "4aa9add05b9c",
+              "_type": "span",
+              "marks": [],
+              "text": "1. **Map Effect & Pack Size:** Pegue todos os nodes pequenos que concedem *Increased Effect of Explicit Modifiers*. Isso escala o *pack size* do seu mapa, aumentando diretamente o número de monstros que podem triggar o spawn do Seer.\n2. **Domination (Shrines):** Shrines são obrigatórios. Eles não servem apenas para buffs; eles spawnão grandes grupos de monstros naturais.\n3. **Influenced Packs:** Aloque **Eldritch Altars** (Searing Exarch ou Eater of Worlds). Esses monstros aparecem instantaneamente e contam para o limite de kills necessário para o Seer.\n4. **Higher Tier Map Drops:** Garanta que você tenha suas **Voidstones** e nodes de map equity para manter um suprimento constante de mapas T16."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "cb0748f2e544",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "8206cbcb66e8",
+              "_type": "span",
+              "marks": [],
+              "text": "### Budget Estimate\nO custo de entrada é relativamente baixo, tornando a estratégia acessível para a maioria dos players no *mid league*."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "98a73693c846",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "d15f6440e2ca",
+              "_type": "span",
+              "marks": [],
+              "text": "| Tier | Investment per 10 Maps | Estimated Return |\n| :--- | :--- | :--- |\n| **Budget** | ~50 **c's** (Alch & Go básico + Shrines) | Baixo (Baseado puramente em RNG) |\n| **Mid-Tier** | ~2-3 **d** (Mapas 8-mod + Scarabs) | Alto (Spawns consistentes do Seer) |\n| **Endgame** | 10+ **d** (Winged Scarabs + Delirium) | Massivo (Alta chance para scrying de **The Apothecary**) |"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "d618a906fdf2",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "185b09942fbe",
+              "_type": "span",
+              "marks": [],
+              "text": "---"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "1af22fd02456",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "2966fe9f4b2f",
+              "_type": "span",
+              "marks": [],
+              "text": "---"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "65777bf2fa14",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "08327f616962",
+              "_type": "span",
+              "marks": [],
+              "text": "## Dicas e Erros Comuns"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "79664c9f3444",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "89af70c138ae",
+              "_type": "span",
+              "marks": [],
+              "text": "Encontrar o **Nameless Seer** é apenas metade da batalha. Para maximizar seu *raw div* por hora e evitar desperdiçar horas de *grind*, você precisa entender as nuances de como ele spawna e quais mapas realmente trazem retorno sobre o investimento."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "23853b07476a",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "45e8f3fe3634",
+              "_type": "span",
+              "marks": [],
+              "text": "### Pro-Tips para um Farming Eficiente"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "ca16fab66d6b",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "5ee28def8a4a",
+              "_type": "span",
+              "marks": [],
+              "text": "* **Velocidade é Tudo:** Não faça full clear apenas por completar. Assim que atingir o limite de \"50 monsters remaining\", saia. O Seer spawna de packs de monstros naturais; se ele não apareceu quando você limpou a densidade principal, seu tempo é melhor gasto começando um novo mapa.\n* **A \"Scry Choice\" é Quase Permanente:** Você pode sobrescrever um mapa com Scry encontrando o Seer novamente, mas não pode \"desfazer\" a escolha para recuperar o pool de cartas original sem outro encontro com o Seer. Pense duas vezes antes de aplicar o Scry de **Defiled Cathedral** em um layout que você talvez não goste de rodar pelos próximos 100 mapas.\n* **Juice no Pack Size:** Como a chance de spawn do Seer é por monstro derrotado, **8-mod maps** são obrigatórios para um *farming* sério. Use **Domination Scarabs** para forçar shrines, que adicionam quantidades massivas de monstros naturais à instância.\n* **Ignore o Boss:** A menos que você esteja farmando especificamente por loots de boss ou **Nightmare maps** (T17), pule o boss. O Nameless Seer não exige que o boss esteja morto para spawnar, e o tempo economizado aumenta significativamente suas chances de encontrá-lo ao longo de várias sessões."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "5f4c1506d745",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "9e9713022d3b",
+              "_type": "span",
+              "marks": [],
+              "text": "### Erros Comuns para Evitar"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "a3a700db0e34",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "8c8086b0f090",
+              "_type": "span",
+              "marks": [],
+              "text": "* **Rodar os Mapas Errados:** Um erro comum é dar Scry em um mapa com uma única carta de alto valor como **The Doctor** (de Burial Chambers) quando o mercado de **Headhunter** está caindo. No patch 3.28, **Defiled Cathedral** é geralmente a melhor escolha porque oferece tanto **The Apothecary** quanto **Seven Years Bad Luck**, garantindo uma proteção melhor contra a variância.\n* **Confundir Mirage Seer com Garantia:** Embora a mecânica da league possa ocasionalmente oferecer um \"Mirage Seer\" como opção, dados da comunidade sugerem que isso é excepcionalmente raro. Não faça \"Mirage-rush\" (entrar no mapa só para checar a mecânica Mirage e sair). Você tem muito mais chances de achar o Seer através de *clear* speed puro e densidade de monstros.\n* **Scrying em T17s:** Você não pode dar Scry em um **Nightmare map**. A mecânica é estritamente para o Atlas propriamente dito. Você pode, no entanto, dar Scry em um pool de cartas high-tier para um mapa rápido e linear como **City Square** ou **Atoll** para tornar seu *stomping* em T16 muito mais lucrativo.\n* **Esquecer a Influence:** Sempre rode **Eldritch Altars** (Eater ou Exarch). Eles fornecem monstros adicionais que podem triggar o spawn do Seer e adicionam *juice* extra aos seus mapas enquanto você caça o NPC."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "850d88f20d5f",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "bdae8bc67e55",
+              "_type": "span",
+              "marks": [],
+              "text": "---"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "cc4e0d60e97d",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "1a6b76379a25",
+              "_type": "span",
+              "marks": [],
+              "text": "### Melhores Mapas para Scry (Meta 3.28)"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "14fabb75a416",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "b713f19642a5",
+              "_type": "span",
+              "marks": [],
+              "text": "| Map Pool (Origem) | Key Drops | Estratégia |\n| :--- | :--- | :--- |\n| **Defiled Cathedral** | The Apothecary, Seven Years Bad Luck | A escolha *bis* para riqueza a longo prazo. |\n| **Tower** | The Nurse, The Patient | Alta consistência, mas o valor flutua com os preços de Headhunter. |\n| **Beach** | The Fortunate | Melhor para *leaguestart* ou renda consistente de *raw div* via trades menores. |"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "a3ae91e02bdd",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "29407b1449c4",
+              "_type": "span",
+              "marks": [],
+              "text": "Se você está buscando ir do **zero ao mirror**, focar em **Defiled Cathedral** e dar Scry em um layout como **Dunes** ou **Underground Sea** é atualmente a *strat* mais otimizada na Mirage league. Cheque o **poe.ninja** frequentemente para garantir que os valores das cartas não mudaram antes de comprometer seu Scry."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        }
+      ]
+    },
+    {
+      "_id": "783e60f6-3bae-482c-8ec8-5140ee42ee5a",
+      "slug": "problemas-com-mana-como-resolver-faq",
+      "body": [
+        {
+          "_key": "895cc9a1be2c",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "9e41e29e1bca",
+              "_type": "span",
+              "marks": [],
+              "text": "# FAQ: Mana Issues e Attributes no Patch 3.28 - Como Resolver"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "401d7ed1a06f",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "a3bba63af1f1",
+              "_type": "span",
+              "marks": [],
+              "text": "## Resposta Rápida\nTer problemas com a mana no Path of Exile 3.28 geralmente surge de um desequilíbrio entre sua **actual attack rate** e sua taxa de mana recovery. Personagens começam com 40 base mana, ganhando +6 por nível e +1 a cada 2 Intelligence, com uma base regeneration de 1.8% do pool máximo por segundo. Se o custo da sua skill multiplicado pelos seus attacks/casts por segundo exceder essa recuperação, sua build vai travar. Soluções rápidas incluem usar uma aura de **Clarity** para flat regeneration, craftar \"Non-Channeled Skills have -7 to Total Mana Cost\" em rings/amulets, ou utilizar mana leech, que é limitado a 10% da sua maximum mana por segundo."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "a1e71e14c181",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "59d2ab7f0202",
+              "_type": "span",
+              "marks": [],
+              "text": "---"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "fc74e72a309d",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "ae7d163201ac",
+              "_type": "span",
+              "marks": [],
+              "text": "## 1. Como funciona\nA mana funciona como o recurso primário para a execução de skills, com custos calculados dinamicamente baseados na skill base e suas support gems conectadas. O jogo define **Low Mana** como estar em ou abaixo de 50% do seu maximum mana pool — um estado que ativa modificadores específicos de defesa e ataque."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "d4a1b29847e3",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "08c1d4628ea0",
+              "_type": "span",
+              "marks": [],
+              "text": "### Core Scaling & Recovery\n* **Base Pool:** 40 Mana no nível 1, +6 por nível. No nível 90, você tem 574 base mana antes de Intelligence ou gear.\n* **Intelligence:** Cada 2 pontos de Intelligence concedem +1 flat mana. Builds de **Int stacker** aproveitam isso para alcançar pools de 10,000+ mana.\n* **Regeneration:** A taxa padrão é 1.8% de max mana por segundo. Isso é facilmente superado por builds modernas de alta velocidade.\n* **Leech:** O leech padrão concede 2% de maximum mana por segundo por \"instância\", até um cap total de 10% da sua max mana. Para a maioria das **all-around builds**, essa é a forma mais confiável de sustentar durante o combate."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "73e6882ee7d9",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "81f098327e9d",
+              "_type": "span",
+              "marks": [],
+              "text": "---"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "8e4d33b7a62e",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "d1b90a7467f1",
+              "_type": "span",
+              "marks": [],
+              "text": "## 2. Interações\nO gerenciamento de mana não se trata apenas de ter um pool grande; trata-se de como esse pool interage com reservation e mitigação de dano."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "d1860ee84747",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "34a586e58850",
+              "_type": "span",
+              "marks": [],
+              "text": "### Mana before Life (MoM)\nA keystone **Mind Over Matter** permite que 40% do dano tomado de hits seja deduzido da mana antes do life. Isso torna a mana uma camada defensiva potente. No entanto, se você estiver com **having mana issues** ofensivamente, suas defesas também vão colapsar, pois um hit pesado vai te deixar no \"mana screw\", impedindo que você contra-ataque ou se mova."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "01f4c65318ed",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "26cef3a373ed",
+              "_type": "span",
+              "marks": [],
+              "text": "### Reservation vs. Usable Pool\nA maioria dos jogadores reserva 90-95% da mana para **purities** ou auras ofensivas. A \"unreserved mana\" restante deve ser suficiente para cobrir pelo menos duas rotações completas de skill para compensar a **actual attack rate** e a latência do servidor. Se sua unreserved mana for menor que o custo da sua skill, a skill simplesmente não vai disparar."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "e35d658006d9",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "f9b00bf66301",
+              "_type": "span",
+              "marks": [],
+              "text": "### Attribute Requirements\nAttributes (Str/Dex/Int) frequentemente limitam as soluções de mana. Se você precisar **reforge attributes** nos seus itens para atingir requisitos altos de Intelligence para gems ou itens **bis** como um **Cogwork Ring**, você acaba aumentando indiretamente seu pool de mana e sua regeneration."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "a5ebecfa21ca",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "475b63bee0ca",
+              "_type": "span",
+              "marks": [],
+              "text": "---"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "e57fc2f6d8bd",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "3565099bdc66",
+              "_type": "span",
+              "marks": [],
+              "text": "## 3. Implicações Práticas\nResolver a mana é um processo em camadas baseado no seu **grind** atual e orçamento."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "b622ce216f93",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "6399af9c5d58",
+              "_type": "span",
+              "marks": [],
+              "text": "### Soluções Budget\n* **Clarity Gem:** Uma **Clarity** nível 1-10 fornece flat regen suficiente para a maioria dos cenários de **leaguestart**.\n* **Mana Flasks:** Use um prefixo \"Enduring\" para que o efeito não termine quando a mana estiver cheia.\n* **Passive Tree:** Pontos em nodes de \"Mana Leech\" são obrigatórios para builds de ataque."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "6699b7eb7987",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "e2e7c29e7623",
+              "_type": "span",
+              "marks": [],
+              "text": "### Otimização Mid-Tier\n* **Jewelry Crafting:** Use **C's** ou **D's** para comprar ou craftar anéis com \"-7 to total mana cost of non-channeled skills.\"\n* **Inspiration Support:** Esta gem reduz o custo de mana significativamente enquanto fornece **percent damage scaling**."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "2bfc7bcd2f3e",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "92fd688a2562",
+              "_type": "span",
+              "marks": [],
+              "text": "### Soluções Endgame/Minmaxed\n* **Cogwork Ring:** Utilizar um **Cogwork Ring** (Nível 24, Experimental Base) permite um sufixo extra. Você pode usar isso para **reforge attributes** ou adicionar T1 mana regeneration, beneficiando-se do implícito \"25% increased Suffix Modifier magnitudes\".\n* **Amanamu's Gaze:** Embora seja focado em builds de minion (concedendo até +30% DoT Multi), usar **Ghastly Eye Jewels** com \"Mana on Hit\" pode resolver o sustento para arquétipos de minion com alto hit-rate.\n* **90 All Res & Mana:** Muitas builds **giga tank** usam setups de \"Internal Conviction\" ou \"Valako\" que exigem um ajuste preciso de mana para garantir que as **purities** fiquem ativas enquanto mantém mana suficiente para dar **stomp** em mapas **t17** nightmare."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "706252149734",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "d099109241bf",
+              "_type": "span",
+              "marks": [],
+              "text": "| Budget Tier | Primary Fix | Estimated Cost |\n| :--- | :--- | :--- |\n| **Budget** | Clarity + Mana Leech Node | < 5 c |\n| **Mid-Tier** | -7 Mana Cost Crafts + Inspiration | 1 - 5 d |\n| **Endgame** | Cogwork Ring + T1 Mana/Int Rolls | 20+ d |"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "42199008efce",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "654a53a3fe20",
+              "_type": "span",
+              "marks": [],
+              "text": "Se você está seguindo um **pobb** do **poe ninja** e ainda está sofrendo, verifique sua **actual attack rate** em comparação com a do criador; maior velocidade exige exponencialmente mais recovery."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "a579e3512613",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "808153685168",
+              "_type": "span",
+              "marks": [],
+              "text": "---"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "9798516da9ef",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "e566e00a2832",
+              "_type": "span",
+              "marks": [],
+              "text": "## Explicação Detalhada: Resolvendo o Puzzle de Mana e Atributos"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "f2668db06b21",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "d2ee0118db03",
+              "_type": "span",
+              "marks": [],
+              "text": "Entender por que seu personagem está travando no meio do map exige olhar além do seu globo de mana. No meta atual da **sc trade league**, os players costumam levar sua **actual attack rate** ou cast speed a níveis que superam seus status de recovery, resultando em uma sensação de build \"brickada\" durante o combate."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "a739c2b80117",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "4bd5feabbe92",
+              "_type": "span",
+              "marks": [],
+              "text": "---"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "3af5b545baea",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "793535acb200",
+              "_type": "span",
+              "marks": [],
+              "text": "### 1. Como Funcionam as Mecânicas de Mana"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "3929582a82ed",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "d546d34d9ded",
+              "_type": "span",
+              "marks": [],
+              "text": "O gerenciamento de mana no **PoE 1** é um equilíbrio entre maximum pool, cost reduction e recovery rate. Todo personagem começa com 40 de base mana, ganhando +6 por level. No entanto, o scaling mais significativo vem de **Intelligence**, fornecendo +1 mana para cada 2 pontos."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "9dcbf1366b2f",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "71d981afecc1",
+              "_type": "span",
+              "marks": [],
+              "text": "A base regeneration é fixada em 1.8% do seu maximum mana por segundo. Isso significa que se você tem uma pool de 1.000 de mana, você regenera apenas 18 de mana por segundo naturalmente. Se sua main skill custa 30 de mana e você ataca 5 vezes por segundo (um requisito de 150 mana/sec), você vai esvaziar sua pool em segundos, a menos que suplemente isso com outras mecânicas."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "65e18ef31670",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "ad8bb1222d04",
+              "_type": "span",
+              "marks": [],
+              "text": "**O Limite de \"Low Mana\":**\nMuitos players ignoram que \"Low Mana\" é estritamente definido como 50% ou menos do seu maximum mana. Isso é crítico para builds que usam itens uniques específicos ou passives que triggam efeitos quando seu recurso cai abaixo dessa metade."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "7e94ceadf29e",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "6d5ffff3f7d2",
+              "_type": "span",
+              "marks": [],
+              "text": "---"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "1e42e67d55d8",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "bbab3edb789d",
+              "_type": "span",
+              "marks": [],
+              "text": "### 2. Interações e Equívocos Comuns"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "4a1f0e114189",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "51ad096dd564",
+              "_type": "span",
+              "marks": [],
+              "text": "#### Mana before Life (MoM)\nUma das interações mais poderosas é **Mind Over Matter**, que faz com que 40% do dano recebido seja deduzido da mana antes do life. Isso aumenta efetivamente sua *e-health pool*, mas cria uma \"tensão de mana\" onde tomar dano impede você de usar skills. Para resolver isso, builds de **hiero** costumam stackar quantidades massivas de mana para garantir que seu recovery aguente tanto o dano quanto os custos das skills simultaneamente."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "c23c4eae97ac",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "6a3f00a3f857",
+              "_type": "span",
+              "marks": [],
+              "text": "#### A Armadilha do \"Reduced Cost\"\nOs players costumam confundir \"Reduced Mana Cost\" com \"Less Mana Cost.\"\n* **Reduced Cost (Aditivo):** 50% reduced + 50% reduced = 100% (Skills de graça).\n* **Less Cost (Multiplicativo):** Geralmente encontrado em support gems como **Inspiration**.\n* **Flat Cost Reduction:** Encontrado em rings (ex: -7 to Total Mana Cost of Skills). Esta é geralmente a solução **bis** para builds de ataque rápido como **CWC** ou **Cyclone**, onde o custo base é baixo."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "6f882013b991",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "b1e157db29f7",
+              "_type": "span",
+              "marks": [],
+              "text": "#### Requisitos de Atributos\nAtributos (Str, Dex, Int) fazem mais do que apenas liberar gems. Se você der **reforge attributes** no seu gear para atingir tiers mais altos, você ganha poder oculto:\n* **Strength:** +1 Life a cada 2 Str e 1% Melee Physical Damage a cada 5 Str.\n* **Intelligence:** +1 Mana a cada 2 Int e 1% Ward/Energy Shield a cada 5 Int.\n* **Interação com Amanamu's Gaze:** Este **Abyss Jewel** requer level 40 e concede **+(5-10) to all Attributes**. Para summoners, esta jewel é padrão, fornecendo até +30% Damage over Time Multiplier para minions, tornando-a essencial para builds de poison com **giga prolif**."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "7294148494fc",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "d7b2a6f34045",
+              "_type": "span",
+              "marks": [],
+              "text": "---"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "3952769d6c34",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "44cccda0b88d",
+              "_type": "span",
+              "marks": [],
+              "text": "### 3. Implicações Práticas para Builds"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "88dba3a4812e",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "2f03f8aefb0d",
+              "_type": "span",
+              "marks": [],
+              "text": "Quando você está **having mana issues**, sua solução depende do seu budget e do arquétipo da build:"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "ce9cf09d2c9c",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "b97556c3bc25",
+              "_type": "span",
+              "marks": [],
+              "text": "| Budget Tier | Estratégia Primária | Gear/Fix Comum |\n| :--- | :--- | :--- |\n| **Budget** | Flasks & Mana Leech | Mana Flask com prefixo \"Enduring\" (não para no mana cheio) |\n| **Mid-Tier** | Skill Cost Reduction | Non-Channeling Skills have -(6-7) to Total Mana Cost nos rings |\n| **Endgame** | Reservation Efficiency | Clusters **minmaxed** ou **Aul's Uprising** para liberar a mana pool |"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "32ccd6d7df73",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "6d717d8a670a",
+              "_type": "span",
+              "marks": [],
+              "text": "#### Pro-Tips para o Patch 3.28:\n* **Mana Leech:** Diferente do life leech, o mana leech é limitado a 10% do seu maximum mana por segundo. Se o custo da sua skill exceder esse cap, nenhuma quantidade de \"leech damage\" vai consertar o stutter.\n* **Contexto de Int Stacker:** Para um **int stacker**, mana raramente é um problema porque seu atributo principal de dano aumenta inerentemente sua pool e regeneration.\n* **Maps T17 e Nightmare:** Em conteúdos high-tier como **t17**, modificadores que reduzem recovery rate ou impedem leech podem desativar instantaneamente uma build que depende puramente de mana recovery para funcionar. Sempre cheque os map mods antes de dar **juice** no seu Atlas."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "192efc8570d8",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "93fdc4a54ffd",
+              "_type": "span",
+              "marks": [],
+              "text": "Se você estiver travado, use o **pobb** para checar seu \"Mana Cost per Second\" contra seu \"Total Recovery per Second.\" Se o custo for maior, você ainda não está pronto para dar **stomp** em **uber** bosses."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "0d468644a18b",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "64c47bbde439",
+              "_type": "span",
+              "marks": [],
+              "text": "---"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "6e380a9eeee9",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "6d2c920f977c",
+              "_type": "span",
+              "marks": [],
+              "text": "## Perguntas Relacionadas"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "6f0dae823d61",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "c3f073e616b6",
+              "_type": "span",
+              "marks": [],
+              "text": "## Q: Como calculo se meu mana recovery consegue sustentar meu attack rate atual?\nPara checar isso, multiplique o mana cost da sua skill pelo seu número de attacks ou casts per second encontrados na aba de calcs do seu **pobb** (Path of Building). Se esse valor for maior que a soma do seu mana regeneration e leech, seu personagem vai dar aquelas travadas (o famoso *stutter*), especialmente em mapas de alta densidade onde você está constantemente no *farming*."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "38a2a664f8a4",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "f378b13dc8b0",
+              "_type": "span",
+              "marks": [],
+              "text": "## Q: Qual a forma mais eficiente de dar reforge em attributes no gear para builds high-end?\nO método mais confiável é usar **Essences** (como Essence of Spite para Intelligence) em uma base com fractured mod para garantir um atributo T1 enquanto busca outros. Como mana escala com +1 a cada 2 Intelligence, um **int stacker** ou caster de alto custo deve usar o **craftofexile** para calcular o custo médio de acertar múltiplos sufixos de attributes T1 antes de gastar seus **raw div**."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "ad0f63a3e688",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "38dae5eafd96",
+              "_type": "span",
+              "marks": [],
+              "text": "## Q: Por que builds de mana são consideradas tão fortes no meta atual da 3.28?\nBuilds de mana estão dominantes porque utilizam as mecânicas de **Archmage Support** e **Indigon** para converter uma grande pool de mana em um **percent damage scaling** massivo. Ao stackar maximum mana e usar um **hiero** (Hierophant), os jogadores conseguem atingir um status de **giga tank** enquanto mantêm dano suficiente para dar **stomp** em **uber** bosses."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "0a8cd8ba7fa6",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "48018f6c59e8",
+              "_type": "span",
+              "marks": [],
+              "text": "## Q: Como o Mana Leech interage com o threshold de \"Low Mana\"?\nO Mana Leech é limitado a uma base de 20% do seu maximum mana por segundo, independentemente de quanto dano você causa. Como \"Low Mana\" é definido como 50% ou menos da sua pool total, builds com reserva alta precisam ter cuidado; se seu mana não reservado já estiver perto desse limite, um único cast pode triggar efeitos de low mana ou quebrar seu ciclo de recovery."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        },
+        {
+          "_key": "7860711d537f",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "732bcd2d72c4",
+              "_type": "span",
+              "marks": [],
+              "text": "## Q: O Amanamu's Gaze é uma boa escolha para resolver problemas de attributes em um summoner?\nEmbora o **Amanamu's Gaze** forneça +(5-10) para todos os Attributes, seu valor principal é garantir aos minions até +30% de Damage over Time Multiplier baseado nos seus **Ghastly Eye Jewels**. É um item **bis** para *strats* de poison minion, mas você não deve depender dele como sua fonte principal para dar **capping res** ou atingir requisitos altos de attributes."
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        }
+      ]
+    },
+    {
+      "_id": "db08dcac-58db-4415-afce-87df62d638fd",
+      "slug": "ultimate-poe-2-crafting-guide-the-power-of-the-abyss-and-desecrated-modifiers",
+      "body": [
+        {
+          "_key": "1cbddacbfa9b",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "e32aef5e06e2",
+              "_type": "span",
+              "marks": [],
+              "text": "In **Path of Exile 2**, crafting has shifted from a random chaos heavily reliant on luck to a system of deliberate choices and stat engineering. The new **Abyss Crafting** system is the ultimate proof of this, introducing powerful **Desecrated Modifiers** and currencies that allow players to actively shape the destiny of their gear.\n\nIf you want to understand how elite players create Mirror-tier items and dominate the market, this guide is your operations manual.\n\n## 1\\. What is Abyss Crafting and Bone Anatomy\n\nUnlike the first game, where the Abyss focus was purely on jewels, in PoE 2 you use **Abyssal Bones** to add hidden (Desecrated) modifiers to rare items. These modifiers often don't even exist in the item's natural modifier pool.\n\n* **Specific Types:** There are exact bones for Weapons (**Jawbone**), Armor (**Rib**), Accessories (**Collarbone**), and Jewels (**Cranium**).\n* **Quality Matters:** Never waste resources on endgame bases with inferior bones. Using **Ancient Abyssal Bones** is mandatory to guarantee that the revealed modifier is of a high level (Tier 40+).\n\n## 2\\. The Well of Souls and Exclusive Modifiers\n\nAfter applying a bone to your item, you must travel to **The Mastodon Badlands (Act 2)**. At the **Well of Souls**, you will reveal the modifier and have the power to **choose one of three options**. This mechanic drastically reduces RNG frustration.\n\n* **The Search for Legends:** The Well is where you hunt for the highly coveted exclusive modifiers from **Kurgal, Ulaman, and Amanamu**. They offer build-defining stats, such as mana cost efficiency and unique critical multipliers.\n\n## 3\\. The Math Behind Perfect and Greater Currencies\n\nTo maximize your Abyss crafting, you need to prepare the item's base. This is where the new currency variants come in, setting a level floor for stats:\n\n* **Greater Currencies:** Guarantee that the added modifier is at least **iLvl 35**. This removes useless early-game stats.\n* **Perfect Currencies:** The gold standard of mastery. They guarantee **iLvl 50** for Exalt/Chaos and **iLvl 70** for Augments. By using a *Perfect Exalted Orb* on gloves, for instance, you eliminate the chances of rolling low tiers, forcing the game to give you elite stats.\n\n## 4\\. Golden Rules for Resource Management\n\nKnowing these currencies exist isn't enough; you need to know when and how to use them to avoid going broke:\n\n* **Item Level (iLvl) Sync:** It's useless to use an expensive currency if the item base doesn't support the desired modifier. Save your *Greater* and *Perfect* orbs exclusively for the endgame, applying them only to *Exceptional Bases* (like *Polish Bracers* iLvl 80+). For early progression, regular orbs will do the job and save your economy.\n* **Market Opportunities:** Since part of the community still doesn't fully grasp the power of this system, valuable materials (like armor *Ribs*) often remain undervalued in the league economy. Monitor the market and buy them while they are cheap to keep your crafting costs viable.\n* **Build Synergy:** The investment truly shines when your build requires stacking a very specific stat. A great example is the **Gemling Legionnaire** build focused on Accuracy. Using *Perfect Exalted Orbs* to secure Tier 1 flat Accuracy and Attack Speed can turn the *Falcon Dive* skill into a damage machine with absurd multipliers.\n\n## 5\\. Advanced Strategies with Omens and Essences\n\nThe secret to not breaking an expensive item during the process is using **Omens** as safety locks and probability manipulators:\n\n* **The Supreme Reroll:** Combine a *Perfect Chaos Orb* with the **Omen of Abyssal Echoes**. This not only rolls your item guaranteeing only high-level stats, but it also gives you expanded options (six choices) upon revealing at the well, creating the best possible desecrated outcomes.\n* **Surgical Targeting:** Use the **Omen of Sinistral/Dextral Necromancy** to force the desecrated modifier to be an exact Prefix or Suffix, ensuring it occupies the right slot on your base.\n* **Mark of the Abyss:** The **Essence of the Abyss** serves as the perfect setup. It adds a Mark of the Abyss, guaranteeing that your next desecrated modifier will be pulled from a much higher tier.\n* **Isolation and Safety:** If the reveal at the Well is terrible, don't despair. The **Omen of Light** guarantees that your next *Annulment Orb* will remove **exclusively** the desecrated modifier, preserving the perfect stats you had already crafted.\n\n## 6\\. Practical Case Study: Mirror-Tier Gloves\n\nTo understand how everything connects in practice, even with the affix manipulation limitations of recent versions:\n\n1. Get an *Exceptional* base with sockets (e.g., *Polish Bracers* iLvl 80+).\n2. Use a **Corrupted Essence of Horror** to guarantee 100% increased effect of socketed items. (Remember to use the *Omen of Crystallization* if you need to protect an existing affix on the base).\n3. Place *Cat Talismans* in the sockets (8% Attack Speed turns into 16% each).\n4. Use **Perfect Exalted Orbs** to fill the remaining affixes. Since the currency guarantees high-level stats (iLvl 50+), you isolate the game's modifier pool, greatly increasing the odds of deterministically hitting a natural Tier 1 Attack Speed.\n5. Finish at the Well of Souls with an **Ancient Abyssal Bone**, aiming for the exclusive *Skill Speed* or *Amanamu* modifier.\n\n## 7\\. Essential Tools: PoEDB and Craft of Exile\n\nNo master clicks on an item in the dark. Utilizing external tools is what separates a casual player from a market billionaire:\n\n* **[PoEDB](https://poe2db.tw/):** The data Bible. Use it to check the item levels (iLvl) required for that T1 mod you want, and study the pool of exclusive boss modifiers before spending your currency.\n* **[Craft of Exile 2](https://www.google.com/search?q=https://p2.craftofexile.com/):** The ultimate laboratory. Simulate your chances, test interactions between Omens and Perfect currencies, and calculate the average cost to obtain your dream item without risking your actual in-game economy.\n\n## Conclusion\n\nAbyss Crafting and the use of high-tier currencies represent the perfect balance of intelligence, planning, and reward. By mastering the use of Bones, the iLvl restrictions of Perfect currencies, the surgical control of Omens, and simulation tools, you aren't just playing with luck—you guarantee that every click is a solid step toward the top of the ladder.\n\n*Which Exceptional base are you planning to desecrate first this league?"
+            }
+          ],
+          "markDefs": [],
+          "style": "normal"
+        }
+      ]
+    }
+  ]
+}

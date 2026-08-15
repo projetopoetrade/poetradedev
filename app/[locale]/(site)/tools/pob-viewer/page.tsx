@@ -23,12 +23,17 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
   const isPt = locale === 'pt-br'
   const canonical = buildCanonical('/tools/pob-viewer', locale)
 
+  // Título casado com a busca real: o tráfego desta página vem de "path of
+  // building online" (1.8k impr/mês), "pob online" (1.6k), "pob web" e
+  // "path of building web" — nenhum desses termos existia no título antigo,
+  // que rendia ~1-2% de CTR na posição 7-8. "pob viewer", a única query que o
+  // título respondia literalmente, convertia a 25%.
   const title = isPt
-    ? 'Visualizador de Build PoE — Importar Path of Building | Path of Trade'
-    : 'PoE Build Viewer — Import Path of Building | Path of Trade'
+    ? 'Path of Building Online — PoB Viewer no Navegador | Path of Trade'
+    : 'Path of Building Online — PoB Viewer in Your Browser | Path of Trade'
   const description = isPt
-    ? 'Cole seu código Path of Building para visualizar sua build de PoE: stats, equipamentos, gems e destaques da árvore passiva.'
-    : 'Paste your Path of Building code to visualize your PoE build: stats, equipment, gems and passive tree highlights.'
+    ? 'Abra o Path of Building online — sem instalar nada. Cole seu código PoB e veja DPS, equipamentos, gemas e a árvore de passivas direto no navegador.'
+    : 'Open Path of Building online — no install needed. Paste your PoB code to view DPS, gear, gems and the passive tree right in your web browser.'
 
   return {
     title,
@@ -63,10 +68,11 @@ export default async function PobViewerPage(props: PageProps) {
   const webAppSchema = {
     "@context": "https://schema.org",
     "@type": "WebApplication",
-    name: isPt ? "Visualizador de Build PoE" : "PoE Build Viewer",
+    name: isPt ? "Path of Building Online — PoB Viewer" : "Path of Building Online — PoB Viewer",
+    alternateName: ["PoB Online", "Path of Building Web", "PoB Viewer"],
     description: isPt
-      ? "Cole seu código Path of Building para visualizar sua build"
-      : "Paste your Path of Building code to visualize your PoE build",
+      ? "Abra o Path of Building online no navegador: cole seu código PoB e veja DPS, equipamentos, gemas e a árvore de passivas."
+      : "Open Path of Building online in your browser: paste your PoB code to view DPS, gear, gems and the passive tree.",
     url: `${baseUrl}/tools/pob-viewer`,
     applicationCategory: "GameApplication",
     operatingSystem: "All",
@@ -104,8 +110,8 @@ export default async function PobViewerPage(props: PageProps) {
         <div className="mt-20 max-w-4xl mx-auto prose prose-invert prose-slate">
           {isPt ? (
             <>
-              <h2 className="text-3xl font-bold text-foreground">Como usar o Visualizador de Build (PoB Viewer) online no Path of Exile?</h2>
-              <p className="text-muted-foreground">O <strong>PoB Viewer</strong> é a ferramenta essencial e definitiva para inspecionar, compartilhar e analisar builds de Path of Exile (PoE) diretamente no seu navegador, sem precisar instalar o software de desktop. Basta importar o link gerado pelo seu Path of Building e pronto: você tem acesso imeditato às estatísticas exatas de DPS (Damage Per Second), HP, equipamentos raros e únicos da build, setups de joias e à árvore de passivas ativadas.</p>
+              <h2 className="text-3xl font-bold text-foreground">Como usar o Path of Building Online (PoB Viewer no navegador)</h2>
+              <p className="text-muted-foreground">O <strong>Path of Building online</strong> — ou <strong>PoB Viewer</strong> — é a ferramenta essencial e definitiva para inspecionar, compartilhar e analisar builds de Path of Exile (PoE) diretamente no seu navegador, sem precisar instalar o software de desktop. Basta importar o link gerado pelo seu Path of Building e pronto: você tem acesso imediato às estatísticas exatas de DPS (Damage Per Second), HP, equipamentos raros e únicos da build, setups de joias e à árvore de passivas ativadas.</p>
               
               <h3 className="text-2xl font-bold text-foreground mt-8">Por que o PoB Import é Essencial?</h3>
               <p className="text-muted-foreground">Avaliar os gargalos do seu personagem através de um visualizador é o que separa jogadores estagnados daqueles que limpam todo o conteúdo de pináculo (T17s, Uber Bosses, Delve profundo). Identificar uma resistência faltante, descobrir qual gema maximiza o benefício, ou qual item base a build recomenda, permite que o jogador faça as correções exatas antes de ir a campo.</p>
@@ -116,8 +122,8 @@ export default async function PobViewerPage(props: PageProps) {
             </>
           ) : (
             <>
-              <h2 className="text-3xl font-bold text-foreground">How to use the Path of Building (PoB) Viewer</h2>
-              <p className="text-muted-foreground">The <strong>PoB Viewer</strong> is the easiest and most effective way to inspect, share, and analyze Path of Exile (PoE) builds straight from your browser—no desktop client installation required. By importing your Path of Building pastebin link, you gain immediate, comprehensive access to critical stats like DPS, defensive layers, passive skill trees, and gem setups.</p>
+              <h2 className="text-3xl font-bold text-foreground">How to Use Path of Building Online (PoB Viewer in Your Browser)</h2>
+              <p className="text-muted-foreground">The <strong>Path of Building online</strong> viewer — also known as the <strong>PoB Viewer</strong> or the PoB web version — is the easiest and most effective way to inspect, share, and analyze Path of Exile (PoE) builds straight from your browser, with no desktop client installation required. By importing your Path of Building pastebin link, you gain immediate, comprehensive access to critical stats like DPS, defensive layers, passive skill trees, and gem setups.</p>
               
               <h3 className="text-2xl font-bold text-foreground mt-8">Why Use a Build Visualizer?</h3>
               <p className="text-muted-foreground">Understanding the hidden bottlenecks of a character is what separates average players from those conquering top-tier endgame content like T17 maps or Uber Bosses. Utilizing an online visualizer highlights missing resistances, suboptimal gem links, and mandatory uncorrupted items, letting you formulate an exact action plan for your progression.</p>
