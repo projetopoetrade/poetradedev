@@ -6,8 +6,10 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import type { Product, Build } from "@/lib/interface";
 import { isPermanentLeague } from "@/lib/leagues";
-import { unstable_cache } from "next/cache";
+import { unstable_cache, revalidateTag } from "next/cache";
 import { DB_TAGS, DB_CACHE_TTL } from "@/lib/cache-tags";
+import { bustDbCache } from "@/lib/revalidate-db";
+import { isAdmin } from "@/utils/supabase/admin";
 
 export const signUpAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
@@ -221,6 +223,38 @@ export const newProduct = async (product: Product) => {
   if (error) {
     throw new Error(error.message);
   }
+
+  bustDbCache(DB_TAGS.products);
+};
+
+/**
+ * Botão "Limpar Cache" do painel admin.
+ *
+ * Era um `fetch('/api/revalidate')` com `Bearer ${NEXT_PUBLIC_REVALIDATE_SECRET
+ * || 'your-secret-key'}` — ou seja, o segredo ia no bundle do browser e, como a
+ * variável nunca foi definida, o valor real era a string default que a própria
+ * rota aceitava. Qualquer visitante podia invalidar o cache do site em loop, o
+ * que hoje significa marcar as ~670 páginas de produto como stale de uma vez e
+ * queimar a cota de ISR Write.
+ *
+ * Como server action não existe segredo para vazar: a sessão é verificada aqui.
+ */
+export const revalidateCacheAction = async (
+  scope: "post" | "product" | "author" | "category",
+): Promise<{ ok: boolean; error?: string }> => {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) return { ok: false, error: "Unauthorized" };
+  if (!isAdmin(user.id)) return { ok: false, error: "Forbidden" };
+
+  revalidateTag(scope);
+
+  // "Produtos" no painel significa a vitrine inteira, não só os documentos do
+  // Sanity: preço e estoque vivem no Supabase, atrás de outra tag.
+  if (scope === "product") bustDbCache(DB_TAGS.products);
+
+  return { ok: true };
 };
 
 const getLeaguesUncached = async (gameVersion: 'path-of-exile-1' | 'path-of-exile-2') => {

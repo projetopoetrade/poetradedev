@@ -14,11 +14,23 @@ const bustSitemapIfNeeded = (type: string) => {
 
 export async function POST(req: NextRequest) {
   try {
-    // Check if it's an internal request with authorization header
+    // Caminho interno (scripts de catálogo, jobs fora do Next). Sem
+    // `REVALIDATE_SECRET` configurado no ambiente, ele simplesmente não existe.
+    //
+    // Antes o fallback era a string literal "your-secret-key" — e o botão do
+    // painel admin mandava exatamente esse valor a partir do browser, via
+    // `NEXT_PUBLIC_REVALIDATE_SECRET` (nunca definida). Na prática o endpoint
+    // era público: dava para invalidar o site em loop e queimar a cota de ISR
+    // Write. O painel agora usa server action; aqui o default morreu.
     const authHeader = req.headers.get("authorization");
-    const internalSecret = process.env.REVALIDATE_SECRET || "your-secret-key";
+    const internalSecret = process.env.REVALIDATE_SECRET;
 
-    if (authHeader === `Bearer ${internalSecret}`) {
+    if (authHeader?.startsWith("Bearer ") && !internalSecret) {
+      console.error("[revalidate] REVALIDATE_SECRET não configurado; caminho interno desabilitado");
+      return new Response("Internal revalidation is not configured", { status: 503 });
+    }
+
+    if (internalSecret && authHeader === `Bearer ${internalSecret}`) {
       // Internal request - parse JSON directly
       const body = await req.json();
 

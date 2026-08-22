@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { toast } from "sonner";
+import { revalidateCacheAction } from "@/app/actions";
 
 interface RevalidateCacheButtonProps {
   type?: 'post' | 'product' | 'author' | 'category';
@@ -20,23 +21,17 @@ export default function RevalidateCacheButton({
   const handleRevalidate = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/revalidate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_REVALIDATE_SECRET || 'your-secret-key'}`,
-        },
-        body: JSON.stringify({ _type: type }),
-      });
+      // Server action, não `fetch` com Bearer: o segredo que ia aqui era
+      // `NEXT_PUBLIC_*` (logo, público) e caía num default que a rota aceitava.
+      // A sessão do admin é verificada no servidor — ver `revalidateCacheAction`.
+      const result = await revalidateCacheAction(type);
 
-      if (response.ok) {
-        const data = await response.json();
+      if (result.ok) {
         toast.success(`Cache cleared successfully for ${type}!`, {
-          description: `Revalidated at ${new Date(data.now).toLocaleTimeString()}`
+          description: `Revalidated at ${new Date().toLocaleTimeString()}`
         });
       } else {
-        const errorText = await response.text();
-        throw new Error(errorText || 'Failed to revalidate');
+        throw new Error(result.error || 'Failed to revalidate');
       }
     } catch (error) {
       console.error('Error revalidating cache:', error);
