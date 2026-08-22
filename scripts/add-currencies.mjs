@@ -20,6 +20,7 @@ import sharp from "sharp";
 import dotenv from "dotenv";
 import path from "path";
 import fs from "fs/promises";
+import { revalidateSite } from "./lib/revalidate-site.mjs";
 
 dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 
@@ -274,6 +275,9 @@ async function main() {
 
   const { error: insErr } = await supabase.from("products").insert(rows);
   if (insErr) throw insErr;
+
+  // Produto novo muda a listagem e o sitemap, não só a página dele.
+  await revalidateSite(["db-products"]);
 
   console.log(`\n${rows.length} produtos criados | ${icons} ícones baixados`);
   console.log(`Agora rode o reprice para preencher preço, price_divine e min_quantity.`);

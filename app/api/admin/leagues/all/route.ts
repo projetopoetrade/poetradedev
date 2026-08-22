@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { createAdminClient, isAdmin } from "@/utils/supabase/admin";
+import { bustDbCache } from "@/lib/revalidate-db";
+import { DB_TAGS } from "@/lib/cache-tags";
 
 // GET - Buscar todas as ligas (sem filtro de gameVersion)
 export async function GET() {
@@ -89,6 +91,11 @@ export async function PATCH(req: NextRequest) {
       console.error("Error updating league:", error);
       return NextResponse.json({ error: "Failed to update league" }, { status: 500 });
     }
+
+    // `divine_usd` e `price_markup` são a âncora do reprice, mas a linha da liga
+    // também é lida direto por `getLeagues` — sem isto o painel mostraria o
+    // valor novo e o site continuaria servindo o antigo até o TTL vencer.
+    bustDbCache(DB_TAGS.leagues);
 
     return NextResponse.json(data);
   } catch (error) {

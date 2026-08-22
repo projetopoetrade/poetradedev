@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
 import https from 'https';
+import { revalidateSite } from './lib/revalidate-site.mjs';
 
 // Load environment variables
 dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
@@ -152,6 +153,10 @@ async function runImageDownloader() {
         }
 
         console.log("==================================================");
+        // `imgUrl` aparece na página de produto e na listagem: sem invalidar,
+        // o ícone novo só entraria quando o TTL de 6 h vencesse.
+        if (updatedCount > 0) await revalidateSite(["db-products"]);
+
         console.log(`🏁 Concluído! Atualizados: ${updatedCount} | Ignorados: ${skippedCount}`);
         console.log("==================================================");
 
