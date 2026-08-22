@@ -8,7 +8,10 @@ import BuildCard from "@/components/Builds/BuildCard";
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 
-export const revalidate = 7200;
+// ISR: o conteúdo vem do Sanity, e `sanityFetch` marca toda query com o `_type`
+// do documento — publicar no Studio dispara o webhook em `/api/revalidate` e a
+// página se refaz na hora. Este TTL é só a rede de segurança se o webhook cair.
+export const revalidate = 86400;
 
 interface Props {
   params: Promise<{ locale: string; leagueSlug: string }>;

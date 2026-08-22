@@ -25,7 +25,7 @@ export interface PobItemRawData {
 // PoB snapshot items change only when the engine is redeployed, but they
 // do GC under the TTL cron — 1h revalidate is cheap enough that a
 // rendered blog post recovers quickly if the ID gets recycled.
-const REVALIDATE_SECONDS = 60 * 60;
+const REVALIDATE_SECONDS = 6 * 60 * 60; // 6h — dado de patch, muda na virada de liga
 const REQUEST_TIMEOUT_MS = 3000;
 
 export async function fetchPobItemRaw(id: string): Promise<PobItemRawData | null> {

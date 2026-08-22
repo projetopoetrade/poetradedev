@@ -8,7 +8,10 @@ import { buildCanonical, buildAbsoluteUrl } from "@/lib/utils";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { Link } from "@/i18n/navigation";
 
-export const revalidate = 300;
+// ISR: o conteúdo vem do Sanity, e `sanityFetch` marca toda query com o `_type`
+// do documento — publicar no Studio dispara o webhook em `/api/revalidate` e a
+// página se refaz na hora. Este TTL é só a rede de segurança se o webhook cair.
+export const revalidate = 86400;
 
 interface PageProps {
   params: Promise<{

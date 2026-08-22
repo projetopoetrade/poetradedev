@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { createAdminClient, isAdmin } from "@/utils/supabase/admin";
+import { bustDbCache } from "@/lib/revalidate-db";
+import { DB_TAGS } from "@/lib/cache-tags";
 import { getCxDivineValues } from "@/lib/pricing/cx-exchange";
 import { getNinjaDivineValues } from "@/lib/pricing/ninja-exchange";
 
@@ -179,6 +181,9 @@ export async function POST(req: NextRequest) {
         if (failed?.error) throw failed.error;
       }
     }
+
+    // `dryRun` não escreve nada — buscar o cache aí só geraria ISR Writes à toa.
+    if (!dryRun) bustDbCache(DB_TAGS.products);
 
     return NextResponse.json({
       success: true,

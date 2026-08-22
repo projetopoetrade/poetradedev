@@ -11,7 +11,10 @@ import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { notFound, redirect } from "next/navigation";
 
 // ISR: revalidate cache every 5 minutes
-export const revalidate = 300;
+// ISR: preço/estoque vêm do Supabase, invalidados por tag (`db-products`) pelas
+// rotas em `/api/admin/products/*`. 6 h é o piso caso alguém escreva no banco
+// por fora do Next — ver DB_CACHE_TTL em lib/cache-tags.ts.
+export const revalidate = 21600;
 
 // Sem isto o segmento [gameVersion] não tem params conhecidos e a rota fica
 // dinâmica apesar do `revalidate` acima. São só dois valores — mesma lista que

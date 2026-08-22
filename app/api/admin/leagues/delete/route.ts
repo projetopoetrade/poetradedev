@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { createAdminClient, isAdmin } from "@/utils/supabase/admin";
+import { bustDbCache } from "@/lib/revalidate-db";
+import { DB_TAGS } from "@/lib/cache-tags";
 
 export async function DELETE(req: Request) {
   try {
@@ -43,6 +45,9 @@ export async function DELETE(req: Request) {
         { status: 500 }
       );
     }
+
+    // Produtos também: a liga sai da listagem junto com o catálogo dela.
+    bustDbCache(DB_TAGS.leagues, DB_TAGS.products);
 
     return NextResponse.json({ success: true });
   } catch (error) {

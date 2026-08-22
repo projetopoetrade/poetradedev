@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { createAdminClient, isAdmin } from "@/utils/supabase/admin";
+import { bustDbCache } from "@/lib/revalidate-db";
+import { DB_TAGS } from "@/lib/cache-tags";
 
 /**
  * Liga/desliga `is_listed` e `in_stock` para o catálogo inteiro de uma liga.
@@ -60,6 +62,8 @@ export async function POST(req: Request) {
 
     const { data, error } = await query.select("id");
     if (error) throw error;
+
+    bustDbCache(DB_TAGS.products);
 
     return NextResponse.json({
       success: true,

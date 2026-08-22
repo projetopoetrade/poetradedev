@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { createAdminClient, isAdmin } from "@/utils/supabase/admin";
+import { bustDbCache } from "@/lib/revalidate-db";
+import { DB_TAGS } from "@/lib/cache-tags";
 
 export async function PATCH(req: Request) {
   try {
@@ -108,6 +110,8 @@ export async function PATCH(req: Request) {
         { status: 500 }
       );
     }
+
+    bustDbCache(DB_TAGS.products);
 
     return NextResponse.json(data);
   } catch (error) {

@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { createAdminClient, isAdmin } from "@/utils/supabase/admin";
+import { bustDbCache } from "@/lib/revalidate-db";
+import { DB_TAGS } from "@/lib/cache-tags";
 
 interface League {
   name: string;
@@ -79,6 +81,8 @@ export async function POST(req: Request) {
         { status: 500 }
       );
     }
+
+    bustDbCache(DB_TAGS.leagues);
 
     return NextResponse.json(data[0]);
   } catch (error) {

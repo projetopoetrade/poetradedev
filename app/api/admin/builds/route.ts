@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { createAdminClient, isAdmin } from "@/utils/supabase/admin";
+import { bustDbCache } from "@/lib/revalidate-db";
+import { DB_TAGS } from "@/lib/cache-tags";
 import crypto from "crypto";
 
 const BASE62_CHARS =
@@ -131,6 +133,8 @@ export async function POST(req: NextRequest) {
       }
       return NextResponse.json({ error: 'Failed to create build' }, { status: 500 });
     }
+
+    bustDbCache(DB_TAGS.builds);
 
     return NextResponse.json(data, { status: 201 });
   } catch (error) {

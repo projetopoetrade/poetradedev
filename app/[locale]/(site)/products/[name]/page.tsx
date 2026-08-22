@@ -16,7 +16,15 @@ import { createAdminClient } from "@/utils/supabase/admin";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 
 // ISR: revalidate cache every 5 minutes
-export const revalidate = 300;
+// Esta rota praticamente só emite o 308 para `/games/<versão>/products/<url_slug>`,
+// e o destino depende de `url_slug` — que é estável. Não há preço aqui para
+// envelhecer, daí 24 h em vez das 6 h da página canônica.
+//
+// Na prática o efetivo é 6 h mesmo assim: `getProductsWithParams` é cacheada com
+// `DB_CACHE_TTL.products` (21600) e o `revalidate` de uma rota é o MENOR entre o
+// dela e o dos caches internos. Fica declarado 24 h para quando essa leitura
+// deixar de compartilhar o TTL de preço.
+export const revalidate = 86400;
 
 export async function generateStaticParams() {
   try {
@@ -53,28 +61,21 @@ const formatPrice = (price: number): string => {
 
 export const generateMetadata = async (props: {
   params: Promise<{ name: string; locale: string }>;
-  searchParams: Promise<{
-    league?: string;
-    difficulty?: string;
-    gameVersion?: "path-of-exile-1" | "path-of-exile-2";
-    locale?: string;
-  }>;
 }): Promise<Metadata> => {
   const params = await props.params;
-  const searchParams = await props.searchParams;
 
   // Nome legível (fallback) — o nome real do produto é resolvido via slug abaixo
   const decodedName = await parseProductSlug(params.name);
   const t = await getTranslations({ locale: params.locale, namespace: "SEO" });
 
-  // 1. URLs Canônicas e Alternativas (CLEAN URL ONLY for PoE 1; Param for PoE 2)
-  // Determine Game Version (Default: POE 1)
-  const targetGameVersion = searchParams.gameVersion || "path-of-exile-1";
+  // A versão do jogo sai do próprio produto, não mais de `?gameVersion=`. Links
+  // legados com essa query já são redirecionados no edge por `next.config.ts`
+  // antes de chegarem aqui, e lê-la tornava a rota dinâmica.
+  const targetGameVersion: "path-of-exile-1" | "path-of-exile-2" = "path-of-exile-1";
 
-  // Game version label for description
-  const gameVersionLabel = targetGameVersion === 'path-of-exile-2'
-    ? 'PoE 2'
-    : 'PoE 1';
+  // Rota PoE 1 por definição: `?gameVersion=path-of-exile-2` é redirecionado no
+  // edge pelo next.config antes de chegar aqui.
+  const gameVersionLabel = 'PoE 1';
 
   // Resolve o produto por slug (canônico); cai para nome (compat). Usa o nome
   // real do produto no título/canonical quando encontrado.
@@ -138,58 +139,42 @@ export const generateMetadata = async (props: {
     },
     keywords: generateKeywords({
       locale: params.locale,
-      gameVersion: searchParams.gameVersion,
-      league: searchParams.league,
-      difficulty: searchParams.difficulty as 'softcore' | 'hardcore',
+      gameVersion: productFn?.gameVersion,
+      league: productFn?.league,
+      difficulty: productFn?.difficulty as 'softcore' | 'hardcore' | undefined,
       productName: productName,
       customKeywords: ['buy', 'cheap', 'fast delivery', 'secure trading']
     })
   };
 };
 
+// Sem `searchParams`. Esta rota é, na prática, um redirecionador 301 para a URL
+// canônica `/games/<versão>/products/<url_slug>` — e o redirect sempre descartou
+// a query, então `?league=`/`?difficulty=` nunca chegavam a lugar nenhum. Ler
+// esses params só servia para tornar a rota dinâmica.
 export default async function ProductDetailPage(props: {
   params: Promise<{ name: string, locale: string }>;
-  searchParams: Promise<{
-    league?: string;
-    difficulty?: string;
-    gameVersion?: "path-of-exile-1" | "path-of-exile-2";
-    locale?: string;
-  }>;
 }) {
-  const searchParams = await props.searchParams;
   const params = await props.params;
 
   try {
     const decodedName = await parseProductSlug(params.name);
 
-    // ------------------------------------------------------------------
-    // SMART LEAGUE DEFAULT LOGIC
-    // ------------------------------------------------------------------
-    // Determine Game Version (Default: POE 1)
-    const targetGameVersion = searchParams.gameVersion || "path-of-exile-1";
+    const targetGameVersion: "path-of-exile-1" | "path-of-exile-2" = "path-of-exile-1";
 
-    // Determine League
-    // 1. Use param if exists
-    // 2. Fetch active leagues and use first one (Primary Default)
-    // 3. Last fallback: undefined (will fetch any)
-    let targetLeague = searchParams.league;
+    // Liga smart-default: prefere a liga temp atual (Standard / Hardcore / SSF /
+    // Ruthless são puladas), caindo para a primeira liga ativa registrada. Só
+    // importa para desambiguar qual linha responde quando o produto não tem
+    // `url_slug` e a página é renderizada de verdade em vez de redirecionar.
+    let targetLeague: string | undefined;
     let activeLeagues: any[] = [];
 
-    if (!targetLeague) {
-      try {
-        // Smart default: prefer the current temp league (Standard / Hardcore /
-        // SSF / Ruthless variants are skipped). Falls back to first active
-        // league only if no temp league is registered.
-        const tempLeague = await getCurrentTempLeague(targetGameVersion);
-        activeLeagues = await getLeagues(targetGameVersion);
-        targetLeague = tempLeague ?? activeLeagues?.[0]?.name;
-      } catch (e) {
-        console.warn("Failed to fetch default leagues", e);
-      }
-    } else {
-      // If league provided, we still might want active leagues list for the dropdown later
-      // Optimally we fetch it anyway
+    try {
+      const tempLeague = await getCurrentTempLeague(targetGameVersion);
       activeLeagues = await getLeagues(targetGameVersion);
+      targetLeague = tempLeague ?? activeLeagues?.[0]?.name;
+    } catch (e) {
+      console.warn("Failed to fetch default leagues", e);
     }
 
     // O slug do produto é o identificador canônico (URL/sitemap). Busca por slug
@@ -199,7 +184,6 @@ export default async function ProductDetailPage(props: {
       (await getProductsWithParams({
         slug: params.name,
         league: targetLeague,
-        difficulty: searchParams.difficulty,
         gameVersion: targetGameVersion,
       }))?.[0] ??
       (await getProductsWithParams({
@@ -212,7 +196,6 @@ export default async function ProductDetailPage(props: {
       const byName = await getProductsWithParams({
         search: decodedName,
         league: targetLeague,
-        difficulty: searchParams.difficulty,
         gameVersion: targetGameVersion,
       });
       productFn =
@@ -253,17 +236,15 @@ export default async function ProductDetailPage(props: {
 
     // Current selected values (for UI state)
     const currentLeague = targetLeague || product.league;
-    const currentDifficulty = searchParams.difficulty || product.difficulty;
+    const currentDifficulty = product.difficulty;
 
     // priceValidUntil: 30 days from build time
     const priceValidUntil = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
       .toISOString()
       .split('T')[0];
 
-    // Game version label for description
-    const gameVersionLabel = targetGameVersion === 'path-of-exile-2'
-      ? 'Path of Exile 2'
-      : 'Path of Exile 1';
+    // Ver nota em generateMetadata: esta rota é PoE 1 por definição.
+    const gameVersionLabel = 'Path of Exile 1';
 
     const localeKey = params.locale === 'pt-BR' || params.locale === 'pt-br' ? 'pt_br' : 'en';
 
@@ -319,8 +300,8 @@ export default async function ProductDetailPage(props: {
       },
       {
         question: params.locale === 'en'
-          ? `Is it possible to buy ${product.name} for other leagues or ${targetGameVersion === 'path-of-exile-1' ? 'PoE 2' : 'PoE 1'}?`
-          : `É possível comprar ${product.name} para outras ligas ou ${targetGameVersion === 'path-of-exile-1' ? 'PoE 2' : 'PoE 1'}?`,
+          ? `Is it possible to buy ${product.name} for other leagues or PoE 2?`
+          : `É possível comprar ${product.name} para outras ligas ou PoE 2?`,
         answer: params.locale === 'en'
           ? `Yes, you can use the dropdown filters on this page to check the availability and current price of ${product.name} across different game versions and active leagues.`
           : `Sim, você pode usar os filtros nesta página para verificar a disponibilidade e o preço atual de ${product.name} em diferentes versões do jogo e ligas ativas.`

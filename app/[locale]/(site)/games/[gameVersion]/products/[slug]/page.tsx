@@ -12,9 +12,14 @@ import { buildAbsoluteUrl, generateKeywords, buildBreadcrumbSchema, getOgLocale 
 import { createAdminClient } from "@/utils/supabase/admin";
 import { createPublicClient } from "@/utils/supabase/public";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
+import { ProductVariantProvider } from "@/lib/contexts/product-variant-context";
+import type { Product } from "@/lib/interface";
 
 // ISR: revalidate cache every 5 minutes
-export const revalidate = 300;
+// ISR: preço/estoque vêm do Supabase, invalidados por tag (`db-products`) pelas
+// rotas em `/api/admin/products/*`. 6 h é o piso caso alguém escreva no banco
+// por fora do Next — ver DB_CACHE_TTL em lib/cache-tags.ts.
+export const revalidate = 21600;
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net";
 
@@ -136,14 +141,19 @@ export const generateMetadata = async (props: {
   };
 };
 
+// Sem `searchParams`. Lê-los aqui tornava a rota dinâmica: apesar do
+// `generateStaticParams` e do `revalidate` acima, esta página não aparecia no
+// prerender-manifest e servia `Cache-Control: private, no-store` em toda visita
+// — cada bot e cada usuário custavam uma invocação de função e uma rodada
+// completa de Supabase + Sanity. E o filtro que os alimentava nem funcionava: o
+// dropdown navegava para `/products/<nome>?league=...`, que faz
+// `permanentRedirect` para cá descartando a query.
+//
+// Agora o servidor entrega a variante canônica (liga temp atual) mais todas as
+// variantes de liga ativa, e o `ProductVariantProvider` troca no cliente.
 export default async function ProductDetailPage(props: {
   params: Promise<{ slug: string; locale: string; gameVersion: string }>;
-  searchParams: Promise<{
-    league?: string;
-    difficulty?: string;
-  }>;
 }) {
-  const searchParams = await props.searchParams;
   const params = await props.params;
 
   try {
@@ -152,61 +162,68 @@ export default async function ProductDetailPage(props: {
     // ------------------------------------------------------------------
     // SMART LEAGUE DEFAULT LOGIC
     // ------------------------------------------------------------------
-    // 1. Usa o param `league` se existir.
-    // 2. Senão, prefere a liga temp atual (getCurrentTempLeague).
-    // 3. Último fallback: primeira liga ativa registrada.
-    let targetLeague = searchParams.league;
+    // 1. Prefere a liga temp atual (getCurrentTempLeague).
+    // 2. Último fallback: primeira liga ativa registrada.
+    let targetLeague: string | undefined;
     let activeLeagues: any[] = [];
 
-    if (!targetLeague) {
-      try {
-        const tempLeague = await getCurrentTempLeague(targetGameVersion);
-        activeLeagues = await getLeagues(targetGameVersion);
-        targetLeague = tempLeague ?? activeLeagues?.[0]?.name;
-      } catch (e) {
-        console.warn("Failed to fetch default leagues", e);
-      }
-    } else {
+    try {
+      const tempLeague = await getCurrentTempLeague(targetGameVersion);
       activeLeagues = await getLeagues(targetGameVersion);
+      targetLeague = tempLeague ?? activeLeagues?.[0]?.name;
+    } catch (e) {
+      console.warn("Failed to fetch default leagues", e);
     }
 
-    // Resolve o produto pelo url_slug (identificador canônico curto, sem liga).
-    // O mesmo url_slug existe em várias ligas; desambigua pela liga smart-default,
-    // caindo para qualquer liga se a smart-default não tiver o produto.
-    let productFn =
-      (await getProductsWithParams({
-        urlSlug: params.slug,
-        league: targetLeague,
-        difficulty: searchParams.difficulty,
-        gameVersion: targetGameVersion,
-      }))?.[0] ??
-      (await getProductsWithParams({
-        urlSlug: params.slug,
-        gameVersion: targetGameVersion,
-      }))?.[0];
+    // Uma consulta só, sem filtro de liga: devolve todas as linhas deste
+    // url_slug. Antes eram duas idas ao banco (liga smart-default + fallback);
+    // agora a desambiguação acontece em memória e as demais linhas viram as
+    // variantes que o dropdown do cliente usa.
+    // Sem filtro de gameVersion: as linhas das duas versões vêm juntas, então o
+    // select de versão do jogo pode oferecer só as que existem de verdade em vez
+    // de mandar o usuário para um 404.
+    const allRows = await getProductsWithParams({ urlSlug: params.slug });
+    const rows = (allRows ?? []).filter((r) => r.gameVersion === targetGameVersion);
 
-    if (!productFn) {
+    if (!rows.length) {
       notFound();
     }
 
-    const product = productFn;
+    // Só ligas ativas viram opção. As inativas (ex.: uma liga encerrada cujas
+    // linhas continuam no banco) seguem acessíveis por URL direta, mas não
+    // devem aparecer num select como se dessem para comprar.
+    const activeLeagueNames = new Set<string>(
+      (activeLeagues ?? []).map((l: any) => l?.name).filter(Boolean),
+    );
+    const variants: Product[] = rows.filter((r) => activeLeagueNames.has(r.league));
+
+    const product =
+      variants.find((r) => r.league === targetLeague) ?? variants[0] ?? rows[0];
     // Sanity e histórico de preço usam o slug ORIGINAL (product.slug), que embute
     // a liga e é a chave compartilhada — NUNCA o url_slug.
     const productSanity = await getProductBySlug(product.slug);
 
-    // Dropdown options
-    const leagueOptions = activeLeagues.length > 0
-      ? activeLeagues.map((l: any) => l.name)
+    // Dropdown options — derivadas das variantes que existem de verdade, não de
+    // uma lista fixa. O catálogo atual só tem linhas softcore; oferecer
+    // "hardcore" era um select que não mudava nada.
+    const leagueOptions = variants.length > 0
+      ? Array.from(new Set(variants.map((v) => v.league)))
       : [product.league];
 
-    const difficultyOptions = ["softcore", "hardcore"];
-    const gameVersionOptions = [
-      { value: "path-of-exile-1", label: "Path of Exile 1" },
-      { value: "path-of-exile-2", label: "Path of Exile 2" },
-    ];
+    const difficultyOptions = Array.from(
+      new Set(variants.filter((v) => v.league === product.league).map((v) => v.difficulty)),
+    );
+    const GAME_VERSION_LABELS: Record<string, string> = {
+      "path-of-exile-1": "Path of Exile 1",
+      "path-of-exile-2": "Path of Exile 2",
+    };
+    const gameVersionOptions = Array.from(new Set((allRows ?? []).map((r) => r.gameVersion)))
+      .filter((v) => v in GAME_VERSION_LABELS)
+      .sort()
+      .map((v) => ({ value: v, label: GAME_VERSION_LABELS[v] }));
 
-    const currentLeague = targetLeague || product.league;
-    const currentDifficulty = searchParams.difficulty || product.difficulty;
+    const currentLeague = product.league;
+    const currentDifficulty = product.difficulty;
 
     // Itens relacionados para o bloco de links no rodapé. createPublicClient
     // (sem cookies) para não acrescentar mais um motivo de render dinâmico.
@@ -380,6 +397,10 @@ export default async function ProductDetailPage(props: {
           ]}
         />
 
+        {/* Preço, seletor de liga e gráfico de histórico compartilham a mesma
+            seleção. O provider é client component, mas os filhos continuam
+            renderizados no servidor — só a variante escolhida atravessa. */}
+        <ProductVariantProvider variants={variants} initial={product}>
         <div className="max-w-6xl mx-auto rounded-lg overflow-hidden">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
             <div className="sticky top-4 flex flex-col items-center justify-start p-8 md:p-12 gap-4">
@@ -430,6 +451,8 @@ export default async function ProductDetailPage(props: {
               difficultyOptions={difficultyOptions}
               productName={product.name}
               seoTitle={seoTitle}
+              urlSlug={product.url_slug}
+              locale={params.locale}
             />
           </div>
         </div>
@@ -438,6 +461,7 @@ export default async function ProductDetailPage(props: {
         <div className="max-w-6xl mx-auto mt-8">
           <PriceHistoryChart productSlug={product.slug} league={currentLeague} />
         </div>
+        </ProductVariantProvider>
 
         {(productSanity as any)?.body?.[params.locale === 'en' ? 'en' : 'pt_br'] && (
           <div className="max-w-6xl mx-auto mt-8">

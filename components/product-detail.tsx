@@ -13,6 +13,7 @@ import type { Product } from "@/lib/interface";
 import { CurrencyInfo } from "./currency-info";
 import { toast } from "sonner";
 import { useTranslations, useLocale } from "next-intl";
+import { useProductVariant } from "@/lib/contexts/product-variant-context";
 
 interface ProductDetailProps {
   product: Product;
@@ -24,10 +25,13 @@ interface ProductDetailProps {
   difficultyOptions: string[];
   productName: string;
   seoTitle?: string;
+  /** `url_slug` canônico — habilita a troca de versão do jogo no Filters. */
+  urlSlug?: string;
+  locale?: string;
 }
 
 export default function ProductDetail({
-  product,
+  product: initialProduct,
   currentGameVersion,
   currentLeague,
   currentDifficulty,
@@ -36,7 +40,19 @@ export default function ProductDetail({
   difficultyOptions,
   productName,
   seoTitle,
+  urlSlug,
+  locale: localeProp,
 }: ProductDetailProps) {
+  // Variante selecionada no cliente (liga/dificuldade). Fora do provider — a
+  // rota legada `/products/[name]`, para produtos sem `url_slug` — o hook
+  // devolve null e caímos nas props do servidor, que era o comportamento antigo.
+  const variant = useProductVariant();
+  const product = variant?.selected ?? initialProduct;
+  const activeLeague = variant?.league ?? currentLeague;
+  const activeDifficulty = variant?.difficulty ?? currentDifficulty;
+  const activeLeagueOptions = variant?.leagueOptions ?? leagueOptions;
+  const activeDifficultyOptions = variant?.difficultyOptions ?? difficultyOptions;
+
   // Pedido mínimo calibrado para valer ~1 divine (ver migration
   // 20260728020000_add_min_quantity.sql). Um Scroll of Wisdom exige milhares de
   // unidades; um Mirror, uma só.
@@ -153,13 +169,16 @@ export default function ProductDetail({
         {/* Game Version, League and Difficulty Filters */}
         <div className="">
           <Filters
-            productName={productName}
             gameVersionOptions={gameVersionOptions}
-            leagueOptions={leagueOptions}
-            difficultyOptions={difficultyOptions}
+            leagueOptions={activeLeagueOptions}
+            difficultyOptions={activeDifficultyOptions}
             currentGameVersion={currentGameVersion}
-            currentLeague={currentLeague}
-            currentDifficulty={currentDifficulty}
+            currentLeague={activeLeague}
+            currentDifficulty={activeDifficulty}
+            onLeagueChange={variant?.setLeague}
+            onDifficultyChange={variant?.setDifficulty}
+            urlSlug={urlSlug}
+            locale={localeProp ?? locale}
           />
         </div>
 

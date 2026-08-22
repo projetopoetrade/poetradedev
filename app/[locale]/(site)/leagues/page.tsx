@@ -4,7 +4,10 @@ import { getLeagueLandingIndex } from "@/lib/league-landing";
 import { buildBreadcrumbSchema, getOgLocale, generateKeywords } from "@/lib/utils";
 import LeagueCard from "@/components/LeagueLanding/LeagueCard";
 
-export const revalidate = 300;
+// ISR: o conteúdo vem do Sanity, e `sanityFetch` marca toda query com o `_type`
+// do documento — publicar no Studio dispara o webhook em `/api/revalidate` e a
+// página se refaz na hora. Este TTL é só a rede de segurança se o webhook cair.
+export const revalidate = 86400;
 
 const SITE_URL = (
   process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"

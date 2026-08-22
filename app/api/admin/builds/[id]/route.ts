@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { createAdminClient, isAdmin } from "@/utils/supabase/admin";
+import { bustDbCache } from "@/lib/revalidate-db";
+import { DB_TAGS } from "@/lib/cache-tags";
 import { generatePobShortHash } from "@/lib/pob-hash";
 
 // PATCH — editar build existente
@@ -68,6 +70,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       return NextResponse.json({ error: 'Failed to update build' }, { status: 500 });
     }
 
+    bustDbCache(DB_TAGS.builds);
+
     return NextResponse.json(data);
   } catch (error) {
     console.error('[admin/builds PATCH] Unexpected error:', error);
@@ -101,6 +105,8 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
       console.error('[admin/builds DELETE] Error:', error);
       return NextResponse.json({ error: 'Failed to delete build' }, { status: 500 });
     }
+
+    bustDbCache(DB_TAGS.builds);
 
     return NextResponse.json({ success: true });
   } catch (error) {

@@ -2,7 +2,10 @@ import { Metadata } from "next";
 import { getOgLocale } from "@/lib/utils";
 
 // ISR: revalidate cache every 5 minutes (must be in server component)
-export const revalidate = 300;
+// ISR: o conteúdo vem do Sanity, e `sanityFetch` marca toda query com o `_type`
+// do documento — publicar no Studio dispara o webhook em `/api/revalidate` e a
+// página se refaz na hora. Este TTL é só a rede de segurança se o webhook cair.
+export const revalidate = 86400;
 
 export async function generateMetadata(props: {
     params: Promise<{ locale: string }>;

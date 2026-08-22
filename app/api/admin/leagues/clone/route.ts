@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { createAdminClient, isAdmin } from "@/utils/supabase/admin";
+import { bustDbCache } from "@/lib/revalidate-db";
+import { DB_TAGS } from "@/lib/cache-tags";
 
 export async function POST(req: NextRequest) {
     try {
@@ -107,6 +109,8 @@ export async function POST(req: NextRequest) {
                 throw insertError;
             }
         }
+
+        bustDbCache(DB_TAGS.products, DB_TAGS.leagues);
 
         return NextResponse.json({
             success: true,

@@ -13,7 +13,12 @@ import type { LeagueLanding } from "@/types/league-landing";
 // primary path and is near-instant, but during a reveal stream the cost of a
 // stale hero is much higher than the cost of a re-render, so this is the floor
 // if the webhook is ever misconfigured or drops an event.
-export const revalidate = 60;
+//
+// Era 60. Sob trafego constante isso e 1440 regravacoes por dia POR pagina, e
+// as landings de liga foram a maior fonte isolada de ISR Writes fora dos
+// produtos. 300 mantem a rede de seguranca de minutos com 1/5 do custo. Em
+// janela de reveal, baixar de volta para 60 por um deploy e a jogada certa.
+export const revalidate = 300;
 
 const SITE_URL = (
   process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"

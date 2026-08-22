@@ -7,8 +7,10 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { buildCanonical } from "@/lib/utils";
 import type { Metadata } from "next";
 
-// ISR: revalidate cache every 5 minutes
-export const revalidate = 300;
+// Estatica de verdade: esta pagina nao le Sanity nem Supabase, so mensagens
+// do next-intl, que sao resolvidas em build. Com um TTL ela se regravava a
+// cada 5 min (x2 locales) sem que uma linha do conteudo tivesse mudado.
+export const revalidate = false;
 
 export async function generateMetadata(
   props: { params: Promise<{ locale: string }> }

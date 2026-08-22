@@ -23,7 +23,7 @@ export interface CurrencyNamesResult {
   names: string[];
 }
 
-const REVALIDATE_SECONDS = 60 * 60; // 1h
+const REVALIDATE_SECONDS = 6 * 60 * 60; // 6h — dado de patch, muda na virada de liga
 const REQUEST_TIMEOUT_MS = 3000;
 
 /**

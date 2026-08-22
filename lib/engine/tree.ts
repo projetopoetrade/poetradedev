@@ -38,7 +38,7 @@ export interface TreeLayoutPointer {
   imageZoomLevels: number[] | null;
 }
 
-const REVALIDATE_SECONDS = 60 * 60; // 1h — patch changes ~every 3 months
+const REVALIDATE_SECONDS = 6 * 60 * 60; // 6h — dado de patch, muda na virada de liga
 const REQUEST_TIMEOUT_MS = 3000;
 
 export async function fetchTreeLayout(

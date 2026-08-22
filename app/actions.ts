@@ -6,6 +6,8 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import type { Product, Build } from "@/lib/interface";
 import { isPermanentLeague } from "@/lib/leagues";
+import { unstable_cache } from "next/cache";
+import { DB_TAGS, DB_CACHE_TTL } from "@/lib/cache-tags";
 
 export const signUpAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
@@ -156,12 +158,14 @@ export const getProducts = async (): Promise<Product[]> => {
   return data as Product[];
 };
 
-export const getProductsByVersionAndLeague = async (
+const getProductsByVersionAndLeagueUncached = async (
   gameVersion: string,
   league: string,
   difficulty: string
 ): Promise<Product[]> => {
-  const supabase = await createClient();
+  // Client publico (sem cookies): `unstable_cache` nao permite ler cookies
+  // dentro do escopo cacheado, e o dado aqui e publico de qualquer forma.
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from('products')
     .select('*')
@@ -219,7 +223,7 @@ export const newProduct = async (product: Product) => {
   }
 };
 
-export const getLeagues = async (gameVersion: 'path-of-exile-1' | 'path-of-exile-2') => {
+const getLeaguesUncached = async (gameVersion: 'path-of-exile-1' | 'path-of-exile-2') => {
   const supabase = createPublicClient();
   const { data, error } = await supabase
     .from('leagues')
@@ -260,7 +264,7 @@ export const getCurrentTempLeague = async (
   }
 };
 
-export const getAllActiveLeagues = async (): Promise<{ name: string; gameVersion: string }[]> => {
+const getAllActiveLeaguesUncached = async (): Promise<{ name: string; gameVersion: string }[]> => {
   const supabase = createPublicClient();
   const { data, error } = await supabase
     .from('leagues')
@@ -274,7 +278,7 @@ export const getAllActiveLeagues = async (): Promise<{ name: string; gameVersion
   return data || [];
 };
 
-export const getLeagueBySlugFromSupabase = async (
+const getLeagueBySlugFromSupabaseUncached = async (
   leagueSlug: string,
   gameVersion: string
 ): Promise<{ name: string; gameVersion: string } | null> => {
@@ -291,7 +295,7 @@ export const getLeagueBySlugFromSupabase = async (
   return league || null;
 };
 
-export const getProductsWithParams = async (
+const getProductsWithParamsUncached = async (
   params: {
     gameVersion?: string;
     league?: string;
@@ -331,7 +335,7 @@ export const getProductsWithParams = async (
   return data as Product[];
 };
 
-export const getDifficulties = async (gameVersion: 'path-of-exile-1' | 'path-of-exile-2') => {
+const getDifficultiesUncached = async (gameVersion: 'path-of-exile-1' | 'path-of-exile-2') => {
   const supabase = createPublicClient();
   const { data, error } = await supabase
     .from('difficulties')
@@ -348,7 +352,7 @@ export const getDifficulties = async (gameVersion: 'path-of-exile-1' | 'path-of-
 
 // --- Builds ---
 
-export const getBuilds = async (params: {
+const getBuildsUncached = async (params: {
   gameVersion?: string;
   league?: string;
   leagueSlug?: string;
@@ -394,7 +398,7 @@ export const getBuilds = async (params: {
   return { builds: (data as Build[]) || [], total: count || 0 };
 };
 
-export const getDistinctBuildLeagues = async (): Promise<string[]> => {
+const getDistinctBuildLeaguesUncached = async (): Promise<string[]> => {
   // Client publico (sem cookies): ler cookies aqui tornava dinamica toda pagina
   // que chama esta funcao, matando o ISR de /builds. Dado e publico
   // (is_published = true), entao a leitura anonima e a correta.
@@ -409,7 +413,7 @@ export const getDistinctBuildLeagues = async (): Promise<string[]> => {
   return Array.from(new Set(data.map((b) => b.league).filter(Boolean) as string[])).sort();
 };
 
-export const getBuildBySlug = async (slug: string): Promise<Build | null> => {
+const getBuildBySlugUncached = async (slug: string): Promise<Build | null> => {
   // Client publico (sem cookies): ler cookies aqui tornava dinamica toda pagina
   // que chama esta funcao, matando o ISR de /builds. Dado e publico
   // (is_published = true), entao a leitura anonima e a correta.
@@ -441,7 +445,7 @@ export const getBuildsAdmin = async (): Promise<Build[]> => {
   return (data as Build[]) || [];
 };
 
-export const getPublishedBuildSlugs = async (): Promise<string[]> => {
+const getPublishedBuildSlugsUncached = async (): Promise<string[]> => {
   // Uses admin client (no cookies) — safe for generateStaticParams / build-time calls
   const { createAdminClient } = await import('@/utils/supabase/admin');
   const supabase = createAdminClient();
@@ -453,7 +457,7 @@ export const getPublishedBuildSlugs = async (): Promise<string[]> => {
   return (data || []).map((b) => b.slug);
 };
 
-export const getPublishedLeagueSlugsFromBuilds = async (): Promise<string[]> => {
+const getPublishedLeagueSlugsFromBuildsUncached = async (): Promise<string[]> => {
   // Uses admin client — safe for generateStaticParams / build-time calls
   const { createAdminClient } = await import('@/utils/supabase/admin');
   const supabase = createAdminClient();
@@ -473,12 +477,14 @@ export const getPublishedLeagueSlugsFromBuilds = async (): Promise<string[]> => 
   return uniqueSlugs;
 };
 
-export const getRelatedBuilds = async (
+const getRelatedBuildsUncached = async (
   currentSlug: string,
   limit: number = 3,
   options?: { class?: string; ascendancy?: string }
 ): Promise<Build[]> => {
-  const supabase = await createClient();
+  // Client publico (sem cookies): `unstable_cache` nao permite ler cookies
+  // dentro do escopo cacheado, e o dado aqui e publico de qualquer forma.
+  const supabase = createPublicClient();
   let query = supabase
     .from('builds')
     .select('*')
@@ -582,3 +588,129 @@ export const getOrderById = async (id: string): Promise<import('@/types').Order 
   if (error) return null;
   return data as import('@/types').Order;
 };
+
+// ─── Data Cache (Supabase) ────────────────────────────────────────────────────
+//
+// Antes daqui, nenhuma leitura do Supabase era cacheada: `supabase-js` usa fetch
+// sem `next.revalidate`, então o único frescor vinha do `revalidate = 300` de
+// página. Isso significava que cada passada de bot numa página vencida gerava
+// uma regeneração — e uma ISR Write. Com ~2k caminhos (388 produtos × 2 locales
+// + rotas /games), era isso que estourava a cota da Vercel.
+//
+// Agora a invalidação é por evento: as rotas admin em `/api/admin/*` chamam
+// `revalidateTag(DB_TAGS.*)` depois de cada mutação, e o TTL em `DB_CACHE_TTL`
+// é só a rede de segurança para escritas feitas fora do Next.
+//
+// Os wrappers exportados são `async` de propósito: este arquivo é `"use server"`,
+// e o compilador só aceita exportar funções async declaradas — o valor devolvido
+// por `unstable_cache()` é uma call expression e seria rejeitado.
+
+const getProductsByVersionAndLeagueCached = unstable_cache(
+  getProductsByVersionAndLeagueUncached,
+  ["products-by-version-and-league"],
+  { tags: [DB_TAGS.products], revalidate: DB_CACHE_TTL.products },
+);
+export const getProductsByVersionAndLeague = async (
+  ...args: Parameters<typeof getProductsByVersionAndLeagueUncached>
+) => getProductsByVersionAndLeagueCached(...args);
+
+const getProductsWithParamsCached = unstable_cache(
+  getProductsWithParamsUncached,
+  ["products-with-params"],
+  { tags: [DB_TAGS.products], revalidate: DB_CACHE_TTL.products },
+);
+export const getProductsWithParams = async (
+  ...args: Parameters<typeof getProductsWithParamsUncached>
+) => getProductsWithParamsCached(...args);
+
+const getLeaguesCached = unstable_cache(
+  getLeaguesUncached,
+  ["leagues"],
+  { tags: [DB_TAGS.leagues], revalidate: DB_CACHE_TTL.leagues },
+);
+export const getLeagues = async (
+  ...args: Parameters<typeof getLeaguesUncached>
+) => getLeaguesCached(...args);
+
+const getAllActiveLeaguesCached = unstable_cache(
+  getAllActiveLeaguesUncached,
+  ["all-active-leagues"],
+  { tags: [DB_TAGS.leagues], revalidate: DB_CACHE_TTL.leagues },
+);
+export const getAllActiveLeagues = async (
+  ...args: Parameters<typeof getAllActiveLeaguesUncached>
+) => getAllActiveLeaguesCached(...args);
+
+const getLeagueBySlugFromSupabaseCached = unstable_cache(
+  getLeagueBySlugFromSupabaseUncached,
+  ["league-by-slug"],
+  { tags: [DB_TAGS.leagues], revalidate: DB_CACHE_TTL.leagues },
+);
+export const getLeagueBySlugFromSupabase = async (
+  ...args: Parameters<typeof getLeagueBySlugFromSupabaseUncached>
+) => getLeagueBySlugFromSupabaseCached(...args);
+
+// `difficulties` é reescrita junto com as ligas na virada, então compartilha a
+// tag — despublicar/criar liga já joga fora as duas leituras de uma vez.
+const getDifficultiesCached = unstable_cache(
+  getDifficultiesUncached,
+  ["difficulties"],
+  { tags: [DB_TAGS.leagues], revalidate: DB_CACHE_TTL.leagues },
+);
+export const getDifficulties = async (
+  ...args: Parameters<typeof getDifficultiesUncached>
+) => getDifficultiesCached(...args);
+
+const getBuildsCached = unstable_cache(
+  getBuildsUncached,
+  ["builds"],
+  { tags: [DB_TAGS.builds], revalidate: DB_CACHE_TTL.builds },
+);
+export const getBuilds = async (
+  ...args: Parameters<typeof getBuildsUncached>
+) => getBuildsCached(...args);
+
+const getDistinctBuildLeaguesCached = unstable_cache(
+  getDistinctBuildLeaguesUncached,
+  ["distinct-build-leagues"],
+  { tags: [DB_TAGS.builds], revalidate: DB_CACHE_TTL.builds },
+);
+export const getDistinctBuildLeagues = async (
+  ...args: Parameters<typeof getDistinctBuildLeaguesUncached>
+) => getDistinctBuildLeaguesCached(...args);
+
+const getBuildBySlugCached = unstable_cache(
+  getBuildBySlugUncached,
+  ["build-by-slug"],
+  { tags: [DB_TAGS.builds], revalidate: DB_CACHE_TTL.builds },
+);
+export const getBuildBySlug = async (
+  ...args: Parameters<typeof getBuildBySlugUncached>
+) => getBuildBySlugCached(...args);
+
+const getPublishedBuildSlugsCached = unstable_cache(
+  getPublishedBuildSlugsUncached,
+  ["published-build-slugs"],
+  { tags: [DB_TAGS.builds], revalidate: DB_CACHE_TTL.builds },
+);
+export const getPublishedBuildSlugs = async (
+  ...args: Parameters<typeof getPublishedBuildSlugsUncached>
+) => getPublishedBuildSlugsCached(...args);
+
+const getPublishedLeagueSlugsFromBuildsCached = unstable_cache(
+  getPublishedLeagueSlugsFromBuildsUncached,
+  ["published-league-slugs-from-builds"],
+  { tags: [DB_TAGS.builds], revalidate: DB_CACHE_TTL.builds },
+);
+export const getPublishedLeagueSlugsFromBuilds = async (
+  ...args: Parameters<typeof getPublishedLeagueSlugsFromBuildsUncached>
+) => getPublishedLeagueSlugsFromBuildsCached(...args);
+
+const getRelatedBuildsCached = unstable_cache(
+  getRelatedBuildsUncached,
+  ["related-builds"],
+  { tags: [DB_TAGS.builds], revalidate: DB_CACHE_TTL.builds },
+);
+export const getRelatedBuilds = async (
+  ...args: Parameters<typeof getRelatedBuildsUncached>
+) => getRelatedBuildsCached(...args);

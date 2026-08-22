@@ -32,7 +32,13 @@ export async function sanityFetch<QueryResponse>({
           cache: "force-cache",
           next: {
             tags,
-            revalidate: 3600 // 1 hora (revalidação por tag cobre publicações)
+            // 24 h. A invalidação real é por tag: publicar no Studio dispara o
+            // webhook em /api/revalidate, que chama revalidateTag(_type). Este
+            // número é só a rede de segurança se o webhook cair — e como o
+            // `revalidate` efetivo de uma página é o MENOR entre o dela e o dos
+            // fetches internos, deixá-lo em 1 h rebaixava toda página que lê
+            // Sanity para 1 h e mantinha o volume de ISR Writes de pé.
+            revalidate: 86400
           },
         })
   );

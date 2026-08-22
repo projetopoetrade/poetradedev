@@ -36,7 +36,7 @@ const POE1_CATEGORIES = [
   'Scarab',
 ] as const;
 
-const REVALIDATE_SECONDS = 300;
+const REVALIDATE_SECONDS = 3600; // 1h — era 300, e travava toda página com {{price:}} em 5 min
 const REQUEST_TIMEOUT_MS = 4000;
 
 export async function fetchPrices(

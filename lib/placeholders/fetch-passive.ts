@@ -34,7 +34,7 @@ export interface PassiveRawData {
 // Passive tooltips are tied to the passive tree export for a given patch and
 // barely change within a league — 1h revalidate keeps the blog responsive
 // to engine redeploys without hammering the endpoint.
-const REVALIDATE_SECONDS = 60 * 60;
+const REVALIDATE_SECONDS = 6 * 60 * 60; // 6h — dado de patch, muda na virada de liga
 const REQUEST_TIMEOUT_MS = 3000;
 
 export async function fetchPassiveRaw(name: string): Promise<PassiveRawData | null> {

@@ -11,7 +11,10 @@ import {
 import { buildBreadcrumbSchema, getOgLocale, generateKeywords } from "@/lib/utils";
 import type { Product } from "@/lib/interface";
 
-export const revalidate = 300;
+// ISR: preço/estoque vêm do Supabase, invalidados por tag (`db-products`) pelas
+// rotas em `/api/admin/products/*`. 6 h é o piso caso alguém escreva no banco
+// por fora do Next — ver DB_CACHE_TTL em lib/cache-tags.ts.
+export const revalidate = 21600;
 
 const CATEGORIES = ["currency", "items", "services"] as const;
 type CategorySlug = (typeof CATEGORIES)[number];

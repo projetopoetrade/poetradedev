@@ -13,6 +13,7 @@ import {
     Legend
 } from 'recharts'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useProductVariant } from '@/lib/contexts/product-variant-context'
 
 interface HistoryPoint {
     date: string
@@ -23,6 +24,13 @@ interface HistoryPoint {
 }
 
 export default function PriceHistoryChart({ productSlug, league }: { productSlug: string, league?: string }) {
+    // Segue a liga escolhida no dropdown da página de produto. Sem isto o preço
+    // mostraria uma liga e o gráfico outra assim que o usuário trocasse.
+    // `selected.slug` embute a liga e é a chave do histórico — não é o url_slug.
+    const variant = useProductVariant()
+    const activeSlug = variant?.selected.slug ?? productSlug
+    const activeLeague = variant?.league ?? league
+
     const [data, setData] = useState<HistoryPoint[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
@@ -32,9 +40,11 @@ export default function PriceHistoryChart({ productSlug, league }: { productSlug
 
     useEffect(() => {
         async function fetchHistory() {
+            setLoading(true)
+            setError(null)
             try {
-                const query = league ? `?league=${encodeURIComponent(league)}` : ''
-                const res = await fetch(`/api/products/${productSlug}/history${query}`)
+                const query = activeLeague ? `?league=${encodeURIComponent(activeLeague)}` : ''
+                const res = await fetch(`/api/products/${activeSlug}/history${query}`)
                 if (!res.ok) {
                     if (res.status === 404) {
                         setError('History not available for this item.')
@@ -64,7 +74,7 @@ export default function PriceHistoryChart({ productSlug, league }: { productSlug
             }
         }
         fetchHistory()
-    }, [productSlug, league])
+    }, [activeSlug, activeLeague])
 
     if (loading) {
         return (

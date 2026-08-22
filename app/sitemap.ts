@@ -8,9 +8,10 @@ import {
 } from "@/lib/sitemap-data";
 import { getLeagueLandingSlugs } from "@/lib/league-landing";
 
-// Refresh every 5 minutes. Sanity webhook hits /api/revalidate which calls
-// revalidatePath('/sitemap.xml') for posts → fresh sitemap on next request.
-export const revalidate = 300;
+// Refresh hourly. A invalidação real é por evento: o webhook do Sanity bate em
+// /api/revalidate, e as rotas admin chamam `bustDbCache` (lib/revalidate-db) —
+// ambos fazem revalidatePath('/sitemap.xml'). Este TTL é só o piso.
+export const revalidate = 3600;
 
 const SITE_URL = (
   process.env.NEXT_PUBLIC_SITE_URL || "https://www.pathoftrade.net"

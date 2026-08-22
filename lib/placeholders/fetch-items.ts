@@ -34,7 +34,7 @@ export interface FetchItemOptions {
   quality?: number;
 }
 
-const REVALIDATE_SECONDS = 60 * 60; // 1h — item stat blocks barely change
+const REVALIDATE_SECONDS = 6 * 60 * 60; // 6h — dado de patch, muda na virada de liga
 const REQUEST_TIMEOUT_MS = 3000;
 
 export async function fetchItemRaw(

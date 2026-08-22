@@ -1,143 +1,81 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Minus, Plus, ShoppingCart, Loader2 } from "lucide-react";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 
+/**
+ * Seletores de versão do jogo / liga / dificuldade da página de produto.
+ *
+ * Liga e dificuldade são **controlados**: trocar não navega, só troca a variante
+ * já carregada (ver `ProductVariantProvider`). Antes cada troca disparava
+ * `router.push('/products/<nome>?league=...')`, que caía num
+ * `permanentRedirect` para a URL canônica sem a query — ou seja, o dropdown
+ * navegava e não mudava nada. Também era o que tornava a rota dinâmica.
+ *
+ * Versão do jogo continua sendo navegação de verdade: é outro segmento de path
+ * (`/games/<versão>/products/<slug>`), outra página estática. Só são oferecidas
+ * as versões em que este `url_slug` existe — mandar o usuário para um 404 seria
+ * pior que esconder a opção.
+ */
 interface FiltersProps {
-  productName: string;
   gameVersionOptions: { value: string; label: string }[];
   leagueOptions: string[];
   difficultyOptions: string[];
-  currentGameVersion: 'path-of-exile-1' | 'path-of-exile-2';
+  currentGameVersion: "path-of-exile-1" | "path-of-exile-2";
   currentLeague: string;
   currentDifficulty: string;
+  onLeagueChange?: (league: string) => void;
+  onDifficultyChange?: (difficulty: string) => void;
+  /** `url_slug` canônico, para a navegação entre versões do jogo. */
+  urlSlug?: string;
+  locale?: string;
 }
 
 export default function Filters({
-  productName,
   gameVersionOptions,
   leagueOptions,
   difficultyOptions,
   currentGameVersion,
   currentLeague,
   currentDifficulty,
+  onLeagueChange,
+  onDifficultyChange,
+  urlSlug,
+  locale,
 }: FiltersProps) {
   const router = useRouter();
-  const pathname = usePathname();
-  const [gameVersion, setGameVersion] = useState(currentGameVersion);
-  const [league, setLeague] = useState(currentLeague);
-  const [difficulty, setDifficulty] = useState(currentDifficulty);
-  const [quantity, setQuantity] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
-  const [debounceTimeout, setDebounceTimeout] = useState<NodeJS.Timeout | null>(null);
 
-  // Debounced update function to prevent multiple rapid navigations
-  const debouncedUpdateFilters = useCallback((newGameVersion: string, newLeague: string, newDifficulty: string) => {
-    // Cancel any existing timeout
-    if (debounceTimeout) {
-      clearTimeout(debounceTimeout);
-    }
-    
-    setIsLoading(true);
-    
-    // Set a new timeout
-    const timeout = setTimeout(() => {
-      const params = new URLSearchParams();
-      if (newGameVersion) params.set("gameVersion", newGameVersion);
-      if (newLeague) params.set("league", newLeague);
-      if (newDifficulty) params.set("difficulty", newDifficulty);
-      
-      const queryString = params.toString();
-      const url = `/products/${encodeURIComponent(productName)}${queryString ? `?${queryString}` : ''}`;
-
-      router.push(url);
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 300);
-    }, 300); // 300ms debounce time
-    setDebounceTimeout(timeout);
-  }, [debounceTimeout, productName, router]);
-
-
-  // Clear the timeout when component unmounts
-  useEffect(() => {
-    return () => {
-      if (debounceTimeout) {
-        clearTimeout(debounceTimeout);
-        
-      }
-
-    };
-  }, [debounceTimeout]);
-
-  // Handle game version change
   const handleGameVersionChange = (value: string) => {
-    setGameVersion(value as 'path-of-exile-1' | 'path-of-exile-2');
-    debouncedUpdateFilters(value, league, difficulty);
+    if (value === currentGameVersion || !urlSlug) return;
+    const prefix = !locale || locale === "en" ? "" : `/${locale}`;
+    router.push(`${prefix}/games/${value}/products/${urlSlug}`);
   };
 
-  // Handle league change
-  const handleLeagueChange = (value: string) => {
-    setLeague(value);
-    debouncedUpdateFilters(gameVersion, value, difficulty);
-
-  };
-
-  // Handle difficulty change
-  const handleDifficultyChange = (value: string) => {
-    setDifficulty(value);
-    debouncedUpdateFilters(gameVersion, league, value);
-
-  };
-
-  // When the URL changes, update the loading state
-  useEffect(() => {
-    setIsLoading(false);
-  }, [pathname]);
-
-  // Handle quantity increment/decrement
-  const incrementQuantity = () => {
-    setQuantity(prev => Math.min(prev + 1, 99));
-  };
-
-  const decrementQuantity = () => {
-    setQuantity(prev => Math.max(prev - 1, 1));
-  };
-
-  const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseInt(e.target.value);
-    if (!isNaN(value) && value > 0 && value <= 99) {
-      setQuantity(value);
-    }
-  };
+  // Os três selects continuam visíveis mesmo quando têm uma opção só — a
+  // dimensão existe no produto e some-la esconderia informação. O que muda é
+  // que ficam desabilitados em vez de fingir que navegam para algum lugar:
+  // hoje o catálogo é todo PoE 1 / softcore, então esses dois são fixos.
+  const canChangeGameVersion = gameVersionOptions.length > 1 && Boolean(urlSlug);
+  const canChangeLeague = leagueOptions.length > 1;
+  const canChangeDifficulty = difficultyOptions.length > 1;
 
   return (
-    <div className="space-y-4 my-6 relative">
-      {isLoading && (
-        <div className="absolute inset-0 bg-background/50 flex items-center justify-center z-10 rounded-md">
-          <Loader2 className="h-6 w-6 animate-spin text-indigo-600" />
-        </div>
-      )}
-      
+    <div className="space-y-4 my-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="space-y-2">
           <label htmlFor="gameVersion" className="text-sm font-medium">
             Game Version
           </label>
-          <Select 
-            value={gameVersion} 
+          <Select
+            value={currentGameVersion}
             onValueChange={handleGameVersionChange}
-            disabled={isLoading}
+            disabled={!canChangeGameVersion}
           >
             <SelectTrigger id="gameVersion" aria-label="Filter by game version">
               <SelectValue placeholder="Select game version" />
@@ -151,15 +89,15 @@ export default function Filters({
             </SelectContent>
           </Select>
         </div>
-        
+
         <div className="space-y-2">
           <label htmlFor="league" className="text-sm font-medium">
             League
           </label>
-          <Select 
-            value={league} 
-            onValueChange={handleLeagueChange}
-            disabled={isLoading}
+          <Select
+            value={currentLeague}
+            onValueChange={(v) => onLeagueChange?.(v)}
+            disabled={!canChangeLeague}
           >
             <SelectTrigger id="league" aria-label="Filter by league">
               <SelectValue placeholder="Select league" />
@@ -173,15 +111,15 @@ export default function Filters({
             </SelectContent>
           </Select>
         </div>
-        
+
         <div className="space-y-2">
           <label htmlFor="difficulty" className="text-sm font-medium">
             Difficulty
           </label>
-          <Select 
-            value={difficulty} 
-            onValueChange={handleDifficultyChange}
-            disabled={isLoading}
+          <Select
+            value={currentDifficulty}
+            onValueChange={(v) => onDifficultyChange?.(v)}
+            disabled={!canChangeDifficulty}
           >
             <SelectTrigger id="difficulty" aria-label="Filter by difficulty">
               <SelectValue placeholder="Select difficulty" />
@@ -196,12 +134,6 @@ export default function Filters({
           </Select>
         </div>
       </div>
-
-      <div className="pt-4 border-t border-border">
-
-        </div>
-
-      </div>
-
+    </div>
   );
-} 
+}
