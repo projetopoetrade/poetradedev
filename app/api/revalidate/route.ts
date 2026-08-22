@@ -81,11 +81,28 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Sanity webhook request - validate signature
+    // Sanity webhook request - validate signature.
+    //
+    // Lia `NEXT_PUBLIC_SANITY_HOOK_SECRET`, que não existe em lugar nenhum — nem
+    // nas env vars da Vercel, nem no `.env.local`. Com o segredo `undefined` o
+    // `parseBody` nunca valida e a rota devolvia 401 para todo webhook do
+    // Sanity: `revalidateTag(_type)` por publicação simplesmente não acontecia.
+    // Passou despercebido enquanto tudo tinha `revalidate = 300`.
+    //
+    // O nome correto é `SANITY_HOOK_SECRET` — é o que já existe nos dois lados e
+    // o que `/api/webhooks/sanity-product` sempre usou. Segredo de webhook não
+    // pode ser `NEXT_PUBLIC_` de qualquer forma: isso o publicaria no bundle.
+    const sanitySecret = process.env.SANITY_HOOK_SECRET;
+
+    if (!sanitySecret) {
+      console.error("[revalidate] SANITY_HOOK_SECRET não configurado");
+      return new Response("Webhook secret is not configured", { status: 503 });
+    }
+
     const { body, isValidSignature } = await parseBody<{
       _type: string;
       slug?: string | undefined;
-    }>(req, process.env.NEXT_PUBLIC_SANITY_HOOK_SECRET);
+    }>(req, sanitySecret);
 
     if (!isValidSignature) {
       return new Response("Invalid Signature", { status: 401 });
