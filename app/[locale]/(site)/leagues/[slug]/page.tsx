@@ -179,6 +179,10 @@ function buildArticleSchema(
       "@type": "Organization",
       name: "Path of Trade",
       url: SITE_URL,
+      logo: {
+        "@type": "ImageObject",
+        url: `${SITE_URL}/images/logo.webp`,
+      },
     },
     about: {
       "@type": "VideoGame",

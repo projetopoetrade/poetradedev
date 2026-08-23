@@ -45,11 +45,13 @@ export async function generateMetadata(props: {
       type: 'website',
       ...getOgLocale(locale),
       siteName: 'Path of Trade',
+      images: [{ url: '/images/logo.webp', alt: 'Path of Trade' }],
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
+      images: ['/images/logo.webp'],
     },
   }
 }
@@ -160,6 +162,11 @@ export default async function PriceTrackerPage(props: {
     of: isPt ? 'de' : 'of',
     prev: isPt ? 'Anterior' : 'Previous',
     next: isPt ? 'Próximo' : 'Next',
+    game: isPt ? 'Versão do jogo' : 'Game version',
+    league: isPt ? 'Liga' : 'League',
+    category: isPt ? 'Categoria de item' : 'Item category',
+    refresh: isPt ? 'Atualizar preços' : 'Refresh prices',
+    sortBy: isPt ? 'Ordenar por' : 'Sort by',
   }
 
   return (

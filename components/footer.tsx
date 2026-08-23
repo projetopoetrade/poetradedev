@@ -65,6 +65,9 @@ export default async function Footer({ locale = 'en' }: FooterProps) {
             <Link href="/tools/build-randomizer" className="text-gray-300 hover:text-white text-sm transition-colors">
               Build Randomizer
             </Link>
+            <Link href="/builds" className="text-gray-300 hover:text-white text-sm transition-colors">
+              {locale === 'pt-br' ? 'Guias de Builds' : 'Build Guides'}
+            </Link>
           </div>
 
           {/* Games Links */}

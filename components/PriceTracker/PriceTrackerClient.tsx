@@ -292,9 +292,10 @@ function PriceCard({ item, convertPrice, formatPrice, game, league }: {
       {item.weSellThis && item.ourUrl && (
         <Link
           href={item.ourUrl}
+          aria-label={`Buy ${item.name}`}
           className="inline-flex items-center gap-1 text-xs bg-primary text-primary-foreground hover:bg-primary/90 px-2.5 py-2 rounded-md transition-colors flex-shrink-0"
         >
-          <ShoppingCart className="h-3.5 w-3.5" />
+          <ShoppingCart className="h-3.5 w-3.5" aria-hidden="true" />
         </Link>
       )}
     </div>
@@ -321,6 +322,11 @@ export default function PriceTrackerClient({ labels }: {
     of: string
     prev: string
     next: string
+    game: string
+    league: string
+    category: string
+    refresh: string
+    sortBy: string
   }
 }) {
   const { currency, convertPrice, formatPrice } = useCurrency()
@@ -449,15 +455,17 @@ export default function PriceTrackerClient({ labels }: {
       {/* Filtros */}
       <div className="flex flex-wrap gap-3 items-center">
         {/* Game toggle */}
-        <div className="flex rounded-lg border border-border overflow-hidden">
+        <div role="group" aria-label={labels.game} className="flex rounded-lg border border-border overflow-hidden">
           <button
             onClick={() => setGame('poe1')}
+            aria-pressed={game === 'poe1'}
             className={`px-4 py-2 text-sm font-medium transition-colors ${game === 'poe1' ? 'bg-primary text-primary-foreground' : 'bg-transparent hover:bg-accent'}`}
           >
             PoE 1
           </button>
           <button
             onClick={() => setGame('poe2')}
+            aria-pressed={game === 'poe2'}
             className={`px-4 py-2 text-sm font-medium transition-colors ${game === 'poe2' ? 'bg-primary text-primary-foreground' : 'bg-transparent hover:bg-accent'}`}
           >
             PoE 2
@@ -466,7 +474,7 @@ export default function PriceTrackerClient({ labels }: {
 
         {/* League */}
         <Select value={league} onValueChange={setLeague}>
-          <SelectTrigger className="w-[160px]">
+          <SelectTrigger aria-label={labels.league} className="w-[160px]">
             <SelectValue placeholder="League" />
           </SelectTrigger>
           <SelectContent>
@@ -478,7 +486,7 @@ export default function PriceTrackerClient({ labels }: {
 
         {/* Category */}
         <Select value={category} onValueChange={setCategory}>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger aria-label={labels.category} className="w-[180px]">
             <SelectValue placeholder="Category" />
           </SelectTrigger>
           <SelectContent>
@@ -495,12 +503,13 @@ export default function PriceTrackerClient({ labels }: {
             value={search}
             onChange={e => { setSearch(e.target.value); setPage(1) }}
             placeholder={labels.searchPlaceholder}
+            aria-label={labels.searchPlaceholder}
             className="pl-9"
           />
         </div>
 
         {/* Refresh */}
-        <Button variant="outline" size="icon" onClick={fetchData} disabled={loading} title="Refresh prices" aria-label="Refresh prices">
+        <Button variant="outline" size="icon" onClick={fetchData} disabled={loading} title={labels.refresh} aria-label={labels.refresh}>
           <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
         </Button>
       </div>
@@ -517,19 +526,19 @@ export default function PriceTrackerClient({ labels }: {
           <>
             {/* Header */}
             <div className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_auto] gap-2 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
-              <button className="text-left hover:text-foreground flex items-center" onClick={() => handleSort('name')}>
+              <button aria-label={`${labels.sortBy}: Item`} className="text-left hover:text-foreground flex items-center" onClick={() => handleSort('name')}>
                 Item <SortIcon col="name" sortKey={sortKey} sortDir={sortDir} />
               </button>
-              <button className="text-left hover:text-foreground flex items-center" onClick={() => handleSort('chaosValue')}>
+              <button aria-label={`${labels.sortBy}: ${labels.chaos}`} className="text-left hover:text-foreground flex items-center" onClick={() => handleSort('chaosValue')}>
                 {labels.chaos} <SortIcon col="chaosValue" sortKey={sortKey} sortDir={sortDir} />
               </button>
-              <button className="text-left hover:text-foreground flex items-center" onClick={() => handleSort('divineValue')}>
+              <button aria-label={`${labels.sortBy}: ${labels.divine}`} className="text-left hover:text-foreground flex items-center" onClick={() => handleSort('divineValue')}>
                 {labels.divine} <SortIcon col="divineValue" sortKey={sortKey} sortDir={sortDir} />
               </button>
-              <button className="text-left hover:text-foreground flex items-center" onClick={() => handleSort('estimatedUSD')}>
+              <button aria-label={`${labels.sortBy}: ${currencyLabel}`} className="text-left hover:text-foreground flex items-center" onClick={() => handleSort('estimatedUSD')}>
                 ~{currencyLabel} <SortIcon col="estimatedUSD" sortKey={sortKey} sortDir={sortDir} />
               </button>
-              <button className="text-left hover:text-foreground flex items-center" onClick={() => handleSort('trend')}>
+              <button aria-label={`${labels.sortBy}: ${labels.trend}`} className="text-left hover:text-foreground flex items-center" onClick={() => handleSort('trend')}>
                 {labels.trend} <SortIcon col="trend" sortKey={sortKey} sortDir={sortDir} />
               </button>
               <span className="text-right">{labels.buy}</span>

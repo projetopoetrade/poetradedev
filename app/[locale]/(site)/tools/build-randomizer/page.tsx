@@ -8,6 +8,7 @@ import {
 } from "@/lib/utils";
 import BuildRandomizerClient from "./BuildRandomizerClient";
 import { CurrencyCtaSection } from "@/components/currency-cta-section";
+import { Link } from "@/i18n/navigation";
 
 export const revalidate = 3600;
 
@@ -48,11 +49,13 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
       type: "website",
       ...getOgLocale(locale),
       siteName: "Path of Trade",
+      images: [{ url: "/images/logo.webp", alt: "Path of Trade" }],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
+      images: ["/images/logo.webp"],
     },
   };
 }
@@ -147,6 +150,12 @@ export default async function BuildRandomizerPage(props: PageProps) {
       />
       <BuildRandomizerClient locale={locale} />
       <div className="container mx-auto px-4 pb-8">
+        <p className="mb-6 text-center text-sm text-muted-foreground">
+          {isPt ? "Prefere escolher manualmente? " : "Prefer to choose manually? "}
+          <Link href="/builds" className="text-primary hover:underline">
+            {isPt ? "Explore todos os guias de builds" : "Browse all build guides"}
+          </Link>
+        </p>
         <CurrencyCtaSection locale={locale} />
       </div>
     </>

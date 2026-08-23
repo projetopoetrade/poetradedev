@@ -1,6 +1,6 @@
 "use client";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { Suspense, useTransition } from "react";
+import { useTransition } from "react";
 import { useTranslations } from "next-intl";
 import {
   Select,
@@ -10,23 +10,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { BUILD_TAGS, getClassesForGameVersion } from "@/lib/builds-data";
 
 interface BuildFiltersProps {
   leagues: string[];
 }
 
-// Suspense por causa do `useSearchParams` em rota pré-renderizada.
-export default function BuildFilters(props: BuildFiltersProps) {
-  return (
-    <Suspense fallback={null}>
-      <BuildFiltersInner {...props} />
-    </Suspense>
-  );
-}
-
-function BuildFiltersInner({ leagues }: BuildFiltersProps) {
+export default function BuildFilters({ leagues }: BuildFiltersProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -108,7 +98,7 @@ function BuildFiltersInner({ leagues }: BuildFiltersProps) {
       {/* Row 1: Game Version, League, Class, Ascendancy */}
       <div className="flex flex-wrap gap-2">
         <Select value={gameVersion} onValueChange={(v) => updateParam("gameVersion", v === "all" ? "" : v)}>
-          <SelectTrigger aria-label="Filter builds by game version" className="w-auto min-w-[150px] h-9 bg-black/40 border-gray-700/50 text-sm text-gray-300">
+          <SelectTrigger aria-label={t("filters.gameVersion")} className="w-auto min-w-[150px] h-9 bg-black/40 border-gray-700/50 text-sm text-gray-300">
             <SelectValue placeholder={t("filters.gameVersion")} />
           </SelectTrigger>
           <SelectContent>
@@ -120,7 +110,7 @@ function BuildFiltersInner({ leagues }: BuildFiltersProps) {
 
         {leagues.length > 0 && (
           <Select value={league} onValueChange={(v) => updateParam("league", v === "all" ? "" : v)}>
-            <SelectTrigger aria-label="Filter builds by league" className="w-auto min-w-[140px] h-9 bg-black/40 border-gray-700/50 text-sm text-gray-300">
+            <SelectTrigger aria-label={t("filters.league")} className="w-auto min-w-[140px] h-9 bg-black/40 border-gray-700/50 text-sm text-gray-300">
               <SelectValue placeholder={t("filters.league")} />
             </SelectTrigger>
             <SelectContent>
@@ -133,7 +123,7 @@ function BuildFiltersInner({ leagues }: BuildFiltersProps) {
         )}
 
         <Select value={poeClass} onValueChange={(v) => updateParam("class", v === "all" ? "" : v)}>
-          <SelectTrigger aria-label="Filter builds by class" className="w-auto min-w-[130px] h-9 bg-black/40 border-gray-700/50 text-sm text-gray-300">
+          <SelectTrigger aria-label={t("filters.class")} className="w-auto min-w-[130px] h-9 bg-black/40 border-gray-700/50 text-sm text-gray-300">
             <SelectValue placeholder={t("filters.class")} />
           </SelectTrigger>
           <SelectContent>
@@ -146,7 +136,7 @@ function BuildFiltersInner({ leagues }: BuildFiltersProps) {
 
         {ascendancies.length > 0 && (
           <Select value={ascendancy} onValueChange={(v) => updateParam("ascendancy", v === "all" ? "" : v)}>
-            <SelectTrigger aria-label="Filter builds by ascendancy" className="w-auto min-w-[140px] h-9 bg-black/40 border-gray-700/50 text-sm text-gray-300">
+            <SelectTrigger aria-label={t("filters.ascendancy")} className="w-auto min-w-[140px] h-9 bg-black/40 border-gray-700/50 text-sm text-gray-300">
               <SelectValue placeholder={t("filters.ascendancy")} />
             </SelectTrigger>
             <SelectContent>
@@ -167,6 +157,7 @@ function BuildFiltersInner({ leagues }: BuildFiltersProps) {
             <button
               key={tag.value}
               onClick={() => toggleTag(tag.value)}
+              aria-pressed={active}
               className={`text-xs px-2.5 py-1 rounded-full border transition-all ${
                 active
                   ? "bg-amber-500/20 text-amber-300 border-amber-500/50"

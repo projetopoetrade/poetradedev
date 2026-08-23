@@ -6,7 +6,6 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Loader2,
-  Sword,
   Shield,
   Shirt,
   HardHat,
@@ -114,9 +113,21 @@ import {
 // agora que a página é pré-renderizada.
 export default function PobViewerClient(props: Props) {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<PobViewerFallback locale={props.locale} />}>
       <PobViewerClientInner {...props} />
     </Suspense>
+  );
+}
+
+function PobViewerFallback({ locale }: { locale: string }) {
+  return (
+    <div
+      role="status"
+      aria-live="polite"
+      className="max-w-7xl mx-auto min-h-40 rounded-lg border border-border/50 bg-background/60 p-6 text-sm text-muted-foreground"
+    >
+      {locale === "pt-br" ? "Carregando o visualizador…" : "Loading the viewer…"}
+    </div>
   );
 }
 
@@ -534,8 +545,8 @@ function PobViewerClientInner({
 
   if (isInitialLoad) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+      <div role="status" aria-live="polite" className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" aria-hidden="true" />
         <p className="text-muted-foreground text-lg">
           {isPt ? "Carregando build..." : "Loading build..."}
         </p>
@@ -569,31 +580,14 @@ function PobViewerClientInner({
           </Link>
         )}
 
-        {/* Page header */}
-        <header className={data ? "space-y-0.5" : "space-y-1"}>
-          <div className="flex items-center gap-2">
-            <Sword
-              className={data ? "h-5 w-5 text-primary" : "h-6 w-6 text-primary"}
-            />
-            <h1
-              className={data ? "text-xl font-semibold" : "text-2xl font-bold"}
-            >
-              {isPt ? "Visualizador de Build" : "PoB Viewer"}
-            </h1>
-          </div>
-          {!data && (
-            <p className="text-muted-foreground text-sm">
-              {isPt
-                ? "Cole seu código Path of Building ou link pobb.in/pastebin para visualizar sua build."
-                : "Paste your Path of Building code or pobb.in/pastebin link to visualize your build."}
-            </p>
-          )}
-        </header>
-
         {/* Input (inline, some à medida que o PoB é carregado) */}
         {!data && (
           <section className="pt-4 space-y-3">
+            <label htmlFor="pob-code-input" className="sr-only">
+              {isPt ? "Código ou link do Path of Building" : "Path of Building code or link"}
+            </label>
             <textarea
+              id="pob-code-input"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder={
@@ -603,7 +597,7 @@ function PobViewerClientInner({
               }
               className="w-full h-28 rounded-md border border-input/80 bg-background/90 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-primary font-mono"
             />
-            {error && <p className="text-sm text-destructive">{error}</p>}
+            {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
             <Button
               onClick={() => void handleAnalyze()}
               disabled={loading || !input.trim()}
@@ -785,7 +779,10 @@ function PobViewerClientInner({
                         value={String(activeItemSetIndex)}
                         onValueChange={(v) => handleLoadoutChange(Number(v))}
                       >
-                        <SelectTrigger className="w-40 h-8 text-xs">
+                        <SelectTrigger
+                          aria-label={isPt ? "Selecionar conjunto de equipamentos" : "Select equipment loadout"}
+                          className="w-40 h-8 text-xs"
+                        >
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -1071,7 +1068,10 @@ function PobViewerClientInner({
                           setActiveTreeSpecIndex(Number(v));
                         }}
                       >
-                        <SelectTrigger className="w-56 h-8 text-sm">
+                        <SelectTrigger
+                          aria-label={isPt ? "Selecionar árvore passiva" : "Select passive tree"}
+                          className="w-56 h-8 text-sm"
+                        >
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>

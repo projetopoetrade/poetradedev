@@ -1,6 +1,6 @@
 "use client";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { Suspense } from "react";
+import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 import BuildCard from "@/components/Builds/BuildCard";
 import BuildFilters from "@/components/Builds/BuildFilters";
@@ -10,29 +10,44 @@ const LIMIT = 12;
 
 interface BuildsClientProps {
   builds: Build[];
-  total: number;
-  page: number;
   locale: string;
   leagues: string[];
 }
 
-// Suspense por causa do `useSearchParams`. Rede de segurança: `builds/page.tsx`
-// lê searchParams no servidor, então esta rota é dinâmica e o fallback não
-// chega a renderizar em produção — a lista continua no HTML.
-export default function BuildsClient(props: BuildsClientProps) {
-  return (
-    <Suspense fallback={null}>
-      <BuildsClientInner {...props} />
-    </Suspense>
-  );
-}
-
-function BuildsClientInner({ builds, total, page, locale, leagues }: BuildsClientProps) {
+// `builds/page.tsx` owns the Suspense boundary and supplies a crawlable fallback
+// with the first page of cards. This component progressively enhances that HTML
+// with URL-backed filters and pagination after hydration.
+export default function BuildsClient({ builds, locale, leagues }: BuildsClientProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const t = useTranslations("BuildsList");
-  const totalPages = Math.ceil(total / LIMIT);
+
+  const filteredBuilds = useMemo(() => {
+    const gameVersion = searchParams.get("gameVersion");
+    const league = searchParams.get("league");
+    const poeClass = searchParams.get("class");
+    const ascendancy = searchParams.get("ascendancy");
+    const search = searchParams.get("search")?.trim().toLocaleLowerCase();
+    const tags = searchParams.get("tags")?.split(",").filter(Boolean) ?? [];
+
+    return builds.filter((build) => {
+      if (gameVersion && build.game_version !== gameVersion) return false;
+      if (league && build.league !== league) return false;
+      if (poeClass && build.class !== poeClass) return false;
+      if (ascendancy && build.ascendancy !== ascendancy) return false;
+      if (search && !build.title.toLocaleLowerCase().includes(search)) return false;
+      if (tags.length > 0 && !build.tags.some((tag) => tags.includes(tag))) return false;
+      return true;
+    });
+  }, [builds, searchParams]);
+
+  const requestedPage = Number.parseInt(searchParams.get("page") ?? "1", 10);
+  const totalPages = Math.max(1, Math.ceil(filteredBuilds.length / LIMIT));
+  const page = Number.isFinite(requestedPage)
+    ? Math.min(Math.max(requestedPage, 1), totalPages)
+    : 1;
+  const visibleBuilds = filteredBuilds.slice((page - 1) * LIMIT, page * LIMIT);
 
   function goToPage(p: number) {
     const params = new URLSearchParams(searchParams.toString());
@@ -41,57 +56,30 @@ function BuildsClientInner({ builds, total, page, locale, leagues }: BuildsClien
   }
 
   const from = (page - 1) * LIMIT + 1;
-  const to = Math.min(page * LIMIT, total);
+  const to = Math.min(page * LIMIT, filteredBuilds.length);
 
   return (
-    <div className="min-h-screen py-12 px-4 max-w-7xl mx-auto">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">{t("heroTitle")}</h1>
-        <p className="text-gray-400 text-sm">{t("heroSubtitle")}</p>
-      </div>
-
-      {/* Build Randomizer CTA */}
-      <div className="mb-8 p-6 rounded-xl border border-amber-500/20 bg-amber-500/5 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div>
-          <h2 className="text-xl font-semibold text-amber-400 mb-1">
-            {t("randomizerCtaTitle")}
-          </h2>
-          <p className="text-sm text-amber-200/70">
-            {t("randomizerCtaBody")}
-          </p>
-        </div>
-        <button
-          onClick={() => router.push(`/${locale}/tools/build-randomizer`)}
-          className="shrink-0 px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-black font-medium rounded-lg transition-colors flex items-center gap-2 text-sm"
-        >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-          </svg>
-          {t("randomizerCtaButton")}
-        </button>
-      </div>
-
+    <section aria-label={locale === "pt-br" ? "Catálogo de builds" : "Build catalog"}>
       {/* Filters */}
       <div className="mb-6">
         <BuildFilters leagues={leagues} />
       </div>
 
       {/* Results count */}
-      {total > 0 && (
+      {filteredBuilds.length > 0 && (
         <p className="text-xs text-gray-500 mb-4">
-          {t("resultsCount", { from, to, total })}
+          {t("resultsCount", { from, to, total: filteredBuilds.length })}
         </p>
       )}
 
       {/* Grid */}
-      {builds.length === 0 ? (
+      {visibleBuilds.length === 0 ? (
         <div className="text-center py-20 text-gray-500">
           {t("emptyState")}
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {builds.map((build, i) => (
+          {visibleBuilds.map((build, i) => (
             <BuildCard
               key={build.id}
               build={build}
@@ -133,6 +121,6 @@ function BuildsClientInner({ builds, total, page, locale, leagues }: BuildsClien
           </button>
         </div>
       )}
-    </div>
+    </section>
   );
 }

@@ -1,6 +1,27 @@
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 
+// Baseline CSP compatible with the current app integrations (Supabase, Stripe,
+// Turnstile, Tawk and YouTube). The broad HTTPS allowances preserve those
+// dynamic hosts while the high-value restrictions still block plugins,
+// hostile base URL rewrites and third-party framing of the storefront.
+const contentSecurityPolicy = [
+  "default-src 'self' https: data: blob:",
+  "base-uri 'self'",
+  "object-src 'none'",
+  "frame-ancestors 'self'",
+  "form-action 'self' https:",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https:",
+  "style-src 'self' 'unsafe-inline' https:",
+  "img-src 'self' data: blob: https:",
+  "font-src 'self' data: https:",
+  "connect-src 'self' https: wss:",
+  "frame-src 'self' https:",
+  "media-src 'self' blob: https:",
+  "worker-src 'self' blob:",
+  "manifest-src 'self'",
+].join('; ');
+
 const nextConfig: NextConfig = {
 
   async headers() {
@@ -12,6 +33,7 @@ const nextConfig: NextConfig = {
           { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
           { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+          { key: 'Content-Security-Policy', value: contentSecurityPolicy },
         ],
       },
     ];

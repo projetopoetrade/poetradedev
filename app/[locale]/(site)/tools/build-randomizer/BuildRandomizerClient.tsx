@@ -134,11 +134,11 @@ export default function BuildRandomizerClient({
   const isControlsDisabled = status === "loading" || status === "animating";
 
   return (
-    <div className="min-h-screen py-12 px-4 max-w-5xl mx-auto">
+    <main className="min-h-screen py-12 px-4 max-w-5xl mx-auto">
       {/* Header */}
       <div className="text-center mb-10">
         <h1 className="text-4xl font-extrabold text-white mb-4 flex items-center justify-center gap-3">
-          <Dices className="w-8 h-8 text-amber-500" />
+          <Dices className="w-8 h-8 text-amber-500" aria-hidden="true" />
           Build Randomizer
         </h1>
         <p className="text-gray-400 text-lg">
@@ -158,7 +158,7 @@ export default function BuildRandomizerClient({
           <div className="space-y-4">
             {/* Game Version */}
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-gray-300">
+              <label htmlFor="randomizer-game" className="text-sm font-medium text-gray-300">
                 {t("filters.gameVersion")}
               </label>
               <Select
@@ -166,7 +166,7 @@ export default function BuildRandomizerClient({
                 value={gameVersion}
                 onValueChange={setGameVersion}
               >
-                <SelectTrigger className="w-full bg-black/40 border-gray-700/50">
+                <SelectTrigger id="randomizer-game" aria-label={t("filters.gameVersion")} className="w-full bg-black/40 border-gray-700/50">
                   <SelectValue placeholder={t("filters.gameVersion")} />
                 </SelectTrigger>
                 <SelectContent>
@@ -182,13 +182,13 @@ export default function BuildRandomizerClient({
 
             {/* Class */}
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-gray-300">{t("filters.class")}</label>
+              <label htmlFor="randomizer-class" className="text-sm font-medium text-gray-300">{t("filters.class")}</label>
               <Select
                 disabled={isControlsDisabled}
                 value={poeClass}
                 onValueChange={setPoeClass}
               >
-                <SelectTrigger className="w-full bg-black/40 border-gray-700/50">
+                <SelectTrigger id="randomizer-class" aria-label={t("filters.class")} className="w-full bg-black/40 border-gray-700/50">
                   <SelectValue placeholder={t("filters.class")} />
                 </SelectTrigger>
                 <SelectContent>
@@ -205,7 +205,7 @@ export default function BuildRandomizerClient({
             {/* Ascendancy */}
             {ascendancies.length > 0 && (
               <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-gray-300">
+                  <label htmlFor="randomizer-ascendancy" className="text-sm font-medium text-gray-300">
                     {t("filters.ascendancy")}
                   </label>
                   <Select
@@ -213,7 +213,7 @@ export default function BuildRandomizerClient({
                     value={ascendancy}
                     onValueChange={setAscendancy}
                   >
-                    <SelectTrigger className="w-full bg-black/40 border-gray-700/50">
+                    <SelectTrigger id="randomizer-ascendancy" aria-label={t("filters.ascendancy")} className="w-full bg-black/40 border-gray-700/50">
                       <SelectValue placeholder={t("filters.ascendancy")} />
                     </SelectTrigger>
                     <SelectContent>
@@ -230,7 +230,7 @@ export default function BuildRandomizerClient({
 
             {/* Difficulty */}
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-gray-300">
+              <label htmlFor="randomizer-difficulty" className="text-sm font-medium text-gray-300">
                 {t("filters.difficulty")}
               </label>
               <Select
@@ -238,7 +238,7 @@ export default function BuildRandomizerClient({
                 value={difficulty}
                 onValueChange={setDifficulty}
               >
-                <SelectTrigger className="w-full bg-black/40 border-gray-700/50">
+                <SelectTrigger id="randomizer-difficulty" aria-label={t("filters.difficulty")} className="w-full bg-black/40 border-gray-700/50">
                   <SelectValue placeholder={t("filters.difficulty")} />
                 </SelectTrigger>
                 <SelectContent>
@@ -252,7 +252,7 @@ export default function BuildRandomizerClient({
 
             {/* Budget */}
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-gray-300">
+              <label htmlFor="randomizer-budget" className="text-sm font-medium text-gray-300">
                 {t("filters.budget")}
               </label>
               <Select
@@ -260,7 +260,7 @@ export default function BuildRandomizerClient({
                 value={budget}
                 onValueChange={setBudget}
               >
-                <SelectTrigger className="w-full bg-black/40 border-gray-700/50">
+                <SelectTrigger id="randomizer-budget" aria-label={t("filters.budget")} className="w-full bg-black/40 border-gray-700/50">
                   <SelectValue placeholder={t("filters.budget")} />
                 </SelectTrigger>
                 <SelectContent>
@@ -304,6 +304,7 @@ export default function BuildRandomizerClient({
                           key={tag.value}
                           onClick={() => toggleTag(tag.value)}
                           disabled={isControlsDisabled}
+                          aria-pressed={active}
                           className={`text-xs px-2.5 py-1 rounded-full border transition-all disabled:opacity-50 ${
                             active
                               ? "bg-amber-500/20 text-amber-300 border-amber-500/50"
@@ -322,7 +323,7 @@ export default function BuildRandomizerClient({
         </div>
 
         {/* Main Roulette Area */}
-        <div className="lg:col-span-2 flex flex-col items-center justify-center min-h-[500px] border border-gray-800 bg-gray-900/20 p-8 rounded-xl relative overflow-hidden">
+        <div aria-live="polite" className="lg:col-span-2 flex flex-col items-center justify-center min-h-[500px] border border-gray-800 bg-gray-900/20 p-8 rounded-xl relative overflow-hidden">
           {/* Status states */}
           {status === "idle" && (
             <div className="text-center space-y-6">
@@ -496,6 +497,6 @@ export default function BuildRandomizerClient({
           </Accordion>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

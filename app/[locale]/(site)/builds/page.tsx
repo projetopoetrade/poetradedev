@@ -1,12 +1,13 @@
 import { Suspense } from "react";
 import { Metadata } from "next";
+import Link from "next/link";
 import { buildAbsoluteUrl, buildBreadcrumbSchema, getOgLocale } from "@/lib/utils";
 import { getBuilds, getDistinctBuildLeagues } from "@/app/actions";
+import BuildCard from "@/components/Builds/BuildCard";
 import BuildsClient from "./BuildsClient";
 
-// ISR: o conteúdo vem do Sanity, e `sanityFetch` marca toda query com o `_type`
-// do documento — publicar no Studio dispara o webhook em `/api/revalidate` e a
-// página se refaz na hora. Este TTL é só a rede de segurança se o webhook cair.
+// ISR: builds vivem no Supabase. Mutações pelo painel invalidam `db-builds`, e
+// este TTL cobre escritas externas que não chamem `/api/revalidate`.
 export const revalidate = 86400;
 
 interface Props {
@@ -63,11 +64,13 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
 // Teto para "traga todos" — a filtragem e a paginacao acontecem no cliente.
 const ALL_BUILDS_LIMIT = 500;
+const BUILDS_PER_PAGE = 12;
 
 // Nao le `searchParams`: filtros e `?page=` eram resolvidos no servidor, o que
 // tornava a rota dinamica (uma execucao de funcao por combinacao). A listagem
 // inteira cabe no payload e o BuildsClient filtra em memoria. Os builds estao
-// individualmente no sitemap, entao a descoberta nao depende desta listagem.
+// individualmente no sitemap; a listagem ainda entrega links no HTML para
+// descoberta, contexto e distribuição de autoridade interna.
 export default async function BuildsPage({ params }: Props) {
   const { locale } = await params;
 
@@ -82,6 +85,8 @@ export default async function BuildsPage({ params }: Props) {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.pathoftrade.net';
   const localePath = locale === 'en' ? '' : `/${locale}`;
   const buildsUrl = `${baseUrl}${localePath}/builds`;
+  const randomizerUrl = `${localePath}/tools/build-randomizer`;
+  const isPt = locale === "pt-br";
 
   const breadcrumbSchema = buildBreadcrumbSchema([
     { name: 'Home', url: `${baseUrl}${localePath}` },
@@ -98,7 +103,7 @@ export default async function BuildsPage({ params }: Props) {
     itemListElement: builds.map((build, i) => ({
       '@type': 'ListItem',
       position: i + 1,
-      url: buildAbsoluteUrl(`/builds/${build.slug}`),
+      url: buildAbsoluteUrl(`${localePath}/builds/${build.slug}`),
       name: build.title,
       description: build.description ?? undefined,
     })),
@@ -156,15 +161,52 @@ export default async function BuildsPage({ params }: Props) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
       <main>
-        <Suspense>
-          <BuildsClient
-            builds={builds}
-            total={total}
-            page={1}
-            locale={locale}
-            leagues={leagues}
-          />
-        </Suspense>
+        <div className="min-h-screen py-12 px-4 max-w-7xl mx-auto">
+          <header className="mb-8">
+            <h1 className="text-3xl font-bold text-white mb-2">
+              {isPt ? "Builds de Path of Exile" : "Path of Exile Builds"}
+            </h1>
+            <p className="text-gray-400 text-sm">
+              {isPt
+                ? "Explore guias de builds e filtre por classe, ascendência, liga e estilo de jogo."
+                : "Browse build guides and filter by class, ascendancy, league, and playstyle."}
+            </p>
+          </header>
+
+          <section
+            aria-labelledby="build-randomizer-heading"
+            className="mb-8 p-6 rounded-xl border border-amber-500/20 bg-amber-500/5 flex flex-col sm:flex-row items-center justify-between gap-4"
+          >
+            <div>
+              <h2 id="build-randomizer-heading" className="text-xl font-semibold text-amber-400 mb-1">
+                {isPt ? "Não sabe qual build escolher?" : "Not sure which build to play?"}
+              </h2>
+              <p className="text-sm text-amber-200/70">
+                {isPt
+                  ? "Use o randomizador para encontrar uma build por orçamento, dificuldade e estilo de jogo."
+                  : "Use the randomizer to find a build by budget, difficulty, and playstyle."}
+              </p>
+            </div>
+            <Link
+              href={randomizerUrl}
+              className="shrink-0 px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-black font-medium rounded-lg transition-colors text-sm"
+            >
+              {isPt ? "Sortear uma build" : "Randomize a build"}
+            </Link>
+          </section>
+
+          <Suspense
+            fallback={(
+              <BuildsCatalogFallback builds={builds} total={total} locale={locale} />
+            )}
+          >
+            <BuildsClient
+              builds={builds}
+              locale={locale}
+              leagues={leagues}
+            />
+          </Suspense>
+        </div>
 
         <section className="container mx-auto px-4 mt-12 border-t border-border pt-8">
           <div className="text-muted-foreground text-sm md:text-base leading-relaxed max-w-3xl space-y-4">
@@ -228,5 +270,46 @@ export default async function BuildsPage({ params }: Props) {
         </section>
       </main>
     </>
+  );
+}
+
+function BuildsCatalogFallback({
+  builds,
+  total,
+  locale,
+}: {
+  builds: Awaited<ReturnType<typeof getBuilds>>["builds"];
+  total: number;
+  locale: string;
+}) {
+  const visibleBuilds = builds.slice(0, BUILDS_PER_PAGE);
+  const isPt = locale === "pt-br";
+
+  return (
+    <section aria-label={isPt ? "Catálogo de builds" : "Build catalog"}>
+      {visibleBuilds.length > 0 ? (
+        <>
+          <p className="text-xs text-gray-500 mb-4">
+            {isPt
+              ? `Mostrando 1–${visibleBuilds.length} de ${total} builds`
+              : `Showing 1–${visibleBuilds.length} of ${total} builds`}
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {visibleBuilds.map((build, index) => (
+              <BuildCard
+                key={build.id}
+                build={build}
+                locale={locale}
+                priority={index < 4}
+              />
+            ))}
+          </div>
+        </>
+      ) : (
+        <p className="text-center py-20 text-gray-500">
+          {isPt ? "Nenhuma build publicada no momento." : "No builds are published yet."}
+        </p>
+      )}
+    </section>
   );
 }

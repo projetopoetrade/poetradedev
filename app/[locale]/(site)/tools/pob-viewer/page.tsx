@@ -5,6 +5,7 @@ import { buildCanonical, buildAbsoluteUrl, buildBreadcrumbSchema, getOgLocale } 
 import { CurrencyCtaSection } from '@/components/currency-cta-section'
 import { fetchTreeLayout } from '@/lib/engine/tree'
 import { getEngineApiBase } from '@/lib/placeholders/engine'
+import { Sword } from 'lucide-react'
 import PobViewerClient from './PobViewerClient'
 
 const FALLBACK_DATA_JSON_URL =
@@ -46,8 +47,16 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
         'x-default': buildAbsoluteUrl('/tools/pob-viewer'),
       },
     },
-    openGraph: { title, description, url: canonical, type: 'website', ...getOgLocale(locale), siteName: 'Path of Trade' },
-    twitter: { card: 'summary_large_image', title, description },
+    openGraph: {
+      title,
+      description,
+      url: canonical,
+      type: 'website',
+      ...getOgLocale(locale),
+      siteName: 'Path of Trade',
+      images: [{ url: '/images/logo.webp', alt: 'Path of Trade' }],
+    },
+    twitter: { card: 'summary_large_image', title, description, images: ['/images/logo.webp'] },
   }
 }
 
@@ -93,7 +102,23 @@ export default async function PobViewerPage(props: PageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(webAppSchema) }}
       />
-      <div className="container mx-auto px-4 py-8 min-h-[calc(100vh-10rem)]">
+      <main className="container mx-auto px-4 py-8 min-h-[calc(100vh-10rem)]">
+        <header className="max-w-7xl mx-auto mb-8 space-y-2">
+          <div className="flex items-center gap-2">
+            <Sword className="h-6 w-6 text-primary" aria-hidden="true" />
+            <h1 className="text-2xl font-bold">
+              {isPt ? 'Visualizador de Build' : 'PoB Viewer'}
+            </h1>
+          </div>
+          <p className="text-muted-foreground text-sm">
+            {isPt
+              ? 'Cole seu código Path of Building ou link pobb.in/Pastebin para visualizar sua build no navegador.'
+              : 'Paste your Path of Building code or pobb.in/Pastebin link to view your build in the browser.'}
+          </p>
+          <Link href="/builds" className="inline-flex text-sm text-primary hover:underline">
+            {isPt ? 'Ou explore os guias de builds publicados' : 'Or browse published build guides'}
+          </Link>
+        </header>
         <PobViewerClient
           locale={locale}
           engineBase={getEngineApiBase()}
@@ -134,7 +159,7 @@ export default async function PobViewerPage(props: PageProps) {
             </>
           )}
         </div>
-      </div>
+      </main>
     </>
   )
 }
