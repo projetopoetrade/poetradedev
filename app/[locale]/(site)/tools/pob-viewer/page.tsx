@@ -33,8 +33,8 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
     ? 'Path of Building Online — PoB Viewer no Navegador | Path of Trade'
     : 'Path of Building Online — PoB Viewer in Your Browser | Path of Trade'
   const description = isPt
-    ? 'Abra o Path of Building online — sem instalar nada. Cole seu código PoB e veja DPS, equipamentos, gemas e a árvore de passivas direto no navegador.'
-    : 'Open Path of Building online — no install needed. Paste your PoB code to view DPS, gear, gems and the passive tree right in your web browser.'
+    ? 'Cole o código do PoB ou um link pobb.in para ver a tree, gems e gear no navegador. Abra a mesma build no Path of Building desktop quando precisar do planner completo.'
+    : 'Paste a PoB code or pobb.in link to inspect the tree, gems, and gear in your browser. Open the same build in desktop Path of Building when you need the full planner.'
 
   return {
     title,
@@ -74,15 +74,16 @@ export default async function PobViewerPage(props: PageProps) {
   ])
 
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.pathoftrade.net'
+  const pageUrl = isPt ? `${baseUrl}/pt-br/tools/pob-viewer` : `${baseUrl}/tools/pob-viewer`
   const webAppSchema = {
     "@context": "https://schema.org",
     "@type": "WebApplication",
-    name: isPt ? "Path of Building Online — PoB Viewer" : "Path of Building Online — PoB Viewer",
+    name: "Path of Building Online — PoB Viewer",
     alternateName: ["PoB Online", "Path of Building Web", "PoB Viewer"],
     description: isPt
-      ? "Abra o Path of Building online no navegador: cole seu código PoB e veja DPS, equipamentos, gemas e a árvore de passivas."
-      : "Open Path of Building online in your browser: paste your PoB code to view DPS, gear, gems and the passive tree.",
-    url: `${baseUrl}/tools/pob-viewer`,
+      ? "Cole o código do PoB ou um link pobb.in para ver a tree, gems e gear no navegador."
+      : "Paste a PoB code or pobb.in link to inspect the tree, gems, and gear in your browser.",
+    url: pageUrl,
     applicationCategory: "GameApplication",
     operatingSystem: "All",
     offers: {
@@ -90,6 +91,96 @@ export default async function PobViewerPage(props: PageProps) {
       price: "0",
       priceCurrency: "USD",
     },
+  }
+
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: isPt
+      ? [
+          {
+            "@type": "Question",
+            name: "O que é Path of Building?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Path of Building (PoB) é um planner offline de build pra Path of Exile, community fork. Você configura tree, gems e gear lá. Não é esta página.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "Dá pra usar Path of Building online sem instalar?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Dá pra inspecionar um PoB colado aqui sem instalar nada. Não dá pra tratar esta página como o planner completo. Pra editar e pra stat calculada, usa o app desktop ou um port web do PoB.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "Qual a diferença deste viewer pro PoB Web / pob.cool?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Esses rodam Path of Building no navegador. Esta página importa um código PoB ou um link pobb.in / Pastebin e mostra a build. Se você precisa mexer em node, vai pra lá ou pro PoB desktop.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "Como abrir um link pobb.in?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Cola a URL inteira no campo. Link de pastebin.com funciona igual. Código PoB cru também.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "Como abrir a mesma build no app desktop?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Instala Path of Building, abre Import/Export e cola o mesmo código ou URL que você usou aqui.",
+            },
+          },
+        ]
+      : [
+          {
+            "@type": "Question",
+            name: "What is Path of Building?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Path of Building (PoB) is an offline build planner for Path of Exile, maintained as a community fork. You set the tree, gems, and gear there. It is not this webpage.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "Can I use Path of Building online without installing it?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "You can inspect a pasted PoB here without installing anything. You cannot treat this page as the full planner. For editing and calculated stats, use the desktop app or a web port of PoB.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "How is this different from PoB Web or pob.cool?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Those run Path of Building in the browser. This page imports a PoB code or a pobb.in / Pastebin link and shows the build. If you need to change nodes, go there or to desktop PoB.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "How do I open a pobb.in link?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Paste the full URL into the box. Pastebin.com links work the same way. A raw PoB code works too.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "How do I open the same build in the desktop app?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Install Path of Building, open Import/Export, and paste the same code or URL you used here.",
+            },
+          },
+        ],
   }
 
   return (
@@ -102,6 +193,10 @@ export default async function PobViewerPage(props: PageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(webAppSchema) }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
       <main className="container mx-auto px-4 py-8 min-h-[calc(100vh-10rem)]">
         <header className="max-w-7xl mx-auto mb-8 space-y-2">
           <div className="flex items-center gap-2">
@@ -112,8 +207,8 @@ export default async function PobViewerPage(props: PageProps) {
           </div>
           <p className="text-muted-foreground text-sm">
             {isPt
-              ? 'Cole seu código Path of Building ou link pobb.in/Pastebin para visualizar sua build no navegador.'
-              : 'Paste your Path of Building code or pobb.in/Pastebin link to view your build in the browser.'}
+              ? 'Cole o código do Path of Building ou um link pobb.in / Pastebin. O PoB Viewer mostra a build no navegador, sem instalar.'
+              : 'Paste a Path of Building code or a pobb.in / Pastebin link. Inspect the build in your browser. No install.'}
           </p>
           <Link href="/builds" className="inline-flex text-sm text-primary hover:underline">
             {isPt ? 'Ou explore os guias de builds publicados' : 'Or browse published build guides'}
@@ -135,27 +230,79 @@ export default async function PobViewerPage(props: PageProps) {
         <div className="mt-20 max-w-4xl mx-auto prose prose-invert prose-slate">
           {isPt ? (
             <>
-              <h2 className="text-3xl font-bold text-foreground">Como usar o Path of Building Online (PoB Viewer no navegador)</h2>
-              <p className="text-muted-foreground">O <strong>Path of Building online</strong> — ou <strong>PoB Viewer</strong> — é a ferramenta essencial e definitiva para inspecionar, compartilhar e analisar builds de Path of Exile (PoE) diretamente no seu navegador, sem precisar instalar o software de desktop. Basta importar o link gerado pelo seu Path of Building e pronto: você tem acesso imediato às estatísticas exatas de DPS (Damage Per Second), HP, equipamentos raros e únicos da build, setups de joias e à árvore de passivas ativadas.</p>
-              
-              <h3 className="text-2xl font-bold text-foreground mt-8">Por que o PoB Import é Essencial?</h3>
-              <p className="text-muted-foreground">Avaliar os gargalos do seu personagem através de um visualizador é o que separa jogadores estagnados daqueles que limpam todo o conteúdo de pináculo (T17s, Uber Bosses, Delve profundo). Identificar uma resistência faltante, descobrir qual gema maximiza o benefício, ou qual item base a build recomenda, permite que o jogador faça as correções exatas antes de ir a campo.</p>
+              <h2 className="text-3xl font-bold text-foreground">O que este visualizador mostra</h2>
+              <p className="text-muted-foreground">Essa página lê um export do Path of Building e joga a build na tela: passive tree, gems e gear. Serve pra quando alguém manda um PoB no chat e você quer olhar sem abrir o app desktop.</p>
+              <p className="text-muted-foreground">É viewer, não é o planner. Não aloca passiva, não crafta item, não substitui o cálculo do Path of Building. Se o número do export importa pra uma decisão, abre o mesmo código no PoB desktop.</p>
 
-              <h3 className="text-2xl font-bold text-foreground mt-8">Equipe-se Analisando o Meta Atual</h3>
-              <p className="text-muted-foreground">Se ao avaliar o pastebin da sua build dos sonhos você perceber que falta um cinto Mageblood, um amuleto craftado, ou que os modifiers estão abaixo da média para gerar os milhões de dano prometidos na guide, a solução é pular as dezenas de horas infernais do *farming* cego. Para realizar esses crafts (Metamod) ou para adqurir os itens diretos no trade oficial, grandes volumes de moedas são cobrados.</p>
-              <p className="text-muted-foreground">Acelere sua diversão: aproveite nossos descontos diários em atacado para <Link href="/pt-br/games/path-of-exile-1/league/standard/divine-orb" className="text-primary font-semibold hover:underline">comprar Divine Orbs</Link> ou <Link href="/pt-br/games/path-of-exile-1/league/standard/chaos-orb" className="text-primary font-semibold hover:underline">Chaos Orbs</Link> e completar agora mesmo os itens recomendados apresentados acima do seu Visualizador de Personagem.</p>
+              <h2 className="text-2xl font-bold text-foreground mt-8">Como abrir um PoB aqui</h2>
+              <ol className="text-muted-foreground list-decimal pl-5 space-y-1">
+                <li>Copia o código cru do PoB, ou copia a URL do pobb.in / pastebin.com.</li>
+                <li>Cola no campo acima.</li>
+                <li>Clica Analisar Build.</li>
+              </ol>
+              <p className="text-muted-foreground">Só isso. Não tem upload de arquivo. Não tem import de personagem do pathofexile.com.</p>
+
+              <h2 className="text-2xl font-bold text-foreground mt-8">Visualizador vs Path of Building desktop</h2>
+              <p className="text-muted-foreground">Path of Building é o planner offline da community pra Path of Exile. É ele que monta a character de verdade. Baixa em <a href="https://pathofbuilding.community/" className="text-primary font-semibold hover:underline">pathofbuilding.community</a>.</p>
+              <p className="text-muted-foreground">Aqui você inspeciona um export colado. Site que roda o PoB inteiro na aba (pob.cool e similares) é outro produto: tenta ser o planner no navegador. Usa esses pra theorycraft. Usa esta página pra abrir um código ou um paste rápido.</p>
+              <p className="text-muted-foreground">Pra mudar a build, instala o Path of Building desktop, vai em Import/Export e cola o mesmo código ou URL.</p>
+
+              <h2 className="text-2xl font-bold text-foreground mt-8">Perguntas frequentes</h2>
+              <h3 className="text-xl font-bold text-foreground mt-6">O que é Path of Building?</h3>
+              <p className="text-muted-foreground">Path of Building (PoB) é um planner offline de build pra Path of Exile, community fork. Você configura tree, gems e gear lá. Não é esta página.</p>
+              <h3 className="text-xl font-bold text-foreground mt-6">Dá pra usar Path of Building online sem instalar?</h3>
+              <p className="text-muted-foreground">Dá pra inspecionar um PoB colado aqui sem instalar nada. Não dá pra tratar esta página como o planner completo. Pra editar e pra stat calculada, usa o app desktop ou um port web do PoB.</p>
+              <h3 className="text-xl font-bold text-foreground mt-6">Qual a diferença deste viewer pro PoB Web / pob.cool?</h3>
+              <p className="text-muted-foreground">Esses rodam Path of Building no navegador. Esta página importa um código PoB ou um link pobb.in / Pastebin e mostra a build. Se você precisa mexer em node, vai pra lá ou pro PoB desktop.</p>
+              <h3 className="text-xl font-bold text-foreground mt-6">Como abrir um link pobb.in?</h3>
+              <p className="text-muted-foreground">Cola a URL inteira no campo. Link de pastebin.com funciona igual. Código PoB cru também.</p>
+              <h3 className="text-xl font-bold text-foreground mt-6">Como abrir a mesma build no app desktop?</h3>
+              <p className="text-muted-foreground">Instala Path of Building, abre Import/Export e cola o mesmo código ou URL que você usou aqui.</p>
+
+              <h2 className="text-2xl font-bold text-foreground mt-8">Outras tools</h2>
+              <ul className="text-muted-foreground">
+                <li><Link href="/pt-br/builds" className="text-primary font-semibold hover:underline">Build guides</Link></li>
+                <li><Link href="/pt-br/tools/price-tracker" className="text-primary font-semibold hover:underline">PoE Price Tracker</Link></li>
+                <li><Link href="/pt-br/tools/build-randomizer" className="text-primary font-semibold hover:underline">Build Randomizer</Link></li>
+              </ul>
             </>
           ) : (
             <>
-              <h2 className="text-3xl font-bold text-foreground">How to Use Path of Building Online (PoB Viewer in Your Browser)</h2>
-              <p className="text-muted-foreground">The <strong>Path of Building online</strong> viewer — also known as the <strong>PoB Viewer</strong> or the PoB web version — is the easiest and most effective way to inspect, share, and analyze Path of Exile (PoE) builds straight from your browser, with no desktop client installation required. By importing your Path of Building pastebin link, you gain immediate, comprehensive access to critical stats like DPS, defensive layers, passive skill trees, and gem setups.</p>
-              
-              <h3 className="text-2xl font-bold text-foreground mt-8">Why Use a Build Visualizer?</h3>
-              <p className="text-muted-foreground">Understanding the hidden bottlenecks of a character is what separates average players from those conquering top-tier endgame content like T17 maps or Uber Bosses. Utilizing an online visualizer highlights missing resistances, suboptimal gem links, and mandatory uncorrupted items, letting you formulate an exact action plan for your progression.</p>
+              <h2 className="text-3xl font-bold text-foreground">What this viewer shows</h2>
+              <p className="text-muted-foreground">This page reads a Path of Building export and puts the build on screen: passive tree, gems, and gear. Use it when someone drops a PoB in chat and you want a look without booting the desktop app.</p>
+              <p className="text-muted-foreground">It is a viewer. It does not allocate passives, craft items, or replace Path of Building’s calculator. If a number in that export matters for a decision, open the same code in the desktop planner.</p>
 
-              <h3 className="text-2xl font-bold text-foreground mt-8">Complete Your Build with Path of Trade</h3>
-              <p className="text-muted-foreground">If the visualizer reveals that your guide requires high-tier cluster jewels, expensive corrupted weapons, or you simply need millions of DPS to get past an endgame hurdle, farming for days relies purely on cruel RNG. Purchasing direct upgrades allows you to focus on the fun parts of the game.</p>
-              <p className="text-muted-foreground">Skip the grind easily by picking up the currency required for top-tier gear. Check out our competitive daily rates to <Link href="/games/path-of-exile-1/league/standard/divine-orb" className="text-primary font-semibold hover:underline">buy Divine Orbs safely</Link> or bulk <Link href="/games/path-of-exile-1/league/standard/chaos-orb" className="text-primary font-semibold hover:underline">buy Chaos Orbs</Link> straight from the Path of Trade marketplace, all delivered within minutes to your in-game stash.</p>
+              <h2 className="text-2xl font-bold text-foreground mt-8">How to open a PoB here</h2>
+              <ol className="text-muted-foreground list-decimal pl-5 space-y-1">
+                <li>Copy the raw PoB code, or copy a pobb.in or pastebin.com URL.</li>
+                <li>Paste it in the box above.</li>
+                <li>Click Analyze Build.</li>
+              </ol>
+              <p className="text-muted-foreground">That is the whole input. No file picker. No character import from pathofexile.com.</p>
+
+              <h2 className="text-2xl font-bold text-foreground mt-8">Viewer vs desktop Path of Building</h2>
+              <p className="text-muted-foreground">Path of Building is the community’s offline build planner for Path of Exile. That is the tool that actually plans the character. Get it from <a href="https://pathofbuilding.community/" className="text-primary font-semibold hover:underline">pathofbuilding.community</a>.</p>
+              <p className="text-muted-foreground">This page inspects a pasted export. Sites that run PoB itself in the tab (pob.cool and similar) are a different product: they are trying to be the planner in a browser. Use those to theorycraft. Use this page to open a code or a paste link fast.</p>
+              <p className="text-muted-foreground">To change the build, install desktop Path of Building, then Import/Export and paste the same code or URL.</p>
+
+              <h2 className="text-2xl font-bold text-foreground mt-8">FAQ</h2>
+              <h3 className="text-xl font-bold text-foreground mt-6">What is Path of Building?</h3>
+              <p className="text-muted-foreground">Path of Building (PoB) is an offline build planner for Path of Exile, maintained as a community fork. You set the tree, gems, and gear there. It is not this webpage.</p>
+              <h3 className="text-xl font-bold text-foreground mt-6">Can I use Path of Building online without installing it?</h3>
+              <p className="text-muted-foreground">You can inspect a pasted PoB here without installing anything. You cannot treat this page as the full planner. For editing and calculated stats, use the desktop app or a web port of PoB.</p>
+              <h3 className="text-xl font-bold text-foreground mt-6">How is this different from PoB Web or pob.cool?</h3>
+              <p className="text-muted-foreground">Those run Path of Building in the browser. This page imports a PoB code or a pobb.in / Pastebin link and shows the build. If you need to change nodes, go there or to desktop PoB.</p>
+              <h3 className="text-xl font-bold text-foreground mt-6">How do I open a pobb.in link?</h3>
+              <p className="text-muted-foreground">Paste the full URL into the box. Pastebin.com links work the same way. A raw PoB code works too.</p>
+              <h3 className="text-xl font-bold text-foreground mt-6">How do I open the same build in the desktop app?</h3>
+              <p className="text-muted-foreground">Install Path of Building, open Import/Export, and paste the same code or URL you used here.</p>
+
+              <h2 className="text-2xl font-bold text-foreground mt-8">Related tools</h2>
+              <ul className="text-muted-foreground">
+                <li><Link href="/builds" className="text-primary font-semibold hover:underline">Build guides</Link></li>
+                <li><Link href="/tools/price-tracker" className="text-primary font-semibold hover:underline">PoE Price Tracker</Link></li>
+                <li><Link href="/tools/build-randomizer" className="text-primary font-semibold hover:underline">Build Randomizer</Link></li>
+              </ul>
             </>
           )}
         </div>
